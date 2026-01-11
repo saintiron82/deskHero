@@ -61,6 +61,9 @@ namespace DeskWarrior.Models
         public bool SoundEnabled { get; set; } = true;
 
         [JsonPropertyName("volume")]
-        public double Volume { get; set; } = 0.5;
+        public double Volume { get; set; } = 0.2;
+
+        [JsonPropertyName("background_opacity")]
+        public double BackgroundOpacity { get; set; } = 0.4;
     }
 }

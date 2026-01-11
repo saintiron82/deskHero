@@ -92,6 +92,9 @@ namespace DeskWarrior
             _gameManager.StartGame();
             var upgrades = _saveManager.GetUpgrades();
             _gameManager.LoadUpgrades(upgrades.keyboard, upgrades.mouse);
+            
+            // 저장된 설정 적용
+            ApplySettings();
 
             // 이미지 로드 (크로마 키 처리)
             LoadCharacterImages();
@@ -219,6 +222,49 @@ namespace DeskWarrior
                 UpdateAllUI();
                 UpdateUpgradeCosts();
             }
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var settingsWindow = new Windows.SettingsWindow(
+                _saveManager.CurrentSave.Settings,
+                (opacity) => {
+                    ApplyBackgroundOpacity(opacity);
+                },
+                (volume) => {
+                    _soundManager.Volume = volume;
+                }
+            );
+            settingsWindow.Owner = this;
+            settingsWindow.ShowDialog();
+            
+            _saveManager.Save();
+        }
+
+        private void ApplyBackgroundOpacity(double opacity)
+        {
+            // 각 패널마다 기본 투명도 비율이 다를 수 있음
+            // 적 정보 / 타이머: 기본 0.4 (최대 0.8)
+            double infoOpacity = Math.Clamp(opacity, 0.0, 0.8);
+            
+            // 업그레이드 패널: 기본 0.6 (최대 0.9)
+            double upgradeOpacity = Math.Clamp(opacity * 1.5, 0.0, 0.95);
+
+            if (EnemyInfoBorder != null) 
+                EnemyInfoBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
+            
+            if (TimerBorder != null) 
+                TimerBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
+            
+            if (UpgradePanel != null) 
+                UpgradePanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
+        }
+
+        private void ApplySettings()
+        {
+            var settings = _saveManager.CurrentSave.Settings;
+            ApplyBackgroundOpacity(settings.BackgroundOpacity);
+            _soundManager.Volume = settings.Volume;
         }
 
         private void SaveUpgrades()

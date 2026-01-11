@@ -4,7 +4,7 @@
     "hp_growth": 50,
     "boss_interval": 10,
     "boss_hp_multiplier": 3.0,
-    "time_limit": 30,
+    "time_limit": 120,
     "base_gold_multiplier": 1
   },
   "upgrade": {

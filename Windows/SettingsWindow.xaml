@@ -1,0 +1,70 @@
+<Window x:Class="DeskWarrior.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Height="250" Width="300"
+        WindowStyle="None" ResizeMode="NoResize"
+        Background="#CC222222" AllowsTransparency="True"
+        WindowStartupLocation="CenterOwner"
+        Topmost="True">
+    
+    <Border BorderBrush="#666" BorderThickness="1" CornerRadius="10">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- 타이틀 -->
+            <TextBlock Grid.Row="0" Text="⚙️ SETTINGS" 
+                       Foreground="White" FontWeight="Bold" FontSize="16"
+                       HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            
+            <!-- 배경 투명도 -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                <TextBlock Text="Background Opacity" Foreground="#AAA" FontSize="12" Margin="0,0,0,5"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider x:Name="OpacitySlider" Grid.Column="0"
+                            Minimum="0" Maximum="1" Value="0.4"
+                            ValueChanged="OpacitySlider_ValueChanged"/>
+                    <TextBlock x:Name="OpacityValueText" Grid.Column="1" 
+                               Text="40%" Foreground="White" Width="35" TextAlignment="Right"/>
+                </Grid>
+            </StackPanel>
+            
+            <!-- 사운드 볼륨 -->
+            <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                <TextBlock Text="Sound Volume" Foreground="#AAA" FontSize="12" Margin="0,0,0,5"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider x:Name="VolumeSlider" Grid.Column="0"
+                            Minimum="0" Maximum="1" Value="0.2"
+                            ValueChanged="VolumeSlider_ValueChanged"/>
+                    <TextBlock x:Name="VolumeValueText" Grid.Column="1" 
+                               Text="20%" Foreground="White" Width="35" TextAlignment="Right"/>
+                </Grid>
+            </StackPanel>
+            
+            <!-- 닫기 버튼 -->
+            <Button Grid.Row="3" Content="CLOSE" 
+                    Click="CloseButton_Click"
+                    Background="#444" Foreground="White"
+                    BorderThickness="0" Width="100" Height="30"
+                    VerticalAlignment="Bottom">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+    </Border>
+</Window>

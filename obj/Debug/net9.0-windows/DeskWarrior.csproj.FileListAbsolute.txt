@@ -17,3 +17,5 @@ C:\Users\saint\Game\DeskWarrior\obj\Debug\net9.0-windows\refint\DeskWarrior.dll
 C:\Users\saint\Game\DeskWarrior\obj\Debug\net9.0-windows\DeskWarrior.pdb
 C:\Users\saint\Game\DeskWarrior\obj\Debug\net9.0-windows\DeskWarrior.genruntimeconfig.cache
 C:\Users\saint\Game\DeskWarrior\obj\Debug\net9.0-windows\ref\DeskWarrior.dll
+C:\Users\saint\Game\DeskWarrior\obj\Debug\net9.0-windows\Windows\SettingsWindow.baml
+C:\Users\saint\Game\DeskWarrior\obj\Debug\net9.0-windows\Windows\SettingsWindow.g.cs
