@@ -143,7 +143,11 @@ namespace DeskWarrior
                 // F1 키로 드래그 모드 토글 (VK_F1 = 112)
                 if (e.Type == GameInputType.Keyboard && e.VirtualKeyCode == 112)
                 {
-                    _trayManager.ToggleDragMode();
+                    // 마우스가 게임 창 위에 있을 때만 작동
+                    if (IsMouseOverWindow())
+                    {
+                        _trayManager.ToggleDragMode();
+                    }
                     return;
                 }
 
@@ -298,6 +302,19 @@ namespace DeskWarrior
                 Win32Helper.SetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE, 
                     extendedStyle & ~Win32Helper.WS_EX_TRANSPARENT);
             }
+        }
+
+        private bool IsMouseOverWindow()
+        {
+            if (!Win32Helper.GetCursorPos(out var pt)) return false;
+
+            // 현재 창의 화면 좌표 범위 계산
+            Point topLeft = PointToScreen(new Point(0, 0));
+            Point bottomRight = PointToScreen(new Point(ActualWidth, ActualHeight));
+
+            // 마우스 좌표가 범위 내에 있는지 확인
+            return pt.x >= topLeft.X && pt.x <= bottomRight.X &&
+                   pt.y >= topLeft.Y && pt.y <= bottomRight.Y;
         }
 
         private void UpdateAllUI()
