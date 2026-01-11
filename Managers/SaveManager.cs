@@ -101,6 +101,17 @@ namespace DeskWarrior.Managers
             }
         }
 
+        public void UpdateUpgrades(int keyboardPower, int mousePower)
+        {
+            _currentSave.Upgrades.KeyboardPower = keyboardPower;
+            _currentSave.Upgrades.MousePower = mousePower;
+        }
+
+        public (int keyboard, int mouse) GetUpgrades()
+        {
+            return (_currentSave.Upgrades.KeyboardPower, _currentSave.Upgrades.MousePower);
+        }
+
         #endregion
     }
 }

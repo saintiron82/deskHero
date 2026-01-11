@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="DeskWarrior"
         Width="280"
-        Height="220"
+        Height="250"
         AllowsTransparency="True"
         Background="Transparent"
         WindowStyle="None"
@@ -30,6 +30,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 
@@ -75,6 +76,15 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
                            Margin="5,0,0,0"/>
+                    
+                    <!-- 공격력 표시 (좌상단) -->
+                    <Border Background="#66000000" CornerRadius="5" Padding="4,2"
+                            HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock x:Name="KeyboardPowerText" Text="⌨️ Atk: 1" FontSize="9" Foreground="#88FFFF"/>
+                            <TextBlock x:Name="MousePowerText" Text="🖱️ Atk: 1" FontSize="9" Foreground="#FF88FF"/>
+                        </StackPanel>
+                    </Border>
                 </Grid>
                 
                 <!-- 하단: 플레이어 정보 + 타이머 -->
@@ -98,6 +108,43 @@
                         </StackPanel>
                     </Border>
                 </Grid>
+                
+                <!-- 업그레이드 패널 (드래그 모드 시 표시) -->
+                <Border x:Name="UpgradePanel" Grid.Row="3" 
+                        Background="#CC000000" CornerRadius="5" 
+                        Margin="0,5,0,0" Padding="5"
+                        Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- 키보드 공격력 업그레이드 -->
+                        <Button x:Name="UpgradeKeyboardBtn" Grid.Column="0" 
+                                Click="UpgradeKeyboard_Click"
+                                Background="#224488" Foreground="White"
+                                BorderThickness="0" Margin="2" Padding="5,3">
+                            <StackPanel>
+                                <TextBlock Text="⌨️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="KeyboardCostText" Text="💰 100" FontSize="8" 
+                                           HorizontalAlignment="Center" Foreground="#FFD700"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- 마우스 공격력 업그레이드 -->
+                        <Button x:Name="UpgradeMouseBtn" Grid.Column="1" 
+                                Click="UpgradeMouse_Click"
+                                Background="#884422" Foreground="White"
+                                BorderThickness="0" Margin="2" Padding="5,3">
+                            <StackPanel>
+                                <TextBlock Text="🖱️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="MouseCostText" Text="💰 100" FontSize="8" 
+                                           HorizontalAlignment="Center" Foreground="#FFD700"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
             </Grid>
         </Border>
         

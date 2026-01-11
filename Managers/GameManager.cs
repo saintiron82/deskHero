@@ -132,6 +132,15 @@ namespace DeskWarrior.Managers
             return (int)(_gameData.Upgrade.BaseCost * Math.Pow(_gameData.Upgrade.CostMultiplier, currentLevel - 1));
         }
 
+        /// <summary>
+        /// 저장된 업그레이드 데이터 로드
+        /// </summary>
+        public void LoadUpgrades(int keyboardPower, int mousePower)
+        {
+            KeyboardPower = keyboardPower;
+            MousePower = mousePower;
+        }
+
         #endregion
 
         #region Private Methods

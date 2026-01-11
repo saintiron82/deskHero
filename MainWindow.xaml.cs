@@ -85,8 +85,10 @@ namespace DeskWarrior
             // 입력 감지 시작
             _inputHandler.Start();
 
-            // 게임 시작
+            // 게임 시작 및 저장된 업그레이드 로드
             _gameManager.StartGame();
+            var upgrades = _saveManager.GetUpgrades();
+            _gameManager.LoadUpgrades(upgrades.keyboard, upgrades.mouse);
 
             // 이미지 로드 (크로마 키 처리)
             LoadCharacterImages();
@@ -175,6 +177,49 @@ namespace DeskWarrior
             _isDragMode = _trayManager.IsDragMode;
             SetClickThrough(!_isDragMode);
             DragModeBorder.Visibility = _isDragMode ? Visibility.Visible : Visibility.Collapsed;
+            UpgradePanel.Visibility = _isDragMode ? Visibility.Visible : Visibility.Collapsed;
+            
+            // 업그레이드 비용 업데이트
+            if (_isDragMode) UpdateUpgradeCosts();
+        }
+
+        private void UpgradeKeyboard_Click(object sender, RoutedEventArgs e)
+        {
+            if (_gameManager.UpgradeKeyboardPower())
+            {
+                SaveUpgrades();
+                UpdateAllUI();
+                UpdateUpgradeCosts();
+            }
+        }
+
+        private void UpgradeMouse_Click(object sender, RoutedEventArgs e)
+        {
+            if (_gameManager.UpgradeMousePower())
+            {
+                SaveUpgrades();
+                UpdateAllUI();
+                UpdateUpgradeCosts();
+            }
+        }
+
+        private void SaveUpgrades()
+        {
+            _saveManager.UpdateUpgrades(_gameManager.KeyboardPower, _gameManager.MousePower);
+            _saveManager.Save();
+        }
+
+        private void UpdateUpgradeCosts()
+        {
+            var keyboardCost = _gameManager.CalculateUpgradeCost(_gameManager.KeyboardPower);
+            var mouseCost = _gameManager.CalculateUpgradeCost(_gameManager.MousePower);
+            
+            KeyboardCostText.Text = $"💰 {keyboardCost}";
+            MouseCostText.Text = $"💰 {mouseCost}";
+            
+            // 골드 부족 시 버튼 비활성화
+            UpgradeKeyboardBtn.IsEnabled = _gameManager.Gold >= keyboardCost;
+            UpgradeMouseBtn.IsEnabled = _gameManager.Gold >= mouseCost;
         }
 
         private void OnExitRequested(object? sender, EventArgs e)
@@ -240,6 +285,10 @@ namespace DeskWarrior
             
             // 입력 수 표시
             InputCountText.Text = $"⌨️ {_sessionInputCount}";
+            
+            // 공격력 표시
+            KeyboardPowerText.Text = $"⌨️ Atk: {_gameManager.KeyboardPower}";
+            MousePowerText.Text = $"🖱️ Atk: {_gameManager.MousePower}";
             
             // 몬스터 정보
             if (monster != null)
