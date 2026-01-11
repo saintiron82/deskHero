@@ -1,11 +1,23 @@
 {
   "balance": {
     "base_hp": 100,
-    "hp_growth": 50,
+    "hp_growth": 1.2,
     "boss_interval": 10,
-    "boss_hp_multiplier": 3.0,
-    "time_limit": 120,
-    "base_gold_multiplier": 1
+    "boss_hp_multiplier": 5.0,
+    "base_gold_multiplier": 1.5,
+    "time_limit": 30,
+    "critical_chance": 0.1,
+    "critical_multiplier": 2.0,
+    "game_over_messages": [
+      "Your finger needs a gym membership.",
+      "Monster: 'Is that all you got?'",
+      "Keyboard destroyed. Try again.",
+      "Evolution failed.",
+      "You became a star in the sky...",
+      "Even my grandma clicks faster.",
+      "Error 404: Skill not found.",
+      "Try using both hands next time."
+    ]
   },
   "upgrade": {
     "base_cost": 100,

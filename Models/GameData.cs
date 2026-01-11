@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace DeskWarrior.Models
 {
@@ -55,6 +56,15 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("base_gold_multiplier")]
         public int BaseGoldMultiplier { get; set; } = 1;
+
+        [JsonPropertyName("critical_chance")]
+        public double CriticalChance { get; set; } = 0.1;
+
+        [JsonPropertyName("critical_multiplier")]
+        public double CriticalMultiplier { get; set; } = 2.0;
+
+        [JsonPropertyName("game_over_messages")]
+        public List<string> GameOverMessages { get; set; } = new();
     }
 
     public class UpgradeConfig

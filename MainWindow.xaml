@@ -25,7 +25,7 @@
                 Panel.ZIndex="100"/>
         
         <!-- 포켓몬 스타일 배틀 뷰 -->
-        <Border Background="#EE1a1a2e" CornerRadius="10" Margin="3">
+        <Border x:Name="MainBackgroundBorder" Background="#EE1a1a2e" CornerRadius="10" Margin="3">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -131,41 +131,67 @@
                             </Grid.ColumnDefinitions>
                             
                             <!-- 키보드 공격력 업그레이드 -->
-                            <Button x:Name="UpgradeKeyboardBtn" Grid.Column="0" 
+                            <Button x:Name="UpgradeKeyboardBtn" Grid.Column="0"
                                     Click="UpgradeKeyboard_Click"
-                                    Background="#224488" Foreground="White"
-                                    BorderThickness="0" Margin="2" Padding="5,3">
+                                    Style="{StaticResource KeyboardUpgradeButton}"
+                                    Margin="2" Padding="5,3"
+                                    ToolTip="Upgrade keyboard attack power">
                                 <StackPanel>
                                     <TextBlock Text="⌨️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="KeyboardCostText" Text="💰 100" FontSize="8" 
+                                    <TextBlock x:Name="KeyboardCostText" Text="💰 100" FontSize="8"
                                                HorizontalAlignment="Center" Foreground="#FFD700"/>
                                 </StackPanel>
                             </Button>
-                            
+
                             <!-- 마우스 공격력 업그레이드 -->
-                            <Button x:Name="UpgradeMouseBtn" Grid.Column="1" 
+                            <Button x:Name="UpgradeMouseBtn" Grid.Column="1"
                                     Click="UpgradeMouse_Click"
-                                    Background="#884422" Foreground="White"
-                                    BorderThickness="0" Margin="2" Padding="5,3">
+                                    Style="{StaticResource MouseUpgradeButton}"
+                                    Margin="2" Padding="5,3"
+                                    ToolTip="Upgrade mouse attack power">
                                 <StackPanel>
                                     <TextBlock Text="🖱️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="MouseCostText" Text="💰 100" FontSize="8" 
+                                    <TextBlock x:Name="MouseCostText" Text="💰 100" FontSize="8"
                                                HorizontalAlignment="Center" Foreground="#FFD700"/>
                                 </StackPanel>
                             </Button>
                         </Grid>
                         
-                        <!-- 설정 버튼 -->
-                        <Button x:Name="SettingsBtn" Content="⚙️ Settings" 
-                                Click="SettingsButton_Click"
-                                Background="#444" Foreground="#CCC"
-                                BorderThickness="0" Margin="2,4,2,0" Height="18" FontSize="10">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                     <Setter Property="CornerRadius" Value="3"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
+                        <!-- 하단 버튼 그룹 (통계 / 설정 / 종료) -->
+                        <Grid Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 통계 버튼 -->
+                            <Button x:Name="StatsBtn" Grid.Column="0" Content="📊 Stats"
+                                    Click="StatsButton_Click"
+                                    Style="{StaticResource SettingsButton}"
+                                    Margin="2,0,2,0" Height="18" FontSize="9"
+                                    ToolTip="View game statistics"/>
+
+                            <!-- 설정 버튼 -->
+                            <Button x:Name="SettingsBtn" Grid.Column="1" Content="⚙️ Settings"
+                                    Click="SettingsButton_Click"
+                                    Style="{StaticResource SettingsButton}"
+                                    Margin="2,0,2,0" Height="18" FontSize="9"
+                                    ToolTip="Open settings"/>
+                                    
+                            <!-- 종료 버튼 -->
+                            <Button x:Name="ExitBtn" Grid.Column="2" Content="❌ Exit"
+                                    Click="ExitButton_Click"
+                                    Background="#662222" Foreground="#FF8888"
+                                    BorderThickness="0" Margin="2,0,2,0" Height="18" FontSize="9"
+                                    ToolTip="Close DeskWarrior">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="3"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </Grid>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -174,5 +200,55 @@
         <!-- 디버그 표시 -->
         <TextBlock x:Name="DebugText" Text="" Foreground="#888" FontSize="8" 
                    HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+        <!-- Game Over Overlay -->
+        <Border x:Name="GameOverOverlay" Visibility="Collapsed" Panel.ZIndex="200"
+                Background="#EE000000">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="GENERATION ENDED" Foreground="#FF4444" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Red" BlurRadius="10" ShadowDepth="0"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+                
+                <TextBlock x:Name="GameOverMessageText" Text="..." Foreground="#AAA" FontSize="10" 
+                           HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,20" TextWrapping="Wrap" MaxWidth="200"/>
+                
+                <Border Background="#33000000" CornerRadius="5" Padding="15" Margin="0,0,0,15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Max Level:" Foreground="#AAA" Margin="0,0,15,8"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ReportLevelText" Text="0" Foreground="White" FontWeight="Bold"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Gold Earned:" Foreground="#AAA" Margin="0,0,15,8"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ReportGoldText" Text="0" Foreground="Gold" FontWeight="Bold"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Damage Dealt:" Foreground="#AAA" Margin="0,0,15,8"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ReportDamageText" Text="0" Foreground="#FF8888" FontWeight="Bold"/>
+                    </Grid>
+                </Border>
+                
+                <Button x:Name="NewLifeButton" Content="⚠️ BEGIN NEW LIFE" Click="NewLifeButton_Click"
+                        Width="140" Height="35" Background="#222" Foreground="White" BorderBrush="#FF4444" BorderThickness="1" Margin="0,0,0,10">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                
+                <CheckBox x:Name="AutoRestartCheckBox" Content="Auto Restart in 10s" 
+                          Foreground="White" FontSize="9" HorizontalAlignment="Center"
+                          Checked="AutoRestart_Checked" Unchecked="AutoRestart_Unchecked"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

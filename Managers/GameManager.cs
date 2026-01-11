@@ -5,6 +5,19 @@ using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
 {
+    public class DamageEventArgs : EventArgs
+    {
+        public int Damage { get; }
+        public bool IsCritical { get; }
+        public bool IsMouse { get; }
+
+        public DamageEventArgs(int damage, bool isCritical, bool isMouse)
+        {
+            Damage = damage;
+            IsCritical = isCritical;
+            IsMouse = isMouse;
+        }
+    }
     /// <summary>
     /// 게임 상태 및 로직 관리
     /// </summary>
@@ -14,6 +27,7 @@ namespace DeskWarrior.Managers
 
         private readonly GameData _gameData;
         private readonly DispatcherTimer _timer;
+        private readonly GameOverMessageManager _messageManager;
         private Monster? _currentMonster;
 
         #endregion
@@ -25,6 +39,7 @@ namespace DeskWarrior.Managers
         public event EventHandler? TimerTick;
         public event EventHandler? GameOver;
         public event EventHandler? StatsChanged;
+        public event EventHandler<DamageEventArgs>? DamageDealt;
 
         #endregion
 
@@ -37,6 +52,7 @@ namespace DeskWarrior.Managers
         public int RemainingTime { get; private set; }
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
+        public GameData GameData => _gameData;
 
         #endregion
 
@@ -47,6 +63,9 @@ namespace DeskWarrior.Managers
             // 설정 로드
             var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "GameData.json");
             _gameData = GameData.LoadFromFile(configPath);
+
+            // 메시지 매니저 초기화
+            _messageManager = new GameOverMessageManager();
 
             // 타이머 설정 (1초마다)
             _timer = new DispatcherTimer
@@ -79,7 +98,8 @@ namespace DeskWarrior.Managers
         {
             if (_currentMonster == null || !_currentMonster.IsAlive) return;
             
-            ApplyDamage(KeyboardPower);
+            int damage = CalculateDamage(KeyboardPower, out bool isCritical);
+            ApplyDamage(damage, isCritical, isMouse: false);
         }
 
         /// <summary>
@@ -89,7 +109,8 @@ namespace DeskWarrior.Managers
         {
             if (_currentMonster == null || !_currentMonster.IsAlive) return;
             
-            ApplyDamage(MousePower);
+            int damage = CalculateDamage(MousePower, out bool isCritical);
+            ApplyDamage(damage, isCritical, isMouse: true);
         }
 
         /// <summary>
@@ -145,11 +166,37 @@ namespace DeskWarrior.Managers
 
         #region Private Methods
 
-        private void ApplyDamage(int damage)
+        private int CalculateDamage(int basePower, out bool isCritical)
+        {
+            isCritical = false;
+            double damage = basePower;
+
+            // 크리티컬 확률 체크
+            if (new Random().NextDouble() < _gameData.Balance.CriticalChance)
+            {
+                isCritical = true;
+                damage *= _gameData.Balance.CriticalMultiplier;
+            }
+
+            return (int)damage;
+        }
+
+        public long SessionDamage { get; private set; }
+        public long SessionTotalGold { get; private set; }
+        public int SessionKills { get; private set; }
+
+        private void ApplyDamage(int damage, bool isCritical, bool isMouse)
         {
             if (_currentMonster == null) return;
 
             _currentMonster.TakeDamage(damage);
+            
+            // 세션 스탯 누적
+            SessionDamage += damage;
+
+            // 데미지 이벤트 발생
+            DamageDealt?.Invoke(this, new DamageEventArgs(damage, isCritical, isMouse));
+            
             StatsChanged?.Invoke(this, EventArgs.Empty);
 
             if (!_currentMonster.IsAlive)
@@ -164,7 +211,11 @@ namespace DeskWarrior.Managers
 
             // 골드 획득
             Gold += _currentMonster.GoldReward;
-            
+            SessionTotalGold += _currentMonster.GoldReward;
+
+            // 킬 카운트 증가
+            SessionKills++;
+
             // 타이머 정지
             _timer.Stop();
 
@@ -173,7 +224,7 @@ namespace DeskWarrior.Managers
 
             // 다음 레벨
             CurrentLevel++;
-            
+
             // 즉시 리스폰
             SpawnMonster();
         }
@@ -205,25 +256,49 @@ namespace DeskWarrior.Managers
 
             if (RemainingTime <= 0)
             {
-                // 시간 초과 - 하드 리셋
-                HardReset();
+                // 시간 초과 - 게임 오버 시퀀스 시작
+                TriggerGameOver();
             }
         }
 
-        private void HardReset()
+        private void TriggerGameOver()
         {
             _timer.Stop();
-            
+            // UI에서 애니메이션 재생 후 RestartGame()을 호출하도록 유도
+            GameOver?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RestartGame()
+        {
             // 리셋
             CurrentLevel = 1;
             Gold = 0;
             KeyboardPower = 1;
             MousePower = 1;
 
-            GameOver?.Invoke(this, EventArgs.Empty);
+            // 세션 스탯 리셋
+            SessionDamage = 0;
+            SessionTotalGold = 0;
+            SessionKills = 0;
 
             // 새 게임 시작
             SpawnMonster();
+        }
+
+        /// <summary>
+        /// 게임 오버 메시지 생성
+        /// </summary>
+        /// <param name="deathType">사망 타입 ("boss", "timeout", "normal")</param>
+        /// <returns>선택된 메시지</returns>
+        public string GetGameOverMessage(string? deathType = null)
+        {
+            return _messageManager.SelectMessage(
+                CurrentLevel,
+                SessionTotalGold,
+                SessionDamage,
+                SessionKills,
+                deathType
+            );
         }
 
         #endregion

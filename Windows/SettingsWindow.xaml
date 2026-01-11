@@ -31,6 +31,7 @@
                     </Grid.ColumnDefinitions>
                     <Slider x:Name="OpacitySlider" Grid.Column="0"
                             Minimum="0" Maximum="1" Value="0.4"
+                            Style="{StaticResource GameSlider}"
                             ValueChanged="OpacitySlider_ValueChanged"/>
                     <TextBlock x:Name="OpacityValueText" Grid.Column="1" 
                                Text="40%" Foreground="White" Width="35" TextAlignment="Right"/>
@@ -47,6 +48,7 @@
                     </Grid.ColumnDefinitions>
                     <Slider x:Name="VolumeSlider" Grid.Column="0"
                             Minimum="0" Maximum="1" Value="0.2"
+                            Style="{StaticResource GameSlider}"
                             ValueChanged="VolumeSlider_ValueChanged"/>
                     <TextBlock x:Name="VolumeValueText" Grid.Column="1" 
                                Text="20%" Foreground="White" Width="35" TextAlignment="Right"/>
@@ -54,17 +56,10 @@
             </StackPanel>
             
             <!-- 닫기 버튼 -->
-            <Button Grid.Row="3" Content="CLOSE" 
+            <Button Grid.Row="3" Content="CLOSE"
                     Click="CloseButton_Click"
-                    Background="#444" Foreground="White"
-                    BorderThickness="0" Width="100" Height="30"
-                    VerticalAlignment="Bottom">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
+                    Style="{StaticResource CloseButton}"
+                    VerticalAlignment="Bottom"/>
         </Grid>
     </Border>
 </Window>

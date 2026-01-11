@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.IO;
@@ -44,6 +46,33 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("last_played")]
         public string LastPlayed { get; set; } = "";
+
+        [JsonPropertyName("total_damage")]
+        public long TotalDamage { get; set; }
+
+        [JsonPropertyName("max_damage")]
+        public long MaxDamage { get; set; }
+
+        [JsonPropertyName("monster_kills")]
+        public int MonsterKills { get; set; }
+
+        [JsonPropertyName("history")]
+        public List<HourlyData> History { get; set; } = new();
+
+        [JsonPropertyName("last_updated")]
+        public DateTime LastUpdated { get; set; }
+    }
+
+    public class HourlyData
+    {
+        [JsonPropertyName("damage")]
+        public long Damage { get; set; }
+
+        [JsonPropertyName("kills")]
+        public int Kills { get; set; }
+
+        [JsonPropertyName("timestamp")]
+        public DateTime TimeStamp { get; set; }
     }
 
     public class UpgradeData
@@ -65,5 +94,8 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("background_opacity")]
         public double BackgroundOpacity { get; set; } = 0.4;
+
+        [JsonPropertyName("auto_restart")]
+        public bool AutoRestart { get; set; } = false;
     }
 }
