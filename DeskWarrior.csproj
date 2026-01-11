@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon></ApplicationIcon>
+    <RootNamespace>DeskWarrior</RootNamespace>
+    <AssemblyName>DeskWarrior</AssemblyName>
+    <!-- UTF-8 인코딩 설정 -->
+    <EncodingWebName>utf-8</EncodingWebName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\**" />
+  </ItemGroup>
+
+</Project>

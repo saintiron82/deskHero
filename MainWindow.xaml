@@ -1,0 +1,108 @@
+<Window x:Class="DeskWarrior.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DeskWarrior"
+        Width="280"
+        Height="220"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStyle="None"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="Manual"
+        Left="100"
+        Top="100"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    
+    <Grid>
+        <!-- 드래그 모드 표시 테두리 -->
+        <Border x:Name="DragModeBorder"
+                BorderBrush="#FFD700"
+                BorderThickness="3"
+                CornerRadius="10"
+                Visibility="Collapsed"
+                Panel.ZIndex="100"/>
+        
+        <!-- 포켓몬 스타일 배틀 뷰 -->
+        <Border Background="#EE1a1a2e" CornerRadius="10" Margin="3">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <!-- 상단: 적 정보 (우측 정렬) -->
+                <Grid Grid.Row="0" HorizontalAlignment="Right">
+                    <Border Background="#99000000" CornerRadius="8" Padding="8,4">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="LevelText" Text="Lv.1" FontSize="12" Foreground="White" FontWeight="Bold"/>
+                                <TextBlock x:Name="MonsterEmoji" Text=" 👹" FontSize="12"/>
+                            </StackPanel>
+                            <!-- HP 바 -->
+                            <Grid Height="6" Width="80" Margin="0,3,0,0">
+                                <Border Background="#333" CornerRadius="3"/>
+                                <Border x:Name="HpBar" Background="#00FF00" CornerRadius="3" HorizontalAlignment="Left" Width="80"/>
+                            </Grid>
+                            <TextBlock x:Name="HpText" Text="100/100" FontSize="9" Foreground="#AAA" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                
+                <!-- 중앙: 배틀 필드 -->
+                <Grid Grid.Row="1">
+                    <!-- 적 몬스터 (우상단, 크게) -->
+                    <Image x:Name="MonsterImage"
+                           Source="pack://application:,,,/Assets/Images/monster.png"
+                           Width="100" Height="100"
+                           Stretch="Uniform"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Margin="0,5,5,0"
+                           RenderTransformOrigin="0.5,0.5">
+                        <Image.RenderTransform>
+                            <TranslateTransform x:Name="MonsterShakeTransform"/>
+                        </Image.RenderTransform>
+                    </Image>
+                    
+                    <!-- 플레이어 히어로 (좌하단, 작게) -->
+                    <Image x:Name="HeroImage"
+                           Source="pack://application:,,,/Assets/Images/hero.png"
+                           Width="70" Height="70"
+                           Stretch="Uniform"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Bottom"
+                           Margin="5,0,0,0"/>
+                </Grid>
+                
+                <!-- 하단: 플레이어 정보 + 타이머 -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- 골드/입력 -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock x:Name="GoldText" Text="💰 0" FontSize="11" Foreground="Gold" Margin="0,0,10,0"/>
+                        <TextBlock x:Name="InputCountText" Text="⌨️ 0" FontSize="11" Foreground="#AAA"/>
+                    </StackPanel>
+                    
+                    <!-- 타이머 -->
+                    <Border Grid.Column="1" Background="#99000000" CornerRadius="5" Padding="6,2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⏱️ " FontSize="11" Foreground="White"/>
+                            <TextBlock x:Name="TimerText" Text="30" FontSize="13" FontWeight="Bold" Foreground="#00FF00"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+        
+        <!-- 디버그 표시 -->
+        <TextBlock x:Name="DebugText" Text="" Foreground="#888" FontSize="8" 
+                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+    </Grid>
+</Window>
