@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -161,6 +162,12 @@ namespace DeskWarrior
                     _gameManager.OnMouseInput();
                 }
 
+                // 데미지 팝업 표시
+                int damage = e.Type == GameInputType.Keyboard 
+                    ? _gameManager.KeyboardPower 
+                    : _gameManager.MousePower;
+                ShowDamagePopup(damage);
+
                 // 몬스터 흔들림 효과
                 ShakeMonster();
 
@@ -303,6 +310,10 @@ namespace DeskWarrior
                         ? "pack://application:,,,/Assets/Images/boss.png" 
                         : "pack://application:,,,/Assets/Images/monster.png";
                     MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
+                    
+                    // 보스는 더 크게
+                    MonsterImage.Width = monster.IsBoss ? 120 : 100;
+                    MonsterImage.Height = monster.IsBoss ? 120 : 100;
                 }
                 catch { }
                 
@@ -365,23 +376,77 @@ namespace DeskWarrior
             MonsterShakeTransform.BeginAnimation(System.Windows.Media.TranslateTransform.YProperty, animY);
         }
 
+        private void ShowDamagePopup(int damage)
+        {
+            var popup = new Controls.DamagePopup(damage);
+            
+            // 랜덤 위치
+            double x = 30 + _random.NextDouble() * 40;
+            double y = 30 + _random.NextDouble() * 30;
+            
+            Canvas.SetLeft(popup, x);
+            Canvas.SetTop(popup, y);
+            
+            DamagePopupCanvas.Children.Add(popup);
+            
+            popup.Animate(() =>
+            {
+                DamagePopupCanvas.Children.Remove(popup);
+            });
+        }
+
         private void FlashEffect()
         {
-            // 처치 시 간단한 효과 (골드 텍스트 강조)
-            var anim = new ColorAnimation
+            // 처치 시 골드 획득 강조 효과
+            var goldReward = _gameManager.CurrentMonster?.GoldReward ?? 0;
+            
+            // 골드 텍스트 색상 애니메이션
+            var brush = new SolidColorBrush(Colors.Gold);
+            GoldText.Foreground = brush;
+            
+            var colorAnim = new ColorAnimation
             {
-                From = Colors.Yellow,
+                From = Colors.White,
                 To = Colors.Gold,
-                Duration = TimeSpan.FromMilliseconds(200),
+                Duration = TimeSpan.FromMilliseconds(300),
                 AutoReverse = true
             };
-            GoldText.Foreground = new SolidColorBrush(Colors.Gold);
+            brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnim);
+            
+            // 골드 획득 팝업 (간단히 디버그로 표시)
+            DebugText.Text = $"+{goldReward} 💰";
         }
 
         private void GameOverEffect()
         {
-            // Hard Reset 시 효과
+            // Hard Reset 시 화면 붉은 플래시 효과
             DebugText.Text = "⚠️ TIME OVER - RESET!";
+            DebugText.Foreground = new SolidColorBrush(Colors.Red);
+            
+            // 타이머 색상 깜빡임
+            var flashAnim = new ColorAnimation
+            {
+                From = Colors.Red,
+                To = Colors.DarkRed,
+                Duration = TimeSpan.FromMilliseconds(100),
+                AutoReverse = true,
+                RepeatBehavior = new RepeatBehavior(3)
+            };
+            
+            var brush = new SolidColorBrush(Colors.Red);
+            TimerText.Foreground = brush;
+            brush.BeginAnimation(SolidColorBrush.ColorProperty, flashAnim);
+        }
+
+        private void BossEntranceEffect()
+        {
+            // 보스 등장 연출
+            DebugText.Text = "⚠️ BOSS APPEARED!";
+            DebugText.Foreground = new SolidColorBrush(Colors.Purple);
+            
+            // 몬스터 크기 확대 애니메이션
+            MonsterImage.Width = 120;
+            MonsterImage.Height = 120;
         }
 
         #endregion

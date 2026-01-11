@@ -68,6 +68,14 @@
                         </Image.RenderTransform>
                     </Image>
                     
+                    <!-- 데미지 팝업 영역 -->
+                    <Canvas x:Name="DamagePopupCanvas"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Width="100" Height="100"
+                            Margin="0,5,5,0"
+                            IsHitTestVisible="False"/>
+                    
                     <!-- 플레이어 히어로 (좌하단, 작게) -->
                     <Image x:Name="HeroImage"
                            Source="pack://application:,,,/Assets/Images/hero.png"
