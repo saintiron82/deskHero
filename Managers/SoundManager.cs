@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Media;
 using System.Windows.Media;
+using DeskWarrior.Helpers;
 
 namespace DeskWarrior.Managers
 {
@@ -15,7 +16,7 @@ namespace DeskWarrior.Managers
 
         private readonly Dictionary<string, MediaPlayer> _sounds = new();
         private bool _enabled = true;
-        private double _volume = 0.5;
+        private double _volume = 0.2; // 기본 볼륨 낮춤 (사용자 요청: 방해되지 않는 레벨)
 
         #endregion
 
@@ -92,10 +93,10 @@ namespace DeskWarrior.Managers
         {
             var soundDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds");
             
-            if (!Directory.Exists(soundDir))
+            // 사운드 디렉토리가 없거나 비어있으면 사운드 생성
+            if (!Directory.Exists(soundDir) || Directory.GetFiles(soundDir, "*.wav").Length == 0)
             {
-                Directory.CreateDirectory(soundDir);
-                return;
+                SoundGenerator.GenerateAllSounds(soundDir);
             }
 
             // 사운드 파일 로드 시도
