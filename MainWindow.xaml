@@ -40,6 +40,7 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="LevelText" Text="Lv.1" FontSize="12" Foreground="White" FontWeight="Bold"/>
+                                <TextBlock x:Name="MaxLevelText" Text="(Best: 1)" FontSize="8" Foreground="#AAA" Margin="4,2,0,0" VerticalAlignment="Bottom"/>
                                 <TextBlock x:Name="MonsterEmoji" Text=" 👹" FontSize="12"/>
                             </StackPanel>
                             <!-- HP 바 -->

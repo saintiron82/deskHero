@@ -258,6 +258,13 @@ namespace DeskWarrior
                 // 처치 사운드
                 _soundManager.Play(SoundType.Defeat);
                 
+                // 최고 레벨 갱신 및 저장
+                if (_gameManager.CurrentLevel > _saveManager.CurrentSave.Stats.MaxLevel)
+                {
+                    _saveManager.UpdateMaxLevel(_gameManager.CurrentLevel);
+                    _saveManager.Save();
+                }
+
                 // 처치 효과 (간단한 플래시)
                 FlashEffect();
             });
@@ -299,6 +306,7 @@ namespace DeskWarrior
             
             // 레벨 표시
             LevelText.Text = $"Lv.{_gameManager.CurrentLevel}";
+            MaxLevelText.Text = $"(Best: {Math.Max(_gameManager.CurrentLevel, _saveManager.CurrentSave.Stats.MaxLevel)})";
             
             // 골드 표시
             GoldText.Text = $"💰 {_gameManager.Gold}";
