@@ -23,6 +23,7 @@ namespace DeskWarrior
         private readonly TrayManager _trayManager;
         private readonly SaveManager _saveManager;
         private readonly GameManager _gameManager;
+        private readonly SoundManager _soundManager;
         private readonly Random _random = new();
         
         private IntPtr _hwnd;
@@ -42,6 +43,7 @@ namespace DeskWarrior
             _trayManager = new TrayManager();
             _saveManager = new SaveManager();
             _gameManager = new GameManager();
+            _soundManager = new SoundManager();
 
             // 이벤트 연결
             _inputHandler.OnInput += OnInputReceived;
@@ -168,6 +170,9 @@ namespace DeskWarrior
                     : _gameManager.MousePower;
                 ShowDamagePopup(damage);
 
+                // 공격 사운드
+                _soundManager.Play(SoundType.Hit);
+
                 // 몬스터 흔들림 효과
                 ShakeMonster();
 
@@ -194,6 +199,7 @@ namespace DeskWarrior
         {
             if (_gameManager.UpgradeKeyboardPower())
             {
+                _soundManager.Play(SoundType.Upgrade);
                 SaveUpgrades();
                 UpdateAllUI();
                 UpdateUpgradeCosts();
@@ -204,6 +210,7 @@ namespace DeskWarrior
         {
             if (_gameManager.UpgradeMousePower())
             {
+                _soundManager.Play(SoundType.Upgrade);
                 SaveUpgrades();
                 UpdateAllUI();
                 UpdateUpgradeCosts();
@@ -248,6 +255,9 @@ namespace DeskWarrior
         {
             Dispatcher.Invoke(() =>
             {
+                // 처치 사운드
+                _soundManager.Play(SoundType.Defeat);
+                
                 // 처치 효과 (간단한 플래시)
                 FlashEffect();
             });
@@ -257,6 +267,9 @@ namespace DeskWarrior
         {
             Dispatcher.Invoke(() =>
             {
+                // 게임오버 사운드
+                _soundManager.Play(SoundType.GameOver);
+                
                 // Hard Reset 효과
                 GameOverEffect();
             });

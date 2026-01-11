@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DeskWarrior")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6839acf10a503ebdf5dca6664822e79c0515bf88")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab959aaff9f4532206fcd3e4858d71e395ecb34b")]
 [assembly: System.Reflection.AssemblyProductAttribute("DeskWarrior")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DeskWarrior")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
