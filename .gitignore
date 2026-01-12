@@ -1,1 +1,22 @@
 ﻿obj/*
+bin/*
+Tests/*
+# 빌드 결과물 제외 (가장 중요)
+[Bb]in/
+[Oo]bj/
+
+# 사용자 설정 및 IDE 설정 제외
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
+
+# 임시 파일 및 로그 제외
+*.log
+*.tmp
+.claude/
+
+# OS 생성 파일 제외
+Thumbs.db
+Desktop.ini

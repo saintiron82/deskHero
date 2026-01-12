@@ -24,6 +24,7 @@
                 Visibility="Collapsed"
                 Panel.ZIndex="100"/>
         
+        
         <!-- 포켓몬 스타일 배틀 뷰 -->
         <Border x:Name="MainBackgroundBorder" Background="#EE1a1a2e" CornerRadius="10" Margin="3">
             <Grid Margin="8">
@@ -62,8 +63,9 @@
                            Stretch="Uniform"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
-                           Margin="0,5,5,0"
-                           RenderTransformOrigin="0.5,0.5">
+                           Margin="0,5,20,0"
+                           RenderTransformOrigin="0.5,0.5"
+                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
                         <Image.RenderTransform>
                             <TranslateTransform x:Name="MonsterShakeTransform"/>
                         </Image.RenderTransform>
@@ -84,7 +86,8 @@
                            Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
-                           Margin="5,0,0,0"/>
+                           Margin="20,0,0,0"
+                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown"/>
                     
                     <!-- 공격력 표시 (좌상단) -->
                     <Border Background="#66000000" CornerRadius="5" Padding="4,2"
@@ -137,7 +140,7 @@
                                     Margin="2" Padding="5,3"
                                     ToolTip="Upgrade keyboard attack power">
                                 <StackPanel>
-                                    <TextBlock Text="⌨️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="UpgradeKeyboardText" Text="⌨️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
                                     <TextBlock x:Name="KeyboardCostText" Text="💰 100" FontSize="8"
                                                HorizontalAlignment="Center" Foreground="#FFD700"/>
                                 </StackPanel>
@@ -150,7 +153,7 @@
                                     Margin="2" Padding="5,3"
                                     ToolTip="Upgrade mouse attack power">
                                 <StackPanel>
-                                    <TextBlock Text="🖱️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="UpgradeMouseText" Text="🖱️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
                                     <TextBlock x:Name="MouseCostText" Text="💰 100" FontSize="8"
                                                HorizontalAlignment="Center" Foreground="#FFD700"/>
                                 </StackPanel>
@@ -202,17 +205,17 @@
                    HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
         <!-- Game Over Overlay -->
         <Border x:Name="GameOverOverlay" Visibility="Collapsed" Panel.ZIndex="200"
-                Background="#EE000000">
+                Background="#EE000000" MouseLeftButtonDown="Window_MouseLeftButtonDown">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="GENERATION ENDED" Foreground="#FF4444" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5">
+                <TextBlock x:Name="GameOverTitleText" Text="GENERATION ENDED" Foreground="#FF4444" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5">
                     <TextBlock.Effect>
                         <DropShadowEffect Color="Red" BlurRadius="10" ShadowDepth="0"/>
                     </TextBlock.Effect>
                 </TextBlock>
-                
-                <TextBlock x:Name="GameOverMessageText" Text="..." Foreground="#AAA" FontSize="10" 
+
+                <TextBlock x:Name="GameOverMessageText" Text="..." Foreground="#AAA" FontSize="10"
                            HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,20" TextWrapping="Wrap" MaxWidth="200"/>
-                
+
                 <Border Background="#33000000" CornerRadius="5" Padding="15" Margin="0,0,0,15">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -224,18 +227,18 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Max Level:" Foreground="#AAA" Margin="0,0,15,8"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" x:Name="ReportLevelLabel" Text="Max Level:" Foreground="#AAA" Margin="0,0,15,8"/>
                         <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ReportLevelText" Text="0" Foreground="White" FontWeight="Bold"/>
-                        
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Gold Earned:" Foreground="#AAA" Margin="0,0,15,8"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" x:Name="ReportGoldLabel" Text="Gold Earned:" Foreground="#AAA" Margin="0,0,15,8"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ReportGoldText" Text="0" Foreground="Gold" FontWeight="Bold"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Damage Dealt:" Foreground="#AAA" Margin="0,0,15,8"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" x:Name="ReportDamageLabel" Text="Damage Dealt:" Foreground="#AAA" Margin="0,0,15,8"/>
                         <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ReportDamageText" Text="0" Foreground="#FF8888" FontWeight="Bold"/>
                     </Grid>
                 </Border>
-                
+
                 <Button x:Name="NewLifeButton" Content="⚠️ BEGIN NEW LIFE" Click="NewLifeButton_Click"
                         Width="140" Height="35" Background="#222" Foreground="White" BorderBrush="#FF4444" BorderThickness="1" Margin="0,0,0,10">
                     <Button.Resources>
@@ -244,8 +247,8 @@
                         </Style>
                     </Button.Resources>
                 </Button>
-                
-                <CheckBox x:Name="AutoRestartCheckBox" Content="Auto Restart in 10s" 
+
+                <CheckBox x:Name="AutoRestartCheckBox" Content="Auto Restart in 10s"
                           Foreground="White" FontSize="9" HorizontalAlignment="Center"
                           Checked="AutoRestart_Checked" Unchecked="AutoRestart_Unchecked"/>
             </StackPanel>

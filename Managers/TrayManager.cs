@@ -46,6 +46,38 @@ namespace DeskWarrior.Managers
             UpdateDragModeMenuItem();
         }
 
+        public void UpdateLanguage()
+        {
+            var loc = LocalizationManager.Instance;
+
+            // 트레이 아이콘 툴팁
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.Text = loc["ui.tray.title"];
+            }
+
+            // 컨텍스트 메뉴 업데이트
+            if (_contextMenu != null)
+            {
+                if (_contextMenu.Items["DragMode"] is ToolStripMenuItem dragItem)
+                {
+                    dragItem.Text = loc["ui.tray.dragMode"];
+                }
+
+                // 설정 메뉴 (인덱스 2)
+                if (_contextMenu.Items.Count > 2 && _contextMenu.Items[2] is ToolStripMenuItem settingsItem)
+                {
+                    settingsItem.Text = loc["ui.tray.settings"];
+                }
+
+                // 종료 메뉴 (인덱스 4)
+                if (_contextMenu.Items.Count > 4 && _contextMenu.Items[4] is ToolStripMenuItem exitItem)
+                {
+                    exitItem.Text = loc["ui.tray.exit"];
+                }
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -100,10 +132,10 @@ namespace DeskWarrior.Managers
                 ToggleDragMode();
             };
 
-            // 시작 시 알림 표시
-            _notifyIcon.ShowBalloonTip(3000, "DeskWarrior", 
-                "트레이 아이콘 더블클릭 또는 F1 키로 드래그 모드 전환", 
-                ToolTipIcon.Info);
+            // 시작 시 알림 표시 (비활성화)
+            // _notifyIcon.ShowBalloonTip(3000, "DeskWarrior", 
+            //     "트레이 아이콘 더블클릭 또는 F1 키로 드래그 모드 전환", 
+            //     ToolTipIcon.Info);
         }
 
         /// <summary>
@@ -115,9 +147,10 @@ namespace DeskWarrior.Managers
             UpdateDragModeMenuItem();
             DragModeToggled?.Invoke(this, EventArgs.Empty);
             
-            _notifyIcon?.ShowBalloonTip(1000, "DeskWarrior", 
-                IsDragMode ? "드래그 모드 ON - 윈도우 이동 가능" : "드래그 모드 OFF", 
-                ToolTipIcon.Info);
+            // 드래그 모드 전환 알림 (비활성화)
+            // _notifyIcon?.ShowBalloonTip(1000, "DeskWarrior", 
+            //     IsDragMode ? "드래그 모드 ON - 윈도우 이동 가능" : "드래그 모드 OFF", 
+            //     ToolTipIcon.Info);
         }
 
         private Icon CreateDefaultIcon()

@@ -1,0 +1,67 @@
+<UserControl x:Class="DeskWarrior.Controls.AchievementToast"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="280" Height="80"
+             Opacity="0">
+
+    <UserControl.Resources>
+        <Storyboard x:Key="ShowAnimation">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           From="0" To="1" Duration="0:0:0.3"/>
+            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                              From="0,20,0,0" To="0,0,0,0" Duration="0:0:0.3">
+                <ThicknessAnimation.EasingFunction>
+                    <QuadraticEase EasingMode="EaseOut"/>
+                </ThicknessAnimation.EasingFunction>
+            </ThicknessAnimation>
+        </Storyboard>
+
+        <Storyboard x:Key="HideAnimation">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           From="1" To="0" Duration="0:0:0.5" BeginTime="0:0:10"/>
+            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                              From="0,0,0,0" To="0,-20,0,0" Duration="0:0:0.5" BeginTime="0:0:10">
+                <ThicknessAnimation.EasingFunction>
+                    <QuadraticEase EasingMode="EaseIn"/>
+                </ThicknessAnimation.EasingFunction>
+            </ThicknessAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Border Background="#EE1a1a2e" CornerRadius="10" BorderBrush="#FFD700" BorderThickness="2">
+        <Grid Margin="12,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Icon -->
+            <TextBlock x:Name="IconText" Grid.Column="0"
+                      Text="🎉"
+                      FontSize="32"
+                      VerticalAlignment="Center"
+                      Margin="0,0,12,0"/>
+
+            <!-- Content -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock x:Name="HeaderText" Text="ACHIEVEMENT UNLOCKED!"
+                          Foreground="#FFD700"
+                          FontSize="9"
+                          FontWeight="Bold"/>
+
+                <TextBlock x:Name="TitleText"
+                          Text="Achievement Name"
+                          Foreground="White"
+                          FontSize="14"
+                          FontWeight="Bold"
+                          TextTrimming="CharacterEllipsis"/>
+
+                <TextBlock x:Name="DescriptionText"
+                          Text="Achievement description"
+                          Foreground="#AAA"
+                          FontSize="10"
+                          TextTrimming="CharacterEllipsis"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

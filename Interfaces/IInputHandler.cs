@@ -27,5 +27,10 @@ namespace DeskWarrior.Interfaces
         /// 현재 활성화 상태
         /// </summary>
         bool IsRunning { get; }
+
+        /// <summary>
+        /// 키 블로킹 결정 콜백
+        /// </summary>
+        Func<int, bool>? ShouldBlockKey { get; set; }
     }
 }

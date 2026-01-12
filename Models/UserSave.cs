@@ -17,6 +17,9 @@ namespace DeskWarrior.Models
         [JsonPropertyName("stats")]
         public UserStats Stats { get; set; } = new();
 
+        [JsonPropertyName("lifetime_stats")]
+        public LifetimeStats LifetimeStats { get; set; } = new();
+
         [JsonPropertyName("upgrades")]
         public UpgradeData Upgrades { get; set; } = new();
 
@@ -63,6 +66,48 @@ namespace DeskWarrior.Models
         public DateTime LastUpdated { get; set; }
     }
 
+    /// <summary>
+    /// 통산 기록 (세션 기반 누적)
+    /// </summary>
+    public class LifetimeStats
+    {
+        [JsonPropertyName("total_gold_earned")]
+        public long TotalGoldEarned { get; set; }
+
+        [JsonPropertyName("total_gold_spent")]
+        public long TotalGoldSpent { get; set; }
+
+        [JsonPropertyName("bosses_defeated")]
+        public int BossesDefeated { get; set; }
+
+        [JsonPropertyName("critical_hits")]
+        public int CriticalHits { get; set; }
+
+        [JsonPropertyName("keyboard_inputs")]
+        public long KeyboardInputs { get; set; }
+
+        [JsonPropertyName("mouse_inputs")]
+        public long MouseInputs { get; set; }
+
+        [JsonPropertyName("total_playtime_minutes")]
+        public double TotalPlaytimeMinutes { get; set; }
+
+        [JsonPropertyName("total_sessions")]
+        public int TotalSessions { get; set; }
+
+        [JsonPropertyName("best_session_level")]
+        public int BestSessionLevel { get; set; }
+
+        [JsonPropertyName("best_session_damage")]
+        public long BestSessionDamage { get; set; }
+
+        [JsonPropertyName("consecutive_days")]
+        public int ConsecutiveDays { get; set; }
+
+        [JsonPropertyName("last_play_date")]
+        public string LastPlayDate { get; set; } = "";
+    }
+
     public class HourlyData
     {
         [JsonPropertyName("damage")]
@@ -97,5 +142,8 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("auto_restart")]
         public bool AutoRestart { get; set; } = false;
+
+        [JsonPropertyName("language")]
+        public string Language { get; set; } = "";  // Empty = auto-detect
     }
 }

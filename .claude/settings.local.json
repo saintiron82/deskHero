@@ -5,7 +5,9 @@
       "Bash(test:*)",
       "Bash(dotnet run)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(start DeskWarrior.exe)",
+      "Bash(taskkill:*)"
     ]
   }
 }

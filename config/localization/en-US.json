@@ -1,0 +1,123 @@
+{
+  "language": {
+    "code": "en-US",
+    "name": "English",
+    "nativeName": "English"
+  },
+
+  "ui": {
+    "common": {
+      "level": "Level",
+      "gold": "Gold",
+      "damage": "Damage",
+      "close": "Close",
+      "kills": "Kills"
+    },
+
+    "main": {
+      "keyboardAtk": "⌨️ Atk",
+      "mouseAtk": "🖱️ Atk",
+      "upgradeKeyboard": "⌨️ ATK UP",
+      "upgradeMouse": "🖱️ ATK UP",
+      "stats": "📊 Stats",
+      "settings": "⚙️ Settings",
+      "exit": "❌ Exit"
+    },
+
+    "settings": {
+      "title": "⚙️ SETTINGS",
+      "opacity": "Background Opacity",
+      "volume": "Sound Volume",
+      "language": "Language / 언어",
+      "close": "CLOSE"
+    },
+
+    "statistics": {
+      "title": "STATISTICS",
+      "tabs": {
+        "overview": "OVERVIEW",
+        "sessions": "SESSIONS",
+        "achievements": "ACHIEVEMENTS"
+      },
+      "overview": {
+        "currentSession": "CURRENT SESSION",
+        "lifetimeRecords": "LIFETIME RECORDS",
+        "efficiency": "EFFICIENCY"
+      },
+      "labels": {
+        "level": "Level",
+        "damage": "Damage",
+        "gold": "Gold",
+        "kills": "Kills",
+        "maxLevel": "Max Level",
+        "totalDamage": "Total Damage",
+        "maxHit": "Max Hit",
+        "monsterKills": "Monster Kills",
+        "bossesDefeated": "Boss",
+        "totalGoldEarned": "Total Gold",
+        "totalPlaytime": "Total Playtime",
+        "totalInputs": "Total Inputs",
+        "criticalHits": "Crit",
+        "consecutiveDays": "Consecutive Days",
+        "duration": "Duration",
+        "levelProgress": "Level Progress (7 Days)",
+        "inputRatio": "Input Ratio"
+      },
+      "format": {
+        "days": "{0} days"
+      },
+      "sessions": {
+        "bestSession": "BEST SESSION",
+        "noSessionsYet": "No sessions yet",
+        "currentVsAverage": "CURRENT VS AVERAGE",
+        "recentSessions": "RECENT SESSIONS",
+        "noSessionsRecorded": "No sessions recorded yet"
+      },
+      "achievements": {
+        "loading": "Loading achievements...",
+        "categories": {
+          "combat": "COMBAT",
+          "progression": "PROGRESSION",
+          "wealth": "WEALTH",
+          "engagement": "ENGAGEMENT",
+          "secret": "SECRET"
+        }
+      }
+    },
+
+    "gameover": {
+      "title": "CHALLENGE FAILED",
+      "maxLevel": "Max Level:",
+      "goldEarned": "Gold Earned:",
+      "damageDealt": "Damage Dealt:",
+      "newLife": "⚠️ BEGIN NEW LIFE",
+      "autoRestart": "Auto Restart in {0}s",
+      "messages": [
+        "Time's up! Try to be faster next time!",
+        "Ran out of time. Retry!",
+        "Good try! Give it another shot!",
+        "This round ends here! Fight on!",
+        "Timer expired. Retry!"
+      ]
+    },
+
+    "toast": {
+      "achievementUnlocked": "ACHIEVEMENT UNLOCKED!"
+    },
+
+    "tray": {
+      "title": "DeskWarrior - Double-click tray or press F1 for drag mode",
+      "dragMode": "📌 Drag Mode",
+      "settings": "⚙️ Settings...",
+      "exit": "❌ Exit"
+    }
+  },
+
+  "tooltips": {
+    "upgradeKeyboard": "Upgrade keyboard attack power",
+    "upgradeMouse": "Upgrade mouse attack power",
+    "stats": "View game statistics",
+    "settings": "Open settings",
+    "exit": "Close DeskWarrior"
+  }
+}

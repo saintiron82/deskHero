@@ -1,0 +1,123 @@
+{
+  "language": {
+    "code": "ko-KR",
+    "name": "한국어",
+    "nativeName": "한국어"
+  },
+
+  "ui": {
+    "common": {
+      "level": "레벨",
+      "gold": "골드",
+      "damage": "데미지",
+      "close": "닫기",
+      "kills": "처치"
+    },
+
+    "main": {
+      "keyboardAtk": "⌨️ 공격력",
+      "mouseAtk": "🖱️ 공격력",
+      "upgradeKeyboard": "⌨️ 공격력 UP",
+      "upgradeMouse": "🖱️ 공격력 UP",
+      "stats": "📊 통계",
+      "settings": "⚙️ 설정",
+      "exit": "❌ 종료"
+    },
+
+    "settings": {
+      "title": "⚙️ SETTINGS",
+      "opacity": "배경 투명도",
+      "volume": "사운드 볼륨",
+      "language": "언어 / Language",
+      "close": "CLOSE"
+    },
+
+    "statistics": {
+      "title": "통계",
+      "tabs": {
+        "overview": "개요",
+        "sessions": "세션",
+        "achievements": "업적"
+      },
+      "overview": {
+        "currentSession": "현재 세션",
+        "lifetimeRecords": "누적 기록",
+        "efficiency": "효율"
+      },
+      "labels": {
+        "level": "레벨",
+        "damage": "데미지",
+        "gold": "골드",
+        "kills": "처치",
+        "maxLevel": "최고 레벨",
+        "totalDamage": "총 데미지",
+        "maxHit": "최대 타격",
+        "monsterKills": "몬스터 처치",
+        "bossesDefeated": "보스",
+        "totalGoldEarned": "총 골드",
+        "totalPlaytime": "총 플레이시간",
+        "totalInputs": "총 입력 횟수",
+        "criticalHits": "크리티컬",
+        "consecutiveDays": "연속 일수",
+        "duration": "지속시간",
+        "levelProgress": "레벨 추이 (7일)",
+        "inputRatio": "입력 비율"
+      },
+      "format": {
+        "days": "{0}일"
+      },
+      "sessions": {
+        "bestSession": "최고 세션",
+        "noSessionsYet": "기록 없음",
+        "currentVsAverage": "현재 vs 평균",
+        "recentSessions": "최근 세션",
+        "noSessionsRecorded": "아직 기록된 세션이 없습니다"
+      },
+      "achievements": {
+        "loading": "업적 로딩 중...",
+        "categories": {
+          "combat": "전투",
+          "progression": "성장",
+          "wealth": "재화",
+          "engagement": "활동",
+          "secret": "비밀"
+        }
+      }
+    },
+
+    "gameover": {
+      "title": "도전 실패",
+      "maxLevel": "최고 레벨:",
+      "goldEarned": "획득 골드:",
+      "damageDealt": "가한 데미지:",
+      "newLife": "⚠️ 새 생명 시작",
+      "autoRestart": "{0}초 후 자동 재시작",
+      "messages": [
+        "타임아웃! 다음엔 더 빠르게!",
+        "시간이 부족했나봐요. 재도전!",
+        "좋은 시도였어요! 다시 한 번!",
+        "이번 라운드는 여기까지! 화이팅!",
+        "타이머가 만료되었습니다. 리트라이!"
+      ]
+    },
+
+    "toast": {
+      "achievementUnlocked": "업적 해금!"
+    },
+
+    "tray": {
+      "title": "DeskWarrior - 트레이 더블클릭 또는 F1키로 드래그 모드",
+      "dragMode": "📌 드래그 모드",
+      "settings": "⚙️ 설정...",
+      "exit": "❌ 종료"
+    }
+  },
+
+  "tooltips": {
+    "upgradeKeyboard": "키보드 공격력 업그레이드",
+    "upgradeMouse": "마우스 공격력 업그레이드",
+    "stats": "게임 통계 보기",
+    "settings": "설정 열기",
+    "exit": "DeskWarrior 종료"
+  }
+}

@@ -1,0 +1,65 @@
+{
+    "Monsters": [
+        {
+            "Id": "monster_slimeA",
+            "Name": "슬라임",
+            "BaseHp": 10,
+            "HpGrowth": 5,
+            "BaseGold": 10,
+            "GoldGrowth": 2,
+            "Emoji": "🟢"
+        },
+        {
+            "Id": "monster_batA",
+            "Name": "박쥐",
+            "BaseHp": 15,
+            "HpGrowth": 7,
+            "BaseGold": 12,
+            "GoldGrowth": 3,
+            "Emoji": "🦇"
+        },
+        {
+            "Id": "monster_skeletonA",
+            "Name": "스켈레톤",
+            "BaseHp": 25,
+            "HpGrowth": 10,
+            "BaseGold": 15,
+            "GoldGrowth": 4,
+            "Emoji": "💀"
+        }
+    ],
+    "Bosses": [
+        {
+            "Id": "boss_dragonA",
+            "Name": "레드 드래곤",
+            "BaseHp": 200,
+            "HpGrowth": 50,
+            "BaseGold": 100,
+            "GoldGrowth": 20,
+            "Emoji": "🐉"
+        },
+        {
+            "Id": "boss_knightA",
+            "Name": "암흑 기사",
+            "BaseHp": 250,
+            "HpGrowth": 60,
+            "BaseGold": 120,
+            "GoldGrowth": 25,
+            "Emoji": "🗡️"
+        }
+    ],
+    "Heroes": [
+        {
+            "Id": "hero_archerA",
+            "Name": "궁수"
+        },
+        {
+            "Id": "hero_mageA",
+            "Name": "마법사"
+        },
+        {
+            "Id": "hero_saintA",
+            "Name": "성녀"
+        }
+    ]
+}

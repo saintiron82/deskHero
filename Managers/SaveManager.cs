@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using DeskWarrior.Models;
 
@@ -10,16 +12,29 @@ namespace DeskWarrior.Managers
     /// </summary>
     public class SaveManager
     {
+        #region Constants
+
+        private const int MaxSessionHistory = 100;
+
+        #endregion
+
         #region Fields
 
         private readonly string _savePath;
+        private readonly string _sessionHistoryPath;
+        private readonly string _achievementsPath;
+        private readonly string _saveDir;
         private UserSave _currentSave;
+        private List<SessionStats> _sessionHistory;
+        private UserAchievements _userAchievements;
 
         #endregion
 
         #region Properties
 
         public UserSave CurrentSave => _currentSave;
+        public List<SessionStats> SessionHistory => _sessionHistory;
+        public UserAchievements UserAchievements => _userAchievements;
 
         #endregion
 
@@ -28,15 +43,20 @@ namespace DeskWarrior.Managers
         public SaveManager()
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var saveDir = Path.Combine(appData, "DeskWarrior");
-            
-            if (!Directory.Exists(saveDir))
+            _saveDir = Path.Combine(appData, "DeskWarrior");
+
+            if (!Directory.Exists(_saveDir))
             {
-                Directory.CreateDirectory(saveDir);
+                Directory.CreateDirectory(_saveDir);
             }
 
-            _savePath = Path.Combine(saveDir, "UserSave.json");
+            _savePath = Path.Combine(_saveDir, "UserSave.json");
+            _sessionHistoryPath = Path.Combine(_saveDir, "SessionHistory.json");
+            _achievementsPath = Path.Combine(_saveDir, "Achievements.json");
+
             _currentSave = new UserSave();
+            _sessionHistory = new List<SessionStats>();
+            _userAchievements = new UserAchievements();
         }
 
         #endregion
@@ -45,12 +65,15 @@ namespace DeskWarrior.Managers
 
         public void Load()
         {
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            // 메인 세이브 로드
             try
             {
                 if (File.Exists(_savePath))
                 {
                     var json = File.ReadAllText(_savePath);
-                    _currentSave = JsonSerializer.Deserialize<UserSave>(json) ?? new UserSave();
+                    _currentSave = JsonSerializer.Deserialize<UserSave>(json, options) ?? new UserSave();
                 }
             }
             catch
@@ -58,20 +81,53 @@ namespace DeskWarrior.Managers
                 _currentSave = new UserSave();
             }
 
-            // 날짜 확인 - 다른 날이면 오늘 입력 수 초기화
+            // 세션 히스토리 로드
+            try
+            {
+                if (File.Exists(_sessionHistoryPath))
+                {
+                    var json = File.ReadAllText(_sessionHistoryPath);
+                    _sessionHistory = JsonSerializer.Deserialize<List<SessionStats>>(json, options) ?? new List<SessionStats>();
+                }
+            }
+            catch
+            {
+                _sessionHistory = new List<SessionStats>();
+            }
+
+            // 업적 진행 로드
+            try
+            {
+                if (File.Exists(_achievementsPath))
+                {
+                    var json = File.ReadAllText(_achievementsPath);
+                    _userAchievements = JsonSerializer.Deserialize<UserAchievements>(json, options) ?? new UserAchievements();
+                }
+            }
+            catch
+            {
+                _userAchievements = new UserAchievements();
+            }
+
+            // 날짜 확인 - 다른 날이면 오늘 입력 수 초기화 및 연속 플레이 체크
             var today = DateTime.Now.ToString("yyyy-MM-dd");
             if (_currentSave.Stats.LastPlayed != today)
             {
                 _currentSave.Stats.TodayInputs = 0;
                 _currentSave.Stats.LastPlayed = today;
+
+                // 연속 플레이 체크
+                UpdateConsecutiveDays(today);
             }
         }
 
         public void Save()
         {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+
+            // 메인 세이브 저장
             try
             {
-                var options = new JsonSerializerOptions { WriteIndented = true };
                 var json = JsonSerializer.Serialize(_currentSave, options);
                 File.WriteAllText(_savePath, json);
             }
@@ -79,6 +135,55 @@ namespace DeskWarrior.Managers
             {
                 // 저장 실패 시 무시
             }
+
+            // 세션 히스토리 저장
+            try
+            {
+                var json = JsonSerializer.Serialize(_sessionHistory, options);
+                File.WriteAllText(_sessionHistoryPath, json);
+            }
+            catch
+            {
+                // 저장 실패 시 무시
+            }
+
+            // 업적 진행 저장
+            try
+            {
+                _userAchievements.LastUpdated = DateTime.Now;
+                var json = JsonSerializer.Serialize(_userAchievements, options);
+                File.WriteAllText(_achievementsPath, json);
+            }
+            catch
+            {
+                // 저장 실패 시 무시
+            }
+        }
+
+        private void UpdateConsecutiveDays(string today)
+        {
+            var lastDate = _currentSave.LifetimeStats.LastPlayDate;
+            if (string.IsNullOrEmpty(lastDate))
+            {
+                _currentSave.LifetimeStats.ConsecutiveDays = 1;
+            }
+            else
+            {
+                if (DateTime.TryParse(lastDate, out var lastDateTime) &&
+                    DateTime.TryParse(today, out var todayDateTime))
+                {
+                    var diff = (todayDateTime - lastDateTime).Days;
+                    if (diff == 1)
+                    {
+                        _currentSave.LifetimeStats.ConsecutiveDays++;
+                    }
+                    else if (diff > 1)
+                    {
+                        _currentSave.LifetimeStats.ConsecutiveDays = 1;
+                    }
+                }
+            }
+            _currentSave.LifetimeStats.LastPlayDate = today;
         }
 
         public void UpdateWindowPosition(double x, double y)
@@ -159,10 +264,207 @@ namespace DeskWarrior.Managers
             {
                 history.RemoveAt(0);
             }
-            
+
             _currentSave.Stats.LastUpdated = now;
         }
 
         #endregion
+
+        #region Session Management
+
+        /// <summary>
+        /// 세션 종료 시 기록 저장
+        /// </summary>
+        public void SaveSession(SessionStats session)
+        {
+            session.EndTime = DateTime.Now;
+
+            // 세션 히스토리에 추가
+            _sessionHistory.Add(session);
+
+            // 최대 100개 유지
+            while (_sessionHistory.Count > MaxSessionHistory)
+            {
+                _sessionHistory.RemoveAt(0);
+            }
+
+            // 통산 기록 업데이트
+            UpdateLifetimeStats(session);
+
+            Save();
+        }
+
+        /// <summary>
+        /// 통산 기록 업데이트
+        /// </summary>
+        private void UpdateLifetimeStats(SessionStats session)
+        {
+            var lifetime = _currentSave.LifetimeStats;
+
+            lifetime.TotalGoldEarned += session.TotalGold;
+            lifetime.KeyboardInputs += session.KeyboardInputs;
+            lifetime.MouseInputs += session.MouseInputs;
+            lifetime.TotalPlaytimeMinutes += session.DurationMinutes;
+            lifetime.TotalSessions++;
+
+            // 최고 기록 갱신
+            if (session.MaxLevel > lifetime.BestSessionLevel)
+            {
+                lifetime.BestSessionLevel = session.MaxLevel;
+            }
+            if (session.TotalDamage > lifetime.BestSessionDamage)
+            {
+                lifetime.BestSessionDamage = session.TotalDamage;
+            }
+        }
+
+        /// <summary>
+        /// 크리티컬 히트 기록 추가
+        /// </summary>
+        public void AddCriticalHit()
+        {
+            _currentSave.LifetimeStats.CriticalHits++;
+        }
+
+        /// <summary>
+        /// 보스 처치 기록 추가
+        /// </summary>
+        public void AddBossKill()
+        {
+            _currentSave.LifetimeStats.BossesDefeated++;
+        }
+
+        /// <summary>
+        /// 골드 사용 기록 추가
+        /// </summary>
+        public void AddGoldSpent(int amount)
+        {
+            _currentSave.LifetimeStats.TotalGoldSpent += amount;
+        }
+
+        /// <summary>
+        /// 키보드/마우스 입력 구분 추가
+        /// </summary>
+        public void AddKeyboardInput()
+        {
+            _currentSave.Stats.TotalInputs++;
+            _currentSave.Stats.TodayInputs++;
+            _currentSave.LifetimeStats.KeyboardInputs++;
+        }
+
+        public void AddMouseInput()
+        {
+            _currentSave.Stats.TotalInputs++;
+            _currentSave.Stats.TodayInputs++;
+            _currentSave.LifetimeStats.MouseInputs++;
+        }
+
+        /// <summary>
+        /// 세션 통계 계산
+        /// </summary>
+        public SessionStatsSummary GetSessionSummary()
+        {
+            if (_sessionHistory.Count == 0)
+            {
+                return new SessionStatsSummary();
+            }
+
+            var avgLevel = _sessionHistory.Average(s => s.MaxLevel);
+            var avgDamage = _sessionHistory.Average(s => s.TotalDamage);
+            var avgGold = _sessionHistory.Average(s => s.TotalGold);
+            var avgDuration = _sessionHistory.Average(s => s.DurationMinutes);
+
+            var bestSession = _sessionHistory.OrderByDescending(s => s.MaxLevel).First();
+
+            return new SessionStatsSummary
+            {
+                AverageLevel = avgLevel,
+                AverageDamage = avgDamage,
+                AverageGold = avgGold,
+                AverageDurationMinutes = avgDuration,
+                BestSession = bestSession,
+                TotalSessions = _sessionHistory.Count
+            };
+        }
+
+        /// <summary>
+        /// 최근 세션 목록 가져오기
+        /// </summary>
+        public List<SessionStats> GetRecentSessions(int count = 10)
+        {
+            return _sessionHistory
+                .OrderByDescending(s => s.StartTime)
+                .Take(count)
+                .ToList();
+        }
+
+        #endregion
+
+        #region Achievement Management
+
+        /// <summary>
+        /// 업적 진행 상태 가져오기
+        /// </summary>
+        public AchievementProgress? GetAchievementProgress(string achievementId)
+        {
+            return _userAchievements.Progress.FirstOrDefault(p => p.Id == achievementId);
+        }
+
+        /// <summary>
+        /// 업적 해금
+        /// </summary>
+        public void UnlockAchievement(string achievementId)
+        {
+            var progress = GetAchievementProgress(achievementId);
+            if (progress == null)
+            {
+                progress = new AchievementProgress { Id = achievementId };
+                _userAchievements.Progress.Add(progress);
+            }
+
+            if (!progress.IsUnlocked)
+            {
+                progress.IsUnlocked = true;
+                progress.UnlockedAt = DateTime.Now;
+            }
+        }
+
+        /// <summary>
+        /// 업적 진행 업데이트
+        /// </summary>
+        public void UpdateAchievementProgress(string achievementId, long progress)
+        {
+            var existing = GetAchievementProgress(achievementId);
+            if (existing == null)
+            {
+                existing = new AchievementProgress { Id = achievementId };
+                _userAchievements.Progress.Add(existing);
+            }
+
+            existing.CurrentProgress = progress;
+        }
+
+        /// <summary>
+        /// 해금된 업적 수
+        /// </summary>
+        public int GetUnlockedAchievementCount()
+        {
+            return _userAchievements.Progress.Count(p => p.IsUnlocked);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// 세션 통계 요약
+    /// </summary>
+    public class SessionStatsSummary
+    {
+        public double AverageLevel { get; set; }
+        public double AverageDamage { get; set; }
+        public double AverageGold { get; set; }
+        public double AverageDurationMinutes { get; set; }
+        public SessionStats? BestSession { get; set; }
+        public int TotalSessions { get; set; }
     }
 }

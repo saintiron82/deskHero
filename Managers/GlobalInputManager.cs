@@ -102,6 +102,11 @@ namespace DeskWarrior.Managers
                 0);
         }
 
+        /// <summary>
+        /// F1 키 블로킹 여부를 결정하는 콜백 (true면 다른 앱으로 전달 안 함)
+        /// </summary>
+        public Func<int, bool>? ShouldBlockKey { get; set; }
+
         private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode >= 0)
@@ -113,6 +118,12 @@ namespace DeskWarrior.Managers
                     var args = new GameInputEventArgs(GameInputType.Keyboard, (int)hookStruct.vkCode);
                     OnInput?.Invoke(this, args);
                     Debug.WriteLine($"[InputManager] Keyboard: VK={hookStruct.vkCode}");
+
+                    // F1 키(112)를 처리했고, 블로킹이 필요하면 다른 앱으로 전달 안 함
+                    if (hookStruct.vkCode == 112 && ShouldBlockKey?.Invoke((int)hookStruct.vkCode) == true)
+                    {
+                        return (IntPtr)1; // 키 이벤트 소비 (다른 앱으로 전달 안 함)
+                    }
                 }
             }
             return Win32Helper.CallNextHookEx(_keyboardHookId, nCode, wParam, lParam);

@@ -41,20 +41,33 @@ namespace DeskWarrior.Models
         public double HpRatio => MaxHp > 0 ? (double)CurrentHp / MaxHp : 0;
 
         /// <summary>
-        /// 몬스터 생성
+        /// 몬스터 스킨 타입 (파일명, 예: monster_slimeA)
         /// </summary>
-        public Monster(int level, int baseHp, int hpGrowth, int bossInterval, double bossHpMultiplier, int baseGoldMultiplier)
+        public string SkinType { get; private set; }
+
+        /// <summary>
+        /// 표시할 이모지
+        /// </summary>
+        public string Emoji { get; private set; }
+
+        /// <summary>
+        /// 몬스터 생성 (데이터 기반)
+        /// </summary>
+        public Monster(MonsterData data, int level, bool isBoss)
         {
             Level = level;
-            IsBoss = level > 0 && level % bossInterval == 0;
+            IsBoss = isBoss;
             
-            // HP 계산: base_hp + (level - 1) * hp_growth
-            int normalHp = baseHp + (level - 1) * hpGrowth;
-            MaxHp = IsBoss ? (int)(normalHp * bossHpMultiplier) : normalHp;
+            // 스케일링 공식: MaxHp = BaseHp + (level - 1) * HpGrowth
+            MaxHp = data.BaseHp + (level - 1) * data.HpGrowth;
             CurrentHp = MaxHp;
             
-            // 골드 보상: level * multiplier (보스는 3배)
-            GoldReward = level * baseGoldMultiplier * (IsBoss ? 3 : 1);
+            // 골드 보상: BaseGold + level * GoldGrowth
+            GoldReward = data.BaseGold + level * data.GoldGrowth;
+
+            // 스킨 및 이모지는 데이터에서 가져옴
+            SkinType = data.Id;
+            Emoji = data.Emoji;
         }
 
         /// <summary>
@@ -67,10 +80,5 @@ namespace DeskWarrior.Models
             CurrentHp -= actualDamage;
             return actualDamage;
         }
-
-        /// <summary>
-        /// 표시할 이모지
-        /// </summary>
-        public string Emoji => IsBoss ? "👿" : "👹";
     }
 }

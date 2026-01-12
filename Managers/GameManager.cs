@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Windows.Threading;
 using DeskWarrior.Models;
 
@@ -26,8 +27,10 @@ namespace DeskWarrior.Managers
         #region Fields
 
         private readonly GameData _gameData;
+        private readonly CharacterDataRoot _characterData;
         private readonly DispatcherTimer _timer;
         private readonly GameOverMessageManager _messageManager;
+        private readonly Random _random = new();
         private Monster? _currentMonster;
 
         #endregion
@@ -45,10 +48,10 @@ namespace DeskWarrior.Managers
 
         #region Properties
 
-        public int CurrentLevel { get; private set; } = 1;
-        public int Gold { get; private set; }
-        public int KeyboardPower { get; private set; } = 1;
-        public int MousePower { get; private set; } = 1;
+        public int CurrentLevel { get; internal set; } = 1;
+        public int Gold { get; internal set; }
+        public int KeyboardPower { get; internal set; } = 1;
+        public int MousePower { get; internal set; } = 1;
         public int RemainingTime { get; private set; }
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
@@ -63,6 +66,11 @@ namespace DeskWarrior.Managers
             // 설정 로드
             var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "GameData.json");
             _gameData = GameData.LoadFromFile(configPath);
+
+            // 캐릭터 데이터 로드
+            var characterDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "CharacterData.json");
+            var json = File.ReadAllText(characterDataPath);
+            _characterData = JsonSerializer.Deserialize<CharacterDataRoot>(json) ?? new CharacterDataRoot();
 
             // 메시지 매니저 초기화
             _messageManager = new GameOverMessageManager();
@@ -184,19 +192,40 @@ namespace DeskWarrior.Managers
         public long SessionDamage { get; private set; }
         public long SessionTotalGold { get; private set; }
         public int SessionKills { get; private set; }
+        public int SessionBossKills { get; private set; }
+        public int SessionKeyboardInputs { get; private set; }
+        public int SessionMouseInputs { get; private set; }
+        public int SessionCriticalHits { get; private set; }
+        public DateTime SessionStartTime { get; private set; } = DateTime.Now;
 
         private void ApplyDamage(int damage, bool isCritical, bool isMouse)
         {
             if (_currentMonster == null) return;
 
             _currentMonster.TakeDamage(damage);
-            
+
             // 세션 스탯 누적
             SessionDamage += damage;
 
+            // 크리티컬 히트 카운트
+            if (isCritical)
+            {
+                SessionCriticalHits++;
+            }
+
+            // 입력 타입별 카운트
+            if (isMouse)
+            {
+                SessionMouseInputs++;
+            }
+            else
+            {
+                SessionKeyboardInputs++;
+            }
+
             // 데미지 이벤트 발생
             DamageDealt?.Invoke(this, new DamageEventArgs(damage, isCritical, isMouse));
-            
+
             StatsChanged?.Invoke(this, EventArgs.Empty);
 
             if (!_currentMonster.IsAlive)
@@ -216,6 +245,12 @@ namespace DeskWarrior.Managers
             // 킬 카운트 증가
             SessionKills++;
 
+            // 보스 킬 체크
+            if (_currentMonster.IsBoss)
+            {
+                SessionBossKills++;
+            }
+
             // 타이머 정지
             _timer.Stop();
 
@@ -232,14 +267,28 @@ namespace DeskWarrior.Managers
         private void SpawnMonster()
         {
             var balance = _gameData.Balance;
-            _currentMonster = new Monster(
-                CurrentLevel,
-                balance.BaseHp,
-                balance.HpGrowth,
-                balance.BossInterval,
-                balance.BossHpMultiplier,
-                balance.BaseGoldMultiplier
-            );
+            bool isBoss = CurrentLevel > 0 && CurrentLevel % balance.BossInterval == 0;
+
+            MonsterData selectedData;
+            if (isBoss && _characterData.Bosses.Count > 0)
+            {
+                // 보스 레벨: 랜덤하게 보스 선택
+                int bossIndex = _random.Next(_characterData.Bosses.Count);
+                selectedData = _characterData.Bosses[bossIndex];
+            }
+            else if (_characterData.Monsters.Count > 0)
+            {
+                // 일반 몬스터: 레벨 기반 순환 인덱스
+                int monsterIndex = (CurrentLevel - 1) % _characterData.Monsters.Count;
+                selectedData = _characterData.Monsters[monsterIndex];
+            }
+            else
+            {
+                // 폴백: 기본 데이터
+                selectedData = new MonsterData { Id = "monster", Name = "??", BaseHp = 10, HpGrowth = 5, BaseGold = 10, GoldGrowth = 2, Emoji = "👹" };
+            }
+
+            _currentMonster = new Monster(selectedData, CurrentLevel, isBoss);
 
             // 타이머 시작
             RemainingTime = _gameData.Balance.TimeLimit;
@@ -280,9 +329,34 @@ namespace DeskWarrior.Managers
             SessionDamage = 0;
             SessionTotalGold = 0;
             SessionKills = 0;
+            SessionBossKills = 0;
+            SessionKeyboardInputs = 0;
+            SessionMouseInputs = 0;
+            SessionCriticalHits = 0;
+            SessionStartTime = DateTime.Now;
 
             // 새 게임 시작
             SpawnMonster();
+        }
+
+        /// <summary>
+        /// 현재 세션 데이터 생성 (게임 오버 시 호출)
+        /// </summary>
+        public SessionStats CreateSessionStats(string endReason = "timeout")
+        {
+            return new SessionStats
+            {
+                StartTime = SessionStartTime,
+                EndTime = DateTime.Now,
+                MaxLevel = CurrentLevel,
+                TotalDamage = SessionDamage,
+                TotalGold = (int)SessionTotalGold,
+                MonstersKilled = SessionKills,
+                BossesKilled = SessionBossKills,
+                KeyboardInputs = SessionKeyboardInputs,
+                MouseInputs = SessionMouseInputs,
+                EndReason = endReason
+            };
         }
 
         /// <summary>
