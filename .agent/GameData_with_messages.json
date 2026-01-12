@@ -1,0 +1,179 @@
+{
+  "_comment": "DeskWarrior 게임 오버 메시지 시스템 - 실제 적용용",
+  "balance": {
+    "base_hp": 100,
+    "hp_growth": 1.2,
+    "boss_interval": 10,
+    "boss_hp_multiplier": 5.0,
+    "base_gold_multiplier": 1.5,
+    "time_limit": 30,
+    "critical_chance": 0.1,
+    "critical_multiplier": 2.0,
+
+    "game_over_messages": {
+      "conditions": [
+        {
+          "id": "first_play",
+          "priority": 100,
+          "condition": { "level": 1 },
+          "messages": [
+            "First time? Everyone's a noob at level 1.",
+            "Tutorial boss defeated you. Classic.",
+            "Don't worry, level 1 is just a warm-up.",
+            "Achievement unlocked: Died to Tutorial Monster."
+          ]
+        },
+        {
+          "id": "boss_death_early",
+          "priority": 95,
+          "condition": { "death_type": "boss", "level_min": 10, "level_max": 19 },
+          "messages": [
+            "Boss: 'Thanks for the free XP!'",
+            "First boss fight? More like first boss flight.",
+            "Boss yawned. You died.",
+            "Boss evolved into 'Noob Destroyer'.",
+            "Level {level} boss said 'Not today, kiddo.'"
+          ]
+        },
+        {
+          "id": "boss_death_advanced",
+          "priority": 94,
+          "condition": { "death_type": "boss", "level_min": 20 },
+          "messages": [
+            "Level {level} boss: 'So close, yet so far.'",
+            "Boss laughed so hard it evolved twice.",
+            "You made the boss sweat. Then you died.",
+            "Boss respects your effort. Still dead though.",
+            "Your tombstone: 'Almost beat Level {level} boss.'"
+          ]
+        },
+        {
+          "id": "high_level_timeout",
+          "priority": 90,
+          "condition": { "level_min": 30, "death_type": "timeout" },
+          "messages": [
+            "Level {level} and you ran out of time? Ouch.",
+            "Clock: 1, You: 0. GG.",
+            "Your fingers: 'We need a vacation.'",
+            "{level} levels deep. Time said 'Nope.'"
+          ]
+        }
+      ],
+
+      "level_based": {
+        "1-3": [
+          "Your finger needs a gym membership.",
+          "Everyone starts somewhere. You started here.",
+          "Level {level}. Not great, not terrible.",
+          "Tutorial difficulty: Too hard?",
+          "Achievement: 'Speedrun to Game Over'.",
+          "Monster: 'Is that all you got?'",
+          "Keyboard destroyed. Try again.",
+          "Error 404: Skill not found.",
+          "Your APM: 3. Sloth's APM: 5.",
+          "Monster yawned mid-fight."
+        ],
+        "4-9": [
+          "Level {level}. You're learning!",
+          "Progress detected. Death also detected.",
+          "{gold}G earned. Knowledge: priceless.",
+          "Evolution failed. Again.",
+          "Try using both hands next time.",
+          "Your mouse filed a complaint.",
+          "Monster's thoughts: 'Too easy.'",
+          "You became a star in the sky...",
+          "Your fingers need couples therapy.",
+          "Level {level}. {gold}G. {damage} damage. Meh.",
+          "{kills} monsters defeated. Then YOU got defeated."
+        ],
+        "10-19": [
+          "Level {level}! You're getting there!",
+          "Double digits! Then double death.",
+          "{gold}G secured. Victory almost secured.",
+          "Level {level}. That's actually respectable.",
+          "You're in the top 50%. Of failures.",
+          "Level {level}. Your keyboard is crying.",
+          "Even my grandma clicks faster.",
+          "Your fingers: 'We quit.'",
+          "Monster wrote a victory speech.",
+          "RIP in pepperoni.",
+          "Level {level} and you choked?",
+          "So close to level 20. So far from victory.",
+          "Almost competent. Almost.",
+          "Your ancestors are disappointed.",
+          "Final stats: Lv{level} | {gold}G | {damage}DMG",
+          "Damage dealt: {damage}. Damage taken: All of it."
+        ],
+        "20-49": [
+          "Level {level}! You're actually good!",
+          "You made it to level {level}. Respect.",
+          "{gold}G earned through blood and clicks.",
+          "Level {level}. That's genuinely impressive.",
+          "You're better than 80% of players. Still lost.",
+          "Level {level}. Your fingers filed for disability.",
+          "Keyboard status: Destroyed with honor.",
+          "Your mouse: 'I need a vacation.'",
+          "{gold}G can't buy you new fingers.",
+          "Achievement: 'Carpal Tunnel Speedrun'.",
+          "Level {level} and you STILL lost?",
+          "Choked harder than a 3-1 lead.",
+          "Your overconfidence was your weakness.",
+          "Git gud --> Git rekt.",
+          "Level {level}. You died a hero.",
+          "Legends don't die. They respawn.",
+          "Level {level}. {damage} damage. Epic run.",
+          "Your sacrifice will not be forgotten.",
+          "They will sing songs of your level {level} run.",
+          "{kills} monsters fell before you. Then you fell.",
+          "You didn't lose. You just ran out of HP.",
+          "FINAL: Lv{level} | {gold}G | {damage}DMG | {kills} Kills",
+          "Stats: Lv{level} | {gold}G | {damage} total damage"
+        ],
+        "50+": [
+          "LEVEL {level}. You are LEGENDARY.",
+          "Level {level}. Absolute madlad.",
+          "You didn't die. You ascended.",
+          "Level {level}. {damage} damage. GODLIKE.",
+          "History books will remember level {level}.",
+          "Level {level}. Your keyboard is a relic now.",
+          "Even in death, you are LEGENDARY.",
+          "Level {level}. You've earned eternal respect.",
+          "{kills} monsters conquered. Then the {level}th ended you.",
+          "Your fingers have transcended mortality.",
+          "LEGENDARY RUN: Lv{level} | {gold}G | {damage}DMG",
+          "Level {level}. {gold} gold. {damage} damage. INSANE.",
+          "Final legacy: Level {level}, {kills} kills, {gold}G earned.",
+          "{damage} total damage. Monster HP: {damage}+1.",
+          "Level {level}. The end of an era.",
+          "Level {level} and you STILL died? Wow.",
+          "Your keyboard should be in a museum.",
+          "Carpal tunnel has entered the chat.",
+          "Your fingers have filed a class-action lawsuit.",
+          "Level {level}. Time to touch grass.",
+          "Achievement unlocked: 'Touch Grass Reminder'."
+        ]
+      },
+
+      "fallback": [
+        "GENERATION ENDED.",
+        "Game Over. Level {level}.",
+        "{gold}G. {level} levels. GG.",
+        "Better luck next time.",
+        "You fought well. You lost better.",
+        "Try again?",
+        "Press any key to restart. Except Esc. That quits.",
+        "Loading... Death screen.",
+        "Your journey ends at level {level}."
+      ]
+    }
+  },
+  "upgrade": {
+    "base_cost": 100,
+    "cost_multiplier": 1.5,
+    "attack_increase": 0.5
+  },
+  "visual": {
+    "shake_power": 2.5,
+    "boss_scale": 1.5
+  }
+}

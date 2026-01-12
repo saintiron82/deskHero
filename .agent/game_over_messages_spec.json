@@ -1,0 +1,327 @@
+{
+  "game_over_messages": {
+    "_description": "조건부 게임 오버 메시지 시스템 - 우선순위 순으로 평가",
+    "_available_variables": [
+      "{level} - 도달한 레벨",
+      "{gold} - 획득한 총 골드",
+      "{damage} - 총 데미지",
+      "{kills} - 처치한 몬스터 수"
+    ],
+
+    "conditions": [
+      {
+        "id": "first_play",
+        "priority": 100,
+        "condition": {
+          "level": 1,
+          "session_count": 1
+        },
+        "category": "encourage",
+        "messages": [
+          "First time? Everyone's a noob at level 1.",
+          "Tutorial boss defeated you. Classic.",
+          "Don't worry, level 1 is just a warm-up.",
+          "Achievement unlocked: Died to Tutorial Monster."
+        ]
+      },
+      {
+        "id": "boss_death_early",
+        "priority": 95,
+        "condition": {
+          "death_type": "boss",
+          "level_min": 10,
+          "level_max": 19
+        },
+        "category": "taunt",
+        "messages": [
+          "Boss: 'Thanks for the free XP!'",
+          "First boss fight? More like first boss flight.",
+          "Boss yawned. You died.",
+          "Boss evolved into 'Noob Destroyer'.",
+          "Boss added you to its highlight reel.",
+          "Level {level} boss said 'Not today, kiddo.'"
+        ]
+      },
+      {
+        "id": "boss_death_advanced",
+        "priority": 94,
+        "condition": {
+          "death_type": "boss",
+          "level_min": 20
+        },
+        "category": "taunt",
+        "messages": [
+          "Level {level} boss: 'So close, yet so far.'",
+          "Boss laughed so hard it evolved twice.",
+          "You made the boss sweat. Then you died.",
+          "Boss respects your effort. Still dead though.",
+          "Boss fight MVP: The Boss.",
+          "Your tombstone: 'Almost beat Level {level} boss.'"
+        ]
+      },
+      {
+        "id": "high_level_timeout",
+        "priority": 90,
+        "condition": {
+          "level_min": 30,
+          "death_type": "timeout"
+        },
+        "category": "taunt",
+        "messages": [
+          "Level {level} and you ran out of time? Ouch.",
+          "Clock: 1, You: 0. GG.",
+          "Your fingers: 'We need a vacation.'",
+          "Time waits for no one. Especially not you.",
+          "{level} levels deep. Time said 'Nope.'",
+          "Your keyboard is filing for overtime pay."
+        ]
+      },
+      {
+        "id": "rich_player",
+        "priority": 80,
+        "condition": {
+          "gold_per_level_min": 100
+        },
+        "category": "humor",
+        "messages": [
+          "{gold}G? You died rich and happy.",
+          "Richest corpse in the graveyard: You.",
+          "Your wallet survived. You didn't.",
+          "{gold}G can't buy you more time.",
+          "You can't buy your way out of this one.",
+          "Financial success: ✓ | Survival: ✗"
+        ]
+      },
+      {
+        "id": "poor_player",
+        "priority": 79,
+        "condition": {
+          "gold_per_level_max": 50
+        },
+        "category": "humor",
+        "messages": [
+          "{gold}G? Did you even try to loot?",
+          "Broke and broken. Double whammy.",
+          "Your bank account and HP have something in common.",
+          "Died poor, died fast. Efficient!",
+          "{gold}G won't even buy you a revival potion.",
+          "Financial advisor: 'Maybe try clicking more?'"
+        ]
+      },
+      {
+        "id": "glass_cannon",
+        "priority": 75,
+        "condition": {
+          "damage_gold_ratio_min": 2.0
+        },
+        "category": "stats",
+        "messages": [
+          "{damage} damage, {gold}G. All damage, no gains.",
+          "You hit hard but died poor. Priorities?",
+          "Glass cannon build failed successfully.",
+          "Your DPS was legendary. Your survival wasn't.",
+          "{damage} damage. Impressive. {gold}G? Not so much.",
+          "Monster's respect: High. Your gold: Low."
+        ]
+      },
+      {
+        "id": "efficient_player",
+        "priority": 74,
+        "condition": {
+          "damage_gold_ratio_max": 1.0,
+          "level_min": 10
+        },
+        "category": "epic",
+        "messages": [
+          "Efficient, deadly, dead. Two outta three ain't bad.",
+          "{damage} damage, {gold}G. You played smart... until the end.",
+          "Optimal strategy. Suboptimal outcome.",
+          "Your efficiency rating: S-tier. Survival: F-tier.",
+          "Perfectly balanced... until you weren't.",
+          "Textbook gameplay. Except the last page."
+        ]
+      }
+    ],
+
+    "level_based": {
+      "1-3": {
+        "encourage": [
+          "Your finger needs a gym membership.",
+          "Everyone starts somewhere. You started here.",
+          "Level {level}. Not great, not terrible.",
+          "Tutorial difficulty: Too hard?",
+          "Achievement: 'Speedrun to Game Over'.",
+          "Your keyboard is still learning your name.",
+          "Even my pet hamster got further.",
+          "Level {level}. Baby steps, literally."
+        ],
+        "humor": [
+          "Monster: 'Is that all you got?'",
+          "Keyboard destroyed. Try again.",
+          "Error 404: Skill not found.",
+          "Your APM: 3. Sloth's APM: 5.",
+          "Monster yawned mid-fight.",
+          "Did you fall asleep?",
+          "Plot twist: You were the tutorial boss.",
+          "Your fingers called in sick."
+        ]
+      },
+      "4-9": {
+        "encourage": [
+          "Level {level}. You're learning!",
+          "Progress detected. Death also detected.",
+          "{gold}G earned. Knowledge: priceless.",
+          "Level {level}. Halfway to not-terrible!",
+          "You're improving! Just... not enough.",
+          "Silver lining: You made it to level {level}.",
+          "Your keyboard is warming up to you."
+        ],
+        "humor": [
+          "Evolution failed. Again.",
+          "Try using both hands next time.",
+          "Your mouse filed a complaint.",
+          "Monster's thoughts: 'Too easy.'",
+          "You became a star in the sky...",
+          "Keyboard shortcuts won't help here.",
+          "Your fingers need couples therapy.",
+          "Monster added you to spam folder."
+        ],
+        "stats": [
+          "Level {level}. {gold}G. {damage} damage. Meh.",
+          "{kills} monsters defeated. Then YOU got defeated.",
+          "Stats: Level {level} | Gold {gold}G | Status: Dead",
+          "Scoreboard updated. You're not on it.",
+          "{damage} total damage. Still not enough."
+        ]
+      },
+      "10-19": {
+        "encourage": [
+          "Level {level}! You're getting there!",
+          "Double digits! Then double death.",
+          "{gold}G secured. Victory almost secured.",
+          "Level {level}. That's actually respectable.",
+          "You're in the top 50%. Of failures.",
+          "Progress saved. Your dignity wasn't.",
+          "Level {level}. Not everyone gets here!"
+        ],
+        "humor": [
+          "Level {level}. Your keyboard is crying.",
+          "Even my grandma clicks faster.",
+          "Your fingers: 'We quit.'",
+          "Monster wrote a victory speech.",
+          "You put up a good fight. Monster disagreed.",
+          "Your mouse needs therapy now.",
+          "Keyboard shortcut for 'git gud': Not found.",
+          "RIP in pepperoni."
+        ],
+        "taunt": [
+          "Level {level} and you choked?",
+          "So close to level 20. So far from victory.",
+          "Almost competent. Almost.",
+          "Level {level}. The monster was level {level}+1.",
+          "Your ancestors are disappointed.",
+          "Monster's review: '2/10, too easy.'",
+          "You peaked at level {level}. Sad."
+        ],
+        "stats": [
+          "Final stats: Lv{level} | {gold}G | {damage}DMG",
+          "{kills} kills. Then you became kill #{kills}.",
+          "Level {level}. {gold}G. Not enough.",
+          "Damage dealt: {damage}. Damage taken: All of it.",
+          "Your K/D ratio just got worse."
+        ]
+      },
+      "20-49": {
+        "encourage": [
+          "Level {level}! You're actually good!",
+          "You made it to level {level}. Respect.",
+          "{gold}G earned through blood and clicks.",
+          "Level {level}. That's genuinely impressive.",
+          "You're better than 80% of players. Still lost.",
+          "Level {level}. Most players never get here.",
+          "Your keyboard is proud. Also broken."
+        ],
+        "humor": [
+          "Level {level}. Your fingers filed for disability.",
+          "Keyboard status: Destroyed with honor.",
+          "Your mouse: 'I need a vacation.'",
+          "{gold}G can't buy you new fingers.",
+          "Your clicking speed: 'Yes.'",
+          "Monster's eulogy: 'Worthy opponent. Still dead.'",
+          "Achievement: 'Carpal Tunnel Speedrun'.",
+          "Your desk filed a noise complaint."
+        ],
+        "taunt": [
+          "Level {level} and you STILL lost?",
+          "Choked harder than a 3-1 lead.",
+          "Your overconfidence was your weakness.",
+          "Monster: 'I expected more from level {level}.'",
+          "Git gud --> Git rekt.",
+          "Level {level}. Monster level: {level}+0.5. You lost.",
+          "Your ego wrote a check your fingers couldn't cash.",
+          "So close to 50. So far from victory."
+        ],
+        "epic": [
+          "Level {level}. You died a hero.",
+          "Legends don't die. They respawn.",
+          "Level {level}. {damage} damage. Epic run.",
+          "Your sacrifice will not be forgotten.",
+          "They will sing songs of your level {level} run.",
+          "{kills} monsters fell before you. Then you fell.",
+          "Level {level}. That's a story worth telling.",
+          "You didn't lose. You just ran out of HP."
+        ],
+        "stats": [
+          "FINAL: Lv{level} | {gold}G | {damage}DMG | {kills} Kills",
+          "Level {level}. {gold} gold. {kills} victories. 1 death.",
+          "Stats: Lv{level} | {gold}G | {damage} total damage",
+          "{damage} damage across {level} levels. Impressive.",
+          "Legacy: Level {level}, {gold}G, {kills} kills."
+        ]
+      },
+      "50+": {
+        "epic": [
+          "LEVEL {level}. You are LEGENDARY.",
+          "Level {level}. Absolute madlad.",
+          "You didn't die. You ascended.",
+          "Level {level}. {damage} damage. GODLIKE.",
+          "History books will remember level {level}.",
+          "Level {level}. Your keyboard is a relic now.",
+          "Even in death, you are LEGENDARY.",
+          "Level {level}. You've earned eternal respect.",
+          "{kills} monsters conquered. Then the {level}th ended you.",
+          "Your fingers have transcended mortality."
+        ],
+        "stats": [
+          "LEGENDARY RUN: Lv{level} | {gold}G | {damage}DMG",
+          "Level {level}. {gold} gold. {damage} damage. INSANE.",
+          "Final legacy: Level {level}, {kills} kills, {gold}G earned.",
+          "{damage} total damage. Monster HP: {damage}+1.",
+          "Level {level}. The end of an era."
+        ],
+        "humor": [
+          "Level {level} and you STILL died? Wow.",
+          "Your keyboard should be in a museum.",
+          "Carpal tunnel has entered the chat.",
+          "Your fingers have filed a class-action lawsuit.",
+          "Level {level}. Time to touch grass.",
+          "Monster's thoughts: 'Finally, it's over.'",
+          "Your keyboard's obituary is 3 pages long.",
+          "Achievement unlocked: 'Touch Grass Reminder'."
+        ]
+      }
+    },
+
+    "fallback": [
+      "GENERATION ENDED.",
+      "Game Over. Level {level}.",
+      "{gold}G. {level} levels. GG.",
+      "Better luck next time.",
+      "You fought well. You lost better.",
+      "Try again?",
+      "Press any key to restart. Except Esc. That quits.",
+      "Loading... Death screen.",
+      "Your journey ends at level {level}."
+    ]
+  }
+}
