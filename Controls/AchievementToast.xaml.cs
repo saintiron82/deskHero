@@ -27,14 +27,10 @@ namespace DeskWarrior.Controls
                 ? achievement.Description
                 : achievement.UnlockMessage;
 
-            // Play show animation
-            var showStoryboard = (Storyboard)Resources["ShowAnimation"];
-            showStoryboard.Begin(this);
-
-            // Play hide animation after delay
-            var hideStoryboard = (Storyboard)Resources["HideAnimation"];
-            hideStoryboard.Completed += (s, e) => AnimationCompleted?.Invoke(this, EventArgs.Empty);
-            hideStoryboard.Begin(this);
+            // 통합된 애니메이션 실행 (Show + Hide를 하나로)
+            var storyboard = (Storyboard)Resources["ToastAnimation"];
+            storyboard.Completed += (s, e) => AnimationCompleted?.Invoke(this, EventArgs.Empty);
+            storyboard.Begin(this);
         }
     }
 }

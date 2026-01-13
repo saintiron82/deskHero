@@ -15,8 +15,7 @@ namespace DeskWarrior.Windows
         private readonly SaveManager _saveManager;
         private readonly AchievementManager _achievementManager;
         private readonly GameManager _gameManager;
-
-        public StatisticsWindow(SaveManager saveManager, AchievementManager achievementManager, GameManager gameManager)
+        private string _currentFilter = "24H";        public StatisticsWindow(SaveManager saveManager, AchievementManager achievementManager, GameManager gameManager)
         {
             InitializeComponent();
             _saveManager = saveManager;
@@ -29,8 +28,7 @@ namespace DeskWarrior.Windows
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             UpdateLocalizedUI();
-            LoadDashboard();
-            LoadSessions();
+            LoadBattleRecord("24H");
             LoadAchievements();
 
             // 언어 변경 이벤트 구독
@@ -55,409 +53,137 @@ namespace DeskWarrior.Windows
             TitleText.Text = "📊 " + loc["ui.statistics.title"];
 
             // 탭 헤더
-            OverviewTab.Header = "DASHBOARD";
-            SessionsTab.Header = loc["ui.statistics.tabs.sessions"];
+            BattleRecordTab.Header = loc.CurrentLanguage == "ko-KR" ? "전투 기록" : "BATTLE RECORD";
             AchievementsTab.Header = loc["ui.statistics.tabs.achievements"];
 
             // Dashboard labels
-            LblBestRecords.Text = "🏆 " + loc["ui.statistics.overview.lifetimeRecords"];
-            LblMaxLevel.Text = loc["ui.statistics.labels.maxLevel"];
-            LblMaxHit.Text = loc["ui.statistics.labels.maxHit"];
-            LblTotalGoldEarned.Text = loc["ui.statistics.labels.totalGoldEarned"];
-            LblLevelProgress.Text = "📈 " + loc["ui.statistics.labels.levelProgress"];
-            LblTodayStats.Text = "🔥 " + loc["ui.statistics.overview.currentSession"];
-            LblSessionKills.Text = loc["ui.statistics.labels.kills"];
-            LblSessionDamage.Text = loc["ui.statistics.labels.damage"];
-            LblCriticalHits.Text = loc["ui.statistics.labels.criticalHits"];
-            LblBossKills.Text = loc["ui.statistics.labels.bossesDefeated"];
-            LblInputRatio.Text = "⌨️ vs 🖱️ " + loc["ui.statistics.labels.inputRatio"];
+            LblSummaryTitle.Text = "📊 " + loc["ui.statistics.overview.cumulativeStats"];
+            LblSummaryKills.Text = loc["ui.statistics.labels.kills"];
+            LblSummaryLevel.Text = loc["ui.statistics.labels.maxLevel"];
+            LblSummaryDamage.Text = loc["ui.statistics.labels.totalDamage"];
+            LblSummaryGold.Text = loc["ui.statistics.labels.totalGoldEarned"];
+            LblInputRatio.Text = loc["ui.statistics.labels.inputRatio"];
 
-            // Sessions Tab
-            LblBestSession.Text = loc["ui.statistics.sessions.bestSession"];
-            LblBestLevel.Text = loc["ui.statistics.labels.level"];
-            LblBestDamage.Text = loc["ui.statistics.labels.damage"];
-            LblBestDuration.Text = loc["ui.statistics.labels.duration"];
-            LblCurrentVsAverage.Text = loc["ui.statistics.sessions.currentVsAverage"];
-            LblCompareLevel.Text = loc["ui.statistics.labels.level"];
-            LblCompareDamage.Text = loc["ui.statistics.labels.damage"];
-            LblCompareGold.Text = loc["ui.statistics.labels.gold"];
+            BtnRange1H.Content = loc.CurrentLanguage == "ko-KR" ? "1시간" : "Last 1H";
+            BtnRange24H.Content = loc.CurrentLanguage == "ko-KR" ? "24시간" : "Last 24H";
+            BtnRangeAll.Content = loc.CurrentLanguage == "ko-KR" ? "전체" : "All Time";
+
             LblRecentSessions.Text = loc["ui.statistics.sessions.recentSessions"];
 
             // Close Button
             CloseButton.Content = loc["ui.common.close"];
         }
 
-        #region Dashboard Tab
-
-        private void LoadDashboard()
+        private void Filter_Click(object sender, RoutedEventArgs e)
         {
-            var stats = _saveManager.CurrentSave.Stats;
-            var lifetime = _saveManager.CurrentSave.LifetimeStats;
-
-            // Best Records
-            TxtMaxLevel.Text = $"{stats.MaxLevel}";
-            TxtMaxDamage.Text = FormatNumber(stats.MaxDamage);
-            TxtTotalGold.Text = FormatNumber(lifetime.TotalGoldEarned);
-
-            // Today's Stats Cards
-            TxtSessionKills.Text = $"{_gameManager.SessionKills}";
-            TxtSessionDamage.Text = FormatNumber(_gameManager.SessionDamage);
-            TxtCriticalHits.Text = $"{_gameManager.SessionCriticalHits}";
-            TxtBossKills.Text = $"{_gameManager.SessionBossKills}";
-
-            // Achievement Badge
-            var (unlocked, total) = _achievementManager.GetAchievementStats();
-            AchievementBadge.Text = $" ({unlocked}/{total})";
-
-            // Draw Charts
-            DrawLevelGraph();
-            DrawInputDonut();
-            UpdateDayLabels();
+            if (sender is Button btn && btn.Tag is string filter)
+            {
+                _currentFilter = filter;
+                LoadBattleRecord(filter);
+            }
         }
 
-        private void DrawLevelGraph()
+        private void LoadBattleRecord(string filter)
         {
-            LevelGraphCanvas.Children.Clear();
+            UpdateFilterButtons(filter);
 
-            // Get recent sessions for last 7 days
-            var recentSessions = _saveManager.GetRecentSessions(30);
-            var last7Days = new List<int>();
+            var sessions = _saveManager.GetRecentSessions(200);
+            var lifetime = _saveManager.CurrentSave.LifetimeStats;
+            
+            long totalKills = 0;
+            long totalGold = 0;
+            long totalDamage = 0;
+            int maxLevel = 0;
+            
+            long keyboardInputs = 0;
+            long mouseInputs = 0;
 
-            for (int i = 6; i >= 0; i--)
+            List<SessionStats> filteredSessions = new();
+
+            if (filter == "All")
             {
-                var date = DateTime.Today.AddDays(-i);
-                var daySession = recentSessions
-                    .Where(s => s.StartTime.Date == date)
-                    .OrderByDescending(s => s.MaxLevel)
-                    .FirstOrDefault();
-
-                last7Days.Add(daySession?.MaxLevel ?? 0);
-            }
-
-            // Add current session if today
-            if (last7Days.Count > 0 && _gameManager.CurrentLevel > last7Days[^1])
-            {
-                last7Days[^1] = _gameManager.CurrentLevel;
-            }
-
-            // If all zeros, show placeholder
-            int maxLevel = last7Days.Max();
-            if (maxLevel == 0) maxLevel = 10; // Default scale
-
-            double width = LevelGraphCanvas.ActualWidth > 0 ? LevelGraphCanvas.ActualWidth : 300;
-            double height = LevelGraphCanvas.ActualHeight > 0 ? LevelGraphCanvas.ActualHeight : 80;
-            double stepX = width / 6; // 7 points = 6 segments
-            double padding = 10;
-
-            // Draw grid lines
-            for (int i = 0; i <= 3; i++)
-            {
-                double y = padding + (height - 2 * padding) * (1 - i / 3.0);
-                var gridLine = new Line
-                {
-                    X1 = 0,
-                    Y1 = y,
-                    X2 = width,
-                    Y2 = y,
-                    Stroke = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
-                    StrokeThickness = 1,
-                    StrokeDashArray = new DoubleCollection { 2, 2 }
-                };
-                LevelGraphCanvas.Children.Add(gridLine);
-            }
-
-            // Draw line graph - align points with column centers
-            var points = new PointCollection();
-            double columnWidth = width / 7; // 7 columns for 7 days
-            for (int i = 0; i < 7; i++)
-            {
-                double x = (i * columnWidth) + (columnWidth / 2); // Center of each column
-                double normalizedY = maxLevel > 0 ? (double)last7Days[i] / maxLevel : 0;
-                double y = height - padding - (normalizedY * (height - 2 * padding));
-                points.Add(new Point(x, y));
-            }
-
-            // Gradient line
-            var polyline = new Polyline
-            {
-                Points = points,
-                Stroke = new LinearGradientBrush(
-                    Color.FromRgb(136, 255, 255),
-                    Color.FromRgb(136, 255, 136),
-                    90),
-                StrokeThickness = 3,
-                StrokeLineJoin = PenLineJoin.Round
-            };
-            LevelGraphCanvas.Children.Add(polyline);
-
-            // Draw points
-            for (int i = 0; i < points.Count; i++)
-            {
-                var point = points[i];
+                totalKills = _saveManager.CurrentSave.Stats.MonsterKills;
+                totalGold = lifetime.TotalGoldEarned;
+                totalDamage = _saveManager.CurrentSave.Stats.TotalDamage;
+                maxLevel = _saveManager.CurrentSave.Stats.MaxLevel;
                 
-                // Glow effect
-                var glow = new Ellipse
-                {
-                    Width = 12,
-                    Height = 12,
-                    Fill = new RadialGradientBrush(
-                        Color.FromArgb(100, 136, 255, 255),
-                        Colors.Transparent)
-                };
-                Canvas.SetLeft(glow, point.X - 6);
-                Canvas.SetTop(glow, point.Y - 6);
-                LevelGraphCanvas.Children.Add(glow);
+                keyboardInputs = lifetime.KeyboardInputs;
+                mouseInputs = lifetime.MouseInputs;
+                
+                filteredSessions = sessions;
+            }
+            else
+            {
+                DateTime cutoff = filter == "1H" ? DateTime.Now.AddHours(-1) : DateTime.Now.AddHours(-24);
+                filteredSessions = sessions.Where(s => s.EndTime >= cutoff).ToList();
+                
+                totalKills = filteredSessions.Sum(s => (long)s.MonstersKilled);
+                totalGold = filteredSessions.Sum(s => s.TotalGold);
+                totalDamage = filteredSessions.Sum(s => s.TotalDamage);
+                maxLevel = filteredSessions.Any() ? filteredSessions.Max(s => s.MaxLevel) : 0;
+                
+                keyboardInputs = filteredSessions.Sum(s => (long)s.KeyboardInputs);
+                mouseInputs = filteredSessions.Sum(s => (long)s.MouseInputs);
+            }
 
-                // Point
-                var ellipse = new Ellipse
-                {
-                    Width = 8,
-                    Height = 8,
-                    Fill = new SolidColorBrush(Color.FromRgb(136, 255, 255)),
-                    Stroke = new SolidColorBrush(Colors.White),
-                    StrokeThickness = 2
-                };
-                Canvas.SetLeft(ellipse, point.X - 4);
-                Canvas.SetTop(ellipse, point.Y - 4);
-                LevelGraphCanvas.Children.Add(ellipse);
+            TxtSummaryKills.Text = FormatNumber(totalKills);
+            TxtSummaryGold.Text = FormatNumber(totalGold);
+            TxtSummaryDamage.Text = FormatNumber(totalDamage);
+            TxtSummaryLevel.Text = $"{maxLevel}";
 
-                // Value label (only show if > 0)
-                if (last7Days[i] > 0)
-                {
-                    var label = new TextBlock
-                    {
-                        Text = last7Days[i].ToString(),
-                        Foreground = new SolidColorBrush(Colors.White),
-                        FontSize = 9,
-                        FontWeight = FontWeights.Bold
-                    };
-                    Canvas.SetLeft(label, point.X - 6);
-                    Canvas.SetTop(label, point.Y - 20);
-                    LevelGraphCanvas.Children.Add(label);
-                }
+            // Update Input Ratio
+            UpdateInputRatio(keyboardInputs, mouseInputs);
+
+            // Update List
+            LoadRecentSessions(filteredSessions);
+        }
+
+        private void UpdateFilterButtons(string filter)
+        {
+            SetButtonStyle(BtnRange1H, filter == "1H");
+            SetButtonStyle(BtnRange24H, filter == "24H");
+            SetButtonStyle(BtnRangeAll, filter == "All");
+        }
+
+        private void SetButtonStyle(Button btn, bool isActive)
+        {
+            if (isActive)
+            {
+                btn.Background = new SolidColorBrush(Color.FromRgb(255, 170, 0)); // Orange
+                btn.Foreground = new SolidColorBrush(Colors.Black);
+                btn.FontWeight = FontWeights.Bold;
+            }
+            else
+            {
+                btn.Background = new SolidColorBrush(Color.FromRgb(51, 51, 51)); // Dark Gray
+                btn.Foreground = new SolidColorBrush(Color.FromRgb(170, 170, 170)); // Light Gray
+                btn.FontWeight = FontWeights.Normal;
             }
         }
 
-        private void DrawInputDonut()
+        private void UpdateInputRatio(long keyboard, long mouse)
         {
-            InputDonutCanvas.Children.Clear();
-
-            var lifetime = _saveManager.CurrentSave.LifetimeStats;
-            long keyboardInputs = lifetime.KeyboardInputs + _gameManager.SessionKeyboardInputs;
-            long mouseInputs = lifetime.MouseInputs + _gameManager.SessionMouseInputs;
-            long total = keyboardInputs + mouseInputs;
+            long total = keyboard + mouse;
+            var loc = LocalizationManager.Instance;
 
             if (total == 0)
             {
-                // Draw empty donut
-                DrawEmptyDonut();
-                TxtKeyboardPercent.Text = "0% Keyboard";
-                TxtMousePercent.Text = "0% Mouse";
+                TxtKeyboardPercent.Text = $"0% {loc["ui.statistics.labels.keyboard"]}";
+                TxtMousePercent.Text = $"0% {loc["ui.statistics.labels.mouse"]}";
                 return;
             }
 
-            double keyboardPercent = (double)keyboardInputs / total * 100;
-            double mousePercent = 100 - keyboardPercent;
+            double kp = (double)keyboard / total * 100.0;
+            double mp = 100.0 - kp;
 
-            TxtKeyboardPercent.Text = $"{keyboardPercent:F0}% Keyboard";
-            TxtMousePercent.Text = $"{mousePercent:F0}% Mouse";
-
-            double centerX = 40;
-            double centerY = 40;
-            double outerRadius = 35;
-            double innerRadius = 20;
-
-            // Keyboard arc (cyan)
-            double keyboardAngle = (keyboardPercent / 100) * 360;
-            DrawArc(centerX, centerY, outerRadius, innerRadius, 0, keyboardAngle,
-                Color.FromRgb(136, 255, 255));
-
-            // Mouse arc (magenta)
-            DrawArc(centerX, centerY, outerRadius, innerRadius, keyboardAngle, 360 - keyboardAngle,
-                Color.FromRgb(255, 136, 255));
+            TxtKeyboardPercent.Text = $"{kp:F0}% {loc["ui.statistics.labels.keyboard"]}";
+            TxtMousePercent.Text = $"{mp:F0}% {loc["ui.statistics.labels.mouse"]}";
         }
 
-        private void DrawEmptyDonut()
-        {
-            double centerX = 40;
-            double centerY = 40;
-            double outerRadius = 35;
-            double innerRadius = 20;
 
-            var ellipse = new Ellipse
-            {
-                Width = outerRadius * 2,
-                Height = outerRadius * 2,
-                Stroke = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
-                StrokeThickness = outerRadius - innerRadius,
-                Fill = Brushes.Transparent
-            };
-            Canvas.SetLeft(ellipse, centerX - outerRadius);
-            Canvas.SetTop(ellipse, centerY - outerRadius);
-            InputDonutCanvas.Children.Add(ellipse);
-        }
 
-        private void DrawArc(double centerX, double centerY, double outerRadius, double innerRadius,
-            double startAngle, double sweepAngle, Color color)
-        {
-            if (sweepAngle <= 0) return;
 
-            // Convert to radians
-            double startRad = (startAngle - 90) * Math.PI / 180;
-            double endRad = (startAngle + sweepAngle - 90) * Math.PI / 180;
 
-            // Calculate points
-            Point outerStart = new Point(
-                centerX + outerRadius * Math.Cos(startRad),
-                centerY + outerRadius * Math.Sin(startRad));
-            Point outerEnd = new Point(
-                centerX + outerRadius * Math.Cos(endRad),
-                centerY + outerRadius * Math.Sin(endRad));
-            Point innerStart = new Point(
-                centerX + innerRadius * Math.Cos(endRad),
-                centerY + innerRadius * Math.Sin(endRad));
-            Point innerEnd = new Point(
-                centerX + innerRadius * Math.Cos(startRad),
-                centerY + innerRadius * Math.Sin(startRad));
-
-            bool isLargeArc = sweepAngle > 180;
-
-            var pathFigure = new PathFigure { StartPoint = outerStart };
-
-            // Outer arc
-            pathFigure.Segments.Add(new ArcSegment
-            {
-                Point = outerEnd,
-                Size = new Size(outerRadius, outerRadius),
-                IsLargeArc = isLargeArc,
-                SweepDirection = SweepDirection.Clockwise
-            });
-
-            // Line to inner
-            pathFigure.Segments.Add(new LineSegment { Point = innerStart });
-
-            // Inner arc (reverse direction)
-            pathFigure.Segments.Add(new ArcSegment
-            {
-                Point = innerEnd,
-                Size = new Size(innerRadius, innerRadius),
-                IsLargeArc = isLargeArc,
-                SweepDirection = SweepDirection.Counterclockwise
-            });
-
-            // Close path
-            pathFigure.IsClosed = true;
-
-            var pathGeometry = new PathGeometry();
-            pathGeometry.Figures.Add(pathFigure);
-
-            var path = new Path
-            {
-                Data = pathGeometry,
-                Fill = new SolidColorBrush(color)
-            };
-
-            InputDonutCanvas.Children.Add(path);
-        }
-
-        private void UpdateDayLabels()
-        {
-            var dayLabels = new[] { Day1Label, Day2Label, Day3Label, Day4Label, Day5Label, Day6Label, Day7Label };
-            var dayNames = new[] { "일", "월", "화", "수", "목", "금", "토" };
-
-            for (int i = 0; i < 7; i++)
-            {
-                var date = DateTime.Today.AddDays(-6 + i);
-                dayLabels[i].Text = dayNames[(int)date.DayOfWeek];
-            }
-        }
-
-        #endregion
-
-        #region Sessions Tab
-
-        private void LoadSessions()
-        {
-            var summary = _saveManager.GetSessionSummary();
-            var recentSessions = _saveManager.GetRecentSessions(10);
-
-            // Best Session
-            var loc = LocalizationManager.Instance;
-            if (summary.BestSession != null)
-            {
-                var best = summary.BestSession;
-                TxtBestSessionDate.Text = $" - {best.StartTime:yyyy.MM.dd HH:mm}";
-                TxtBestLevel.Text = $"{best.MaxLevel}";
-                TxtBestDamage.Text = FormatNumber(best.TotalDamage);
-                TxtBestDuration.Text = $"{(int)best.DurationMinutes}m";
-            }
-            else
-            {
-                TxtBestSessionDate.Text = $" - {loc["ui.statistics.sessions.noSessionsYet"]}";
-                TxtBestLevel.Text = "0";
-                TxtBestDamage.Text = "0";
-                TxtBestDuration.Text = "0m";
-            }
-
-            // Current vs Average
-            UpdateComparison(summary);
-
-            // Recent Sessions
-            LoadRecentSessions(recentSessions);
-        }
-
-        private void UpdateComparison(SessionStatsSummary summary)
-        {
-            if (summary.TotalSessions == 0)
-            {
-                SetComparisonBar(LevelCompareBar, TxtLevelCompare, 0, "#88FF88");
-                SetComparisonBar(DamageCompareBar, TxtDamageCompare, 0, "#FF8888");
-                SetComparisonBar(GoldCompareBar, TxtGoldCompare, 0, "Gold");
-                return;
-            }
-
-            double levelPercent = summary.AverageLevel > 0
-                ? ((_gameManager.CurrentLevel - summary.AverageLevel) / summary.AverageLevel) * 100
-                : 0;
-            SetComparisonBar(LevelCompareBar, TxtLevelCompare, levelPercent, "#88FF88");
-
-            double damagePercent = summary.AverageDamage > 0
-                ? ((_gameManager.SessionDamage - summary.AverageDamage) / summary.AverageDamage) * 100
-                : 0;
-            SetComparisonBar(DamageCompareBar, TxtDamageCompare, damagePercent, "#FF8888");
-
-            double goldPercent = summary.AverageGold > 0
-                ? ((_gameManager.SessionTotalGold - summary.AverageGold) / summary.AverageGold) * 100
-                : 0;
-            SetComparisonBar(GoldCompareBar, TxtGoldCompare, goldPercent, "Gold");
-        }
-
-        private void SetComparisonBar(Border bar, TextBlock text, double percent, string color)
-        {
-            percent = Math.Max(-100, Math.Min(200, percent));
-
-            double barPercent = 50 + (percent / 4);
-            barPercent = Math.Max(5, Math.Min(100, barPercent));
-
-            var parent = bar.Parent as Grid;
-            if (parent != null)
-            {
-                double maxWidth = parent.ActualWidth > 0 ? parent.ActualWidth : 300;
-                bar.Width = maxWidth * (barPercent / 100);
-            }
-
-            string sign = percent >= 0 ? "+" : "";
-            text.Text = $"{sign}{percent:F0}%";
-
-            if (percent >= 0)
-            {
-                text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color)!);
-            }
-            else
-            {
-                text.Foreground = new SolidColorBrush(Colors.Red);
-            }
-        }
 
         private void LoadRecentSessions(List<SessionStats> sessions)
         {
@@ -557,7 +283,7 @@ namespace DeskWarrior.Windows
             return border;
         }
 
-        #endregion
+
 
         #region Achievements Tab
 

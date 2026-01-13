@@ -101,6 +101,12 @@ namespace DeskWarrior.Models
         [JsonPropertyName("best_session_damage")]
         public long BestSessionDamage { get; set; }
 
+        [JsonPropertyName("best_session_kills")]
+        public int BestSessionKills { get; set; }
+
+        [JsonPropertyName("best_session_gold")]
+        public long BestSessionGold { get; set; }
+
         [JsonPropertyName("consecutive_days")]
         public int ConsecutiveDays { get; set; }
 

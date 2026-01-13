@@ -204,9 +204,13 @@ namespace DeskWarrior.Managers
             _translations["ui.statistics.title"] = "통계";
             _translations["ui.statistics.tabs.overview"] = "개요";
             _translations["ui.statistics.tabs.sessions"] = "세션";
+            _translations["ui.statistics.tabs.history"] = "기록"; // New
             _translations["ui.statistics.tabs.achievements"] = "업적";
 
             _translations["ui.statistics.overview.currentSession"] = "현재 세션";
+            _translations["ui.statistics.overview.bestSessionRecords"] = "역대 최고 기록"; // New
+            _translations["ui.statistics.overview.cumulativeStats"] = "누적 통계"; // New
+            _translations["ui.statistics.overview.maxStats"] = "최고 세션 통계 (기간 내)"; // New
             _translations["ui.statistics.overview.lifetimeRecords"] = "누적 기록";
             _translations["ui.statistics.overview.efficiency"] = "효율";
 
@@ -227,6 +231,10 @@ namespace DeskWarrior.Managers
             _translations["ui.statistics.labels.duration"] = "지속시간";
             _translations["ui.statistics.labels.levelProgress"] = "레벨 추이 (7일)";
             _translations["ui.statistics.labels.inputRatio"] = "입력 비율";
+            _translations["ui.statistics.labels.keyboard"] = "키보드";
+            _translations["ui.statistics.labels.mouse"] = "마우스";
+            _translations["ui.statistics.labels.achievements"] = "업적 달성"; // New
+            _translations["ui.statistics.labels.timeRange"] = "기간 선택"; // New
 
             _translations["ui.statistics.format.days"] = "{0}일";
 
@@ -298,9 +306,13 @@ namespace DeskWarrior.Managers
             _translations["ui.statistics.title"] = "STATISTICS";
             _translations["ui.statistics.tabs.overview"] = "OVERVIEW";
             _translations["ui.statistics.tabs.sessions"] = "SESSIONS";
+            _translations["ui.statistics.tabs.history"] = "HISTORY"; // New
             _translations["ui.statistics.tabs.achievements"] = "ACHIEVEMENTS";
 
             _translations["ui.statistics.overview.currentSession"] = "CURRENT SESSION";
+            _translations["ui.statistics.overview.bestSessionRecords"] = "BEST SESSION RECORDS"; // New
+            _translations["ui.statistics.overview.cumulativeStats"] = "CUMULATIVE STATS"; // New
+            _translations["ui.statistics.overview.maxStats"] = "MAX SESSION STATS (In Range)"; // New
             _translations["ui.statistics.overview.lifetimeRecords"] = "LIFETIME RECORDS";
             _translations["ui.statistics.overview.efficiency"] = "EFFICIENCY";
 
@@ -321,6 +333,10 @@ namespace DeskWarrior.Managers
             _translations["ui.statistics.labels.duration"] = "Duration";
             _translations["ui.statistics.labels.levelProgress"] = "Level Progress (7 Days)";
             _translations["ui.statistics.labels.inputRatio"] = "Input Ratio";
+            _translations["ui.statistics.labels.keyboard"] = "Keyboard";
+            _translations["ui.statistics.labels.mouse"] = "Mouse";
+            _translations["ui.statistics.labels.achievements"] = "ACHIEVEMENTS"; // New
+            _translations["ui.statistics.labels.timeRange"] = "TIME RANGE"; // New
 
             _translations["ui.statistics.format.days"] = "{0} days";
 

@@ -5,7 +5,8 @@
              Opacity="0">
 
     <UserControl.Resources>
-        <Storyboard x:Key="ShowAnimation">
+        <Storyboard x:Key="ToastAnimation">
+            <!-- Show: 0~0.3초 -->
             <DoubleAnimation Storyboard.TargetProperty="Opacity"
                            From="0" To="1" Duration="0:0:0.3"/>
             <ThicknessAnimation Storyboard.TargetProperty="Margin"
@@ -14,13 +15,12 @@
                     <QuadraticEase EasingMode="EaseOut"/>
                 </ThicknessAnimation.EasingFunction>
             </ThicknessAnimation>
-        </Storyboard>
 
-        <Storyboard x:Key="HideAnimation">
+            <!-- Hide: 15초 후 시작 (0.5초 동안) -->
             <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                           From="1" To="0" Duration="0:0:0.5" BeginTime="0:0:10"/>
+                           From="1" To="0" Duration="0:0:0.5" BeginTime="0:0:15"/>
             <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                              From="0,0,0,0" To="0,-20,0,0" Duration="0:0:0.5" BeginTime="0:0:10">
+                              From="0,0,0,0" To="0,-20,0,0" Duration="0:0:0.5" BeginTime="0:0:15">
                 <ThicknessAnimation.EasingFunction>
                     <QuadraticEase EasingMode="EaseIn"/>
                 </ThicknessAnimation.EasingFunction>

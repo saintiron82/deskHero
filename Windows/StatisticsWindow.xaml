@@ -8,6 +8,52 @@
         Topmost="True"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
+    <Window.Resources>
+        <!-- TabItem Style -->
+        <Style TargetType="TabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border Name="Border" BorderThickness="0,0,0,2" BorderBrush="Transparent" Margin="2">
+                            <ContentPresenter x:Name="ContentSite"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                ContentSource="Header"
+                                Margin="10,4"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#FFAA00"/>
+                                <Setter Property="Foreground" Value="#FFAA00"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="Foreground" Value="#888"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Filter Button Style -->
+        <Style x:Key="FilterButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#333"/>
+            <Setter Property="Foreground" Value="#AAA"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="0,0,5,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Border BorderBrush="#666" BorderThickness="1" Background="#FF1a1a2e">
         <Grid Margin="15">
             <Grid.RowDefinitions>
@@ -19,282 +65,114 @@
             <!-- Title -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
                 <TextBlock x:Name="TitleText" Text="📊 STATISTICS" Foreground="White" FontWeight="Bold" FontSize="16"/>
-                <TextBlock x:Name="AchievementBadge" Text=" (0/48)" Foreground="#FFD700" FontSize="11" VerticalAlignment="Bottom" Margin="5,0,0,2"/>
             </StackPanel>
 
             <!-- Content -->
             <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0">
-                <TabControl.Resources>
-                    <Style TargetType="TabItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="TabItem">
-                                    <Border Name="Border" BorderThickness="0,0,0,2" BorderBrush="Transparent" Margin="2">
-                                        <ContentPresenter x:Name="ContentSite"
-                                            VerticalAlignment="Center"
-                                            HorizontalAlignment="Center"
-                                            ContentSource="Header"
-                                            Margin="10,4"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Border" Property="BorderBrush" Value="#FFAA00"/>
-                                            <Setter Property="Foreground" Value="#FFAA00"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="False">
-                                            <Setter Property="Foreground" Value="#888"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TabControl.Resources>
+                
+                <!-- Tab 1: Battle Record (Unified) -->
+                <TabItem x:Name="BattleRecordTab" Header="BATTLE RECORD">
+                    <Grid Margin="5,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                <!-- Tab 1: Dashboard -->
-                <TabItem x:Name="OverviewTab" Header="DASHBOARD">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="5,10">
-                            
-                            <!-- Best Records Row -->
-                            <Border Background="#33FFD700" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <TextBlock x:Name="LblBestRecords" Text="🏆 BEST RECORDS" Foreground="#FFD700" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                                            <TextBlock x:Name="LblMaxLevel" Text="Max Level" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TxtMaxLevel" Text="0" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                        
-                                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                                            <TextBlock x:Name="LblMaxHit" Text="Max Hit" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TxtMaxDamage" Text="0" Foreground="#FF8888" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                        
-                                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                            <TextBlock x:Name="LblTotalGoldEarned" Text="Total Gold" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TxtTotalGold" Text="0" Foreground="Gold" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Level Progress Chart -->
-                            <Border Background="#22FFFFFF" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <TextBlock x:Name="LblLevelProgress" Text="📈 LEVEL PROGRESS (7 Days)" Foreground="#888" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
-                                    
-                                    <!-- Line Graph Canvas -->
-                                    <Canvas x:Name="LevelGraphCanvas" Height="100" Background="Transparent" Margin="0,0,0,5"/>
-                                    
-                                    <!-- X-axis labels -->
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock x:Name="Day1Label" Text="일" Foreground="#888" FontSize="9" HorizontalAlignment="Center" Grid.Column="0"/>
-                                        <TextBlock x:Name="Day2Label" Text="월" Foreground="#888" FontSize="9" HorizontalAlignment="Center" Grid.Column="1"/>
-                                        <TextBlock x:Name="Day3Label" Text="화" Foreground="#888" FontSize="9" HorizontalAlignment="Center" Grid.Column="2"/>
-                                        <TextBlock x:Name="Day4Label" Text="수" Foreground="#888" FontSize="9" HorizontalAlignment="Center" Grid.Column="3"/>
-                                        <TextBlock x:Name="Day5Label" Text="목" Foreground="#888" FontSize="9" HorizontalAlignment="Center" Grid.Column="4"/>
-                                        <TextBlock x:Name="Day6Label" Text="금" Foreground="#888" FontSize="9" HorizontalAlignment="Center" Grid.Column="5"/>
-                                        <TextBlock x:Name="Day7Label" Text="토" Foreground="#888" FontSize="9" HorizontalAlignment="Center" Grid.Column="6"/>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Daily Stats Cards -->
-                            <Border Background="#22FFFFFF" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <TextBlock x:Name="LblTodayStats" Text="🔥 TODAY'S SESSION" Foreground="#888" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
-                                    
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <!-- Kill Card -->
-                                        <Border Grid.Column="0" Background="#33FF6666" CornerRadius="6" Padding="6" Margin="0,0,4,0">
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <TextBlock x:Name="TxtSessionKills" Text="0" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                                <TextBlock x:Name="LblSessionKills" Text="KILLS" Foreground="#FF8888" FontSize="8" HorizontalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                        
-                                        <!-- Damage Card -->
-                                        <Border Grid.Column="1" Background="#33FF8844" CornerRadius="6" Padding="6" Margin="2,0">
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <TextBlock x:Name="TxtSessionDamage" Text="0" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                                <TextBlock x:Name="LblSessionDamage" Text="DMG" Foreground="#FFAA66" FontSize="8" HorizontalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                        
-                                        <!-- Critical Card -->
-                                        <Border Grid.Column="2" Background="#33FFDD00" CornerRadius="6" Padding="6" Margin="2,0">
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <TextBlock x:Name="TxtCriticalHits" Text="0" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                                <TextBlock x:Name="LblCriticalHits" Text="CRIT" Foreground="#FFD700" FontSize="8" HorizontalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                        
-                                        <!-- Boss Card -->
-                                        <Border Grid.Column="3" Background="#33FF44FF" CornerRadius="6" Padding="6" Margin="4,0,0,0">
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <TextBlock x:Name="TxtBossKills" Text="0" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                                <TextBlock x:Name="LblBossKills" Text="BOSS" Foreground="#FF88FF" FontSize="8" HorizontalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Input Ratio -->
-                            <Border Background="#22FFFFFF" CornerRadius="8" Padding="12">
-                                <StackPanel>
-                                    <TextBlock x:Name="LblInputRatio" Text="⌨️ vs 🖱️ INPUT RATIO" Foreground="#888" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
-                                    
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="100"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <!-- Donut Chart Canvas -->
-                                        <Canvas x:Name="InputDonutCanvas" Grid.Column="0" Width="80" Height="80"/>
-                                        
-                                        <!-- Legend -->
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="15,0,0,0">
-                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                                <Border Width="14" Height="14" Background="#88FFFF" CornerRadius="3" Margin="0,0,8,0"/>
-                                                <TextBlock x:Name="TxtKeyboardPercent" Text="0% Keyboard" Foreground="White" FontSize="12"/>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Border Width="14" Height="14" Background="#FF88FF" CornerRadius="3" Margin="0,0,8,0"/>
-                                                <TextBlock x:Name="TxtMousePercent" Text="0% Mouse" Foreground="White" FontSize="12"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-                            
+                        <!-- Time Filters -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15" HorizontalAlignment="Center">
+                            <Button x:Name="BtnRange1H" Content="Last 1H" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="1H"/>
+                            <Button x:Name="BtnRange24H" Content="Last 24H" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="24H"/>
+                            <Button x:Name="BtnRangeAll" Content="All Time" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="All"/>
                         </StackPanel>
-                    </ScrollViewer>
+
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <!-- Summary Cards -->
+                                <Border Background="#22FFFFFF" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock x:Name="LblSummaryTitle" Text="SUMMARY" Foreground="#888" FontWeight="Bold" FontSize="11" Margin="0,0,0,8"/>
+                                        
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Kills -->
+                                            <Border Grid.Row="0" Grid.Column="0" Background="#33FF6666" CornerRadius="6" Padding="8" Margin="0,0,4,4">
+                                                <StackPanel>
+                                                    <TextBlock x:Name="LblSummaryKills" Text="KILLS" Foreground="#FF8888" FontSize="9"/>
+                                                    <TextBlock x:Name="TxtSummaryKills" Text="0" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- Gold -->
+                                            <Border Grid.Row="0" Grid.Column="1" Background="#33FFDD00" CornerRadius="6" Padding="8" Margin="4,0,0,4">
+                                                <StackPanel>
+                                                    <TextBlock x:Name="LblSummaryGold" Text="GOLD" Foreground="#FFD700" FontSize="9"/>
+                                                    <TextBlock x:Name="TxtSummaryGold" Text="0" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- Damage -->
+                                            <Border Grid.Row="1" Grid.Column="0" Background="#33FF8844" CornerRadius="6" Padding="8" Margin="0,4,4,0">
+                                                <StackPanel>
+                                                    <TextBlock x:Name="LblSummaryDamage" Text="DAMAGE" Foreground="#FFAA66" FontSize="9"/>
+                                                    <TextBlock x:Name="TxtSummaryDamage" Text="0" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- Max Level -->
+                                            <Border Grid.Row="1" Grid.Column="1" Background="#338844FF" CornerRadius="6" Padding="8" Margin="4,4,0,0">
+                                                <StackPanel>
+                                                    <TextBlock x:Name="LblSummaryLevel" Text="MAX LEVEL" Foreground="#AA88FF" FontSize="9"/>
+                                                    <TextBlock x:Name="TxtSummaryLevel" Text="0" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Use Ratio -->
+                                <Border Background="#22FFFFFF" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBlock Grid.Column="0" x:Name="LblInputRatio" Text="INPUT RATIO" Foreground="#888" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
+                                        
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock x:Name="TxtKeyboardPercent" Text="0% Key" Foreground="#88FFFF" FontSize="11" Margin="0,0,10,0"/>
+                                            <TextBlock x:Name="TxtMousePercent" Text="0% Mouse" Foreground="#FF88FF" FontSize="11"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Keep hidden canvas for potential drawing logic or remove if using text only -->
+                                        <!-- Re-adding canvas to support existing code logic -->
+                                        <Canvas x:Name="InputDonutCanvas" Width="0" Height="0" Visibility="Collapsed"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Session List -->
+                                <Border Background="#22FFFFFF" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock x:Name="LblRecentSessions" Text="RECENT SESSIONS" Foreground="#888" FontWeight="Bold" FontSize="11" Margin="0,0,0,10"/>
+                                        <StackPanel x:Name="RecentSessionsPanel">
+                                            <TextBlock Text="No sessions found." Foreground="#666" FontStyle="Italic" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
                 </TabItem>
 
-                <!-- Tab 2: Sessions -->
-                <TabItem x:Name="SessionsTab" Header="SESSIONS">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="5,10">
-                            <!-- Best Session -->
-                            <Border Background="#33FFD700" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <TextBlock x:Name="LblBestSession" Text="🏆 BEST SESSION" Foreground="#FFD700" FontWeight="Bold" FontSize="11"/>
-                                        <TextBlock x:Name="TxtBestSessionDate" Text=" - Never" Foreground="#888" FontSize="10" VerticalAlignment="Bottom"/>
-                                    </StackPanel>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                                            <TextBlock x:Name="LblBestLevel" Text="Level" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TxtBestLevel" Text="0" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                                            <TextBlock x:Name="LblBestDamage" Text="Damage" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TxtBestDamage" Text="0" Foreground="#FF8888" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                            <TextBlock x:Name="LblBestDuration" Text="Duration" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TxtBestDuration" Text="0m" Foreground="#88FFFF" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Current vs Average -->
-                            <Border Background="#22FFFFFF" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <TextBlock x:Name="LblCurrentVsAverage" Text="📊 CURRENT VS AVERAGE" Foreground="#888" FontWeight="Bold" FontSize="11" Margin="0,0,0,10"/>
-
-                                    <!-- Level Comparison -->
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="60"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="50"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" x:Name="LblCompareLevel" Text="Level" Foreground="#AAA" VerticalAlignment="Center"/>
-                                        <Grid Grid.Column="1" Height="12" Margin="5,0">
-                                            <Border Background="#333" CornerRadius="6"/>
-                                            <Border x:Name="LevelCompareBar" Background="#88FF88" CornerRadius="6" HorizontalAlignment="Left" Width="50"/>
-                                        </Grid>
-                                        <TextBlock Grid.Column="2" x:Name="TxtLevelCompare" Text="+0%" Foreground="#88FF88" FontSize="11" HorizontalAlignment="Right"/>
-                                    </Grid>
-
-                                    <!-- Damage Comparison -->
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="60"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="50"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" x:Name="LblCompareDamage" Text="Damage" Foreground="#AAA" VerticalAlignment="Center"/>
-                                        <Grid Grid.Column="1" Height="12" Margin="5,0">
-                                            <Border Background="#333" CornerRadius="6"/>
-                                            <Border x:Name="DamageCompareBar" Background="#FF8888" CornerRadius="6" HorizontalAlignment="Left" Width="50"/>
-                                        </Grid>
-                                        <TextBlock Grid.Column="2" x:Name="TxtDamageCompare" Text="+0%" Foreground="#FF8888" FontSize="11" HorizontalAlignment="Right"/>
-                                    </Grid>
-
-                                    <!-- Gold Comparison -->
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="60"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="50"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" x:Name="LblCompareGold" Text="Gold" Foreground="#AAA" VerticalAlignment="Center"/>
-                                        <Grid Grid.Column="1" Height="12" Margin="5,0">
-                                            <Border Background="#333" CornerRadius="6"/>
-                                            <Border x:Name="GoldCompareBar" Background="Gold" CornerRadius="6" HorizontalAlignment="Left" Width="50"/>
-                                        </Grid>
-                                        <TextBlock Grid.Column="2" x:Name="TxtGoldCompare" Text="+0%" Foreground="Gold" FontSize="11" HorizontalAlignment="Right"/>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Recent Sessions -->
-                            <Border Background="#22FFFFFF" CornerRadius="8" Padding="12">
-                                <StackPanel>
-                                    <TextBlock x:Name="LblRecentSessions" Text="📋 RECENT SESSIONS" Foreground="#888" FontWeight="Bold" FontSize="11" Margin="0,0,0,10"/>
-                                    <StackPanel x:Name="RecentSessionsPanel">
-                                        <TextBlock Text="No sessions recorded yet" Foreground="#666" FontStyle="Italic" HorizontalAlignment="Center"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-
-                <!-- Tab 3: Achievements -->
+                <!-- Tab 2: Achievements -->
                 <TabItem x:Name="AchievementsTab" Header="ACHIEVEMENTS">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel x:Name="AchievementsPanel" Margin="5,10">

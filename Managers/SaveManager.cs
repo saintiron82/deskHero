@@ -28,6 +28,11 @@ namespace DeskWarrior.Managers
         private List<SessionStats> _sessionHistory;
         private UserAchievements _userAchievements;
 
+        // Dirty Flags
+        private bool _isMainDirty = false;
+        private bool _isHistoryDirty = false;
+
+
         #endregion
 
         #region Properties
@@ -119,35 +124,47 @@ namespace DeskWarrior.Managers
                 // 연속 플레이 체크
                 UpdateConsecutiveDays(today);
             }
+
+            // 초기화 후 Dirty flag 리셋
+            _isMainDirty = false;
+            _isHistoryDirty = false;
         }
 
         public void Save()
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
 
-            // 메인 세이브 저장
-            try
+            // 메인 세이브 저장 (변경된 경우만)
+            if (_isMainDirty)
             {
-                var json = JsonSerializer.Serialize(_currentSave, options);
-                File.WriteAllText(_savePath, json);
-            }
-            catch
-            {
-                // 저장 실패 시 무시
-            }
-
-            // 세션 히스토리 저장
-            try
-            {
-                var json = JsonSerializer.Serialize(_sessionHistory, options);
-                File.WriteAllText(_sessionHistoryPath, json);
-            }
-            catch
-            {
-                // 저장 실패 시 무시
+                try
+                {
+                    var json = JsonSerializer.Serialize(_currentSave, options);
+                    File.WriteAllText(_savePath, json);
+                    _isMainDirty = false; // 저장 완료
+                }
+                catch
+                {
+                    // 저장 실패 시 무시
+                }
             }
 
-            // 업적 진행 저장
+            // 세션 히스토리 저장 (변경된 경우만)
+            if (_isHistoryDirty)
+            {
+                try
+                {
+                    var json = JsonSerializer.Serialize(_sessionHistory, options);
+                    File.WriteAllText(_sessionHistoryPath, json);
+                    _isHistoryDirty = false; // 저장 완료
+                }
+                catch
+                {
+                    // 저장 실패 시 무시
+                }
+            }
+
+            // 업적 진행 저장 (항상 저장 - 외부 수정 감지 어려움)
             try
             {
                 _userAchievements.LastUpdated = DateTime.Now;
@@ -190,12 +207,14 @@ namespace DeskWarrior.Managers
         {
             _currentSave.Position.X = x;
             _currentSave.Position.Y = y;
+            _isMainDirty = true;
         }
 
         public void AddInput()
         {
             _currentSave.Stats.TotalInputs++;
             _currentSave.Stats.TodayInputs++;
+            _isMainDirty = true;
         }
 
         public void UpdateMaxLevel(int level)
@@ -203,6 +222,7 @@ namespace DeskWarrior.Managers
             if (level > _currentSave.Stats.MaxLevel)
             {
                 _currentSave.Stats.MaxLevel = level;
+                _isMainDirty = true;
             }
         }
 
@@ -210,6 +230,7 @@ namespace DeskWarrior.Managers
         {
             _currentSave.Upgrades.KeyboardPower = keyboardPower;
             _currentSave.Upgrades.MousePower = mousePower;
+            _isMainDirty = true;
         }
 
         public (int keyboard, int mouse) GetUpgrades()
@@ -230,12 +251,14 @@ namespace DeskWarrior.Managers
 
             // History (Sliding Window)
             UpdateHistory(damage, 0);
+            _isMainDirty = true;
         }
 
         public void AddKill()
         {
             _currentSave.Stats.MonsterKills++;
             UpdateHistory(0, 1);
+            _isMainDirty = true;
         }
 
         private void UpdateHistory(long damage, int kills)
@@ -291,6 +314,8 @@ namespace DeskWarrior.Managers
             // 통산 기록 업데이트
             UpdateLifetimeStats(session);
 
+            _isHistoryDirty = true;
+            _isMainDirty = true;
             Save();
         }
 
@@ -316,6 +341,16 @@ namespace DeskWarrior.Managers
             {
                 lifetime.BestSessionDamage = session.TotalDamage;
             }
+            if (session.MonstersKilled > lifetime.BestSessionKills)
+            {
+                lifetime.BestSessionKills = session.MonstersKilled;
+            }
+            if (session.TotalGold > lifetime.BestSessionGold)
+            {
+                lifetime.BestSessionGold = session.TotalGold;
+            }
+            
+            _isMainDirty = true;
         }
 
         /// <summary>
@@ -324,6 +359,7 @@ namespace DeskWarrior.Managers
         public void AddCriticalHit()
         {
             _currentSave.LifetimeStats.CriticalHits++;
+            _isMainDirty = true;
         }
 
         /// <summary>
@@ -332,6 +368,7 @@ namespace DeskWarrior.Managers
         public void AddBossKill()
         {
             _currentSave.LifetimeStats.BossesDefeated++;
+            _isMainDirty = true;
         }
 
         /// <summary>
@@ -340,6 +377,7 @@ namespace DeskWarrior.Managers
         public void AddGoldSpent(int amount)
         {
             _currentSave.LifetimeStats.TotalGoldSpent += amount;
+            _isMainDirty = true;
         }
 
         /// <summary>
@@ -350,6 +388,7 @@ namespace DeskWarrior.Managers
             _currentSave.Stats.TotalInputs++;
             _currentSave.Stats.TodayInputs++;
             _currentSave.LifetimeStats.KeyboardInputs++;
+            _isMainDirty = true;
         }
 
         public void AddMouseInput()
@@ -357,6 +396,7 @@ namespace DeskWarrior.Managers
             _currentSave.Stats.TotalInputs++;
             _currentSave.Stats.TodayInputs++;
             _currentSave.LifetimeStats.MouseInputs++;
+            _isMainDirty = true;
         }
 
         /// <summary>
@@ -453,6 +493,25 @@ namespace DeskWarrior.Managers
         }
 
         #endregion
+
+
+
+        /// <summary>
+        /// 전체 세션 중 각 항목별 최고 기록 반환
+        /// </summary>
+        public SessionStats GetBestSessionStats()
+        {
+            var lifetime = _currentSave.LifetimeStats;
+            return new SessionStats
+            {
+                MonstersKilled = lifetime.BestSessionKills,
+                TotalDamage = lifetime.BestSessionDamage,
+                MaxLevel = lifetime.BestSessionLevel,
+                TotalGold = lifetime.BestSessionGold
+            };
+        }
+
+
     }
 
     /// <summary>
@@ -466,5 +525,44 @@ namespace DeskWarrior.Managers
         public double AverageDurationMinutes { get; set; }
         public SessionStats? BestSession { get; set; }
         public int TotalSessions { get; set; }
+    }
+
+    /// <summary>
+    /// 시간 범위 타입
+    /// </summary>
+    public enum TimeRangeType
+    {
+        Hour1,
+        Hour24,
+        Day7
+    }
+
+    /// <summary>
+    /// 시간 범위별 통계
+    /// </summary>
+    public class TimeRangeStats
+    {
+        public TimeRangeType RangeType { get; set; }
+        public long TotalDamage { get; set; }
+        public int TotalKills { get; set; }
+        public long TotalGold { get; set; }
+        public int TotalInputs { get; set; }
+        public int KeyboardInputs { get; set; }
+        public int MouseInputs { get; set; }
+
+        public long MaxSessionDamage { get; set; }
+        public int MaxSessionKills { get; set; }
+        public long MaxSessionGold { get; set; }
+        public int MaxSessionInputs { get; set; }
+    }
+
+    /// <summary>
+    /// 그래프 데이터 포인트
+    /// </summary>
+    public class GraphDataPoint
+    {
+        public string Label { get; set; } = "";
+        public long Damage { get; set; }
+        public int Kills { get; set; }
     }
 }

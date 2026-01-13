@@ -24,7 +24,7 @@ namespace DeskWarrior.Models
         public long TotalDamage { get; set; }
 
         [JsonPropertyName("total_gold")]
-        public int TotalGold { get; set; }
+        public long TotalGold { get; set; }
 
         [JsonPropertyName("monsters_killed")]
         public int MonstersKilled { get; set; }

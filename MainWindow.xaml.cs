@@ -42,6 +42,9 @@ namespace DeskWarrior
 
         // Drag Mode Toggle Window
         private Windows.DragToggleWindow? _dragToggleWindow;
+        private System.Windows.Threading.DispatcherTimer? _hideDelayTimer;
+        private System.Windows.Threading.DispatcherTimer? _mouseTrackTimer;
+        private bool _wasMouseOver = false;
 
         #endregion
 
@@ -130,9 +133,28 @@ namespace DeskWarrior
 
             // 드래그 모드 토글 버튼 창 생성
             _dragToggleWindow = new Windows.DragToggleWindow();
-            _dragToggleWindow.ToggleRequested += (s, args) => _trayManager.ToggleDragMode();
+            _dragToggleWindow.ToggleRequested += (s, args) =>
+            {
+                System.IO.File.AppendAllText(
+                    System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "dragtoggle_debug.txt"),
+                    $"{DateTime.Now:HH:mm:ss.fff} MainWindow received ToggleRequested, calling ToggleDragMode()\n");
+                _trayManager.ToggleDragMode();
+            };
+            _dragToggleWindow.DragDeltaRequested += (s, args) =>
+            {
+                // 잠금 버튼 드래그 시 메인 윈도우 이동
+                Left += args.DeltaX;
+                Top += args.DeltaY;
+                // DragToggleWindow 위치는 MainWindow_LocationChanged에서 자동 업데이트됨
+            };
             _dragToggleWindow.UpdatePosition(Left, Top, Width);
             _dragToggleWindow.Show();
+
+            // 마우스 위치 추적 타이머 (Click-through 상태에서도 작동)
+            _mouseTrackTimer = new System.Windows.Threading.DispatcherTimer();
+            _mouseTrackTimer.Interval = TimeSpan.FromMilliseconds(100);
+            _mouseTrackTimer.Tick += MouseTrackTimer_Tick;
+            _mouseTrackTimer.Start();
 
             // 입력 감지 시작
             _inputHandler.ShouldBlockKey = (vkCode) =>
@@ -176,16 +198,33 @@ namespace DeskWarrior
             catch { }
         }
 
+
+
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            // 위치 저장
-            _saveManager.UpdateWindowPosition(Left, Top);
-            _saveManager.Save();
+            DeskWarrior.Helpers.Logger.Log("=== EXIT START ===");
 
-            // 리소스 정리
+            // 0. 위치 업데이트
+            _saveManager.UpdateWindowPosition(Left, Top);
+
+            // 1. 저장
+            _saveManager.Save();
+            DeskWarrior.Helpers.Logger.Log("SaveManager.Save() Completed");
+
+            // 2. InputHandler 정리
             _inputHandler.OnInput -= OnInputReceived;
             _inputHandler.Dispose();
+            DeskWarrior.Helpers.Logger.Log("InputHandler Disposed");
+
+            // 3. TrayManager 정리
             _trayManager.Dispose();
+            DeskWarrior.Helpers.Logger.Log("TrayManager Disposed");
+
+            // 4. SoundManager 정리
+            _soundManager.Dispose();
+            DeskWarrior.Helpers.Logger.Log("SoundManager Disposed");
+
+            DeskWarrior.Helpers.Logger.Log("=== EXIT END ===");
         }
 
         private void MainWindow_LocationChanged(object? sender, EventArgs e)
@@ -200,7 +239,28 @@ namespace DeskWarrior
         {
             if (_isDragMode)
             {
-                DragMove();
+                try
+                {
+                    if (e.LeftButton == MouseButtonState.Pressed)
+                    {
+                        DragMove();
+                        
+                        // 드래그 완료 후 DragToggleWindow를 최상위로 다시 올림
+                        if (_dragToggleWindow != null)
+                        {
+                            _dragToggleWindow.Topmost = false;
+                            _dragToggleWindow.Topmost = true;
+                        }
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    // 드래그 중 마우스 버튼 상태 변경 등으로 인한 예외 무시
+                }
+                catch (Exception ex)
+                {
+                     DeskWarrior.Helpers.Logger.LogError("DragMove Failed", ex);
+                }
             }
         }
 
@@ -270,13 +330,35 @@ namespace DeskWarrior
         private void OnDragModeToggled(object? sender, EventArgs e)
         {
             _isDragMode = _trayManager.IsDragMode;
-            SetClickThrough(!_isDragMode);
+
+            // 게임 오버 상태에서는 항상 Click-through 해제 유지
+            bool isGameOver = GameOverOverlay.Visibility == Visibility.Visible;
+            if (!isGameOver)
+            {
+                SetClickThrough(!_isDragMode);
+            }
+
             DragModeBorder.Visibility = _isDragMode ? Visibility.Visible : Visibility.Collapsed;
             UpgradePanel.Visibility = _isDragMode ? Visibility.Visible : Visibility.Collapsed;
-            
+
             // 드래그 토글 창 아이콘 업데이트
             _dragToggleWindow?.UpdateIcon(_isDragMode);
-            
+
+            // 드래그 모드 활성화 시 버튼 표시 유지
+            if (_isDragMode)
+            {
+                _hideDelayTimer?.Stop();
+                _dragToggleWindow?.ShowAnimated();
+            }
+            else
+            {
+                // 드래그 모드 해제 시 마우스가 창 밖이면 숨김 (게임 오버가 아닐 때만)
+                if (!isGameOver && !IsMouseOverWindow() && !IsMouseOverDragToggle())
+                {
+                    StartHideDelayTimer();
+                }
+            }
+
             // 업그레이드 비용 업데이트
             if (_isDragMode) UpdateUpgradeCosts();
         }
@@ -430,7 +512,9 @@ namespace DeskWarrior
 
         private void OnExitRequested(object? sender, EventArgs e)
         {
+            DeskWarrior.Helpers.Logger.Log("OnExitRequested: Before Close()");
             Close();
+            DeskWarrior.Helpers.Logger.Log("OnExitRequested: After Close()");
         }
 
         private void OnStatsChanged(object? sender, EventArgs e)
@@ -530,6 +614,8 @@ namespace DeskWarrior
 
         private void ShowLifeReport()
         {
+            DeskWarrior.Helpers.Logger.Log("=== GAME OVER START ===");
+
             // 사망 타입 판단
             string? deathType = null;
             if (_gameManager.CurrentMonster != null && _gameManager.CurrentMonster.IsBoss)
@@ -544,10 +630,12 @@ namespace DeskWarrior
             {
                 deathType = "normal";
             }
+            DeskWarrior.Helpers.Logger.Log($"DeathType: {deathType}");
 
             // 세션 저장
             var sessionStats = _gameManager.CreateSessionStats(deathType ?? "timeout");
             _saveManager.SaveSession(sessionStats);
+            DeskWarrior.Helpers.Logger.Log("Session Saved");
 
             // 업적 체크 (세션 관련)
             _achievementManager.CheckAchievements("total_sessions");
@@ -572,7 +660,14 @@ namespace DeskWarrior
             
             // 클릭 투과 해제 (오버레이 상호작용 가능하게)
             SetClickThrough(false);
+            DeskWarrior.Helpers.Logger.Log("ClickThrough Enabled");
+
             _isDragMode = true; // 드래그 모드도 활성화
+
+            // 잠금 버튼 표시 (게임 오버 시 항상 입력 가능하도록)
+            _hideDelayTimer?.Stop();
+            _dragToggleWindow?.ShowAnimated();
+            _dragToggleWindow?.UpdateIcon(_isDragMode);
             
             var fadeIn = new DoubleAnimation
             {
@@ -594,13 +689,15 @@ namespace DeskWarrior
             else
             {
                 _autoRestartTimer.Stop();
-                AutoRestartCheckBox.Content = "Auto Restart in 10s";
+                AutoRestartCheckBox.Content = string.Format(LocalizationManager.Instance["ui.gameover.autoRestart"], 10);
             }
+            
+            DeskWarrior.Helpers.Logger.Log("=== GAME OVER END ===");
         }
 
         private void UpdateAutoRestartText()
         {
-            AutoRestartCheckBox.Content = $"Auto Restart in {_autoRestartCountdown}s";
+            AutoRestartCheckBox.Content = string.Format(LocalizationManager.Instance["ui.gameover.autoRestart"], _autoRestartCountdown);
         }
 
         private void AutoRestartTimer_Tick(object? sender, EventArgs e)
@@ -638,7 +735,7 @@ namespace DeskWarrior
             
             // 타이머 중지
             _autoRestartTimer.Stop();
-            AutoRestartCheckBox.Content = "Auto Restart in 10s";
+            AutoRestartCheckBox.Content = string.Format(LocalizationManager.Instance["ui.gameover.autoRestart"], 10);
         }
 
         private void NewLifeButton_Click(object sender, RoutedEventArgs e)
@@ -710,6 +807,64 @@ namespace DeskWarrior
                 }
             }
             return false;
+        }
+
+        private bool IsMouseOverDragToggle()
+        {
+            if (_dragToggleWindow == null) return false;
+
+            if (Win32Helper.GetCursorPos(out var pt))
+            {
+                try
+                {
+                    var localPoint = _dragToggleWindow.PointFromScreen(
+                        new System.Windows.Point(pt.x, pt.y));
+                    return localPoint.X >= 0 && localPoint.X < _dragToggleWindow.ActualWidth &&
+                           localPoint.Y >= 0 && localPoint.Y < _dragToggleWindow.ActualHeight;
+                }
+                catch { return false; }
+            }
+            return false;
+        }
+
+        private void MouseTrackTimer_Tick(object? sender, EventArgs e)
+        {
+            bool isMouseOver = IsMouseOverWindow() || IsMouseOverDragToggle();
+
+            if (isMouseOver && !_wasMouseOver)
+            {
+                // 마우스 진입
+                _hideDelayTimer?.Stop();
+                _dragToggleWindow?.ShowAnimated();
+            }
+            else if (!isMouseOver && _wasMouseOver && !_isDragMode)
+            {
+                // 마우스 이탈 (드래그 모드가 아닐 때만)
+                StartHideDelayTimer();
+            }
+
+            _wasMouseOver = isMouseOver;
+        }
+
+        private void StartHideDelayTimer()
+        {
+            if (_hideDelayTimer == null)
+            {
+                _hideDelayTimer = new System.Windows.Threading.DispatcherTimer();
+                _hideDelayTimer.Interval = TimeSpan.FromMilliseconds(300);
+                _hideDelayTimer.Tick += (s, args) =>
+                {
+                    _hideDelayTimer.Stop();
+
+                    // 마우스가 MainWindow나 DragToggleWindow 위에 있는지 확인
+                    if (!IsMouseOverWindow() && !IsMouseOverDragToggle() && !_isDragMode)
+                    {
+                        _dragToggleWindow?.HideAnimated();
+                    }
+                };
+            }
+            _hideDelayTimer.Stop();
+            _hideDelayTimer.Start();
         }
 
         private void SetClickThrough(bool enabled)
