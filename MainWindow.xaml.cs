@@ -896,95 +896,104 @@ namespace DeskWarrior
 
         private void UpdateAllUI()
         {
-            var monster = _gameManager.CurrentMonster;
-            
-            // 레벨 표시
+            UpdateLevelUI();
+            UpdateGoldUI();
+            UpdateInputCountUI();
+            UpdatePowerUI();
+            UpdateMonsterUI();
+            UpdateTimerUI();
+        }
+
+        private void UpdateLevelUI()
+        {
             LevelText.Text = $"Lv.{_gameManager.CurrentLevel}";
             MaxLevelText.Text = $"(Best: {Math.Max(_gameManager.CurrentLevel, _saveManager.CurrentSave.Stats.MaxLevel)})";
-            
-            // 골드 표시
+        }
+
+        private void UpdateGoldUI()
+        {
             GoldText.Text = $"💰 {_gameManager.Gold}";
-            
-            // 입력 수 표시
+        }
+
+        private void UpdateInputCountUI()
+        {
             InputCountText.Text = $"⌨️ {_sessionInputCount}";
-            
-            // 공격력 표시
+        }
+
+        private void UpdatePowerUI()
+        {
             KeyboardPowerText.Text = $"⌨️ Atk: {_gameManager.KeyboardPower}";
             MousePowerText.Text = $"🖱️ Atk: {_gameManager.MousePower}";
-            
-            // 몬스터 정보
-            if (monster != null)
+        }
+
+        private void UpdateMonsterUI()
+        {
+            var monster = _gameManager.CurrentMonster;
+            if (monster == null) return;
+
+            UpdateMonsterSpriteUI(monster);
+            UpdateMonsterHpUI(monster);
+        }
+
+        private void UpdateMonsterSpriteUI(Models.Monster monster)
+        {
+            MonsterEmoji.Text = monster.Emoji;
+
+            try
             {
-                // 이모지 업데이트 (보스 vs 일반)
-                MonsterEmoji.Text = monster.Emoji;
-                
-                // 이미지 업데이트 (보스 vs 일반) - 크로마 키 처리
-                try
-                {
-                    string spritePath = monster.SkinType;
+                string spritePath = monster.SkinType;
+                string imagePath = spritePath.EndsWith(".png")
+                    ? $"pack://application:,,,/Assets/Images/{spritePath}"
+                    : $"pack://application:,,,/Assets/Images/{spritePath}.png";
 
-                    // Sprite 경로가 이미 확장자를 포함하고 있는지 확인
-                    string imagePath = spritePath.EndsWith(".png")
-                        ? $"pack://application:,,,/Assets/Images/{spritePath}"
-                        : $"pack://application:,,,/Assets/Images/{spritePath}.png";
+                MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
+                MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+                MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
 
-                    MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
+                bool needsFlip = NeedsFlip(spritePath);
+                MonsterImage.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
 
-                    // 보스는 더 크게
-                    MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
-                    MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
-
-                    // 몬스터 방향 보정 (대부분 몬스터가 좌측을 보고 있음 - 우측으로 반전)
-                    bool needsFlip = spritePath.Contains("slime") || spritePath.Contains("bat") ||
-                                     spritePath.Contains("skeleton") || spritePath.Contains("goblin") ||
-                                     spritePath.Contains("orc") || spritePath.Contains("ghost") ||
-                                     spritePath.Contains("golem") || spritePath.Contains("mushroom") ||
-                                     spritePath.Contains("spider") || spritePath.Contains("wolf") ||
-                                     spritePath.Contains("snake") || spritePath.Contains("boar");
-
-                    MonsterImage.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
-
-                    // TransformGroup으로 ScaleTransform과 TranslateTransform 함께 적용
-                    var transformGroup = new TransformGroup();
-                    transformGroup.Children.Add(new ScaleTransform(needsFlip ? -1 : 1, 1));
-                    transformGroup.Children.Add(MonsterShakeTransform);
-                    MonsterImage.RenderTransform = transformGroup;
-                }
-                catch (Exception ex)
-                {
-                    // 이미지 로딩 실패 시 기본 이미지 유지
-                    DeskWarrior.Helpers.Logger.Log($"Monster image load failed: {ex.Message}");
-                }
-                
-                // HP 텍스트
-                HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
-
-                // HP 바 애니메이션 (80px 기준)
-                var hpRatio = monster.HpRatio;
-                double targetWidth = hpRatio * 80;
-
-                var widthAnim = new DoubleAnimation
-                {
-                    To = targetWidth,
-                    Duration = TimeSpan.FromMilliseconds(300),
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                };
-                HpBar.BeginAnimation(FrameworkElement.WidthProperty, widthAnim);
-
-                // HP 바 색상 애니메이션 (초록 → 노랑 → 빨강)
-                Color targetColor;
-                if (hpRatio > 0.5)
-                    targetColor = Color.FromRgb(0, 255, 0);
-                else if (hpRatio > 0.25)
-                    targetColor = Color.FromRgb(255, 255, 0);
-                else
-                    targetColor = Color.FromRgb(255, 0, 0);
-
-                var hpBrush = new SolidColorBrush(targetColor);
-                HpBar.Background = hpBrush;
+                var transformGroup = new TransformGroup();
+                transformGroup.Children.Add(new ScaleTransform(needsFlip ? -1 : 1, 1));
+                transformGroup.Children.Add(MonsterShakeTransform);
+                MonsterImage.RenderTransform = transformGroup;
             }
-            
-            UpdateTimerUI();
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.Log($"Monster image load failed: {ex.Message}");
+            }
+        }
+
+        private static bool NeedsFlip(string spritePath)
+        {
+            return spritePath.Contains("slime") || spritePath.Contains("bat") ||
+                   spritePath.Contains("skeleton") || spritePath.Contains("goblin") ||
+                   spritePath.Contains("orc") || spritePath.Contains("ghost") ||
+                   spritePath.Contains("golem") || spritePath.Contains("mushroom") ||
+                   spritePath.Contains("spider") || spritePath.Contains("wolf") ||
+                   spritePath.Contains("snake") || spritePath.Contains("boar");
+        }
+
+        private void UpdateMonsterHpUI(Models.Monster monster)
+        {
+            HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
+
+            var hpRatio = monster.HpRatio;
+            double targetWidth = hpRatio * 80;
+
+            var widthAnim = new DoubleAnimation
+            {
+                To = targetWidth,
+                Duration = TimeSpan.FromMilliseconds(300),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            HpBar.BeginAnimation(FrameworkElement.WidthProperty, widthAnim);
+
+            Color targetColor = hpRatio > 0.5 ? Color.FromRgb(0, 255, 0)
+                              : hpRatio > 0.25 ? Color.FromRgb(255, 255, 0)
+                              : Color.FromRgb(255, 0, 0);
+
+            HpBar.Background = new SolidColorBrush(targetColor);
         }
 
         private void UpdateTimerUI()
