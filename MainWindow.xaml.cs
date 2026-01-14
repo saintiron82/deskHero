@@ -10,40 +10,39 @@ using DeskWarrior.Helpers;
 using DeskWarrior.Interfaces;
 using DeskWarrior.Managers;
 using DeskWarrior.Models;
+using DeskWarrior.ViewModels;
 
 namespace DeskWarrior
 {
     /// <summary>
-    /// 메인 윈도우 코드비하인드
+    /// 메인 윈도우 코드비하인드 (MVVM: View 역할)
+    /// UI 렌더링과 애니메이션만 담당, 비즈니스 로직은 ViewModel에 위임
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Constants
+
+        private const double MONSTER_SIZE = 80;
+        private const double BOSS_SIZE = 130;
+        private const double HERO_SIZE = 100;
+
+        #endregion
+
         #region Fields
 
-        // 캐릭터 크기 설정 (여기서 조절)
-        private const double MONSTER_SIZE = 80;      // 일반 몬스터 크기
-        private const double BOSS_SIZE = 130;        // 보스 크기
-        private const double HERO_SIZE = 100;        // 히어로 크기
-
-        private readonly IInputHandler _inputHandler;
-        private readonly TrayManager _trayManager;
-        private readonly SaveManager _saveManager;
-        private readonly GameManager _gameManager;
-        private readonly SoundManager _soundManager;
-        private readonly AchievementManager _achievementManager;
+        private readonly MainViewModel _viewModel;
         private readonly Random _random = new();
 
         private IntPtr _hwnd;
         private bool _isManageMode;
         private bool _isModeButtonVisible;
-        private int _sessionInputCount;
 
         // Auto Restart
         private System.Windows.Threading.DispatcherTimer _autoRestartTimer;
         private int _autoRestartCountdown;
 
         // Achievement Toast Queue
-        private readonly Queue<Models.AchievementDefinition> _toastQueue = new();
+        private readonly Queue<AchievementDefinition> _toastQueue = new();
         private bool _isShowingToast;
 
         // Hero Sprite
@@ -55,54 +54,97 @@ namespace DeskWarrior
 
         #endregion
 
+        #region Properties (ViewModel 접근용)
+
+        private GameManager GameManager => _viewModel.GameManager;
+        private SaveManager SaveManager => _viewModel.SaveManager;
+        private SoundManager SoundManager => _viewModel.SoundManager;
+        private TrayManager TrayManager => _viewModel.TrayManager;
+        private AchievementManager AchievementManager => _viewModel.AchievementManager;
+        private IInputHandler InputHandler => _viewModel.InputHandler;
+
+        #endregion
+
         #region Constructor
 
         public MainWindow()
         {
             InitializeComponent();
-            
-            // 데이터 매니저 초기화
-            _inputHandler = new GlobalInputManager();
-            _trayManager = new TrayManager();
-            _saveManager = new SaveManager();
-            _gameManager = new GameManager();
-            _soundManager = new SoundManager();
-            _achievementManager = new AchievementManager(_saveManager);
 
-            // 업적 해금 이벤트 구독
-            _achievementManager.AchievementUnlocked += OnAchievementUnlocked;
+            // ViewModel 생성 및 DataContext 설정
+            _viewModel = new MainViewModel();
+            DataContext = _viewModel;
 
-            // Auto Restart Timer
-            _autoRestartTimer = new System.Windows.Threading.DispatcherTimer();
-            _autoRestartTimer.Interval = TimeSpan.FromSeconds(1);
-            _autoRestartTimer.Tick += AutoRestartTimer_Tick;
+            // ViewModel 이벤트 구독
+            SubscribeToViewModelEvents();
 
-            // 이벤트 구독
-            _inputHandler.OnInput += OnInputReceived;
-            _trayManager.ManageModeToggled += OnManageModeToggled;
-            _trayManager.SettingsRequested += OnSettingsRequested;
-            _trayManager.ExitRequested += OnExitRequested;
+            // UI 전용 타이머 초기화
+            InitializeUITimers();
 
-            _gameManager.DamageDealt += OnDamageDealt;
-            _gameManager.MonsterDefeated += OnMonsterDefeated;
-            _gameManager.TimerTick += OnTimerTick;
-            _gameManager.StatsChanged += OnStatsChanged;
-            _gameManager.GameOver += OnGameOver;
-
+            // 윈도우 이벤트 구독
             Loaded += MainWindow_Loaded;
             Closing += MainWindow_Closing;
             LocationChanged += MainWindow_LocationChanged;
 
             // 초기 UI 업데이트
             UpdateUI();
-            
-            // 게임 시작
-            _gameManager.StartGame();
         }
 
         #endregion
 
-        #region Event Handlers
+        #region Initialization
+
+        private void SubscribeToViewModelEvents()
+        {
+            // ViewModel 이벤트 → View 애니메이션/UI
+            _viewModel.DamageDealt += OnDamageDealt;
+            _viewModel.MonsterDefeated += OnMonsterDefeated;
+            _viewModel.MonsterSpawned += OnMonsterSpawned;
+            _viewModel.GameOver += OnGameOver;
+            _viewModel.ManageModeChanged += OnManageModeChanged;
+            _viewModel.InputReceived += OnInputReceived;
+            _viewModel.SettingsRequested += OnSettingsRequested;
+            _viewModel.StatsRequested += OnStatsRequested;
+
+            // GameManager 이벤트 (UI 업데이트용)
+            GameManager.TimerTick += OnTimerTick;
+            GameManager.StatsChanged += OnStatsChanged;
+
+            // AchievementManager 이벤트
+            AchievementManager.AchievementUnlocked += OnAchievementUnlocked;
+
+            // TrayManager 이벤트
+            TrayManager.ManageModeToggled += OnTrayManageModeToggled;
+            TrayManager.ExitRequested += OnExitRequested;
+        }
+
+        private void InitializeUITimers()
+        {
+            // Auto Restart Timer
+            _autoRestartTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _autoRestartTimer.Tick += AutoRestartTimer_Tick;
+
+            // Hero Attack Timer
+            _heroAttackTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(150)
+            };
+            _heroAttackTimer.Tick += HeroAttackTimer_Tick;
+
+            // Hover Check Timer
+            _hoverCheckTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            _hoverCheckTimer.Tick += HoverCheckTimer_Tick;
+        }
+
+        #endregion
+
+        #region Window Event Handlers
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -113,12 +155,10 @@ namespace DeskWarrior
             source.AddHook(WndProc);
 
             // 저장 데이터 로드
-            _saveManager.Load();
+            SaveManager.Load();
 
-            // 다국어 초기화 (저장된 언어 설정 적용)
-            LocalizationManager.Instance.Initialize(_saveManager.CurrentSave.Settings.Language);
-
-            // 언어 변경 이벤트 구독
+            // 다국어 초기화
+            LocalizationManager.Instance.Initialize(SaveManager.CurrentSave.Settings.Language);
             LocalizationManager.Instance.PropertyChanged += (s, args) =>
             {
                 if (args.PropertyName == "Item[]")
@@ -126,73 +166,744 @@ namespace DeskWarrior
                     Dispatcher.Invoke(UpdateLocalizedUI);
                 }
             };
-
-            // 초기 다국어 UI 적용
             UpdateLocalizedUI();
 
             // 저장된 위치 복원
-            Left = _saveManager.CurrentSave.Position.X;
-            Top = _saveManager.CurrentSave.Position.Y;
-
-            // WM_NCHITTEST가 Click-through를 처리하므로 SetClickThrough 호출 불필요
+            Left = SaveManager.CurrentSave.Position.X;
+            Top = SaveManager.CurrentSave.Position.Y;
 
             // 태스크바에서 숨기기
             Win32Helper.SetWindowToolWindow(_hwnd);
 
             // 트레이 아이콘 초기화
-            _trayManager.Initialize();
+            _viewModel.InitializeTray();
 
             // 입력 감지 시작
-            _inputHandler.ShouldBlockKey = (vkCode) =>
+            InputHandler.ShouldBlockKey = (vkCode) =>
             {
-                // F1(112) 키이고, 마우스가 창 위에 있으면 블로킹 (true 반환)
-                if (vkCode == 112)
+                if (vkCode == 112) // F1
                 {
                     return IsMouseOverWindow();
                 }
                 return false;
             };
-            _inputHandler.Start();
 
-            // 모드 버튼 호버 체크 타이머 초기화
-            _hoverCheckTimer = new System.Windows.Threading.DispatcherTimer();
-            _hoverCheckTimer.Interval = TimeSpan.FromMilliseconds(100);
-            _hoverCheckTimer.Tick += HoverCheckTimer_Tick;
-            _hoverCheckTimer.Start();
+            // 게임 시작 및 업그레이드 로드
+            _viewModel.LoadSavedData();
+            _viewModel.StartGame();
 
-            // 게임 시작 및 저장된 업그레이드 로드
-            _gameManager.StartGame();
-            var upgrades = _saveManager.GetUpgrades();
-            _gameManager.LoadUpgrades(upgrades.keyboard, upgrades.mouse);
-            
-            // 저장된 설정 적용
+            // 설정 적용
             ApplySettings();
 
-            // 이미지 로드 (크로마 키 처리)
+            // 이미지 로드
             LoadCharacterImages();
+
+            // 호버 타이머 시작
+            _hoverCheckTimer?.Start();
 
             // UI 초기화
             UpdateAllUI();
         }
 
-        private void LoadCharacterImages()
+        private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            // 히어로 이미지 로드
+            Logger.Log("=== EXIT START ===");
+
+            // 위치 업데이트
+            SaveManager.UpdateWindowPosition(Left, Top);
+
+            // 저장
+            _viewModel.SaveCurrentState();
+            Logger.Log("SaveManager.Save() Completed");
+
+            // 타이머 정리
+            _hoverCheckTimer?.Stop();
+            _heroAttackTimer?.Stop();
+            _autoRestartTimer?.Stop();
+
+            // ViewModel 정리
+            _viewModel.Dispose();
+            Logger.Log("ViewModel Disposed");
+
+            Logger.Log("=== EXIT END ===");
+        }
+
+        private void MainWindow_LocationChanged(object? sender, EventArgs e)
+        {
+            SaveManager.UpdateWindowPosition(Left, Top);
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_isManageMode)
+            {
+                try
+                {
+                    if (e.LeftButton == MouseButtonState.Pressed)
+                    {
+                        DragMove();
+                    }
+                }
+                catch (InvalidOperationException) { }
+                catch (Exception ex)
+                {
+                    Logger.LogError("DragMove Failed", ex);
+                }
+            }
+        }
+
+        #endregion
+
+        #region ViewModel Event Handlers
+
+        private void OnInputReceived(object? sender, GameInputEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // F1 키로 관리 모드 토글
+                if (e.Type == GameInputType.Keyboard && e.VirtualKeyCode == 112)
+                {
+                    if (IsMouseOverWindow())
+                    {
+                        TrayManager.ToggleManageMode();
+                    }
+                    return;
+                }
+
+                // 통계 업데이트
+                if (e.Type == GameInputType.Keyboard)
+                {
+                    SaveManager.AddKeyboardInput();
+                }
+                else
+                {
+                    SaveManager.AddMouseInput();
+                }
+
+                // 공격 사운드
+                SoundManager.Play(SoundType.Hit);
+
+                // 영웅 공격 스프라이트 전환
+                ShowHeroAttackSprite();
+
+                // 몬스터 흔들림 효과
+                ShakeMonster();
+
+                // 디버그 텍스트
+                string inputInfo = e.Type == GameInputType.Keyboard
+                    ? $"⌨️ Key:{e.VirtualKeyCode}"
+                    : $"🖱️ {e.MouseButton}";
+                DebugText.Text = inputInfo;
+            });
+        }
+
+        private void OnDamageDealt(object? sender, DamageEventArgs e)
+        {
+            // 통계 업데이트
+            SaveManager.AddDamage(e.Damage);
+            if (e.IsCritical)
+            {
+                SaveManager.AddCriticalHit();
+            }
+
+            // 업적 체크
+            AchievementManager.CheckAchievements("total_damage");
+            AchievementManager.CheckAchievements("max_damage");
+            AchievementManager.CheckAchievements("critical_hits");
+
+            Dispatcher.Invoke(() =>
+            {
+                ShowDamagePopup(e.Damage, e.IsCritical);
+                UpdateMonsterUI();
+            });
+        }
+
+        private void OnMonsterDefeated(object? sender, EventArgs e)
+        {
+            // 통계 업데이트
+            SaveManager.AddKill();
+            if (GameManager.CurrentMonster?.IsBoss == true)
+            {
+                SaveManager.AddBossKill();
+            }
+
+            // 업적 체크
+            AchievementManager.CheckAchievements("monster_kills");
+            AchievementManager.CheckAchievements("bosses_defeated");
+            AchievementManager.CheckAchievements("max_level");
+
+            Dispatcher.Invoke(() =>
+            {
+                SoundManager.Play(SoundType.Defeat);
+
+                if (GameManager.CurrentLevel > SaveManager.CurrentSave.Stats.MaxLevel)
+                {
+                    SaveManager.UpdateMaxLevel(GameManager.CurrentLevel);
+                    SaveManager.Save();
+                }
+
+                FlashEffect();
+                UpdateAllUI();
+            });
+        }
+
+        private void OnMonsterSpawned(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (GameManager.CurrentMonster?.IsBoss == true)
+                {
+                    SoundManager.Play(SoundType.BossAppear);
+                    BossEntranceEffect();
+                }
+                UpdateMonsterUI();
+            });
+        }
+
+        private void OnGameOver(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(StartGameOverSequence);
+        }
+
+        private void OnManageModeChanged(object? sender, bool isManageMode)
+        {
+            _isManageMode = isManageMode;
+            UpdateManageModeUI();
+        }
+
+        private void OnTrayManageModeToggled(object? sender, EventArgs e)
+        {
+            _viewModel.IsManageMode = TrayManager.IsManageMode;
+        }
+
+        private void OnTimerTick(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(UpdateTimerUI);
+        }
+
+        private void OnStatsChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(UpdateAllUI);
+        }
+
+        private void OnSettingsRequested()
+        {
+            Dispatcher.Invoke(() => SettingsButton_Click(this, new RoutedEventArgs()));
+        }
+
+        private void OnStatsRequested()
+        {
+            Dispatcher.Invoke(() => StatsButton_Click(this, new RoutedEventArgs()));
+        }
+
+        private void OnExitRequested(object? sender, EventArgs e)
+        {
+            Logger.Log("OnExitRequested: Before Close()");
+            Close();
+            Logger.Log("OnExitRequested: After Close()");
+        }
+
+        #endregion
+
+        #region UI Event Handlers
+
+        private void ModeToggle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TrayManager.ToggleManageMode();
+            e.Handled = true;
+        }
+
+        private void GameElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isManageMode)
+            {
+                TrayManager.ToggleManageMode();
+            }
+            e.Handled = true;
+        }
+
+        private void UpgradeKeyboard_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.UpgradeKeyboardCommand.Execute(null);
+            UpdateAllUI();
+            UpdateUpgradeCosts();
+        }
+
+        private void UpgradeMouse_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.UpgradeMouseCommand.Execute(null);
+            UpdateAllUI();
+            UpdateUpgradeCosts();
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var settingsWindow = new Windows.SettingsWindow(
+                SaveManager.CurrentSave.Settings,
+                ApplyWindowOpacity,
+                ApplyBackgroundOpacity,
+                (volume) => SoundManager.Volume = volume,
+                () => TrayManager.UpdateLanguage()
+            );
+            settingsWindow.Owner = this;
+            settingsWindow.ShowDialog();
+            SaveManager.Save();
+        }
+
+        private void StatsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var statsWindow = new Windows.StatisticsWindow(SaveManager, AchievementManager, GameManager);
+            statsWindow.Owner = this;
+            statsWindow.ShowDialog();
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void ExitButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            Application.Current.Shutdown();
+        }
+
+        private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            _autoRestartTimer.Stop();
+            CloseGameOverOverlay();
+        }
+
+        #endregion
+
+        #region UI Update Methods
+
+        private void UpdateUI()
+        {
+            if (GameManager == null) return;
+            UpdateCoreUI();
+            UpdateUpgradeCosts();
+        }
+
+        private void UpdateAllUI()
+        {
+            UpdateCoreUI();
+            UpdateMonsterUI();
+            UpdateTimerUI();
+        }
+
+        private void UpdateCoreUI()
+        {
+            if (LevelText != null) LevelText.Text = $"Lv.{GameManager.CurrentLevel}";
+            if (MaxLevelText != null)
+            {
+                int bestLevel = Math.Max(GameManager.CurrentLevel, SaveManager.CurrentSave.Stats.MaxLevel);
+                MaxLevelText.Text = $"(Best: {bestLevel})";
+            }
+            if (GoldText != null) GoldText.Text = $"💰 {GameManager.Gold:N0}";
+
+            if (GameManager.CurrentMonster != null && HpText != null)
+            {
+                HpText.Text = $"{GameManager.CurrentMonster.CurrentHp:N0}/{GameManager.CurrentMonster.MaxHp:N0}";
+            }
+
+            if (InputCountText != null) InputCountText.Text = $"⌨️ {_viewModel.SessionInputCount}";
+            if (KeyboardPowerText != null) KeyboardPowerText.Text = $"⌨️ Atk: {GameManager.KeyboardPower:N0}";
+            if (MousePowerText != null) MousePowerText.Text = $"🖱️ Atk: {GameManager.MousePower:N0}";
+        }
+
+        private void UpdateMonsterUI()
+        {
+            var monster = GameManager.CurrentMonster;
+            if (monster == null) return;
+
+            MonsterEmoji.Text = monster.Emoji;
+            UpdateMonsterImage(monster);
+            HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
+            UpdateHpBar(monster);
+        }
+
+        private void UpdateMonsterImage(Monster monster)
+        {
             try
             {
-                // JSON에서 영웅 목록 가져와서 랜덤 선택
-                var heroes = _gameManager.Heroes;
+                string spritePath = monster.SkinType;
+                string imagePath = spritePath.EndsWith(".png")
+                    ? $"pack://application:,,,/Assets/Images/{spritePath}"
+                    : $"pack://application:,,,/Assets/Images/{spritePath}.png";
+
+                MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
+                MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+                MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+
+                bool needsFlip = NeedsFlip(spritePath);
+                MonsterImage.RenderTransformOrigin = new Point(0.5, 0.5);
+
+                var transformGroup = new TransformGroup();
+                transformGroup.Children.Add(new ScaleTransform(needsFlip ? -1 : 1, 1));
+                transformGroup.Children.Add(MonsterShakeTransform);
+                MonsterImage.RenderTransform = transformGroup;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"Monster image load failed: {ex.Message}");
+            }
+        }
+
+        private static bool NeedsFlip(string spritePath)
+        {
+            return spritePath.Contains("slime") || spritePath.Contains("bat") ||
+                   spritePath.Contains("skeleton") || spritePath.Contains("goblin") ||
+                   spritePath.Contains("orc") || spritePath.Contains("ghost") ||
+                   spritePath.Contains("golem") || spritePath.Contains("mushroom") ||
+                   spritePath.Contains("spider") || spritePath.Contains("wolf") ||
+                   spritePath.Contains("snake") || spritePath.Contains("boar");
+        }
+
+        private void UpdateHpBar(Monster monster)
+        {
+            var hpRatio = monster.HpRatio;
+            double targetWidth = hpRatio * 80;
+
+            var widthAnim = new DoubleAnimation
+            {
+                To = targetWidth,
+                Duration = TimeSpan.FromMilliseconds(300),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            HpBar.BeginAnimation(WidthProperty, widthAnim);
+            HpBar.Background = new SolidColorBrush(GetHpBarColor(hpRatio));
+        }
+
+        private static Color GetHpBarColor(double hpRatio)
+        {
+            if (hpRatio > 0.5) return Color.FromRgb(0, 255, 0);
+            if (hpRatio > 0.25) return Color.FromRgb(255, 255, 0);
+            return Color.FromRgb(255, 0, 0);
+        }
+
+        private void UpdateTimerUI()
+        {
+            int time = GameManager.RemainingTime;
+            TimerText.Text = time.ToString();
+
+            if (time > 20)
+            {
+                TimerText.BeginAnimation(OpacityProperty, null);
+                TimerText.Opacity = 1.0;
+                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(135, 206, 235));
+            }
+            else if (time > 10)
+            {
+                TimerText.BeginAnimation(OpacityProperty, null);
+                TimerText.Opacity = 1.0;
+                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 0));
+            }
+            else
+            {
+                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+                if (time <= 5 && time > 0)
+                {
+                    var blinkAnim = new DoubleAnimation
+                    {
+                        From = 1.0, To = 0.3,
+                        Duration = TimeSpan.FromMilliseconds(300),
+                        AutoReverse = true,
+                        RepeatBehavior = RepeatBehavior.Forever
+                    };
+                    TimerText.BeginAnimation(OpacityProperty, blinkAnim);
+                }
+            }
+        }
+
+        private void UpdateUpgradeCosts()
+        {
+            var keyboardCost = GameManager.CalculateUpgradeCost(GameManager.KeyboardPower);
+            var mouseCost = GameManager.CalculateUpgradeCost(GameManager.MousePower);
+            int gold = GameManager.Gold;
+
+            KeyboardCostText.Text = $"💰 {keyboardCost}";
+            MouseCostText.Text = $"💰 {mouseCost}";
+
+            bool canBuyKeyboard = gold >= keyboardCost;
+            bool canBuyMouse = gold >= mouseCost;
+
+            UpgradeKeyboardBtn.IsEnabled = canBuyKeyboard;
+            UpgradeMouseBtn.IsEnabled = canBuyMouse;
+
+            KeyboardCostText.Foreground = new SolidColorBrush(
+                canBuyKeyboard ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
+            MouseCostText.Foreground = new SolidColorBrush(
+                canBuyMouse ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
+        }
+
+        private void UpdateManageModeUI()
+        {
+            if (_isManageMode)
+            {
+                ManageModeBorder.Visibility = Visibility.Visible;
+                UpgradePanel.Visibility = Visibility.Visible;
+                PowerInfoBar.Visibility = Visibility.Visible;
+                ExitButtonBorder.Visibility = Visibility.Visible;
+                MaxLevelText.Visibility = Visibility.Visible;
+                HpText.Visibility = Visibility.Visible;
+
+                ModeIcon.Text = "✋";
+                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(255, 165, 0));
+                ModeToggleBorder.ToolTip = "👁️ 관전 모드로 전환 (F1)";
+                ModeToggleBorder.Opacity = 1;
+                _isModeButtonVisible = true;
+
+                UpdateUpgradeCosts();
+            }
+            else
+            {
+                ManageModeBorder.Visibility = Visibility.Collapsed;
+                UpgradePanel.Visibility = Visibility.Collapsed;
+                PowerInfoBar.Visibility = Visibility.Collapsed;
+                ExitButtonBorder.Visibility = Visibility.Collapsed;
+                MaxLevelText.Visibility = Visibility.Collapsed;
+                HpText.Visibility = Visibility.Collapsed;
+
+                ModeIcon.Text = "👁️";
+                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 206, 209));
+                ModeToggleBorder.ToolTip = "✋ 관리 모드로 전환 (F1)";
+
+                if (!IsMouseOverWindow())
+                {
+                    ModeToggleBorder.Opacity = 0;
+                    _isModeButtonVisible = false;
+                }
+            }
+
+            ApplyBackgroundOpacity(SaveManager.CurrentSave.Settings.BackgroundOpacity);
+        }
+
+        private void UpdateLocalizedUI()
+        {
+            var loc = LocalizationManager.Instance;
+
+            if (UpgradeKeyboardText != null) UpgradeKeyboardText.Text = loc["ui.main.upgradeKeyboard"];
+            if (UpgradeMouseText != null) UpgradeMouseText.Text = loc["ui.main.upgradeMouse"];
+            if (StatsBtn != null) StatsBtn.Content = loc["ui.main.stats"];
+            if (SettingsBtn != null) SettingsBtn.Content = loc["ui.main.settings"];
+
+            if (KeyboardPowerText != null)
+                KeyboardPowerText.Text = $"{loc["ui.main.keyboardAtk"]}: {GameManager?.KeyboardPower ?? 1:N0}";
+            if (MousePowerText != null)
+                MousePowerText.Text = $"{loc["ui.main.mouseAtk"]}: {GameManager?.MousePower ?? 1:N0}";
+
+            if (GameOverTitleText != null) GameOverTitleText.Text = loc["ui.gameover.title"];
+            if (ReportLevelLabel != null) ReportLevelLabel.Text = loc["ui.gameover.maxLevel"];
+            if (ReportGoldLabel != null) ReportGoldLabel.Text = loc["ui.gameover.goldEarned"];
+            if (ReportDamageLabel != null) ReportDamageLabel.Text = loc["ui.gameover.damageDealt"];
+            if (CloseOverlayButton != null) CloseOverlayButton.Content = loc.CurrentLanguage == "ko-KR" ? "닫기" : "Close";
+
+            if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.ToolTip = loc["tooltips.upgradeKeyboard"];
+            if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["tooltips.upgradeMouse"];
+            if (StatsBtn != null) StatsBtn.ToolTip = loc["tooltips.stats"];
+            if (SettingsBtn != null) SettingsBtn.ToolTip = loc["tooltips.settings"];
+            if (ExitButtonBorder != null) ExitButtonBorder.ToolTip = loc["tooltips.exit"];
+        }
+
+        #endregion
+
+        #region Animation & Effects
+
+        private void ShakeMonster()
+        {
+            double shakePower = GameManager.Config.Visual.ShakePower;
+            double offsetX = (_random.NextDouble() - 0.5) * 2 * shakePower;
+            double offsetY = (_random.NextDouble() - 0.5) * 2 * shakePower;
+
+            var animX = new DoubleAnimation
+            {
+                From = offsetX, To = 0,
+                Duration = TimeSpan.FromMilliseconds(50),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            var animY = new DoubleAnimation
+            {
+                From = offsetY, To = 0,
+                Duration = TimeSpan.FromMilliseconds(50),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+
+            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, animX);
+            MonsterShakeTransform.BeginAnimation(TranslateTransform.YProperty, animY);
+
+            var opacityFlash = new DoubleAnimation
+            {
+                From = 1.0, To = 0.5,
+                Duration = TimeSpan.FromMilliseconds(80),
+                AutoReverse = true
+            };
+            MonsterImage.BeginAnimation(OpacityProperty, opacityFlash);
+        }
+
+        private void ShowDamagePopup(int damage, bool isCritical = false)
+        {
+            var popup = new Controls.DamagePopup(damage, isCritical);
+            double x = 30 + _random.NextDouble() * 40;
+            double y = 30 + _random.NextDouble() * 30;
+
+            Canvas.SetLeft(popup, x);
+            Canvas.SetTop(popup, y);
+            DamagePopupCanvas.Children.Add(popup);
+
+            popup.Animate(() => DamagePopupCanvas.Children.Remove(popup));
+        }
+
+        private void FlashEffect()
+        {
+            var goldReward = GameManager.CurrentMonster?.GoldReward ?? 0;
+            var brush = new SolidColorBrush(Colors.Gold);
+            GoldText.Foreground = brush;
+
+            var colorAnim = new ColorAnimation
+            {
+                From = Colors.White, To = Colors.Gold,
+                Duration = TimeSpan.FromMilliseconds(300),
+                AutoReverse = true
+            };
+            brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnim);
+            DebugText.Text = $"+{goldReward} 💰";
+        }
+
+        private void BossEntranceEffect()
+        {
+            DebugText.Text = "⚠️ BOSS APPEARED!";
+            DebugText.Foreground = new SolidColorBrush(Colors.Purple);
+            MonsterImage.Width = BOSS_SIZE;
+            MonsterImage.Height = BOSS_SIZE;
+        }
+
+        #endregion
+
+        #region Game Over Sequence
+
+        private void StartGameOverSequence()
+        {
+            if (MainBackgroundBorder != null)
+                MainBackgroundBorder.IsHitTestVisible = false;
+
+            var growAnim = new DoubleAnimation
+            {
+                To = 500,
+                Duration = TimeSpan.FromSeconds(1.5),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+
+            MonsterImage.BeginAnimation(WidthProperty, growAnim);
+            MonsterImage.BeginAnimation(HeightProperty, growAnim);
+
+            var shakeAnim = new DoubleAnimation
+            {
+                From = -5, To = 5,
+                Duration = TimeSpan.FromMilliseconds(50),
+                RepeatBehavior = new RepeatBehavior(TimeSpan.FromSeconds(1.5)),
+                AutoReverse = true
+            };
+            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, shakeAnim);
+
+            var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
+            timer.Tick += (s, args) =>
+            {
+                timer.Stop();
+                ShowLifeReport();
+            };
+            timer.Start();
+
+            SoundManager.Play(SoundType.GameOver);
+        }
+
+        private void ShowLifeReport()
+        {
+            Logger.Log("=== GAME OVER START ===");
+
+            string? deathType = GameManager.CurrentMonster?.IsBoss == true ? "boss"
+                : GameManager.RemainingTime <= 0 ? "timeout" : "normal";
+
+            _viewModel.SaveSession();
+
+            AchievementManager.CheckAchievements("total_sessions");
+            AchievementManager.CheckAchievements("total_gold_earned");
+            AchievementManager.CheckAchievements("total_playtime_minutes");
+            AchievementManager.CheckAchievements("keyboard_inputs");
+            AchievementManager.CheckAchievements("mouse_inputs");
+            AchievementManager.CheckAchievements("consecutive_days");
+
+            GameOverMessageText.Text = GameManager.GetGameOverMessage(deathType);
+            ReportLevelText.Text = $"{GameManager.CurrentLevel}";
+            ReportGoldText.Text = $"{GameManager.SessionTotalGold:N0}";
+            ReportDamageText.Text = $"{GameManager.SessionDamage:N0}";
+
+            GameOverOverlay.Opacity = 0;
+            GameOverOverlay.Visibility = Visibility.Visible;
+            GameOverOverlay.IsHitTestVisible = true;
+
+            var fadeIn = new DoubleAnimation { From = 0, To = 1, Duration = TimeSpan.FromSeconds(0.5) };
+            GameOverOverlay.BeginAnimation(OpacityProperty, fadeIn);
+
+            ApplyBackgroundOpacity(SaveManager.CurrentSave.Settings.BackgroundOpacity);
+
+            MonsterImage.BeginAnimation(WidthProperty, null);
+            MonsterImage.BeginAnimation(HeightProperty, null);
+            MonsterImage.Width = MONSTER_SIZE;
+            MonsterImage.Height = MONSTER_SIZE;
+            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, null);
+
+            GameManager.RestartGame();
+
+            _autoRestartCountdown = 10;
+            UpdateAutoCloseCountdown();
+            _autoRestartTimer.Start();
+
+            Logger.Log("=== GAME OVER END ===");
+        }
+
+        private void UpdateAutoCloseCountdown()
+        {
+            var loc = LocalizationManager.Instance;
+            AutoCloseCountdownText.Text = loc.CurrentLanguage == "ko-KR"
+                ? $"{_autoRestartCountdown}초후 닫힘"
+                : $"Closes in {_autoRestartCountdown}s";
+        }
+
+        private void AutoRestartTimer_Tick(object? sender, EventArgs e)
+        {
+            _autoRestartCountdown--;
+            UpdateAutoCloseCountdown();
+            if (_autoRestartCountdown <= 0)
+            {
+                _autoRestartTimer.Stop();
+                CloseGameOverOverlay();
+            }
+        }
+
+        private void CloseGameOverOverlay()
+        {
+            GameOverOverlay.Visibility = Visibility.Collapsed;
+            if (MainBackgroundBorder != null)
+                MainBackgroundBorder.IsHitTestVisible = true;
+            UpdateAllUI();
+        }
+
+        #endregion
+
+        #region Hero Sprite
+
+        private void LoadCharacterImages()
+        {
+            try
+            {
+                var heroes = GameManager.Heroes;
                 if (heroes.Count > 0)
                 {
                     _currentHero = heroes[_random.Next(heroes.Count)];
                     HeroImage.Source = ImageHelper.LoadWithChromaKey(
                         $"pack://application:,,,/Assets/Images/{_currentHero.IdleSprite}.png");
                 }
-
-                // 공격 스프라이트 복귀 타이머 초기화
-                _heroAttackTimer = new System.Windows.Threading.DispatcherTimer();
-                _heroAttackTimer.Interval = TimeSpan.FromMilliseconds(150);
-                _heroAttackTimer.Tick += HeroAttackTimer_Tick;
             }
             catch { }
         }
@@ -210,265 +921,22 @@ namespace DeskWarrior
         private void ShowHeroAttackSprite()
         {
             if (_currentHero == null) return;
-
             _heroAttackTimer?.Stop();
             HeroImage.Source = ImageHelper.LoadWithChromaKey(
                 $"pack://application:,,,/Assets/Images/{_currentHero.AttackSprite}.png");
             _heroAttackTimer?.Start();
         }
 
-        private void ModeToggle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        #endregion
+
+        #region Settings
+
+        private void ApplySettings()
         {
-            // 모드 전환만 수행 (설정창 열지 않음)
-            _trayManager.ToggleManageMode();
-            e.Handled = true;
-        }
-
-
-        private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
-        {
-            DeskWarrior.Helpers.Logger.Log("=== EXIT START ===");
-
-            // 0. 위치 업데이트
-            _saveManager.UpdateWindowPosition(Left, Top);
-
-            // 1. 저장
-            _saveManager.Save();
-            DeskWarrior.Helpers.Logger.Log("SaveManager.Save() Completed");
-
-            // 2. Hover Timer 정리
-            _hoverCheckTimer?.Stop();
-
-            // 3. InputHandler 정리
-            _inputHandler.OnInput -= OnInputReceived;
-            _inputHandler.Dispose();
-            DeskWarrior.Helpers.Logger.Log("InputHandler Disposed");
-
-            // 4. TrayManager 정리
-            _trayManager.Dispose();
-            DeskWarrior.Helpers.Logger.Log("TrayManager Disposed");
-
-            // 5. SoundManager 정리
-            _soundManager.Dispose();
-            DeskWarrior.Helpers.Logger.Log("SoundManager Disposed");
-
-            DeskWarrior.Helpers.Logger.Log("=== EXIT END ===");
-        }
-
-        private void MainWindow_LocationChanged(object? sender, EventArgs e)
-        {
-            _saveManager.UpdateWindowPosition(Left, Top);
-        }
-
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (_isManageMode)
-            {
-                try
-                {
-                    if (e.LeftButton == MouseButtonState.Pressed)
-                    {
-                        DragMove();
-                    }
-                }
-                catch (InvalidOperationException)
-                {
-                    // 드래그 중 마우스 버튼 상태 변경 등으로 인한 예외 무시
-                }
-                catch (Exception ex)
-                {
-                     DeskWarrior.Helpers.Logger.LogError("DragMove Failed", ex);
-                }
-            }
-        }
-
-        private void GameElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // 게임 요소(몬스터/히어로) 클릭 시 관리 모드가 아니면 자동 활성화
-            if (!_isManageMode)
-            {
-                _trayManager.ToggleManageMode();
-            }
-            e.Handled = true;
-        }
-
-        private void OnInputReceived(object? sender, GameInputEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // F1 키로 관리 모드 토글 (VK_F1 = 112)
-                if (e.Type == GameInputType.Keyboard && e.VirtualKeyCode == 112)
-                {
-                    // 마우스가 게임 창 위에 있을 때만 작동
-                    if (IsMouseOverWindow())
-                    {
-                        _trayManager.ToggleManageMode();
-                    }
-                    return;
-                }
-
-                // 입력 카운트 증가
-                _sessionInputCount++;
-
-                // 게임 로직에 입력 전달 + 입력 타입별 통계 저장
-                if (e.Type == GameInputType.Keyboard)
-                {
-                    _saveManager.AddKeyboardInput();
-                    _gameManager.OnKeyboardInput();
-                }
-                else
-                {
-                    _saveManager.AddMouseInput();
-                    _gameManager.OnMouseInput();
-                }
-
-                // 데미지 팝업 표시 (Event 기반으로 변경됨)
-                // int damage = e.Type == GameInputType.Keyboard 
-                //    ? _gameManager.KeyboardPower 
-                //    : _gameManager.MousePower;
-                // ShowDamagePopup(damage);
-
-                // 공격 사운드
-                _soundManager.Play(SoundType.Hit);
-
-                // 영웅 공격 스프라이트 전환
-                ShowHeroAttackSprite();
-
-                // 몬스터 흔들림 효과
-                ShakeMonster();
-
-                // 디버그 텍스트
-                string inputInfo = e.Type == GameInputType.Keyboard
-                    ? $"⌨️ Key:{e.VirtualKeyCode}"
-                    : $"🖱️ {e.MouseButton}";
-                DebugText.Text = inputInfo;
-            });
-        }
-
-        private void OnManageModeToggled(object? sender, EventArgs e)
-        {
-            _isManageMode = _trayManager.IsManageMode;
-
-            // UI 업데이트
-            if (_isManageMode)
-            {
-                // 관리 모드 - 모든 정보 표시
-                ManageModeBorder.Visibility = Visibility.Visible;
-                UpgradePanel.Visibility = Visibility.Visible;
-                PowerInfoBar.Visibility = Visibility.Visible;
-                ExitButtonBorder.Visibility = Visibility.Visible;
-                MaxLevelText.Visibility = Visibility.Visible;
-                HpText.Visibility = Visibility.Visible;
-
-                ModeIcon.Text = "✋";
-                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(255, 165, 0)); // Orange
-                ModeToggleBorder.ToolTip = "👁️ 관전 모드로 전환 (F1)";
-
-                // 관리 모드에서는 버튼 항상 표시
-                ModeToggleBorder.Opacity = 1;
-                _isModeButtonVisible = true;
-
-                UpdateUpgradeCosts();
-            }
-            else
-            {
-                // 관전 모드 - 최소 UI
-                ManageModeBorder.Visibility = Visibility.Collapsed;
-                UpgradePanel.Visibility = Visibility.Collapsed;
-                PowerInfoBar.Visibility = Visibility.Collapsed;
-                ExitButtonBorder.Visibility = Visibility.Collapsed;
-                MaxLevelText.Visibility = Visibility.Collapsed;
-                HpText.Visibility = Visibility.Collapsed;
-
-                ModeIcon.Text = "👁️";
-                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 206, 209)); // Cyan
-                ModeToggleBorder.ToolTip = "✋ 관리 모드로 전환 (F1)";
-
-                // 관전 모드에서는 마우스가 창 위에 없으면 버튼 숨김
-                if (!IsMouseOverWindow())
-                {
-                    ModeToggleBorder.Opacity = 0;
-                    _isModeButtonVisible = false;
-                }
-            }
-
-            // 모드 전환 시 배경 불투명도 재적용 (관리 모드 최소 5% 보장)
-            ApplyBackgroundOpacity(_saveManager.CurrentSave.Settings.BackgroundOpacity);
-        }
-
-        private void UpgradeKeyboard_Click(object sender, RoutedEventArgs e)
-        {
-            if (_gameManager.UpgradeKeyboardPower())
-            {
-                _soundManager.Play(SoundType.Upgrade);
-                SaveUpgrades();
-                UpdateAllUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-        private void UpgradeMouse_Click(object sender, RoutedEventArgs e)
-        {
-            if (_gameManager.UpgradeMousePower())
-            {
-                _soundManager.Play(SoundType.Upgrade);
-                SaveUpgrades();
-                UpdateAllUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-
-        private void OnSettingsRequested(object? sender, EventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                SettingsButton_Click(this, new RoutedEventArgs());
-            });
-        }
-
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            // 설정 창 열기 (모달)
-            var settingsWindow = new Windows.SettingsWindow(
-                _saveManager.CurrentSave.Settings,
-                (windowOpacity) => {
-                    ApplyWindowOpacity(windowOpacity);
-                },
-                (opacity) => {
-                    ApplyBackgroundOpacity(opacity);
-                },
-                (volume) => {
-                    _soundManager.Volume = volume;
-                },
-                () => {
-                    // 언어 변경 콜백 - 트레이 메뉴 업데이트
-                    _trayManager.UpdateLanguage();
-                }
-            );
-            settingsWindow.Owner = this;
-            settingsWindow.ShowDialog();
-
-            _saveManager.Save();
-        }
-
-        private void StatsButton_Click(object sender, RoutedEventArgs e)
-        {
-            // 통계 창 열기
-            var statsWindow = new Windows.StatisticsWindow(_saveManager, _achievementManager, _gameManager);
-            statsWindow.Owner = this;
-            statsWindow.ShowDialog();
-        }
-
-        private void ExitButton_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        private void ExitButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            Application.Current.Shutdown();
+            var settings = SaveManager.CurrentSave.Settings;
+            ApplyWindowOpacity(settings.WindowOpacity);
+            ApplyBackgroundOpacity(settings.BackgroundOpacity);
+            SoundManager.Volume = settings.Volume;
         }
 
         private void ApplyWindowOpacity(double opacity)
@@ -478,312 +946,30 @@ namespace DeskWarrior
 
         private void ApplyBackgroundOpacity(double opacity)
         {
-            // 관리 모드에서는 최소 5% 불투명도 보장
             double effectiveOpacity = _isManageMode ? Math.Max(opacity, 0.05) : opacity;
-
-            // 각 패널마다 기본 투명도 비율이 다를 수 있음
-            // 적 정보 / 타이머: 기본 0.4 (최대 0.8)
             double infoOpacity = Math.Clamp(effectiveOpacity, 0.0, 0.8);
-
-            // 업그레이드 패널: 기본 0.6 (최대 0.9)
             double upgradeOpacity = Math.Clamp(effectiveOpacity * 1.5, 0.0, 0.95);
 
             if (MainBackgroundBorder != null)
                 MainBackgroundBorder.Background = new SolidColorBrush(Color.FromRgb(0x1a, 0x1a, 0x2e)) { Opacity = effectiveOpacity };
-
             if (EnemyInfoBorder != null)
                 EnemyInfoBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
-
             if (HeroInfoBar != null)
                 HeroInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = Math.Max(infoOpacity, 0.7) };
-
             if (PowerInfoBar != null)
                 PowerInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
-
             if (UpgradePanel != null)
                 UpgradePanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
-
-            // GameOverOverlay도 설정 따르도록 함
             if (GameOverOverlay != null)
             {
-                 // 게임오버는 좀 더 어둡게
-                 byte overlayAlpha = (byte)(Math.Max(opacity, 0.8) * 255);
-                 GameOverOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayAlpha, 0, 0, 0));
+                byte overlayAlpha = (byte)(Math.Max(opacity, 0.8) * 255);
+                GameOverOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayAlpha, 0, 0, 0));
             }
-        }
-
-        private void ApplySettings()
-        {
-            var settings = _saveManager.CurrentSave.Settings;
-            ApplyWindowOpacity(settings.WindowOpacity);
-            ApplyBackgroundOpacity(settings.BackgroundOpacity);
-            _soundManager.Volume = settings.Volume;
-        }
-
-        private void SaveUpgrades()
-        {
-            _saveManager.UpdateUpgrades(_gameManager.KeyboardPower, _gameManager.MousePower);
-            _saveManager.Save();
-        }
-
-        private void UpdateUpgradeCosts()
-        {
-            var keyboardCost = _gameManager.CalculateUpgradeCost(_gameManager.KeyboardPower);
-            var mouseCost = _gameManager.CalculateUpgradeCost(_gameManager.MousePower);
-            int gold = _gameManager.Gold;
-
-            KeyboardCostText.Text = $"💰 {keyboardCost}";
-            MouseCostText.Text = $"💰 {mouseCost}";
-
-            // 골드 부족 시 버튼 비활성화 및 비용 텍스트 색상 변경
-            bool canBuyKeyboard = gold >= keyboardCost;
-            bool canBuyMouse = gold >= mouseCost;
-
-            UpgradeKeyboardBtn.IsEnabled = canBuyKeyboard;
-            UpgradeMouseBtn.IsEnabled = canBuyMouse;
-
-            // 비용 텍스트 색상: 구매 가능 시 금색, 불가 시 빨간색
-            KeyboardCostText.Foreground = new SolidColorBrush(
-                canBuyKeyboard ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
-            MouseCostText.Foreground = new SolidColorBrush(
-                canBuyMouse ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
-        }
-
-        private void OnExitRequested(object? sender, EventArgs e)
-        {
-            DeskWarrior.Helpers.Logger.Log("OnExitRequested: Before Close()");
-            Close();
-            DeskWarrior.Helpers.Logger.Log("OnExitRequested: After Close()");
-        }
-
-        private void OnStatsChanged(object? sender, EventArgs e)
-        {
-            Dispatcher.Invoke(UpdateAllUI);
-        }
-
-        private void OnTimerTick(object? sender, EventArgs e)
-        {
-            Dispatcher.Invoke(UpdateTimerUI);
-        }
-
-        private void OnMonsterDefeated(object? sender, EventArgs e)
-        {
-            // 통계 업데이트
-            _saveManager.AddKill();
-
-            // 보스 처치 시 추적
-            if (_gameManager.CurrentMonster?.IsBoss == true)
-            {
-                _saveManager.AddBossKill();
-            }
-
-            // 업적 체크
-            _achievementManager.CheckAchievements("monster_kills");
-            _achievementManager.CheckAchievements("bosses_defeated");
-            _achievementManager.CheckAchievements("max_level");
-
-            Dispatcher.Invoke(() =>
-            {
-                // 처치 사운드
-                _soundManager.Play(SoundType.Defeat);
-
-                // 최고 레벨 갱신 및 저장
-                if (_gameManager.CurrentLevel > _saveManager.CurrentSave.Stats.MaxLevel)
-                {
-                    _saveManager.UpdateMaxLevel(_gameManager.CurrentLevel);
-                    _saveManager.Save();
-                }
-
-                // 처치 효과 (간단한 플래시)
-                FlashEffect();
-            });
-        }
-
-        private void OnGameOver(object? sender, EventArgs e)
-        {
-            Dispatcher.Invoke(StartGameOverSequence);
-        }
-
-        private void StartGameOverSequence()
-        {
-            // 1. 입력 차단 (게임 플레이 영역 비활성화)
-            if (MainBackgroundBorder != null)
-                MainBackgroundBorder.IsHitTestVisible = false;
-            
-            // 2. 몬스터 거대화 연출 (Smash Animation)
-            // XAML에 ScaleTransform이 없어서 크기 조절로 대체
-            var growAnim = new DoubleAnimation
-            {
-                To = 500, // 화면을 가득 채울 정도로 커짐
-                Duration = TimeSpan.FromSeconds(1.5),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn } // 점점 빠르게
-            };
-
-            var opacityAnim = new DoubleAnimation
-            {
-                To = 0,
-                BeginTime = TimeSpan.FromSeconds(1.2), // 커지다가 사라짐 (암전)
-                Duration = TimeSpan.FromSeconds(0.3)
-            };
-
-            MonsterImage.BeginAnimation(WidthProperty, growAnim);
-            MonsterImage.BeginAnimation(HeightProperty, growAnim);
-            
-            // 흔들림 효과 증폭
-            var shakeAnim = new DoubleAnimation
-            {
-                From = -5, To = 5,
-                Duration = TimeSpan.FromMilliseconds(50),
-                RepeatBehavior = new RepeatBehavior(TimeSpan.FromSeconds(1.5)),
-                AutoReverse = true
-            };
-            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, shakeAnim);
-
-            // 3. 암전 및 리포트 표시 (지연 실행)
-            var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
-            timer.Tick += (s, args) =>
-            {
-                timer.Stop();
-                ShowLifeReport();
-            };
-            timer.Start();
-            
-            _soundManager.Play(SoundType.GameOver); // 쿵 소리?
-        }
-
-        private void ShowLifeReport()
-        {
-            DeskWarrior.Helpers.Logger.Log("=== GAME OVER START ===");
-
-            // 사망 타입 판단
-            string? deathType = null;
-            if (_gameManager.CurrentMonster != null && _gameManager.CurrentMonster.IsBoss)
-            {
-                deathType = "boss";
-            }
-            else if (_gameManager.RemainingTime <= 0)
-            {
-                deathType = "timeout";
-            }
-            else
-            {
-                deathType = "normal";
-            }
-            DeskWarrior.Helpers.Logger.Log($"DeathType: {deathType}");
-
-            // 세션 저장
-            var sessionStats = _gameManager.CreateSessionStats(deathType ?? "timeout");
-            _saveManager.SaveSession(sessionStats);
-            DeskWarrior.Helpers.Logger.Log("Session Saved");
-
-            // 업적 체크 (세션 관련)
-            _achievementManager.CheckAchievements("total_sessions");
-            _achievementManager.CheckAchievements("total_gold_earned");
-            _achievementManager.CheckAchievements("total_playtime_minutes");
-            _achievementManager.CheckAchievements("keyboard_inputs");
-            _achievementManager.CheckAchievements("mouse_inputs");
-            _achievementManager.CheckAchievements("consecutive_days");
-
-            // 게임 오버 메시지 선택
-            GameOverMessageText.Text = _gameManager.GetGameOverMessage(deathType);
-
-            // 데이터 바인딩
-            ReportLevelText.Text = $"{_gameManager.CurrentLevel}";
-            ReportGoldText.Text = $"{_gameManager.SessionTotalGold:N0}";
-            ReportDamageText.Text = $"{_gameManager.SessionDamage:N0}";
-
-            // 오버레이 표시
-            GameOverOverlay.Opacity = 0;
-            GameOverOverlay.Visibility = Visibility.Visible;
-            GameOverOverlay.IsHitTestVisible = true;
-
-            var fadeIn = new DoubleAnimation
-            {
-                From = 0, To = 1,
-                Duration = TimeSpan.FromSeconds(0.5)
-            };
-            GameOverOverlay.BeginAnimation(OpacityProperty, fadeIn);
-
-            // 배경 투명도 재적용 (로드 시점 문제 방지)
-            ApplyBackgroundOpacity(_saveManager.CurrentSave.Settings.BackgroundOpacity);
-
-            // 몬스터 크기/흔들림 초기화
-            MonsterImage.BeginAnimation(WidthProperty, null);
-            MonsterImage.BeginAnimation(HeightProperty, null);
-            MonsterImage.Width = MONSTER_SIZE;
-            MonsterImage.Height = MONSTER_SIZE;
-            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, null);
-
-            // 즉시 게임 재시작 (뒤에서 진행)
-            _gameManager.RestartGame();
-
-            // 10초 후 오버레이 자동 닫기 타이머 시작
-            _autoRestartCountdown = 10;
-            UpdateAutoCloseCountdown();
-            _autoRestartTimer.Start();
-
-            DeskWarrior.Helpers.Logger.Log("=== GAME OVER END ===");
-        }
-
-        private void UpdateAutoCloseCountdown()
-        {
-            var loc = LocalizationManager.Instance;
-            AutoCloseCountdownText.Text = loc.CurrentLanguage == "ko-KR"
-                ? $"{_autoRestartCountdown}초후 닫힘"
-                : $"Closes in {_autoRestartCountdown}s";
-        }
-
-        private void AutoRestartTimer_Tick(object? sender, EventArgs e)
-        {
-            _autoRestartCountdown--;
-            UpdateAutoCloseCountdown();
-
-            if (_autoRestartCountdown <= 0)
-            {
-                _autoRestartTimer.Stop();
-                CloseGameOverOverlay();
-            }
-        }
-
-        private void CloseGameOverOverlay()
-        {
-            GameOverOverlay.Visibility = Visibility.Collapsed;
-            if (MainBackgroundBorder != null)
-                MainBackgroundBorder.IsHitTestVisible = true;
-            UpdateAllUI();
-        }
-
-        private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            _autoRestartTimer.Stop();
-            CloseGameOverOverlay();
-        }
-
-        private void OnDamageDealt(object? sender, DamageEventArgs e)
-        {
-            // 통계 업데이트
-            _saveManager.AddDamage(e.Damage);
-
-            // 크리티컬 히트 추적
-            if (e.IsCritical)
-            {
-                _saveManager.AddCriticalHit();
-            }
-
-            // 업적 체크 (데미지 관련)
-            _achievementManager.CheckAchievements("total_damage");
-            _achievementManager.CheckAchievements("max_damage");
-            _achievementManager.CheckAchievements("critical_hits");
-
-            Dispatcher.Invoke(() =>
-            {
-                ShowDamagePopup(e.Damage, e.IsCritical);
-            });
         }
 
         #endregion
 
-        #region Private Methods
+        #region Win32 & Mode Button
 
         private bool IsMouseOverWindow()
         {
@@ -791,32 +977,13 @@ namespace DeskWarrior
             {
                 try
                 {
-                    // 스크린 좌표를 로컬 좌표로 변환
-                    var localPoint = PointFromScreen(new System.Windows.Point(pt.x, pt.y));
-                    // 윈도우 영역 내에 있는지 확인
+                    var localPoint = PointFromScreen(new Point(pt.x, pt.y));
                     return localPoint.X >= 0 && localPoint.X < ActualWidth &&
                            localPoint.Y >= 0 && localPoint.Y < ActualHeight;
                 }
-                catch
-                {
-                    return false;
-                }
+                catch { return false; }
             }
             return false;
-        }
-
-        private void SetClickThrough(bool enabled)
-        {
-            if (enabled)
-            {
-                Win32Helper.SetWindowClickThrough(_hwnd);
-            }
-            else
-            {
-                int extendedStyle = Win32Helper.GetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE);
-                Win32Helper.SetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE,
-                    extendedStyle & ~Win32Helper.WS_EX_TRANSPARENT);
-            }
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -827,45 +994,37 @@ namespace DeskWarrior
 
             if (msg == WM_NCHITTEST)
             {
-                // 관리 모드가 아닐 때만 Click-through 처리
                 if (!_isManageMode)
                 {
-                    // 게임 오버 오버레이가 표시 중이면 클릭 허용
                     if (GameOverOverlay.Visibility == Visibility.Visible)
                     {
                         handled = true;
                         return new IntPtr(HTCLIENT);
                     }
 
-                    // 마우스 좌표 가져오기
                     int x = (short)(lParam.ToInt32() & 0xFFFF);
                     int y = (short)(lParam.ToInt32() >> 16);
                     Point screenPoint = new Point(x, y);
                     Point clientPoint = PointFromScreen(screenPoint);
 
-                    // 모드 전환 버튼 영역 확인
                     if (IsPointOverModeButton(clientPoint))
                     {
                         handled = true;
-                        return new IntPtr(HTCLIENT);  // 클릭 받음
+                        return new IntPtr(HTCLIENT);
                     }
 
-                    // 나머지 영역은 투과
                     handled = true;
                     return new IntPtr(HTTRANSPARENT);
                 }
             }
-
             return IntPtr.Zero;
         }
 
         private void HoverCheckTimer_Tick(object? sender, EventArgs e)
         {
-            // 관리 모드에서는 버튼 항상 표시
             if (_isManageMode) return;
 
             bool isOver = IsMouseOverWindow();
-
             if (isOver && !_isModeButtonVisible)
             {
                 _isModeButtonVisible = true;
@@ -886,9 +1045,7 @@ namespace DeskWarrior
 
         private void HideModeButton()
         {
-            // 관리 모드에서는 숨기지 않음
             if (_isManageMode) return;
-
             var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
             ModeToggleBorder.BeginAnimation(OpacityProperty, fadeOut);
         }
@@ -902,356 +1059,10 @@ namespace DeskWarrior
                     new Rect(0, 0, ModeToggleBorder.ActualWidth, ModeToggleBorder.ActualHeight));
                 return bounds.Contains(point);
             }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 전체 UI 업데이트 (애니메이션 포함)
-        /// </summary>
-        private void UpdateAllUI()
-        {
-            // 공통 UI 업데이트
-            UpdateCoreUI();
-
-            // 몬스터 UI 업데이트
-            UpdateMonsterUI();
-
-            // 타이머 UI 업데이트
-            UpdateTimerUI();
-        }
-
-        /// <summary>
-        /// 몬스터 관련 UI 업데이트 (이미지, HP 바 등)
-        /// </summary>
-        private void UpdateMonsterUI()
-        {
-            var monster = _gameManager.CurrentMonster;
-            if (monster == null) return;
-
-            // 이모지 업데이트 (보스 vs 일반)
-            MonsterEmoji.Text = monster.Emoji;
-
-            // 이미지 업데이트 (보스 vs 일반) - 크로마 키 처리
-            UpdateMonsterImage(monster);
-
-            // HP 텍스트
-            HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
-
-            // HP 바 애니메이션
-            UpdateHpBar(monster);
-        }
-
-        /// <summary>
-        /// 몬스터 이미지 업데이트
-        /// </summary>
-        private void UpdateMonsterImage(Models.Monster monster)
-        {
-            try
-            {
-                string spritePath = monster.SkinType;
-
-                // Sprite 경로가 이미 확장자를 포함하고 있는지 확인
-                string imagePath = spritePath.EndsWith(".png")
-                    ? $"pack://application:,,,/Assets/Images/{spritePath}"
-                    : $"pack://application:,,,/Assets/Images/{spritePath}.png";
-
-                MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
-
-                // 보스는 더 크게
-                MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
-                MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
-
-                // 몬스터 방향 보정 (대부분 몬스터가 좌측을 보고 있음 - 우측으로 반전)
-                bool needsFlip = NeedsFlip(spritePath);
-
-                MonsterImage.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
-
-                // TransformGroup으로 ScaleTransform과 TranslateTransform 함께 적용
-                var transformGroup = new TransformGroup();
-                transformGroup.Children.Add(new ScaleTransform(needsFlip ? -1 : 1, 1));
-                transformGroup.Children.Add(MonsterShakeTransform);
-                MonsterImage.RenderTransform = transformGroup;
-            }
-            catch (Exception ex)
-            {
-                // 이미지 로딩 실패 시 기본 이미지 유지
-                DeskWarrior.Helpers.Logger.Log($"Monster image load failed: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 몬스터 이미지 좌우 반전 필요 여부
-        /// </summary>
-        private static bool NeedsFlip(string spritePath)
-        {
-            return spritePath.Contains("slime") || spritePath.Contains("bat") ||
-                   spritePath.Contains("skeleton") || spritePath.Contains("goblin") ||
-                   spritePath.Contains("orc") || spritePath.Contains("ghost") ||
-                   spritePath.Contains("golem") || spritePath.Contains("mushroom") ||
-                   spritePath.Contains("spider") || spritePath.Contains("wolf") ||
-                   spritePath.Contains("snake") || spritePath.Contains("boar");
-        }
-
-        /// <summary>
-        /// HP 바 업데이트 (애니메이션 포함)
-        /// </summary>
-        private void UpdateHpBar(Models.Monster monster)
-        {
-            var hpRatio = monster.HpRatio;
-            double targetWidth = hpRatio * 80;
-
-            var widthAnim = new DoubleAnimation
-            {
-                To = targetWidth,
-                Duration = TimeSpan.FromMilliseconds(300),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-            HpBar.BeginAnimation(FrameworkElement.WidthProperty, widthAnim);
-
-            // HP 바 색상 (초록 → 노랑 → 빨강)
-            Color targetColor = GetHpBarColor(hpRatio);
-            HpBar.Background = new SolidColorBrush(targetColor);
-        }
-
-        /// <summary>
-        /// HP 비율에 따른 색상 반환
-        /// </summary>
-        private static Color GetHpBarColor(double hpRatio)
-        {
-            if (hpRatio > 0.5)
-                return Color.FromRgb(0, 255, 0);   // 초록
-            if (hpRatio > 0.25)
-                return Color.FromRgb(255, 255, 0); // 노랑
-            return Color.FromRgb(255, 0, 0);       // 빨강
-        }
-
-        private void UpdateTimerUI()
-        {
-            int time = _gameManager.RemainingTime;
-            TimerText.Text = time.ToString();
-
-            // 타이머 색상 및 긴급 상태 애니메이션
-            if (time > 20)
-            {
-                TimerText.BeginAnimation(OpacityProperty, null); // 깜빡임 중지
-                TimerText.Opacity = 1.0;
-                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(135, 206, 235)); // 하늘색
-            }
-            else if (time > 10)
-            {
-                TimerText.BeginAnimation(OpacityProperty, null);
-                TimerText.Opacity = 1.0;
-                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 0)); // 노란색
-            }
-            else
-            {
-                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0)); // 빨간색
-
-                // 5초 미만일 때 깜빡임 효과
-                if (time <= 5 && time > 0)
-                {
-                    var blinkAnim = new DoubleAnimation
-                    {
-                        From = 1.0,
-                        To = 0.3,
-                        Duration = TimeSpan.FromMilliseconds(300),
-                        AutoReverse = true,
-                        RepeatBehavior = RepeatBehavior.Forever
-                    };
-                    TimerText.BeginAnimation(OpacityProperty, blinkAnim);
-                }
-            }
-        }
-
-        private void ShakeMonster()
-        {
-            double shakePower = _gameManager.Config.Visual.ShakePower;
-            double offsetX = (_random.NextDouble() - 0.5) * 2 * shakePower;
-            double offsetY = (_random.NextDouble() - 0.5) * 2 * shakePower;
-
-            // 흔들림 애니메이션
-            var animX = new DoubleAnimation
-            {
-                From = offsetX,
-                To = 0,
-                Duration = TimeSpan.FromMilliseconds(50),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-
-            var animY = new DoubleAnimation
-            {
-                From = offsetY,
-                To = 0,
-                Duration = TimeSpan.FromMilliseconds(50),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-
-            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, animX);
-            MonsterShakeTransform.BeginAnimation(TranslateTransform.YProperty, animY);
-
-            // 피격 시 Opacity 플래시 효과
-            var opacityFlash = new DoubleAnimation
-            {
-                From = 1.0,
-                To = 0.5,
-                Duration = TimeSpan.FromMilliseconds(80),
-                AutoReverse = true
-            };
-            MonsterImage.BeginAnimation(OpacityProperty, opacityFlash);
-        }
-
-        private void ShowDamagePopup(int damage, bool isCritical = false)
-        {
-            var popup = new Controls.DamagePopup(damage, isCritical);
-            
-            // 랜덤 위치
-            double x = 30 + _random.NextDouble() * 40;
-            double y = 30 + _random.NextDouble() * 30;
-            
-            Canvas.SetLeft(popup, x);
-            Canvas.SetTop(popup, y);
-            
-            DamagePopupCanvas.Children.Add(popup);
-            
-            popup.Animate(() =>
-            {
-                DamagePopupCanvas.Children.Remove(popup);
-            });
-        }
-
-        private void FlashEffect()
-        {
-            // 처치 시 골드 획득 강조 효과
-            var goldReward = _gameManager.CurrentMonster?.GoldReward ?? 0;
-            
-            // 골드 텍스트 색상 애니메이션
-            var brush = new SolidColorBrush(Colors.Gold);
-            GoldText.Foreground = brush;
-            
-            var colorAnim = new ColorAnimation
-            {
-                From = Colors.White,
-                To = Colors.Gold,
-                Duration = TimeSpan.FromMilliseconds(300),
-                AutoReverse = true
-            };
-            brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnim);
-            
-            // 골드 획득 팝업 (간단히 디버그로 표시)
-            DebugText.Text = $"+{goldReward} 💰";
-        }
-
-        private void GameOverEffect()
-        {
-            // Hard Reset 시 화면 붉은 플래시 효과
-            DebugText.Text = "⚠️ TIME OVER - RESET!";
-            DebugText.Foreground = new SolidColorBrush(Colors.Red);
-            
-            // 타이머 색상 깜빡임
-            var flashAnim = new ColorAnimation
-            {
-                From = Colors.Red,
-                To = Colors.DarkRed,
-                Duration = TimeSpan.FromMilliseconds(100),
-                AutoReverse = true,
-                RepeatBehavior = new RepeatBehavior(3)
-            };
-            
-            var brush = new SolidColorBrush(Colors.Red);
-            TimerText.Foreground = brush;
-            brush.BeginAnimation(SolidColorBrush.ColorProperty, flashAnim);
-        }
-
-        private void BossEntranceEffect()
-        {
-            // 보스 등장 연출
-            DebugText.Text = "⚠️ BOSS APPEARED!";
-            DebugText.Foreground = new SolidColorBrush(Colors.Purple);
-
-            // 몬스터 크기를 보스 크기로 설정
-            MonsterImage.Width = BOSS_SIZE;
-            MonsterImage.Height = BOSS_SIZE;
+            catch { return false; }
         }
 
         #endregion
-
-        /// <summary>
-        /// 기본 UI 업데이트 (애니메이션 없음, 초기화 시 사용)
-        /// </summary>
-        private void UpdateUI()
-        {
-            if (_gameManager == null) return;
-
-            // 공통 UI 업데이트
-            UpdateCoreUI();
-
-            // 업그레이드 비용 업데이트
-            UpdateUpgradeCosts();
-        }
-
-        /// <summary>
-        /// 핵심 UI 요소 업데이트 (공통 로직)
-        /// </summary>
-        private void UpdateCoreUI()
-        {
-            // 레벨, 골드 업데이트
-            if (LevelText != null) LevelText.Text = $"Lv.{_gameManager.CurrentLevel}";
-            if (MaxLevelText != null)
-            {
-                int bestLevel = Math.Max(_gameManager.CurrentLevel, _saveManager.CurrentSave.Stats.MaxLevel);
-                MaxLevelText.Text = $"(Best: {bestLevel})";
-            }
-            if (GoldText != null) GoldText.Text = $"💰 {_gameManager.Gold:N0}";
-
-            // HP 업데이트
-            if (_gameManager.CurrentMonster != null && HpText != null)
-            {
-                HpText.Text = $"{_gameManager.CurrentMonster.CurrentHp:N0}/{_gameManager.CurrentMonster.MaxHp:N0}";
-            }
-
-            // 입력 카운트
-            if (InputCountText != null) InputCountText.Text = $"⌨️ {_sessionInputCount}";
-
-            // 공격력 업데이트
-            if (KeyboardPowerText != null) KeyboardPowerText.Text = $"⌨️ Atk: {_gameManager.KeyboardPower:N0}";
-            if (MousePowerText != null) MousePowerText.Text = $"🖱️ Atk: {_gameManager.MousePower:N0}";
-        }
-
-        private void UpdateLocalizedUI()
-        {
-            var loc = LocalizationManager.Instance;
-
-            // 업그레이드 버튼
-            if (UpgradeKeyboardText != null) UpgradeKeyboardText.Text = loc["ui.main.upgradeKeyboard"];
-            if (UpgradeMouseText != null) UpgradeMouseText.Text = loc["ui.main.upgradeMouse"];
-
-            // 하단 버튼
-            if (StatsBtn != null) StatsBtn.Content = loc["ui.main.stats"];
-            if (SettingsBtn != null) SettingsBtn.Content = loc["ui.main.settings"];
-
-            // 공격력 표시
-            if (KeyboardPowerText != null)
-                KeyboardPowerText.Text = $"{loc["ui.main.keyboardAtk"]}: {_gameManager?.KeyboardPower ?? 1:N0}";
-            if (MousePowerText != null)
-                MousePowerText.Text = $"{loc["ui.main.mouseAtk"]}: {_gameManager?.MousePower ?? 1:N0}";
-
-            // 게임오버 화면
-            if (GameOverTitleText != null) GameOverTitleText.Text = loc["ui.gameover.title"];
-            if (ReportLevelLabel != null) ReportLevelLabel.Text = loc["ui.gameover.maxLevel"];
-            if (ReportGoldLabel != null) ReportGoldLabel.Text = loc["ui.gameover.goldEarned"];
-            if (ReportDamageLabel != null) ReportDamageLabel.Text = loc["ui.gameover.damageDealt"];
-            if (CloseOverlayButton != null) CloseOverlayButton.Content = loc.CurrentLanguage == "ko-KR" ? "닫기" : "Close";
-
-            // 툴팁
-            if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.ToolTip = loc["tooltips.upgradeKeyboard"];
-            if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["tooltips.upgradeMouse"];
-            if (StatsBtn != null) StatsBtn.ToolTip = loc["tooltips.stats"];
-            if (SettingsBtn != null) SettingsBtn.ToolTip = loc["tooltips.settings"];
-            if (ExitButtonBorder != null) ExitButtonBorder.ToolTip = loc["tooltips.exit"];
-        }
 
         #region Achievement Toast
 
@@ -1259,10 +1070,7 @@ namespace DeskWarrior
         {
             Dispatcher.Invoke(() =>
             {
-                // 큐에 추가
                 _toastQueue.Enqueue(e.Achievement);
-
-                // 표시 중이 아니면 표시 시작
                 if (!_isShowingToast)
                 {
                     ShowNextToast();
@@ -1281,13 +1089,11 @@ namespace DeskWarrior
             _isShowingToast = true;
             var achievement = _toastQueue.Dequeue();
 
-            // 토스트 생성
             var toast = new Controls.AchievementToast();
             toast.HorizontalAlignment = HorizontalAlignment.Right;
             toast.VerticalAlignment = VerticalAlignment.Bottom;
             toast.Margin = new Thickness(0, 0, 10, 10);
 
-            // 토스트 표시 (메인 그리드에 추가)
             var mainGrid = Content as Grid;
             if (mainGrid != null)
             {
@@ -1297,11 +1103,11 @@ namespace DeskWarrior
                 toast.AnimationCompleted += (s, args) =>
                 {
                     mainGrid.Children.Remove(toast);
-                    ShowNextToast(); // 다음 토스트 표시
+                    ShowNextToast();
                 };
 
                 toast.Show(achievement);
-                _soundManager.Play(SoundType.Upgrade); // 업적 해금 사운드
+                SoundManager.Play(SoundType.Upgrade);
             }
             else
             {
