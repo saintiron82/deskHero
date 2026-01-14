@@ -11,9 +11,10 @@ except ImportError:
     sys.exit(1)
 
 # Configuration
-BASE_DIR = r"c:\Users\saintiron\deskHero\Assets\Images\Raw_Green"
-DB_FILE = r"monster_db.json" # Relative path, assuming run from tools dir
-OUTPUT_JSON_FILE = r"new_character_data.json" # Output in same dir
+# Configuration
+BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "Assets", "Images", "Raw_Green")
+DB_FILE = os.path.join(os.path.dirname(__file__), "monster_db.json")
+OUTPUT_JSON_FILE = os.path.join(os.path.dirname(__file__), "new_character_data.json")
 
 # Green Background Color to mask (Approximate)
 BG_COLOR_RGB = (0, 255, 0)

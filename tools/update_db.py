@@ -2,7 +2,7 @@
 import json
 import os
 
-DB_FILE = r"c:\Users\saintiron\.gemini\antigravity\brain\44f97050-c090-47af-88b1-5194bbd9293b\monster_db.json"
+DB_FILE = os.path.join(os.path.dirname(__file__), "monster_db.json")
 
 def main():
     with open(DB_FILE, 'r', encoding='utf-8') as f:

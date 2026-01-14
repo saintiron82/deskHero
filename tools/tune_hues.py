@@ -2,7 +2,7 @@
 import json
 import random
 
-DB_FILE = r"c:\Users\saintiron\deskHero\tools\monster_db.json"
+DB_FILE = os.path.join(os.path.dirname(__file__), "monster_db.json")
 
 # Base Hues Mapping
 BASE_HUES = {

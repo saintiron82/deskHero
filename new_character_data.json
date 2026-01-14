@@ -568,35 +568,5 @@
         "Id": "monster_elemental_dark",
         "Name": "어둠의 정령",
         "Sprite": "Raw_Green/monster_elemental_dark.png"
-    },
-    {
-        "Id": "monster_rat_normal",
-        "Name": "시궁창 쥐",
-        "Sprite": "Raw_Green/monster_rat_normal.png"
-    },
-    {
-        "Id": "monster_rat_fire",
-        "Name": "역병 쥐",
-        "Sprite": "Raw_Green/monster_rat_fire.png"
-    },
-    {
-        "Id": "monster_rat_ice",
-        "Name": "실험실 쥐",
-        "Sprite": "Raw_Green/monster_rat_ice.png"
-    },
-    {
-        "Id": "monster_rat_wind",
-        "Name": "날쌘 쥐",
-        "Sprite": "Raw_Green/monster_rat_wind.png"
-    },
-    {
-        "Id": "monster_rat_holy",
-        "Name": "황금 쥐",
-        "Sprite": "Raw_Green/monster_rat_holy.png"
-    },
-    {
-        "Id": "monster_rat_dark",
-        "Name": "좀비 쥐",
-        "Sprite": "Raw_Green/monster_rat_dark.png"
     }
 ]

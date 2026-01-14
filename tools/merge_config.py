@@ -2,8 +2,8 @@
 import json
 import os
 
-MAIN_CONFIG = r"c:\Users\saintiron\deskHero\config\CharacterData.json"
-NEW_DATA = r"c:\Users\saintiron\deskHero\tools\new_character_data.json"
+MAIN_CONFIG = os.path.join(os.path.dirname(__file__), "..", "config", "CharacterData.json")
+NEW_DATA = os.path.join(os.path.dirname(__file__), "new_character_data.json")
 
 DEFAULT_STATS = {
     "BaseHp": 20,

@@ -1,124 +1,81 @@
 {
-  "language": {
-    "code": "ko-KR",
-    "name": "한국어",
-    "nativeName": "한국어"
-  },
-
-  "ui": {
-    "common": {
-      "level": "레벨",
-      "gold": "골드",
-      "damage": "데미지",
-      "close": "닫기",
-      "kills": "처치"
-    },
-
-    "main": {
-      "keyboardAtk": "⌨️ 공격력",
-      "mouseAtk": "🖱️ 공격력",
-      "upgradeKeyboard": "⌨️ 공격력 UP",
-      "upgradeMouse": "🖱️ 공격력 UP",
-      "stats": "📊 통계",
-      "settings": "⚙️ 설정",
-      "exit": "❌ 종료"
-    },
-
-    "settings": {
-      "title": "⚙️ SETTINGS",
-      "windowOpacity": "창 투명도",
-      "opacity": "배경 투명도",
-      "volume": "사운드 볼륨",
-      "language": "언어 / Language",
-      "close": "CLOSE"
-    },
-
-    "statistics": {
-      "title": "통계",
-      "tabs": {
-        "overview": "개요",
-        "sessions": "세션",
-        "achievements": "업적"
-      },
-      "overview": {
-        "currentSession": "현재 세션",
-        "lifetimeRecords": "누적 기록",
-        "efficiency": "효율"
-      },
-      "labels": {
-        "level": "레벨",
-        "damage": "데미지",
-        "gold": "골드",
-        "kills": "처치",
-        "maxLevel": "최고 레벨",
-        "totalDamage": "총 데미지",
-        "maxHit": "최대 타격",
-        "monsterKills": "몬스터 처치",
-        "bossesDefeated": "보스",
-        "totalGoldEarned": "총 골드",
-        "totalPlaytime": "총 플레이시간",
-        "totalInputs": "총 입력 횟수",
-        "criticalHits": "크리티컬",
-        "consecutiveDays": "연속 일수",
-        "duration": "지속시간",
-        "levelProgress": "레벨 추이 (7일)",
-        "inputRatio": "입력 비율"
-      },
-      "format": {
-        "days": "{0}일"
-      },
-      "sessions": {
-        "bestSession": "최고 세션",
-        "noSessionsYet": "기록 없음",
-        "currentVsAverage": "현재 vs 평균",
-        "recentSessions": "최근 세션",
-        "noSessionsRecorded": "아직 기록된 세션이 없습니다"
-      },
-      "achievements": {
-        "loading": "업적 로딩 중...",
-        "categories": {
-          "combat": "전투",
-          "progression": "성장",
-          "wealth": "재화",
-          "engagement": "활동",
-          "secret": "비밀"
-        }
-      }
-    },
-
-    "gameover": {
-      "title": "도전 실패",
-      "maxLevel": "최고 레벨:",
-      "goldEarned": "획득 골드:",
-      "damageDealt": "가한 데미지:",
-      "newLife": "⚠️ 새 생명 시작",
-      "autoRestart": "{0}초 후 자동 재시작",
-      "messages": [
-        "타임아웃! 다음엔 더 빠르게!",
-        "시간이 부족했나봐요. 재도전!",
-        "좋은 시도였어요! 다시 한 번!",
-        "이번 라운드는 여기까지! 화이팅!",
-        "타이머가 만료되었습니다. 리트라이!"
-      ]
-    },
-
-    "toast": {
-      "achievementUnlocked": "업적 해금!"
-    },
-
-    "tray": {
-      "title": "DeskWarrior - 트레이 더블클릭 또는 F1키로 관리 모드",
-      "manageMode": "📌 관리 모드",
-      "settings": "⚙️ 설정...",
-      "exit": "❌ 종료"
-    }
-  },
-
-  "tooltips": {
-    "upgradeKeyboard": "키보드 공격력 업그레이드",
-    "upgradeMouse": "마우스 공격력 업그레이드",
-    "stats": "게임 통계 보기",
-    "settings": "설정 열기",
-    "exit": "DeskWarrior 종료"
-  }
+  "ui.common.level": "레벨",
+  "ui.common.gold": "골드",
+  "ui.common.damage": "데미지",
+  "ui.common.close": "닫기",
+  "ui.common.kills": "처치",
+  "ui.main.keyboardAtk": "⌨️ 공격력",
+  "ui.main.mouseAtk": "🖱️ 공격력",
+  "ui.main.upgradeKeyboard": "⌨️ 공격력 UP",
+  "ui.main.upgradeMouse": "🖱️ 공격력 UP",
+  "ui.main.stats": "📊 통계",
+  "ui.main.settings": "⚙️ 설정",
+  "ui.main.exit": "❌ 종료",
+  "ui.settings.title": "⚙️ SETTINGS",
+  "ui.settings.opacity": "배경 투명도",
+  "ui.settings.volume": "사운드 볼륨",
+  "ui.settings.language": "언어 / Language",
+  "ui.settings.close": "CLOSE",
+  "ui.statistics.title": "통계",
+  "ui.statistics.tabs.overview": "개요",
+  "ui.statistics.tabs.sessions": "세션",
+  "ui.statistics.tabs.history": "기록",
+  "ui.statistics.tabs.achievements": "업적",
+  "ui.statistics.overview.currentSession": "현재 세션",
+  "ui.statistics.overview.bestSessionRecords": "역대 최고 기록",
+  "ui.statistics.overview.cumulativeStats": "누적 통계",
+  "ui.statistics.overview.maxStats": "최고 세션 통계 (기간 내)",
+  "ui.statistics.overview.lifetimeRecords": "누적 기록",
+  "ui.statistics.overview.efficiency": "효율",
+  "ui.statistics.labels.level": "레벨",
+  "ui.statistics.labels.damage": "데미지",
+  "ui.statistics.labels.gold": "골드",
+  "ui.statistics.labels.kills": "처치",
+  "ui.statistics.labels.maxLevel": "최고 레벨",
+  "ui.statistics.labels.totalDamage": "총 데미지",
+  "ui.statistics.labels.maxHit": "최대 타격",
+  "ui.statistics.labels.monsterKills": "몬스터 처치",
+  "ui.statistics.labels.bossesDefeated": "보스",
+  "ui.statistics.labels.totalGoldEarned": "총 골드",
+  "ui.statistics.labels.totalPlaytime": "총 플레이시간",
+  "ui.statistics.labels.totalInputs": "총 입력 횟수",
+  "ui.statistics.labels.criticalHits": "크리티컬",
+  "ui.statistics.labels.consecutiveDays": "연속 일수",
+  "ui.statistics.labels.duration": "지속시간",
+  "ui.statistics.labels.levelProgress": "레벨 추이 (7일)",
+  "ui.statistics.labels.inputRatio": "입력 비율",
+  "ui.statistics.labels.keyboard": "키보드",
+  "ui.statistics.labels.mouse": "마우스",
+  "ui.statistics.labels.achievements": "업적 달성",
+  "ui.statistics.labels.timeRange": "기간 선택",
+  "ui.statistics.format.days": "{0}일",
+  "ui.statistics.sessions.bestSession": "최고 세션",
+  "ui.statistics.sessions.noSessionsYet": "기록 없음",
+  "ui.statistics.sessions.currentVsAverage": "현재 vs 평균",
+  "ui.statistics.sessions.recentSessions": "최근 세션",
+  "ui.statistics.sessions.noSessionsRecorded": "아직 기록된 세션이 없습니다",
+  "ui.statistics.achievements.loading": "업적 로딩 중...",
+  "ui.statistics.achievements.categories.combat": "전투",
+  "ui.statistics.achievements.categories.progression": "성장",
+  "ui.statistics.achievements.categories.wealth": "재화",
+  "ui.statistics.achievements.categories.engagement": "활동",
+  "ui.statistics.achievements.categories.secret": "비밀",
+  "ui.gameover.title": "도전 실패",
+  "ui.gameover.maxLevel": "최고 레벨:",
+  "ui.gameover.goldEarned": "획득 골드:",
+  "ui.gameover.damageDealt": "가한 데미지:",
+  "ui.gameover.newLife": "⚠️ 새 생명 시작",
+  "ui.gameover.autoRestart": "{0}초 후 자동 재시작",
+  "ui.gameover.messages": [
+    "타임아웃! 다음엔 더 빠르게!",
+    "시간이 부족했나봐요. 재도전!",
+    "좋은 시도였어요! 다시 한 번!",
+    "이번 라운드는 여기까지! 화이팅!",
+    "타이머가 만료되었습니다. 리트라이!"
+  ],
+  "ui.toast.achievementUnlocked": "업적 해금!",
+  "ui.tray.title": "DeskWarrior - 트레이 더블클릭 또는 F1키로 드래그 모드",
+  "ui.tray.dragMode": "📌 드래그 모드",
+  "ui.tray.settings": "⚙️ 설정...",
+  "ui.tray.exit": "❌ 종료"
 }

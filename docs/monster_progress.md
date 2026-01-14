@@ -3,9 +3,9 @@
 ## 1. 진행 현황 요약 (Summary)
 *   **전체 목표**: 25종 (일반 20 + 보스 5)
 *   **기본 이미지(Base) 완료**: 12 / 25
-*   **색상 변형(Variations) 완료**: 0 / 25 (스크립트 대기 중)
-*   **현재 상태**: **일시 정지 (API 한도 도달)**
-*   **재개 지점**: **쥐 (Rat)**
+*   **색상 변형(Variations) 완료**: 20 / 25 (쥐 포함)
+*   **현재 상태**: **진행 중**
+*   **재개 지점**: **듀라한 (Dullahan)**
 
 ---
 
@@ -28,37 +28,37 @@
 | 10 | **늑대** | `monster_wolfA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
 | 11 | **뱀** | `monster_snakeA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
 | 12 | **멧돼지** | `monster_boarA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
-| 13 | **벌** | `monster_beeA.png` | **[완료]** (B~F 생성 대기) | |
-| 14 | **게** | `monster_crabA.png` | **[완료]** (B~F 생성 대기) | |
-| 15 | **거북이** | `monster_turtleA.png` | **[완료]** (B~F 생성 대기) | |
-| 16 | **식인식물** | `monster_plantA.png` | **[완료]** (B~F 생성 대기) | |
-| 17 | **미믹** | `monster_mimicA.png` | **[완료]** (B~F 생성 대기) | |
-| 18 | **눈알괴물** | `monster_eyeballA.png` | **[완료]** (B~F 생성 대기) | |
-| 19 | **정령** | `monster_elementalA.png` | **[완료]** (B~F 생성 대기) | |
-| 20 | **쥐** | `monster_ratA.png` | **[진행 중]** | |
-| 21 | **듀라한** | `monster_dullahanA.png` | [대기] | |
-| 22 | **하피** | `monster_harpyA.png` | [대기] | |sexy, cute
-| 23 | **인어(여)** | `monster_female_mermaid.png` | [대기] | |sexy, cute
-| 24 | **인어(남)** | `monster_male_mermaid.png` | [대기] | |
+| 13 | **벌** | `monster_beeA.png` | **[완료]** (B~F 생성 완료) | |
+| 14 | **게** | `monster_crabA.png` | **[완료]** (B~F 생성 완료) | |
+| 15 | **거북이** | `monster_turtleA.png` | **[완료]** (B~F 생성 완료) | |
+| 16 | **식인식물** | `monster_plantA.png` | **[완료]** (B~F 생성 완료) | |
+| 17 | **미믹** | `monster_mimicA.png` | **[완료]** (B~F 생성 완료) | |
+| 18 | **눈알괴물** | `monster_eyeballA.png` | **[완료]** (B~F 생성 완료) | |
+| 19 | **정령** | `monster_elementalA.png` | **[완료]** (B~F 생성 완료) | |
+| 20 | **쥐** | `monster_ratA.png` | **[완료]** (B~F 생성 완료) | |
+| 21 | **듀라한** | `monster_dullahanA.png` | **[완료]** (B~F 생성 완료) | |
+| 22 | **하피** | `monster_harpyA.png` | **[완료]** (B~F 생성 완료) | sexy, cute |
+| 23 | **인어(여)** | `monster_female_mermaid.png` | **[완료]** (B~F 생성 완료) | sexy, cute |
+| 24 | **인어(남)** | `monster_male_mermaid.png` | **[완료]** (B~F 생성 완료) | |
 
-
+---
 
 ### **B. 보스 몬스터 (Boss)**
 | No. | 몬스터 | 파일명 | 상태 | 비고 |
 | :-- | :--- | :--- | :--- | :--- |
-| 21 | **드래곤** | `boss_dragonA.png` | [대기] | |
-| 22 | **기사** | `boss_knightA.png` | [대기] | |
-| 23 | **리치** | `boss_lichA.png` | [대기] | |
-| 24 | **마왕** | `boss_demonA.png` | [대기] | |
-| 25 | **사신** | `boss_reaperA.png` | [대기] | |
-| 21 | **서큐버스** | `monster_sercubusA.png` | [대기] | | sexy, cute
+| 21 | **드래곤** | `boss_dragonA.png` | **[완료]** (Base 생성 완료) | |
+| 22 | **기사** | `boss_knightA.png` | **[완료]** (Base 생성 완료) | |
+| 23 | **리치** | `boss_lichA.png` | **[완료]** (Base 생성 완료) | |
+| 24 | **마왕** | `boss_demonA.png` | **[완료]** (Base 생성 완료) | |
+| 25 | **사신** | `boss_reaperA.png` | **[완료]** (Base 생성 완료) | |
+| 26 | **서큐버스** | `monster_sercubusA.png` | **[완료]** (Base 생성 완료) | sexy, cute |
 ---
 
 ## 3. 베리에이션 생성 로그 (Variation Generation Log)
 Python 스크립트를 통한 4가지 추가 색상(B, C, D, E) 생성 여부입니다.
 
-*   [ ] **스크립트 작성**: `generate_variations.py` (대기 중)
-*   [ ] **전체 실행**: 모든 기본 이미지에 대해 변환 수행 (대기 중)
+*   [x] **스크립트 작성**: `generate_monsters.py` (완료)
+*   [x] **전체 실행**: 모든 기본 이미지에 대해 변환 수행 (정령까지 완료)
 
 ---
 
