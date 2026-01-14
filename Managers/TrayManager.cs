@@ -2,13 +2,14 @@ using System;
 using System.Windows;
 using System.Windows.Forms;
 using System.Drawing;
+using DeskWarrior.Interfaces;
 
 namespace DeskWarrior.Managers
 {
     /// <summary>
     /// 시스템 트레이 아이콘 관리 클래스
     /// </summary>
-    public class TrayManager : IDisposable
+    public class TrayManager : ITrayManager
     {
         #region Fields
 

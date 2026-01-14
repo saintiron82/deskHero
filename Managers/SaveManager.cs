@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using DeskWarrior.Interfaces;
 using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
@@ -10,7 +11,7 @@ namespace DeskWarrior.Managers
     /// <summary>
     /// 저장/로드 관리 클래스
     /// </summary>
-    public class SaveManager
+    public class SaveManager : ISaveManager
     {
         #region Constants
 

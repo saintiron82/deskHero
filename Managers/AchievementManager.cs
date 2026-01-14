@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using DeskWarrior.Interfaces;
 using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
@@ -10,7 +11,7 @@ namespace DeskWarrior.Managers
     /// <summary>
     /// 업적 관리 클래스
     /// </summary>
-    public class AchievementManager
+    public class AchievementManager : IAchievementManager
     {
         #region Fields
 
@@ -231,18 +232,5 @@ namespace DeskWarrior.Managers
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// 업적 해금 이벤트 인자
-    /// </summary>
-    public class AchievementUnlockedEventArgs : EventArgs
-    {
-        public AchievementDefinition Achievement { get; }
-
-        public AchievementUnlockedEventArgs(AchievementDefinition achievement)
-        {
-            Achievement = achievement;
-        }
     }
 }

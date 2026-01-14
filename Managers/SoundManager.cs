@@ -4,13 +4,14 @@ using System.IO;
 using System.Media;
 using System.Windows.Media;
 using DeskWarrior.Helpers;
+using DeskWarrior.Interfaces;
 
 namespace DeskWarrior.Managers
 {
     /// <summary>
     /// 사운드 효과 관리 클래스
     /// </summary>
-    public class SoundManager : IDisposable
+    public class SoundManager : ISoundManager
     {
         #region Fields
 
@@ -138,17 +139,5 @@ namespace DeskWarrior.Managers
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// 사운드 타입
-    /// </summary>
-    public enum SoundType
-    {
-        Hit,       // 공격 시
-        Defeat,    // 몬스터 처치
-        GameOver,  // 하드 리셋
-        Upgrade,   // 업그레이드
-        BossAppear // 보스 등장
     }
 }
