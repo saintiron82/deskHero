@@ -1,0 +1,51 @@
+{
+    "base_dir": "../Assets/Images",
+    "output_dir": "../Assets/Images/Generated",
+    "operations": [
+        {
+            "input": "monster_slime.png",
+            "output": "monster_slime_flipped.png",
+            "commands": [
+                {"type": "flip", "direction": "horizontal"}
+            ]
+        },
+        {
+            "input": "monster_slime.png",
+            "output": "monster_slime_fire.png",
+            "commands": [
+                {"type": "hue", "target": 0, "preserve_bg": true}
+            ]
+        },
+        {
+            "input": "monster_slime.png",
+            "output": "monster_slime_ice.png",
+            "commands": [
+                {"type": "hue", "target": 210, "preserve_bg": true}
+            ]
+        },
+        {
+            "input": "monster_slime.png",
+            "output": "monster_slime_dark.png",
+            "commands": [
+                {"type": "hue", "target": 270, "preserve_bg": true},
+                {"type": "brightness", "factor": 0.7}
+            ]
+        },
+        {
+            "input": "hero_knight.png",
+            "output": "hero_knight_centered.png",
+            "commands": [
+                {"type": "expand", "left": 20, "top": 10, "right": 20, "bottom": 10},
+                {"type": "offset", "x": 5, "y": 0}
+            ]
+        },
+        {
+            "input": "boss_dragon.png",
+            "output": "boss_dragon_rotated.png",
+            "commands": [
+                {"type": "rotate", "angle": 15, "expand": true},
+                {"type": "resize", "scale": 0.8}
+            ]
+        }
+    ]
+}
