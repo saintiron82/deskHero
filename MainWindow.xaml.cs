@@ -93,9 +93,6 @@ namespace DeskWarrior
             Closing += MainWindow_Closing;
             LocationChanged += MainWindow_LocationChanged;
 
-            // 초기 UI 업데이트
-            UpdateUI();
-            
             // 게임 시작
             _gameManager.StartGame();
         }
@@ -194,7 +191,10 @@ namespace DeskWarrior
                 _heroAttackTimer.Interval = TimeSpan.FromMilliseconds(150);
                 _heroAttackTimer.Tick += HeroAttackTimer_Tick;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.LogError("Hero image loading failed", ex);
+            }
         }
 
         private void HeroAttackTimer_Tick(object? sender, EventArgs e)
@@ -805,20 +805,6 @@ namespace DeskWarrior
             return false;
         }
 
-        private void SetClickThrough(bool enabled)
-        {
-            if (enabled)
-            {
-                Win32Helper.SetWindowClickThrough(_hwnd);
-            }
-            else
-            {
-                int extendedStyle = Win32Helper.GetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE);
-                Win32Helper.SetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE,
-                    extendedStyle & ~Win32Helper.WS_EX_TRANSPARENT);
-            }
-        }
-
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_NCHITTEST = 0x0084;
@@ -1117,64 +1103,7 @@ namespace DeskWarrior
             DebugText.Text = $"+{goldReward} 💰";
         }
 
-        private void GameOverEffect()
-        {
-            // Hard Reset 시 화면 붉은 플래시 효과
-            DebugText.Text = "⚠️ TIME OVER - RESET!";
-            DebugText.Foreground = new SolidColorBrush(Colors.Red);
-            
-            // 타이머 색상 깜빡임
-            var flashAnim = new ColorAnimation
-            {
-                From = Colors.Red,
-                To = Colors.DarkRed,
-                Duration = TimeSpan.FromMilliseconds(100),
-                AutoReverse = true,
-                RepeatBehavior = new RepeatBehavior(3)
-            };
-            
-            var brush = new SolidColorBrush(Colors.Red);
-            TimerText.Foreground = brush;
-            brush.BeginAnimation(SolidColorBrush.ColorProperty, flashAnim);
-        }
-
-        private void BossEntranceEffect()
-        {
-            // 보스 등장 연출
-            DebugText.Text = "⚠️ BOSS APPEARED!";
-            DebugText.Foreground = new SolidColorBrush(Colors.Purple);
-
-            // 몬스터 크기를 보스 크기로 설정
-            MonsterImage.Width = BOSS_SIZE;
-            MonsterImage.Height = BOSS_SIZE;
-        }
-
         #endregion
-        private void UpdateUI()
-        {
-            if (_gameManager == null) return;
-
-            // 레벨, 골드 업데이트
-            if (LevelText != null) LevelText.Text = $"Lv.{_gameManager.CurrentLevel}";
-            if (MaxLevelText != null) MaxLevelText.Text = $"(Best: {_saveManager.CurrentSave.Stats.MaxLevel})";
-            if (GoldText != null) GoldText.Text = $"💰 {_gameManager.Gold:N0}";
-
-            // HP 업데이트
-            if (_gameManager.CurrentMonster != null && HpText != null)
-            {
-                HpText.Text = $"{_gameManager.CurrentMonster.CurrentHp:N0}/{_gameManager.CurrentMonster.MaxHp:N0}";
-            }
-
-            // 입력 카운트
-            if (InputCountText != null) InputCountText.Text = $"⌨️ {_sessionInputCount}";
-
-            // 공격력 업데이트
-            if (KeyboardPowerText != null) KeyboardPowerText.Text = $"⌨️ Atk: {_gameManager.KeyboardPower:N0}";
-            if (MousePowerText != null) MousePowerText.Text = $"🖱️ Atk: {_gameManager.MousePower:N0}";
-
-            // 업그레이드 비용 업데이트
-            UpdateUpgradeCosts();
-        }
 
         private void UpdateLocalizedUI()
         {
