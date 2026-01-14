@@ -80,9 +80,9 @@
 
                         <!-- Time Filters -->
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15" HorizontalAlignment="Center">
-                            <Button x:Name="BtnRange1H" Content="Last 1H" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="1H"/>
-                            <Button x:Name="BtnRange24H" Content="Last 24H" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="24H"/>
-                            <Button x:Name="BtnRangeAll" Content="All Time" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="All"/>
+                            <Button x:Name="BtnRange1H" Content="1H" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="1H"/>
+                            <Button x:Name="BtnRange24H" Content="24H" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="24H"/>
+                            <Button x:Name="BtnRange7D" Content="7D" Style="{StaticResource FilterButtonStyle}" Click="Filter_Click" Tag="7D"/>
                         </StackPanel>
 
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">

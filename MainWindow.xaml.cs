@@ -20,6 +20,11 @@ namespace DeskWarrior
     {
         #region Fields
 
+        // 캐릭터 크기 설정 (여기서 조절)
+        private const double MONSTER_SIZE = 80;      // 일반 몬스터 크기
+        private const double BOSS_SIZE = 130;        // 보스 크기
+        private const double HERO_SIZE = 100;        // 히어로 크기
+
         private readonly IInputHandler _inputHandler;
         private readonly TrayManager _trayManager;
         private readonly SaveManager _saveManager;
@@ -29,7 +34,8 @@ namespace DeskWarrior
         private readonly Random _random = new();
 
         private IntPtr _hwnd;
-        private bool _isDragMode;
+        private bool _isManageMode;
+        private bool _isModeButtonVisible;
         private int _sessionInputCount;
 
         // Auto Restart
@@ -40,11 +46,12 @@ namespace DeskWarrior
         private readonly Queue<Models.AchievementDefinition> _toastQueue = new();
         private bool _isShowingToast;
 
-        // Drag Mode Toggle Window
-        private Windows.DragToggleWindow? _dragToggleWindow;
-        private System.Windows.Threading.DispatcherTimer? _hideDelayTimer;
-        private System.Windows.Threading.DispatcherTimer? _mouseTrackTimer;
-        private bool _wasMouseOver = false;
+        // Hero Sprite
+        private HeroData? _currentHero;
+        private System.Windows.Threading.DispatcherTimer? _heroAttackTimer;
+
+        // Mode Button Hover Timer
+        private System.Windows.Threading.DispatcherTimer? _hoverCheckTimer;
 
         #endregion
 
@@ -72,7 +79,8 @@ namespace DeskWarrior
 
             // 이벤트 구독
             _inputHandler.OnInput += OnInputReceived;
-            _trayManager.DragModeToggled += OnDragModeToggled;
+            _trayManager.ManageModeToggled += OnManageModeToggled;
+            _trayManager.SettingsRequested += OnSettingsRequested;
             _trayManager.ExitRequested += OnExitRequested;
 
             _gameManager.DamageDealt += OnDamageDealt;
@@ -100,6 +108,10 @@ namespace DeskWarrior
         {
             _hwnd = new WindowInteropHelper(this).Handle;
 
+            // WndProc 훅 추가 (WM_NCHITTEST 처리용)
+            HwndSource source = HwndSource.FromHwnd(_hwnd);
+            source.AddHook(WndProc);
+
             // 저장 데이터 로드
             _saveManager.Load();
 
@@ -122,39 +134,13 @@ namespace DeskWarrior
             Left = _saveManager.CurrentSave.Position.X;
             Top = _saveManager.CurrentSave.Position.Y;
 
-            // Click-through 설정 (초기 상태)
-            SetClickThrough(true);
+            // WM_NCHITTEST가 Click-through를 처리하므로 SetClickThrough 호출 불필요
 
             // 태스크바에서 숨기기
             Win32Helper.SetWindowToolWindow(_hwnd);
 
             // 트레이 아이콘 초기화
             _trayManager.Initialize();
-
-            // 드래그 모드 토글 버튼 창 생성
-            _dragToggleWindow = new Windows.DragToggleWindow();
-            _dragToggleWindow.ToggleRequested += (s, args) =>
-            {
-                System.IO.File.AppendAllText(
-                    System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "dragtoggle_debug.txt"),
-                    $"{DateTime.Now:HH:mm:ss.fff} MainWindow received ToggleRequested, calling ToggleDragMode()\n");
-                _trayManager.ToggleDragMode();
-            };
-            _dragToggleWindow.DragDeltaRequested += (s, args) =>
-            {
-                // 잠금 버튼 드래그 시 메인 윈도우 이동
-                Left += args.DeltaX;
-                Top += args.DeltaY;
-                // DragToggleWindow 위치는 MainWindow_LocationChanged에서 자동 업데이트됨
-            };
-            _dragToggleWindow.UpdatePosition(Left, Top, Width);
-            _dragToggleWindow.Show();
-
-            // 마우스 위치 추적 타이머 (Click-through 상태에서도 작동)
-            _mouseTrackTimer = new System.Windows.Threading.DispatcherTimer();
-            _mouseTrackTimer.Interval = TimeSpan.FromMilliseconds(100);
-            _mouseTrackTimer.Tick += MouseTrackTimer_Tick;
-            _mouseTrackTimer.Start();
 
             // 입력 감지 시작
             _inputHandler.ShouldBlockKey = (vkCode) =>
@@ -167,6 +153,12 @@ namespace DeskWarrior
                 return false;
             };
             _inputHandler.Start();
+
+            // 모드 버튼 호버 체크 타이머 초기화
+            _hoverCheckTimer = new System.Windows.Threading.DispatcherTimer();
+            _hoverCheckTimer.Interval = TimeSpan.FromMilliseconds(100);
+            _hoverCheckTimer.Tick += HoverCheckTimer_Tick;
+            _hoverCheckTimer.Start();
 
             // 게임 시작 및 저장된 업그레이드 로드
             _gameManager.StartGame();
@@ -188,16 +180,49 @@ namespace DeskWarrior
             // 히어로 이미지 로드
             try
             {
-                // 랜덤하게 히어로 이미지 선택 (hero_mageA, hero_archerA, hero_saintA)
-                string[] heroSkins = { "hero_mageA", "hero_archerA", "hero_saintA" };
-                string heroSkin = heroSkins[_random.Next(heroSkins.Length)]; 
+                // JSON에서 영웅 목록 가져와서 랜덤 선택
+                var heroes = _gameManager.Heroes;
+                if (heroes.Count > 0)
+                {
+                    _currentHero = heroes[_random.Next(heroes.Count)];
+                    HeroImage.Source = ImageHelper.LoadWithChromaKey(
+                        $"pack://application:,,,/Assets/Images/{_currentHero.IdleSprite}.png");
+                }
 
-                HeroImage.Source = ImageHelper.LoadWithChromaKey(
-                    $"pack://application:,,,/Assets/Images/{heroSkin}.png");
+                // 공격 스프라이트 복귀 타이머 초기화
+                _heroAttackTimer = new System.Windows.Threading.DispatcherTimer();
+                _heroAttackTimer.Interval = TimeSpan.FromMilliseconds(150);
+                _heroAttackTimer.Tick += HeroAttackTimer_Tick;
             }
             catch { }
         }
 
+        private void HeroAttackTimer_Tick(object? sender, EventArgs e)
+        {
+            _heroAttackTimer?.Stop();
+            if (_currentHero != null)
+            {
+                HeroImage.Source = ImageHelper.LoadWithChromaKey(
+                    $"pack://application:,,,/Assets/Images/{_currentHero.IdleSprite}.png");
+            }
+        }
+
+        private void ShowHeroAttackSprite()
+        {
+            if (_currentHero == null) return;
+
+            _heroAttackTimer?.Stop();
+            HeroImage.Source = ImageHelper.LoadWithChromaKey(
+                $"pack://application:,,,/Assets/Images/{_currentHero.AttackSprite}.png");
+            _heroAttackTimer?.Start();
+        }
+
+        private void ModeToggle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // 모드 전환만 수행 (설정창 열지 않음)
+            _trayManager.ToggleManageMode();
+            e.Handled = true;
+        }
 
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -211,16 +236,19 @@ namespace DeskWarrior
             _saveManager.Save();
             DeskWarrior.Helpers.Logger.Log("SaveManager.Save() Completed");
 
-            // 2. InputHandler 정리
+            // 2. Hover Timer 정리
+            _hoverCheckTimer?.Stop();
+
+            // 3. InputHandler 정리
             _inputHandler.OnInput -= OnInputReceived;
             _inputHandler.Dispose();
             DeskWarrior.Helpers.Logger.Log("InputHandler Disposed");
 
-            // 3. TrayManager 정리
+            // 4. TrayManager 정리
             _trayManager.Dispose();
             DeskWarrior.Helpers.Logger.Log("TrayManager Disposed");
 
-            // 4. SoundManager 정리
+            // 5. SoundManager 정리
             _soundManager.Dispose();
             DeskWarrior.Helpers.Logger.Log("SoundManager Disposed");
 
@@ -230,27 +258,17 @@ namespace DeskWarrior
         private void MainWindow_LocationChanged(object? sender, EventArgs e)
         {
             _saveManager.UpdateWindowPosition(Left, Top);
-            
-            // 드래그 토글 창 위치 동기화
-            _dragToggleWindow?.UpdatePosition(Left, Top, Width);
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_isDragMode)
+            if (_isManageMode)
             {
                 try
                 {
                     if (e.LeftButton == MouseButtonState.Pressed)
                     {
                         DragMove();
-                        
-                        // 드래그 완료 후 DragToggleWindow를 최상위로 다시 올림
-                        if (_dragToggleWindow != null)
-                        {
-                            _dragToggleWindow.Topmost = false;
-                            _dragToggleWindow.Topmost = true;
-                        }
                     }
                 }
                 catch (InvalidOperationException)
@@ -266,10 +284,10 @@ namespace DeskWarrior
 
         private void GameElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            // 게임 요소(몬스터/히어로) 클릭 시 드래그 모드가 아니면 자동 활성화
-            if (!_isDragMode)
+            // 게임 요소(몬스터/히어로) 클릭 시 관리 모드가 아니면 자동 활성화
+            if (!_isManageMode)
             {
-                _trayManager.ToggleDragMode();
+                _trayManager.ToggleManageMode();
             }
             e.Handled = true;
         }
@@ -278,19 +296,16 @@ namespace DeskWarrior
         {
             Dispatcher.Invoke(() =>
             {
-                // F1 키로 드래그 모드 토글 (VK_F1 = 112)
+                // F1 키로 관리 모드 토글 (VK_F1 = 112)
                 if (e.Type == GameInputType.Keyboard && e.VirtualKeyCode == 112)
                 {
                     // 마우스가 게임 창 위에 있을 때만 작동
                     if (IsMouseOverWindow())
                     {
-                        _trayManager.ToggleDragMode();
+                        _trayManager.ToggleManageMode();
                     }
                     return;
                 }
-
-                // 드래그 모드일 때는 게임 입력 무시
-                if (_isDragMode) return;
 
                 // 입력 카운트 증가
                 _sessionInputCount++;
@@ -316,6 +331,9 @@ namespace DeskWarrior
                 // 공격 사운드
                 _soundManager.Play(SoundType.Hit);
 
+                // 영웅 공격 스프라이트 전환
+                ShowHeroAttackSprite();
+
                 // 몬스터 흔들림 효과
                 ShakeMonster();
 
@@ -327,40 +345,55 @@ namespace DeskWarrior
             });
         }
 
-        private void OnDragModeToggled(object? sender, EventArgs e)
+        private void OnManageModeToggled(object? sender, EventArgs e)
         {
-            _isDragMode = _trayManager.IsDragMode;
+            _isManageMode = _trayManager.IsManageMode;
 
-            // 게임 오버 상태에서는 항상 Click-through 해제 유지
-            bool isGameOver = GameOverOverlay.Visibility == Visibility.Visible;
-            if (!isGameOver)
+            // UI 업데이트
+            if (_isManageMode)
             {
-                SetClickThrough(!_isDragMode);
-            }
+                // 관리 모드 - 모든 정보 표시
+                ManageModeBorder.Visibility = Visibility.Visible;
+                UpgradePanel.Visibility = Visibility.Visible;
+                PowerInfoBar.Visibility = Visibility.Visible;
+                ExitButtonBorder.Visibility = Visibility.Visible;
+                MaxLevelText.Visibility = Visibility.Visible;
+                HpText.Visibility = Visibility.Visible;
 
-            DragModeBorder.Visibility = _isDragMode ? Visibility.Visible : Visibility.Collapsed;
-            UpgradePanel.Visibility = _isDragMode ? Visibility.Visible : Visibility.Collapsed;
+                ModeIcon.Text = "✋";
+                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(255, 165, 0)); // Orange
+                ModeToggleBorder.ToolTip = "👁️ 관전 모드로 전환 (F1)";
 
-            // 드래그 토글 창 아이콘 업데이트
-            _dragToggleWindow?.UpdateIcon(_isDragMode);
+                // 관리 모드에서는 버튼 항상 표시
+                ModeToggleBorder.Opacity = 1;
+                _isModeButtonVisible = true;
 
-            // 드래그 모드 활성화 시 버튼 표시 유지
-            if (_isDragMode)
-            {
-                _hideDelayTimer?.Stop();
-                _dragToggleWindow?.ShowAnimated();
+                UpdateUpgradeCosts();
             }
             else
             {
-                // 드래그 모드 해제 시 마우스가 창 밖이면 숨김 (게임 오버가 아닐 때만)
-                if (!isGameOver && !IsMouseOverWindow() && !IsMouseOverDragToggle())
+                // 관전 모드 - 최소 UI
+                ManageModeBorder.Visibility = Visibility.Collapsed;
+                UpgradePanel.Visibility = Visibility.Collapsed;
+                PowerInfoBar.Visibility = Visibility.Collapsed;
+                ExitButtonBorder.Visibility = Visibility.Collapsed;
+                MaxLevelText.Visibility = Visibility.Collapsed;
+                HpText.Visibility = Visibility.Collapsed;
+
+                ModeIcon.Text = "👁️";
+                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 206, 209)); // Cyan
+                ModeToggleBorder.ToolTip = "✋ 관리 모드로 전환 (F1)";
+
+                // 관전 모드에서는 마우스가 창 위에 없으면 버튼 숨김
+                if (!IsMouseOverWindow())
                 {
-                    StartHideDelayTimer();
+                    ModeToggleBorder.Opacity = 0;
+                    _isModeButtonVisible = false;
                 }
             }
 
-            // 업그레이드 비용 업데이트
-            if (_isDragMode) UpdateUpgradeCosts();
+            // 모드 전환 시 배경 불투명도 재적용 (관리 모드 최소 5% 보장)
+            ApplyBackgroundOpacity(_saveManager.CurrentSave.Settings.BackgroundOpacity);
         }
 
         private void UpgradeKeyboard_Click(object sender, RoutedEventArgs e)
@@ -385,25 +418,13 @@ namespace DeskWarrior
             }
         }
 
-        private void ToggleDragMode()
+
+        private void OnSettingsRequested(object? sender, EventArgs e)
         {
-            _isDragMode = !_isDragMode;
-            if (_isDragMode)
+            Dispatcher.Invoke(() =>
             {
-                DragModeBorder.Visibility = Visibility.Visible;
-                UpgradePanel.Visibility = Visibility.Visible;
-                this.ResizeMode = ResizeMode.CanResizeWithGrip;
-            }
-            else
-            {
-                DragModeBorder.Visibility = Visibility.Collapsed;
-                UpgradePanel.Visibility = Visibility.Collapsed;
-                this.ResizeMode = ResizeMode.NoResize;
-                
-                // 위치 저장
-                _saveManager.UpdateWindowPosition(Left, Top); // Changed from UpdatePosition to UpdateWindowPosition
-                _saveManager.Save();
-            }
+                SettingsButton_Click(this, new RoutedEventArgs());
+            });
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -411,6 +432,9 @@ namespace DeskWarrior
             // 설정 창 열기 (모달)
             var settingsWindow = new Windows.SettingsWindow(
                 _saveManager.CurrentSave.Settings,
+                (windowOpacity) => {
+                    ApplyWindowOpacity(windowOpacity);
+                },
                 (opacity) => {
                     ApplyBackgroundOpacity(opacity);
                 },
@@ -441,32 +465,49 @@ namespace DeskWarrior
             Application.Current.Shutdown();
         }
 
+        private void ExitButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            Application.Current.Shutdown();
+        }
+
+        private void ApplyWindowOpacity(double opacity)
+        {
+            this.Opacity = opacity;
+        }
+
         private void ApplyBackgroundOpacity(double opacity)
         {
+            // 관리 모드에서는 최소 5% 불투명도 보장
+            double effectiveOpacity = _isManageMode ? Math.Max(opacity, 0.05) : opacity;
+
             // 각 패널마다 기본 투명도 비율이 다를 수 있음
             // 적 정보 / 타이머: 기본 0.4 (최대 0.8)
-            double infoOpacity = Math.Clamp(opacity, 0.0, 0.8);
-            
+            double infoOpacity = Math.Clamp(effectiveOpacity, 0.0, 0.8);
+
             // 업그레이드 패널: 기본 0.6 (최대 0.9)
-            double upgradeOpacity = Math.Clamp(opacity * 1.5, 0.0, 0.95);
+            double upgradeOpacity = Math.Clamp(effectiveOpacity * 1.5, 0.0, 0.95);
 
             if (MainBackgroundBorder != null)
-                MainBackgroundBorder.Background = new SolidColorBrush(Color.FromRgb(0x1a, 0x1a, 0x2e)) { Opacity = opacity };
+                MainBackgroundBorder.Background = new SolidColorBrush(Color.FromRgb(0x1a, 0x1a, 0x2e)) { Opacity = effectiveOpacity };
 
-            if (EnemyInfoBorder != null) 
+            if (EnemyInfoBorder != null)
                 EnemyInfoBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
-            
-            if (TimerBorder != null) 
-                TimerBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
-            
-            if (UpgradePanel != null) 
+
+            if (HeroInfoBar != null)
+                HeroInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = Math.Max(infoOpacity, 0.7) };
+
+            if (PowerInfoBar != null)
+                PowerInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
+
+            if (UpgradePanel != null)
                 UpgradePanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
 
             // GameOverOverlay도 설정 따르도록 함
             if (GameOverOverlay != null)
             {
                  // 게임오버는 좀 더 어둡게
-                 byte overlayAlpha = (byte)(Math.Max(opacity, 0.8) * 255); 
+                 byte overlayAlpha = (byte)(Math.Max(opacity, 0.8) * 255);
                  GameOverOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayAlpha, 0, 0, 0));
             }
         }
@@ -474,11 +515,9 @@ namespace DeskWarrior
         private void ApplySettings()
         {
             var settings = _saveManager.CurrentSave.Settings;
+            ApplyWindowOpacity(settings.WindowOpacity);
             ApplyBackgroundOpacity(settings.BackgroundOpacity);
             _soundManager.Volume = settings.Volume;
-            
-            // Auto Restart 설정 로드
-            AutoRestartCheckBox.IsChecked = settings.AutoRestart;
         }
 
         private void SaveUpgrades()
@@ -656,111 +695,68 @@ namespace DeskWarrior
             // 오버레이 표시
             GameOverOverlay.Opacity = 0;
             GameOverOverlay.Visibility = Visibility.Visible;
-            GameOverOverlay.IsHitTestVisible = true; // 반응 즉시 가능하도록 명시
-            
-            // 클릭 투과 해제 (오버레이 상호작용 가능하게)
-            SetClickThrough(false);
-            DeskWarrior.Helpers.Logger.Log("ClickThrough Enabled");
+            GameOverOverlay.IsHitTestVisible = true;
 
-            _isDragMode = true; // 드래그 모드도 활성화
-
-            // 잠금 버튼 표시 (게임 오버 시 항상 입력 가능하도록)
-            _hideDelayTimer?.Stop();
-            _dragToggleWindow?.ShowAnimated();
-            _dragToggleWindow?.UpdateIcon(_isDragMode);
-            
             var fadeIn = new DoubleAnimation
             {
                 From = 0, To = 1,
                 Duration = TimeSpan.FromSeconds(0.5)
             };
             GameOverOverlay.BeginAnimation(OpacityProperty, fadeIn);
-            
+
             // 배경 투명도 재적용 (로드 시점 문제 방지)
             ApplyBackgroundOpacity(_saveManager.CurrentSave.Settings.BackgroundOpacity);
 
-            // Auto Restart 시작 확인
-            if (AutoRestartCheckBox.IsChecked == true)
-            {
-                _autoRestartCountdown = 10;
-                UpdateAutoRestartText();
-                _autoRestartTimer.Start();
-            }
-            else
-            {
-                _autoRestartTimer.Stop();
-                AutoRestartCheckBox.Content = string.Format(LocalizationManager.Instance["ui.gameover.autoRestart"], 10);
-            }
-            
+            // 몬스터 크기/흔들림 초기화
+            MonsterImage.BeginAnimation(WidthProperty, null);
+            MonsterImage.BeginAnimation(HeightProperty, null);
+            MonsterImage.Width = MONSTER_SIZE;
+            MonsterImage.Height = MONSTER_SIZE;
+            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, null);
+
+            // 즉시 게임 재시작 (뒤에서 진행)
+            _gameManager.RestartGame();
+
+            // 10초 후 오버레이 자동 닫기 타이머 시작
+            _autoRestartCountdown = 10;
+            UpdateAutoCloseCountdown();
+            _autoRestartTimer.Start();
+
             DeskWarrior.Helpers.Logger.Log("=== GAME OVER END ===");
         }
 
-        private void UpdateAutoRestartText()
+        private void UpdateAutoCloseCountdown()
         {
-            AutoRestartCheckBox.Content = string.Format(LocalizationManager.Instance["ui.gameover.autoRestart"], _autoRestartCountdown);
+            var loc = LocalizationManager.Instance;
+            AutoCloseCountdownText.Text = loc.CurrentLanguage == "ko-KR"
+                ? $"{_autoRestartCountdown}초후 닫힘"
+                : $"Closes in {_autoRestartCountdown}s";
         }
 
         private void AutoRestartTimer_Tick(object? sender, EventArgs e)
         {
             _autoRestartCountdown--;
-            UpdateAutoRestartText();
+            UpdateAutoCloseCountdown();
 
             if (_autoRestartCountdown <= 0)
             {
                 _autoRestartTimer.Stop();
-                NewLifeButton_Click(this, new RoutedEventArgs());
+                CloseGameOverOverlay();
             }
         }
 
-        private void AutoRestart_Checked(object sender, RoutedEventArgs e)
+        private void CloseGameOverOverlay()
         {
-            // 설정 저장
-            _saveManager.CurrentSave.Settings.AutoRestart = true;
-            _saveManager.Save();
-            
-            // 이미 게임오버 상태라면 타이머 시작
-            if (GameOverOverlay.Visibility == Visibility.Visible)
-            {
-                _autoRestartCountdown = 10;
-                UpdateAutoRestartText();
-                _autoRestartTimer.Start();
-            }
-        }
-
-        private void AutoRestart_Unchecked(object sender, RoutedEventArgs e)
-        {
-            // 설정 저장
-             _saveManager.CurrentSave.Settings.AutoRestart = false;
-            _saveManager.Save();
-            
-            // 타이머 중지
-            _autoRestartTimer.Stop();
-            AutoRestartCheckBox.Content = string.Format(LocalizationManager.Instance["ui.gameover.autoRestart"], 10);
-        }
-
-        private void NewLifeButton_Click(object sender, RoutedEventArgs e)
-        {
-            // 타이머 중지 확인
-            _autoRestartTimer.Stop();
-            
-            // 오버레이 숨기기
             GameOverOverlay.Visibility = Visibility.Collapsed;
-            
-            // 게임 플레이 영역 활성화
             if (MainBackgroundBorder != null)
                 MainBackgroundBorder.IsHitTestVisible = true;
-            
-            // 몬스터 크기 초기화
-            MonsterImage.BeginAnimation(WidthProperty, null);
-            MonsterImage.BeginAnimation(HeightProperty, null);
-            MonsterImage.Width = 100;
-            MonsterImage.Height = 100;
-            
-            // 흔들림 초기화
-            MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, null);
+            UpdateAllUI();
+        }
 
-            // 게임 리스타트
-            _gameManager.RestartGame();
+        private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            _autoRestartTimer.Stop();
+            CloseGameOverOverlay();
         }
 
         private void OnDamageDealt(object? sender, DamageEventArgs e)
@@ -809,64 +805,6 @@ namespace DeskWarrior
             return false;
         }
 
-        private bool IsMouseOverDragToggle()
-        {
-            if (_dragToggleWindow == null) return false;
-
-            if (Win32Helper.GetCursorPos(out var pt))
-            {
-                try
-                {
-                    var localPoint = _dragToggleWindow.PointFromScreen(
-                        new System.Windows.Point(pt.x, pt.y));
-                    return localPoint.X >= 0 && localPoint.X < _dragToggleWindow.ActualWidth &&
-                           localPoint.Y >= 0 && localPoint.Y < _dragToggleWindow.ActualHeight;
-                }
-                catch { return false; }
-            }
-            return false;
-        }
-
-        private void MouseTrackTimer_Tick(object? sender, EventArgs e)
-        {
-            bool isMouseOver = IsMouseOverWindow() || IsMouseOverDragToggle();
-
-            if (isMouseOver && !_wasMouseOver)
-            {
-                // 마우스 진입
-                _hideDelayTimer?.Stop();
-                _dragToggleWindow?.ShowAnimated();
-            }
-            else if (!isMouseOver && _wasMouseOver && !_isDragMode)
-            {
-                // 마우스 이탈 (드래그 모드가 아닐 때만)
-                StartHideDelayTimer();
-            }
-
-            _wasMouseOver = isMouseOver;
-        }
-
-        private void StartHideDelayTimer()
-        {
-            if (_hideDelayTimer == null)
-            {
-                _hideDelayTimer = new System.Windows.Threading.DispatcherTimer();
-                _hideDelayTimer.Interval = TimeSpan.FromMilliseconds(300);
-                _hideDelayTimer.Tick += (s, args) =>
-                {
-                    _hideDelayTimer.Stop();
-
-                    // 마우스가 MainWindow나 DragToggleWindow 위에 있는지 확인
-                    if (!IsMouseOverWindow() && !IsMouseOverDragToggle() && !_isDragMode)
-                    {
-                        _dragToggleWindow?.HideAnimated();
-                    }
-                };
-            }
-            _hideDelayTimer.Stop();
-            _hideDelayTimer.Start();
-        }
-
         private void SetClickThrough(bool enabled)
         {
             if (enabled)
@@ -876,12 +814,99 @@ namespace DeskWarrior
             else
             {
                 int extendedStyle = Win32Helper.GetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE);
-                Win32Helper.SetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE, 
+                Win32Helper.SetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE,
                     extendedStyle & ~Win32Helper.WS_EX_TRANSPARENT);
             }
         }
 
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_NCHITTEST = 0x0084;
+            const int HTTRANSPARENT = -1;
+            const int HTCLIENT = 1;
 
+            if (msg == WM_NCHITTEST)
+            {
+                // 관리 모드가 아닐 때만 Click-through 처리
+                if (!_isManageMode)
+                {
+                    // 게임 오버 오버레이가 표시 중이면 클릭 허용
+                    if (GameOverOverlay.Visibility == Visibility.Visible)
+                    {
+                        handled = true;
+                        return new IntPtr(HTCLIENT);
+                    }
+
+                    // 마우스 좌표 가져오기
+                    int x = (short)(lParam.ToInt32() & 0xFFFF);
+                    int y = (short)(lParam.ToInt32() >> 16);
+                    Point screenPoint = new Point(x, y);
+                    Point clientPoint = PointFromScreen(screenPoint);
+
+                    // 모드 전환 버튼 영역 확인
+                    if (IsPointOverModeButton(clientPoint))
+                    {
+                        handled = true;
+                        return new IntPtr(HTCLIENT);  // 클릭 받음
+                    }
+
+                    // 나머지 영역은 투과
+                    handled = true;
+                    return new IntPtr(HTTRANSPARENT);
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+
+        private void HoverCheckTimer_Tick(object? sender, EventArgs e)
+        {
+            // 관리 모드에서는 버튼 항상 표시
+            if (_isManageMode) return;
+
+            bool isOver = IsMouseOverWindow();
+
+            if (isOver && !_isModeButtonVisible)
+            {
+                _isModeButtonVisible = true;
+                ShowModeButton();
+            }
+            else if (!isOver && _isModeButtonVisible)
+            {
+                _isModeButtonVisible = false;
+                HideModeButton();
+            }
+        }
+
+        private void ShowModeButton()
+        {
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150));
+            ModeToggleBorder.BeginAnimation(OpacityProperty, fadeIn);
+        }
+
+        private void HideModeButton()
+        {
+            // 관리 모드에서는 숨기지 않음
+            if (_isManageMode) return;
+
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
+            ModeToggleBorder.BeginAnimation(OpacityProperty, fadeOut);
+        }
+
+        private bool IsPointOverModeButton(Point point)
+        {
+            try
+            {
+                GeneralTransform transform = ModeToggleBorder.TransformToAncestor(this);
+                Rect bounds = transform.TransformBounds(
+                    new Rect(0, 0, ModeToggleBorder.ActualWidth, ModeToggleBorder.ActualHeight));
+                return bounds.Contains(point);
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         private void UpdateAllUI()
         {
@@ -910,22 +935,40 @@ namespace DeskWarrior
                 // 이미지 업데이트 (보스 vs 일반) - 크로마 키 처리
                 try
                 {
-                    string imageName = monster.SkinType;
-                    // bossA 등 보조 이미지가 있다면 처리해야 하겠지만 현재는 기본 로직 사용
-                    
-                    string imagePath = $"pack://application:,,,/Assets/Images/{imageName}.png";
-                    MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
-                    
-                    // 보스는 더 크게
-                    MonsterImage.Width = monster.IsBoss ? 120 : 100;
-                    MonsterImage.Height = monster.IsBoss ? 120 : 100;
+                    string spritePath = monster.SkinType;
 
-                    // 몬스터 방향 보정 (슬라임, 박쥐, 스켈레톤은 반대 방향을 보고 있음)
-                    bool needsFlip = imageName.Contains("slime") || imageName.Contains("bat") || imageName.Contains("skeleton");
+                    // Sprite 경로가 이미 확장자를 포함하고 있는지 확인
+                    string imagePath = spritePath.EndsWith(".png")
+                        ? $"pack://application:,,,/Assets/Images/{spritePath}"
+                        : $"pack://application:,,,/Assets/Images/{spritePath}.png";
+
+                    MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
+
+                    // 보스는 더 크게
+                    MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+                    MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+
+                    // 몬스터 방향 보정 (대부분 몬스터가 좌측을 보고 있음 - 우측으로 반전)
+                    bool needsFlip = spritePath.Contains("slime") || spritePath.Contains("bat") ||
+                                     spritePath.Contains("skeleton") || spritePath.Contains("goblin") ||
+                                     spritePath.Contains("orc") || spritePath.Contains("ghost") ||
+                                     spritePath.Contains("golem") || spritePath.Contains("mushroom") ||
+                                     spritePath.Contains("spider") || spritePath.Contains("wolf") ||
+                                     spritePath.Contains("snake") || spritePath.Contains("boar");
+
                     MonsterImage.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
-                    MonsterImage.RenderTransform = new ScaleTransform(needsFlip ? -1 : 1, 1);
+
+                    // TransformGroup으로 ScaleTransform과 TranslateTransform 함께 적용
+                    var transformGroup = new TransformGroup();
+                    transformGroup.Children.Add(new ScaleTransform(needsFlip ? -1 : 1, 1));
+                    transformGroup.Children.Add(MonsterShakeTransform);
+                    MonsterImage.RenderTransform = transformGroup;
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    // 이미지 로딩 실패 시 기본 이미지 유지
+                    DeskWarrior.Helpers.Logger.Log($"Monster image load failed: {ex.Message}");
+                }
                 
                 // HP 텍스트
                 HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
@@ -968,20 +1011,17 @@ namespace DeskWarrior
             {
                 TimerText.BeginAnimation(OpacityProperty, null); // 깜빡임 중지
                 TimerText.Opacity = 1.0;
-                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
-                TimerBorder.Background = new SolidColorBrush(Color.FromArgb(0x44, 0, 0, 0));
+                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(135, 206, 235)); // 하늘색
             }
             else if (time > 10)
             {
                 TimerText.BeginAnimation(OpacityProperty, null);
                 TimerText.Opacity = 1.0;
-                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 0));
-                TimerBorder.Background = new SolidColorBrush(Color.FromArgb(0x66, 255, 165, 0));
+                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 0)); // 노란색
             }
             else
             {
-                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-                TimerBorder.Background = new SolidColorBrush(Color.FromArgb(0x88, 255, 0, 0));
+                TimerText.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0)); // 빨간색
 
                 // 5초 미만일 때 깜빡임 효과
                 if (time <= 5 && time > 0)
@@ -1103,10 +1143,10 @@ namespace DeskWarrior
             // 보스 등장 연출
             DebugText.Text = "⚠️ BOSS APPEARED!";
             DebugText.Foreground = new SolidColorBrush(Colors.Purple);
-            
-            // 몬스터 크기 확대 애니메이션
-            MonsterImage.Width = 120;
-            MonsterImage.Height = 120;
+
+            // 몬스터 크기를 보스 크기로 설정
+            MonsterImage.Width = BOSS_SIZE;
+            MonsterImage.Height = BOSS_SIZE;
         }
 
         #endregion
@@ -1147,7 +1187,6 @@ namespace DeskWarrior
             // 하단 버튼
             if (StatsBtn != null) StatsBtn.Content = loc["ui.main.stats"];
             if (SettingsBtn != null) SettingsBtn.Content = loc["ui.main.settings"];
-            if (ExitBtn != null) ExitBtn.Content = loc["ui.main.exit"];
 
             // 공격력 표시
             if (KeyboardPowerText != null)
@@ -1160,14 +1199,14 @@ namespace DeskWarrior
             if (ReportLevelLabel != null) ReportLevelLabel.Text = loc["ui.gameover.maxLevel"];
             if (ReportGoldLabel != null) ReportGoldLabel.Text = loc["ui.gameover.goldEarned"];
             if (ReportDamageLabel != null) ReportDamageLabel.Text = loc["ui.gameover.damageDealt"];
-            if (NewLifeButton != null) NewLifeButton.Content = loc["ui.gameover.newLife"];
+            if (CloseOverlayButton != null) CloseOverlayButton.Content = loc.CurrentLanguage == "ko-KR" ? "닫기" : "Close";
 
             // 툴팁
             if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.ToolTip = loc["tooltips.upgradeKeyboard"];
             if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["tooltips.upgradeMouse"];
             if (StatsBtn != null) StatsBtn.ToolTip = loc["tooltips.stats"];
             if (SettingsBtn != null) SettingsBtn.ToolTip = loc["tooltips.settings"];
-            if (ExitBtn != null) ExitBtn.ToolTip = loc["tooltips.exit"];
+            if (ExitButtonBorder != null) ExitButtonBorder.ToolTip = loc["tooltips.exit"];
         }
 
         #region Achievement Toast

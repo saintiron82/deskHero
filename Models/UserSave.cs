@@ -146,6 +146,9 @@ namespace DeskWarrior.Models
         [JsonPropertyName("background_opacity")]
         public double BackgroundOpacity { get; set; } = 0.4;
 
+        [JsonPropertyName("window_opacity")]
+        public double WindowOpacity { get; set; } = 1.0;
+
         [JsonPropertyName("auto_restart")]
         public bool AutoRestart { get; set; } = false;
 

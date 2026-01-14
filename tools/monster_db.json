@@ -1,0 +1,578 @@
+[
+    {
+        "id": "monster_slime",
+        "base_file": "monster_slimeA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "숲 슬라임",
+                "hue": null,
+                "filename": "monster_slime_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "마그마 슬라임",
+                "hue": 359,
+                "filename": "monster_slime_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "아이스 슬라임",
+                "hue": 211,
+                "filename": "monster_slime_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "윈드 슬라임",
+                "hue": 57,
+                "filename": "monster_slime_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "엔젤 슬라임",
+                "hue": 52,
+                "filename": "monster_slime_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "맹독 슬라임",
+                "hue": 266,
+                "filename": "monster_slime_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_bat",
+        "base_file": "monster_batA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "동굴 박쥐",
+                "hue": null,
+                "filename": "monster_bat_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "파이어 뱃",
+                "hue": 5,
+                "filename": "monster_bat_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "서리 박쥐",
+                "hue": 214,
+                "filename": "monster_bat_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "소닉 배트",
+                "hue": 59,
+                "filename": "monster_bat_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "황금 박쥐",
+                "hue": 50,
+                "filename": "monster_bat_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "뱀파이어 배트",
+                "hue": 270,
+                "filename": "monster_bat_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_skeleton",
+        "base_file": "monster_skeletonA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "해골 병사",
+                "hue": null,
+                "filename": "monster_skeleton_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "타오르는 해골",
+                "hue": 358,
+                "filename": "monster_skeleton_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "프로즌 나이트",
+                "hue": 209,
+                "filename": "monster_skeleton_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "윈드 워리어",
+                "hue": 64,
+                "filename": "monster_skeleton_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "호구와트 가드",
+                "hue": 45,
+                "filename": "monster_skeleton_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "커스드 스켈레톤",
+                "hue": 270,
+                "filename": "monster_skeleton_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_goblin",
+        "base_file": "monster_goblinA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "숲 고블린",
+                "hue": null,
+                "filename": "monster_goblin_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "고블린 방화광",
+                "hue": 356,
+                "filename": "monster_goblin_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "설원 고블린",
+                "hue": 214,
+                "filename": "monster_goblin_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "고블린 정찰병",
+                "hue": 60,
+                "filename": "monster_goblin_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "고블린 성기사",
+                "hue": 48,
+                "filename": "monster_goblin_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "다크 고블린",
+                "hue": 265,
+                "filename": "monster_goblin_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_orc",
+        "base_file": "monster_orcA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "오크 전사",
+                "hue": null,
+                "filename": "monster_orc_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "화산 오크",
+                "hue": 355,
+                "filename": "monster_orc_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "빙하 오크",
+                "hue": 207,
+                "filename": "monster_orc_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "태풍의 오크",
+                "hue": 59,
+                "filename": "monster_orc_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "오크 대장군",
+                "hue": 53,
+                "filename": "monster_orc_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "타락한 오크",
+                "hue": 267,
+                "filename": "monster_orc_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_ghost",
+        "base_file": "monster_ghostA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "떠도는 영혼",
+                "hue": null,
+                "filename": "monster_ghost_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "불타는 원혼",
+                "hue": 0,
+                "filename": "monster_ghost_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "냉혹한 망령",
+                "hue": 206,
+                "filename": "monster_ghost_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "폭풍의 영혼",
+                "hue": 57,
+                "filename": "monster_ghost_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "성령",
+                "hue": 48,
+                "filename": "monster_ghost_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "악령",
+                "hue": 269,
+                "filename": "monster_ghost_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_golem",
+        "base_file": "monster_golemA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "바위 골렘",
+                "hue": null,
+                "filename": "monster_golem_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "용암 골렘",
+                "hue": 2,
+                "filename": "monster_golem_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "빙벽 골렘",
+                "hue": 190,
+                "filename": "monster_golem_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "샌드 골렘",
+                "hue": 65,
+                "filename": "monster_golem_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "고대 수호자",
+                "hue": 47,
+                "filename": "monster_golem_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "흑요석 골렘",
+                "hue": 267,
+                "filename": "monster_golem_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_mushroom",
+        "base_file": "monster_mushroomA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "독 버섯",
+                "hue": null,
+                "filename": "monster_mushroom_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "폭발 버섯",
+                "hue": 1,
+                "filename": "monster_mushroom_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "아이스 펑거스",
+                "hue": 215,
+                "filename": "monster_mushroom_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "포자 버섯",
+                "hue": 62,
+                "filename": "monster_mushroom_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "빛나는 버섯",
+                "hue": 52,
+                "filename": "monster_mushroom_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "지옥 버섯",
+                "hue": 269,
+                "filename": "monster_mushroom_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_spider",
+        "base_file": "monster_spiderA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "숲 거미",
+                "hue": null,
+                "filename": "monster_spider_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "화염 독거미",
+                "hue": 355,
+                "filename": "monster_spider_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "크리스탈 거미",
+                "hue": 214,
+                "filename": "monster_spider_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "날개 거미",
+                "hue": 59,
+                "filename": "monster_spider_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "빛의 거미",
+                "hue": 49,
+                "filename": "monster_spider_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "그림자 거미",
+                "hue": 273,
+                "filename": "monster_spider_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_wolf",
+        "base_file": "monster_wolfA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "회색 늑대",
+                "hue": null,
+                "filename": "monster_wolf_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "헬하운드",
+                "hue": 358,
+                "filename": "monster_wolf_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "윈터 울프",
+                "hue": 212,
+                "filename": "monster_wolf_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "스톰 울프",
+                "hue": 62,
+                "filename": "monster_wolf_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "실버 울프",
+                "hue": 51,
+                "filename": "monster_wolf_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "나이트 울프",
+                "hue": 268,
+                "filename": "monster_wolf_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_snake",
+        "base_file": "monster_snakeA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "숲 뱀",
+                "hue": null,
+                "filename": "monster_snake_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "살무사",
+                "hue": 357,
+                "filename": "monster_snake_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "바다 뱀",
+                "hue": 211,
+                "filename": "monster_snake_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "비전 뱀",
+                "hue": 65,
+                "filename": "monster_snake_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "황금 뱀",
+                "hue": 51,
+                "filename": "monster_snake_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "맹독 코브라",
+                "hue": 272,
+                "filename": "monster_snake_dark.png"
+            }
+        ]
+    },
+    {
+        "id": "monster_boar",
+        "base_file": "monster_boarA.png",
+        "variations": [
+            {
+                "suffix": "A",
+                "attribute": "Normal",
+                "name": "야생 멧돼지",
+                "hue": null,
+                "filename": "monster_boar_normal.png"
+            },
+            {
+                "suffix": "B",
+                "attribute": "Fire",
+                "name": "레이지 보어",
+                "hue": 359,
+                "filename": "monster_boar_fire.png"
+            },
+            {
+                "suffix": "C",
+                "attribute": "Ice",
+                "name": "툰드라 보어",
+                "hue": 205,
+                "filename": "monster_boar_ice.png"
+            },
+            {
+                "suffix": "D",
+                "attribute": "Wind",
+                "name": "돌진 멧돼지",
+                "hue": 56,
+                "filename": "monster_boar_wind.png"
+            },
+            {
+                "suffix": "E",
+                "attribute": "Holy",
+                "name": "강철 멧돼지",
+                "hue": 53,
+                "filename": "monster_boar_holy.png"
+            },
+            {
+                "suffix": "F",
+                "attribute": "Dark",
+                "name": "스컬 보어",
+                "hue": 275,
+                "filename": "monster_boar_dark.png"
+            }
+        ]
+    }
+]

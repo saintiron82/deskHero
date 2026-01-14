@@ -26,6 +26,7 @@
 
     "settings": {
       "title": "⚙️ SETTINGS",
+      "windowOpacity": "창 투명도",
       "opacity": "배경 투명도",
       "volume": "사운드 볼륨",
       "language": "언어 / Language",
@@ -106,8 +107,8 @@
     },
 
     "tray": {
-      "title": "DeskWarrior - 트레이 더블클릭 또는 F1키로 드래그 모드",
-      "dragMode": "📌 드래그 모드",
+      "title": "DeskWarrior - 트레이 더블클릭 또는 F1키로 관리 모드",
+      "manageMode": "📌 관리 모드",
       "settings": "⚙️ 설정...",
       "exit": "❌ 종료"
     }

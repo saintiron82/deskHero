@@ -20,7 +20,7 @@ namespace DeskWarrior.Managers
 
         #region Events
 
-        public event EventHandler? DragModeToggled;
+        public event EventHandler? ManageModeToggled;
         public event EventHandler? SettingsRequested;
         public event EventHandler? ExitRequested;
 
@@ -28,7 +28,7 @@ namespace DeskWarrior.Managers
 
         #region Properties
 
-        public bool IsDragMode { get; private set; }
+        public bool IsManageMode { get; private set; }
 
         #endregion
 
@@ -40,10 +40,10 @@ namespace DeskWarrior.Managers
             CreateNotifyIcon();
         }
 
-        public void SetDragMode(bool enabled)
+        public void SetManageMode(bool enabled)
         {
-            IsDragMode = enabled;
-            UpdateDragModeMenuItem();
+            IsManageMode = enabled;
+            UpdateManageModeMenuItem();
         }
 
         public void UpdateLanguage()
@@ -59,9 +59,9 @@ namespace DeskWarrior.Managers
             // 컨텍스트 메뉴 업데이트
             if (_contextMenu != null)
             {
-                if (_contextMenu.Items["DragMode"] is ToolStripMenuItem dragItem)
+                if (_contextMenu.Items["ManageMode"] is ToolStripMenuItem manageModeItem)
                 {
-                    dragItem.Text = loc["ui.tray.dragMode"];
+                    manageModeItem.Text = loc["ui.tray.manageMode"];
                 }
 
                 // 설정 메뉴 (인덱스 2)
@@ -86,18 +86,18 @@ namespace DeskWarrior.Managers
         {
             _contextMenu = new ContextMenuStrip();
 
-            // 드래그 모드 토글
-            var dragModeItem = new ToolStripMenuItem("📌 드래그 모드")
+            // 관리 모드 토글
+            var manageModeItem = new ToolStripMenuItem("📌 관리 모드")
             {
                 CheckOnClick = true,
-                Name = "DragMode"
+                Name = "ManageMode"
             };
-            dragModeItem.Click += (s, e) =>
+            manageModeItem.Click += (s, e) =>
             {
-                IsDragMode = dragModeItem.Checked;
-                DragModeToggled?.Invoke(this, EventArgs.Empty);
+                IsManageMode = manageModeItem.Checked;
+                ManageModeToggled?.Invoke(this, EventArgs.Empty);
             };
-            _contextMenu.Items.Add(dragModeItem);
+            _contextMenu.Items.Add(manageModeItem);
 
             // 구분선
             _contextMenu.Items.Add(new ToolStripSeparator());
@@ -120,7 +120,7 @@ namespace DeskWarrior.Managers
         {
             _notifyIcon = new NotifyIcon
             {
-                Text = "DeskWarrior - 트레이 더블클릭 또는 F1키로 드래그 모드",
+                Text = "DeskWarrior - 트레이 더블클릭 또는 F1키로 관리 모드",
                 Visible = true,
                 ContextMenuStrip = _contextMenu,
                 Icon = CreateDefaultIcon()
@@ -128,28 +128,28 @@ namespace DeskWarrior.Managers
 
             _notifyIcon.DoubleClick += (s, e) =>
             {
-                // 더블클릭 시 드래그 모드 토글
-                ToggleDragMode();
+                // 더블클릭 시 관리 모드 토글
+                ToggleManageMode();
             };
 
             // 시작 시 알림 표시 (비활성화)
-            // _notifyIcon.ShowBalloonTip(3000, "DeskWarrior", 
-            //     "트레이 아이콘 더블클릭 또는 F1 키로 드래그 모드 전환", 
+            // _notifyIcon.ShowBalloonTip(3000, "DeskWarrior",
+            //     "트레이 아이콘 더블클릭 또는 F1 키로 관리 모드 전환",
             //     ToolTipIcon.Info);
         }
 
         /// <summary>
-        /// 드래그 모드 토글 (외부에서 호출 가능)
+        /// 관리 모드 토글 (외부에서 호출 가능)
         /// </summary>
-        public void ToggleDragMode()
+        public void ToggleManageMode()
         {
-            IsDragMode = !IsDragMode;
-            UpdateDragModeMenuItem();
-            DragModeToggled?.Invoke(this, EventArgs.Empty);
-            
-            // 드래그 모드 전환 알림 (비활성화)
-            // _notifyIcon?.ShowBalloonTip(1000, "DeskWarrior", 
-            //     IsDragMode ? "드래그 모드 ON - 윈도우 이동 가능" : "드래그 모드 OFF", 
+            IsManageMode = !IsManageMode;
+            UpdateManageModeMenuItem();
+            ManageModeToggled?.Invoke(this, EventArgs.Empty);
+
+            // 관리 모드 전환 알림 (비활성화)
+            // _notifyIcon?.ShowBalloonTip(1000, "DeskWarrior",
+            //     IsManageMode ? "관리 모드 ON - 윈도우 이동 가능" : "관전 모드 ON",
             //     ToolTipIcon.Info);
         }
 
@@ -159,11 +159,11 @@ namespace DeskWarrior.Managers
             return SystemIcons.Shield;
         }
 
-        private void UpdateDragModeMenuItem()
+        private void UpdateManageModeMenuItem()
         {
-            if (_contextMenu?.Items["DragMode"] is ToolStripMenuItem item)
+            if (_contextMenu?.Items["ManageMode"] is ToolStripMenuItem item)
             {
-                item.Checked = IsDragMode;
+                item.Checked = IsManageMode;
             }
         }
 

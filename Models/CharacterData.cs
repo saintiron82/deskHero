@@ -9,6 +9,7 @@ namespace DeskWarrior.Models
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string Sprite { get; set; } = string.Empty;
         public int BaseHp { get; set; }
         public int HpGrowth { get; set; }
         public int BaseGold { get; set; }
@@ -23,6 +24,8 @@ namespace DeskWarrior.Models
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string IdleSprite { get; set; } = string.Empty;
+        public string AttackSprite { get; set; } = string.Empty;
     }
 
     /// <summary>

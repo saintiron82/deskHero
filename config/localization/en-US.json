@@ -26,6 +26,7 @@
 
     "settings": {
       "title": "⚙️ SETTINGS",
+      "windowOpacity": "Window Opacity",
       "opacity": "Background Opacity",
       "volume": "Sound Volume",
       "language": "Language / 언어",
@@ -106,8 +107,8 @@
     },
 
     "tray": {
-      "title": "DeskWarrior - Double-click tray or press F1 for drag mode",
-      "dragMode": "📌 Drag Mode",
+      "title": "DeskWarrior - Double-click tray or press F1 for manage mode",
+      "manageMode": "📌 Manage Mode",
       "settings": "⚙️ Settings...",
       "exit": "❌ Exit"
     }

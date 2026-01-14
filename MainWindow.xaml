@@ -14,18 +14,60 @@
         Left="100"
         Top="100"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
-    
+
     <Grid>
-        <!-- 드래그 모드 표시 테두리 -->
-        <Border x:Name="DragModeBorder"
+        <!-- 관리 모드 표시 테두리 -->
+        <Border x:Name="ManageModeBorder"
                 BorderBrush="#FFD700"
                 BorderThickness="3"
                 CornerRadius="10"
                 Visibility="Collapsed"
                 Panel.ZIndex="100"/>
-        
-        
-        <!-- 포켓몬 스타일 배틀 뷰 -->
+
+        <!-- 모드 전환 버튼 (호버 시 표시) -->
+        <Border x:Name="ModeToggleBorder"
+                Background="#DD222233"
+                BorderBrush="#666" BorderThickness="1"
+                CornerRadius="6"
+                Width="28" Height="28"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="8,8,0,0"
+                Cursor="Hand"
+                Opacity="0"
+                ToolTip="관리 모드로 전환 (F1)"
+                MouseLeftButtonDown="ModeToggle_MouseLeftButtonDown"
+                Panel.ZIndex="150">
+            <TextBlock x:Name="ModeIcon"
+                       Text="👁️"
+                       FontSize="16"
+                       Foreground="#00CED1"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- 종료 버튼 (관리 모드에서만 표시) -->
+        <Border x:Name="ExitButtonBorder"
+                Background="#662222"
+                BorderBrush="#FF4444" BorderThickness="1"
+                CornerRadius="6"
+                Width="28" Height="28"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,8,8,0"
+                Cursor="Hand"
+                Visibility="Collapsed"
+                ToolTip="종료"
+                MouseLeftButtonDown="ExitButton_MouseLeftButtonDown"
+                Panel.ZIndex="150">
+            <TextBlock Text="❌"
+                       FontSize="14"
+                       Foreground="#FF8888"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- 메인 컨텐츠 -->
         <Border x:Name="MainBackgroundBorder" Background="#EE1a1a2e" CornerRadius="10" Margin="3">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
@@ -34,29 +76,29 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                
-                <!-- 상단: 적 정보 (우측 정렬) -->
-                <Grid Grid.Row="0" HorizontalAlignment="Right">
-                    <Border x:Name="EnemyInfoBorder" Background="#44000000" CornerRadius="8" Padding="8,4">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock x:Name="LevelText" Text="Lv.1" FontSize="12" Foreground="White" FontWeight="Bold"/>
-                                <TextBlock x:Name="MaxLevelText" Text="(Best: 1)" FontSize="8" Foreground="#AAA" Margin="4,2,0,0" VerticalAlignment="Bottom"/>
-                                <TextBlock x:Name="MonsterEmoji" Text=" 👹" FontSize="12"/>
-                            </StackPanel>
-                            <!-- HP 바 -->
-                            <Grid Height="6" Width="80" Margin="0,3,0,0">
-                                <Border Background="#333" CornerRadius="3"/>
-                                <Border x:Name="HpBar" Background="#00FF00" CornerRadius="3" HorizontalAlignment="Left" Width="80"/>
-                            </Grid>
-                            <TextBlock x:Name="HpText" Text="100/100" FontSize="9" Foreground="#AAA" HorizontalAlignment="Right"/>
+
+                <!-- Row 0: 적 정보 (우측 정렬) -->
+                <Border x:Name="EnemyInfoBorder" Grid.Row="0"
+                        Background="#44000000" CornerRadius="8" Padding="8,4"
+                        HorizontalAlignment="Right">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="LevelText" Text="Lv.1" FontSize="12" Foreground="White" FontWeight="Bold"/>
+                            <TextBlock x:Name="MaxLevelText" Text=" (Best: 1)" FontSize="8" Foreground="#AAA" VerticalAlignment="Bottom" Margin="4,0,0,0" Visibility="Collapsed"/>
+                            <TextBlock x:Name="MonsterEmoji" Text=" 👹" FontSize="12"/>
                         </StackPanel>
-                    </Border>
-                </Grid>
-                
-                <!-- 중앙: 배틀 필드 -->
+                        <!-- HP 바 -->
+                        <Grid Height="6" Width="80" Margin="0,3,0,0">
+                            <Border Background="#333" CornerRadius="3"/>
+                            <Border x:Name="HpBar" Background="#00FF00" CornerRadius="3" HorizontalAlignment="Left" Width="80"/>
+                        </Grid>
+                        <TextBlock x:Name="HpText" Text="100/100" FontSize="9" Foreground="#AAA" HorizontalAlignment="Right" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Row 1: 배틀 필드 -->
                 <Grid Grid.Row="1">
-                    <!-- 적 몬스터 (우상단, 크게) -->
+                    <!-- 적 몬스터 (우상단) -->
                     <Image x:Name="MonsterImage"
                            Source="pack://application:,,,/Assets/Images/monster.png"
                            Width="100" Height="100"
@@ -65,12 +107,13 @@
                            VerticalAlignment="Top"
                            Margin="0,5,20,0"
                            RenderTransformOrigin="0.5,0.5"
+                           Panel.ZIndex="10"
                            MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
                         <Image.RenderTransform>
                             <TranslateTransform x:Name="MonsterShakeTransform"/>
                         </Image.RenderTransform>
                     </Image>
-                    
+
                     <!-- 데미지 팝업 영역 -->
                     <Canvas x:Name="DamagePopupCanvas"
                             HorizontalAlignment="Right"
@@ -78,69 +121,80 @@
                             Width="100" Height="100"
                             Margin="0,5,5,0"
                             IsHitTestVisible="False"/>
-                    
-                    <!-- 플레이어 히어로 (좌하단, 작게) -->
+
+                    <!-- 히어로 위 플로팅 정보 (골드 + 타이머) -->
+                    <Border x:Name="HeroInfoBar"
+                            Background="#CC000000" CornerRadius="12"
+                            Padding="10,3"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Bottom"
+                            Margin="5,0,0,85">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="GoldText" Text="💰 0" FontSize="11" Foreground="#FFD700" FontWeight="SemiBold"/>
+                            <TextBlock Text="  " FontSize="11"/>
+                            <TextBlock Text="⏱️" FontSize="11" Foreground="White"/>
+                            <TextBlock x:Name="TimerText" Text="30" FontSize="11" FontWeight="Bold" Foreground="#87CEEB"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 플레이어 히어로 (좌하단) -->
                     <Image x:Name="HeroImage"
                            Source="pack://application:,,,/Assets/Images/hero.png"
-                           Width="70" Height="70"
+                           Width="120" Height="120"
                            Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
                            Margin="20,0,0,0"
-                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown"/>
-                    
-                    <!-- 공격력 표시 (좌상단) -->
-                    <Border Background="#66000000" CornerRadius="5" Padding="4,2"
-                            HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <StackPanel>
-                            <TextBlock x:Name="KeyboardPowerText" Text="⌨️ Atk: 1" FontSize="9" Foreground="#88FFFF"/>
-                            <TextBlock x:Name="MousePowerText" Text="🖱️ Atk: 1" FontSize="9" Foreground="#FF88FF"/>
-                        </StackPanel>
-                    </Border>
+                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
+                        <Image.Clip>
+                            <RectangleGeometry x:Name="HeroClip" Rect="0,0,120,100"/>
+                        </Image.Clip>
+                    </Image>
                 </Grid>
-                
-                <!-- 하단: 플레이어 정보 + 타이머 -->
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <!-- 골드/입력 -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <TextBlock x:Name="GoldText" Text="💰 0" FontSize="11" Foreground="Gold" Margin="0,0,10,0"/>
-                        <TextBlock x:Name="InputCountText" Text="⌨️ 0" FontSize="11" Foreground="#AAA"/>
-                    </StackPanel>
-                    
-                    <!-- 타이머 -->
-                    <Border x:Name="TimerBorder" Grid.Column="1" Background="#44000000" CornerRadius="5" Padding="6,2">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="⏱️ " FontSize="11" Foreground="White"/>
-                            <TextBlock x:Name="TimerText" Text="30" FontSize="13" FontWeight="Bold" Foreground="#00FF00"/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-                
-                <!-- 업그레이드 패널 (드래그 모드 시 표시) -->
-                <Border x:Name="UpgradePanel" Grid.Row="3" 
-                        Background="#88000000" CornerRadius="5" 
+
+                <!-- Row 2: 공격력 정보바 (관리 모드에서만 표시) -->
+                <Border x:Name="PowerInfoBar" Grid.Row="2"
+                        Background="#44000000" CornerRadius="5"
+                        Padding="8,4" Margin="0,5,0,0"
+                        Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" x:Name="KeyboardPowerText"
+                                   Text="⌨️ Atk: 1" FontSize="10" Foreground="#88FFFF"
+                                   HorizontalAlignment="Left"/>
+                        <Border Grid.Column="1" Width="1" Background="#444" Margin="8,0"/>
+                        <TextBlock Grid.Column="2" x:Name="MousePowerText"
+                                   Text="🖱️ Atk: 1" FontSize="10" Foreground="#FF88FF"
+                                   HorizontalAlignment="Right"/>
+                    </Grid>
+                </Border>
+
+                <!-- Row 3: 업그레이드 패널 (관리 모드에서만 표시) -->
+                <Border x:Name="UpgradePanel" Grid.Row="3"
+                        Background="#88000000" CornerRadius="5"
                         Margin="0,5,0,0" Padding="5"
                         Visibility="Collapsed">
                     <StackPanel>
+                        <!-- 업그레이드 버튼 -->
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            
+
                             <!-- 키보드 공격력 업그레이드 -->
                             <Button x:Name="UpgradeKeyboardBtn" Grid.Column="0"
                                     Click="UpgradeKeyboard_Click"
                                     Style="{StaticResource KeyboardUpgradeButton}"
                                     Margin="2" Padding="5,3"
-                                    ToolTip="Upgrade keyboard attack power">
+                                    ToolTip="키보드 공격력 업그레이드">
                                 <StackPanel>
-                                    <TextBlock x:Name="UpgradeKeyboardText" Text="⌨️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="UpgradeKeyboardText" Text="⌨️ UP" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     <TextBlock x:Name="KeyboardCostText" Text="💰 100" FontSize="8"
                                                HorizontalAlignment="Center" Foreground="#FFD700"/>
                                 </StackPanel>
@@ -151,19 +205,18 @@
                                     Click="UpgradeMouse_Click"
                                     Style="{StaticResource MouseUpgradeButton}"
                                     Margin="2" Padding="5,3"
-                                    ToolTip="Upgrade mouse attack power">
+                                    ToolTip="마우스 공격력 업그레이드">
                                 <StackPanel>
-                                    <TextBlock x:Name="UpgradeMouseText" Text="🖱️ 공격력 UP" FontSize="9" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="UpgradeMouseText" Text="🖱️ UP" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
                                     <TextBlock x:Name="MouseCostText" Text="💰 100" FontSize="8"
                                                HorizontalAlignment="Center" Foreground="#FFD700"/>
                                 </StackPanel>
                             </Button>
                         </Grid>
-                        
-                        <!-- 하단 버튼 그룹 (통계 / 설정 / 종료) -->
+
+                        <!-- 유틸리티 버튼 -->
                         <Grid Margin="0,4,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
@@ -172,37 +225,29 @@
                             <Button x:Name="StatsBtn" Grid.Column="0" Content="📊 Stats"
                                     Click="StatsButton_Click"
                                     Style="{StaticResource SettingsButton}"
-                                    Margin="2,0,2,0" Height="18" FontSize="9"
-                                    ToolTip="View game statistics"/>
+                                    Margin="2,0" Height="20" FontSize="9"
+                                    ToolTip="통계 보기"/>
 
                             <!-- 설정 버튼 -->
                             <Button x:Name="SettingsBtn" Grid.Column="1" Content="⚙️ Settings"
                                     Click="SettingsButton_Click"
                                     Style="{StaticResource SettingsButton}"
-                                    Margin="2,0,2,0" Height="18" FontSize="9"
-                                    ToolTip="Open settings"/>
-                                    
-                            <!-- 종료 버튼 -->
-                            <Button x:Name="ExitBtn" Grid.Column="2" Content="❌ Exit"
-                                    Click="ExitButton_Click"
-                                    Background="#662222" Foreground="#FF8888"
-                                    BorderThickness="0" Margin="2,0,2,0" Height="18" FontSize="9"
-                                    ToolTip="Close DeskWarrior">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="3"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
+                                    Margin="2,0" Height="20" FontSize="9"
+                                    ToolTip="설정 열기"/>
                         </Grid>
                     </StackPanel>
                 </Border>
             </Grid>
         </Border>
-        
+
         <!-- 디버그 표시 -->
-        <TextBlock x:Name="DebugText" Text="" Foreground="#888" FontSize="8" 
-                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+        <TextBlock x:Name="DebugText" Text="" Foreground="#888" FontSize="8"
+                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"
+                   Visibility="Collapsed"/>
+
+        <!-- 입력 횟수 (숨김, 통계용) -->
+        <TextBlock x:Name="InputCountText" Text="0" Visibility="Collapsed"/>
+
         <!-- Game Over Overlay -->
         <Border x:Name="GameOverOverlay" Visibility="Collapsed" Panel.ZIndex="200"
                 Background="#EE000000" MouseLeftButtonDown="Window_MouseLeftButtonDown">
@@ -239,8 +284,8 @@
                     </Grid>
                 </Border>
 
-                <Button x:Name="NewLifeButton" Content="⚠️ BEGIN NEW LIFE" Click="NewLifeButton_Click"
-                        Width="140" Height="35" Background="#222" Foreground="White" BorderBrush="#FF4444" BorderThickness="1" Margin="0,0,0,10">
+                <Button x:Name="CloseOverlayButton" Content="닫기" Click="CloseOverlayButton_Click"
+                        Width="100" Height="30" Background="#333" Foreground="White" BorderBrush="#666" BorderThickness="1" Margin="0,0,0,10">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="5"/>
@@ -248,9 +293,8 @@
                     </Button.Resources>
                 </Button>
 
-                <CheckBox x:Name="AutoRestartCheckBox" Content="Auto Restart in 10s"
-                          Foreground="White" FontSize="9" HorizontalAlignment="Center"
-                          Checked="AutoRestart_Checked" Unchecked="AutoRestart_Unchecked"/>
+                <TextBlock x:Name="AutoCloseCountdownText" Text="10초후 닫힘"
+                           Foreground="#888" FontSize="10" HorizontalAlignment="Center"/>
             </StackPanel>
         </Border>
     </Grid>

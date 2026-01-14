@@ -56,6 +56,7 @@ namespace DeskWarrior.Managers
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
         public GameData GameData => _gameData;
+        public System.Collections.Generic.List<HeroData> Heroes => _characterData.Heroes;
 
         #endregion
 

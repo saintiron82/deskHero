@@ -9,20 +9,23 @@ namespace DeskWarrior.Windows
     public partial class SettingsWindow : Window
     {
         private readonly UserSettings _settings;
+        private readonly Action<double> _onWindowOpacityChanged;
         private readonly Action<double> _onOpacityChanged;
         private readonly Action<double> _onVolumeChanged;
         private readonly Action? _onLanguageChanged;
         private bool _isInitializing = true;
 
-        public SettingsWindow(UserSettings settings, Action<double> onOpacityChanged, Action<double> onVolumeChanged, Action? onLanguageChanged = null)
+        public SettingsWindow(UserSettings settings, Action<double> onWindowOpacityChanged, Action<double> onOpacityChanged, Action<double> onVolumeChanged, Action? onLanguageChanged = null)
         {
             InitializeComponent();
             _settings = settings;
+            _onWindowOpacityChanged = onWindowOpacityChanged;
             _onOpacityChanged = onOpacityChanged;
             _onVolumeChanged = onVolumeChanged;
             _onLanguageChanged = onLanguageChanged;
 
             // 초기값 설정
+            WindowOpacitySlider.Value = _settings.WindowOpacity;
             OpacitySlider.Value = _settings.BackgroundOpacity;
             VolumeSlider.Value = _settings.Volume;
 
@@ -62,10 +65,20 @@ namespace DeskWarrior.Windows
         {
             var loc = LocalizationManager.Instance;
             TitleText.Text = loc["ui.settings.title"];
+            WindowOpacityLabel.Text = loc["ui.settings.windowOpacity"];
             OpacityLabel.Text = loc["ui.settings.opacity"];
             VolumeLabel.Text = loc["ui.settings.volume"];
             LanguageLabel.Text = loc["ui.settings.language"];
             CloseBtn.Content = loc["ui.settings.close"];
+        }
+
+        private void WindowOpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (WindowOpacityValueText == null) return;
+
+            WindowOpacityValueText.Text = $"{(int)(e.NewValue * 100)}%";
+            _settings.WindowOpacity = e.NewValue;
+            _onWindowOpacityChanged?.Invoke(e.NewValue);
         }
 
         private void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

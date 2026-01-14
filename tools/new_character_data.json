@@ -1,0 +1,362 @@
+[
+    {
+        "Id": "monster_slime_normal",
+        "Name": "숲 슬라임",
+        "Sprite": "Raw_Green/monster_slime_normal.png"
+    },
+    {
+        "Id": "monster_slime_fire",
+        "Name": "마그마 슬라임",
+        "Sprite": "Raw_Green/monster_slime_fire.png"
+    },
+    {
+        "Id": "monster_slime_ice",
+        "Name": "아이스 슬라임",
+        "Sprite": "Raw_Green/monster_slime_ice.png"
+    },
+    {
+        "Id": "monster_slime_wind",
+        "Name": "윈드 슬라임",
+        "Sprite": "Raw_Green/monster_slime_wind.png"
+    },
+    {
+        "Id": "monster_slime_holy",
+        "Name": "엔젤 슬라임",
+        "Sprite": "Raw_Green/monster_slime_holy.png"
+    },
+    {
+        "Id": "monster_slime_dark",
+        "Name": "맹독 슬라임",
+        "Sprite": "Raw_Green/monster_slime_dark.png"
+    },
+    {
+        "Id": "monster_bat_normal",
+        "Name": "동굴 박쥐",
+        "Sprite": "Raw_Green/monster_bat_normal.png"
+    },
+    {
+        "Id": "monster_bat_fire",
+        "Name": "파이어 뱃",
+        "Sprite": "Raw_Green/monster_bat_fire.png"
+    },
+    {
+        "Id": "monster_bat_ice",
+        "Name": "서리 박쥐",
+        "Sprite": "Raw_Green/monster_bat_ice.png"
+    },
+    {
+        "Id": "monster_bat_wind",
+        "Name": "소닉 배트",
+        "Sprite": "Raw_Green/monster_bat_wind.png"
+    },
+    {
+        "Id": "monster_bat_holy",
+        "Name": "황금 박쥐",
+        "Sprite": "Raw_Green/monster_bat_holy.png"
+    },
+    {
+        "Id": "monster_bat_dark",
+        "Name": "뱀파이어 배트",
+        "Sprite": "Raw_Green/monster_bat_dark.png"
+    },
+    {
+        "Id": "monster_skeleton_normal",
+        "Name": "해골 병사",
+        "Sprite": "Raw_Green/monster_skeleton_normal.png"
+    },
+    {
+        "Id": "monster_skeleton_fire",
+        "Name": "타오르는 해골",
+        "Sprite": "Raw_Green/monster_skeleton_fire.png"
+    },
+    {
+        "Id": "monster_skeleton_ice",
+        "Name": "프로즌 나이트",
+        "Sprite": "Raw_Green/monster_skeleton_ice.png"
+    },
+    {
+        "Id": "monster_skeleton_wind",
+        "Name": "윈드 워리어",
+        "Sprite": "Raw_Green/monster_skeleton_wind.png"
+    },
+    {
+        "Id": "monster_skeleton_holy",
+        "Name": "호구와트 가드",
+        "Sprite": "Raw_Green/monster_skeleton_holy.png"
+    },
+    {
+        "Id": "monster_skeleton_dark",
+        "Name": "커스드 스켈레톤",
+        "Sprite": "Raw_Green/monster_skeleton_dark.png"
+    },
+    {
+        "Id": "monster_goblin_normal",
+        "Name": "숲 고블린",
+        "Sprite": "Raw_Green/monster_goblin_normal.png"
+    },
+    {
+        "Id": "monster_goblin_fire",
+        "Name": "고블린 방화광",
+        "Sprite": "Raw_Green/monster_goblin_fire.png"
+    },
+    {
+        "Id": "monster_goblin_ice",
+        "Name": "설원 고블린",
+        "Sprite": "Raw_Green/monster_goblin_ice.png"
+    },
+    {
+        "Id": "monster_goblin_wind",
+        "Name": "고블린 정찰병",
+        "Sprite": "Raw_Green/monster_goblin_wind.png"
+    },
+    {
+        "Id": "monster_goblin_holy",
+        "Name": "고블린 성기사",
+        "Sprite": "Raw_Green/monster_goblin_holy.png"
+    },
+    {
+        "Id": "monster_goblin_dark",
+        "Name": "다크 고블린",
+        "Sprite": "Raw_Green/monster_goblin_dark.png"
+    },
+    {
+        "Id": "monster_orc_normal",
+        "Name": "오크 전사",
+        "Sprite": "Raw_Green/monster_orc_normal.png"
+    },
+    {
+        "Id": "monster_orc_fire",
+        "Name": "화산 오크",
+        "Sprite": "Raw_Green/monster_orc_fire.png"
+    },
+    {
+        "Id": "monster_orc_ice",
+        "Name": "빙하 오크",
+        "Sprite": "Raw_Green/monster_orc_ice.png"
+    },
+    {
+        "Id": "monster_orc_wind",
+        "Name": "태풍의 오크",
+        "Sprite": "Raw_Green/monster_orc_wind.png"
+    },
+    {
+        "Id": "monster_orc_holy",
+        "Name": "오크 대장군",
+        "Sprite": "Raw_Green/monster_orc_holy.png"
+    },
+    {
+        "Id": "monster_orc_dark",
+        "Name": "타락한 오크",
+        "Sprite": "Raw_Green/monster_orc_dark.png"
+    },
+    {
+        "Id": "monster_ghost_normal",
+        "Name": "떠도는 영혼",
+        "Sprite": "Raw_Green/monster_ghost_normal.png"
+    },
+    {
+        "Id": "monster_ghost_fire",
+        "Name": "불타는 원혼",
+        "Sprite": "Raw_Green/monster_ghost_fire.png"
+    },
+    {
+        "Id": "monster_ghost_ice",
+        "Name": "냉혹한 망령",
+        "Sprite": "Raw_Green/monster_ghost_ice.png"
+    },
+    {
+        "Id": "monster_ghost_wind",
+        "Name": "폭풍의 영혼",
+        "Sprite": "Raw_Green/monster_ghost_wind.png"
+    },
+    {
+        "Id": "monster_ghost_holy",
+        "Name": "성령",
+        "Sprite": "Raw_Green/monster_ghost_holy.png"
+    },
+    {
+        "Id": "monster_ghost_dark",
+        "Name": "악령",
+        "Sprite": "Raw_Green/monster_ghost_dark.png"
+    },
+    {
+        "Id": "monster_golem_normal",
+        "Name": "바위 골렘",
+        "Sprite": "Raw_Green/monster_golem_normal.png"
+    },
+    {
+        "Id": "monster_golem_fire",
+        "Name": "용암 골렘",
+        "Sprite": "Raw_Green/monster_golem_fire.png"
+    },
+    {
+        "Id": "monster_golem_ice",
+        "Name": "빙벽 골렘",
+        "Sprite": "Raw_Green/monster_golem_ice.png"
+    },
+    {
+        "Id": "monster_golem_wind",
+        "Name": "샌드 골렘",
+        "Sprite": "Raw_Green/monster_golem_wind.png"
+    },
+    {
+        "Id": "monster_golem_holy",
+        "Name": "고대 수호자",
+        "Sprite": "Raw_Green/monster_golem_holy.png"
+    },
+    {
+        "Id": "monster_golem_dark",
+        "Name": "흑요석 골렘",
+        "Sprite": "Raw_Green/monster_golem_dark.png"
+    },
+    {
+        "Id": "monster_mushroom_normal",
+        "Name": "독 버섯",
+        "Sprite": "Raw_Green/monster_mushroom_normal.png"
+    },
+    {
+        "Id": "monster_mushroom_fire",
+        "Name": "폭발 버섯",
+        "Sprite": "Raw_Green/monster_mushroom_fire.png"
+    },
+    {
+        "Id": "monster_mushroom_ice",
+        "Name": "아이스 펑거스",
+        "Sprite": "Raw_Green/monster_mushroom_ice.png"
+    },
+    {
+        "Id": "monster_mushroom_wind",
+        "Name": "포자 버섯",
+        "Sprite": "Raw_Green/monster_mushroom_wind.png"
+    },
+    {
+        "Id": "monster_mushroom_holy",
+        "Name": "빛나는 버섯",
+        "Sprite": "Raw_Green/monster_mushroom_holy.png"
+    },
+    {
+        "Id": "monster_mushroom_dark",
+        "Name": "지옥 버섯",
+        "Sprite": "Raw_Green/monster_mushroom_dark.png"
+    },
+    {
+        "Id": "monster_spider_normal",
+        "Name": "숲 거미",
+        "Sprite": "Raw_Green/monster_spider_normal.png"
+    },
+    {
+        "Id": "monster_spider_fire",
+        "Name": "화염 독거미",
+        "Sprite": "Raw_Green/monster_spider_fire.png"
+    },
+    {
+        "Id": "monster_spider_ice",
+        "Name": "크리스탈 거미",
+        "Sprite": "Raw_Green/monster_spider_ice.png"
+    },
+    {
+        "Id": "monster_spider_wind",
+        "Name": "날개 거미",
+        "Sprite": "Raw_Green/monster_spider_wind.png"
+    },
+    {
+        "Id": "monster_spider_holy",
+        "Name": "빛의 거미",
+        "Sprite": "Raw_Green/monster_spider_holy.png"
+    },
+    {
+        "Id": "monster_spider_dark",
+        "Name": "그림자 거미",
+        "Sprite": "Raw_Green/monster_spider_dark.png"
+    },
+    {
+        "Id": "monster_wolf_normal",
+        "Name": "회색 늑대",
+        "Sprite": "Raw_Green/monster_wolf_normal.png"
+    },
+    {
+        "Id": "monster_wolf_fire",
+        "Name": "헬하운드",
+        "Sprite": "Raw_Green/monster_wolf_fire.png"
+    },
+    {
+        "Id": "monster_wolf_ice",
+        "Name": "윈터 울프",
+        "Sprite": "Raw_Green/monster_wolf_ice.png"
+    },
+    {
+        "Id": "monster_wolf_wind",
+        "Name": "스톰 울프",
+        "Sprite": "Raw_Green/monster_wolf_wind.png"
+    },
+    {
+        "Id": "monster_wolf_holy",
+        "Name": "실버 울프",
+        "Sprite": "Raw_Green/monster_wolf_holy.png"
+    },
+    {
+        "Id": "monster_wolf_dark",
+        "Name": "나이트 울프",
+        "Sprite": "Raw_Green/monster_wolf_dark.png"
+    },
+    {
+        "Id": "monster_snake_normal",
+        "Name": "숲 뱀",
+        "Sprite": "Raw_Green/monster_snake_normal.png"
+    },
+    {
+        "Id": "monster_snake_fire",
+        "Name": "살무사",
+        "Sprite": "Raw_Green/monster_snake_fire.png"
+    },
+    {
+        "Id": "monster_snake_ice",
+        "Name": "바다 뱀",
+        "Sprite": "Raw_Green/monster_snake_ice.png"
+    },
+    {
+        "Id": "monster_snake_wind",
+        "Name": "비전 뱀",
+        "Sprite": "Raw_Green/monster_snake_wind.png"
+    },
+    {
+        "Id": "monster_snake_holy",
+        "Name": "황금 뱀",
+        "Sprite": "Raw_Green/monster_snake_holy.png"
+    },
+    {
+        "Id": "monster_snake_dark",
+        "Name": "맹독 코브라",
+        "Sprite": "Raw_Green/monster_snake_dark.png"
+    },
+    {
+        "Id": "monster_boar_normal",
+        "Name": "야생 멧돼지",
+        "Sprite": "Raw_Green/monster_boar_normal.png"
+    },
+    {
+        "Id": "monster_boar_fire",
+        "Name": "레이지 보어",
+        "Sprite": "Raw_Green/monster_boar_fire.png"
+    },
+    {
+        "Id": "monster_boar_ice",
+        "Name": "툰드라 보어",
+        "Sprite": "Raw_Green/monster_boar_ice.png"
+    },
+    {
+        "Id": "monster_boar_wind",
+        "Name": "돌진 멧돼지",
+        "Sprite": "Raw_Green/monster_boar_wind.png"
+    },
+    {
+        "Id": "monster_boar_holy",
+        "Name": "강철 멧돼지",
+        "Sprite": "Raw_Green/monster_boar_holy.png"
+    },
+    {
+        "Id": "monster_boar_dark",
+        "Name": "스컬 보어",
+        "Sprite": "Raw_Green/monster_boar_dark.png"
+    }
+]

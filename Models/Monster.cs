@@ -66,7 +66,16 @@ namespace DeskWarrior.Models
             GoldReward = data.BaseGold + level * data.GoldGrowth;
 
             // 스킨 및 이모지는 데이터에서 가져옴
-            SkinType = data.Id;
+            // Sprite가 있으면 사용, 없으면 Id.png 사용 (보스용)
+            if (!string.IsNullOrEmpty(data.Sprite))
+            {
+                SkinType = data.Sprite;
+            }
+            else
+            {
+                // 보스는 Id.png 형식 (예: boss_dragonA.png)
+                SkinType = $"{data.Id}.png";
+            }
             Emoji = data.Emoji;
         }
 

@@ -1,31 +1,724 @@
 {
     "Monsters": [
         {
-            "Id": "monster_slimeA",
-            "Name": "슬라임",
-            "BaseHp": 10,
+            "Id": "monster_slime_normal",
+            "Name": "숲 슬라임",
+            "Sprite": "Raw_Green/monster_slime_normal.png",
+            "BaseHp": 20,
             "HpGrowth": 5,
             "BaseGold": 10,
             "GoldGrowth": 2,
             "Emoji": "🟢"
         },
         {
-            "Id": "monster_batA",
-            "Name": "박쥐",
-            "BaseHp": 15,
-            "HpGrowth": 7,
+            "Id": "monster_slime_fire",
+            "Name": "마그마 슬라임",
+            "Sprite": "Raw_Green/monster_slime_fire.png",
+            "BaseHp": 32,
+            "HpGrowth": 5,
+            "BaseGold": 10,
+            "GoldGrowth": 2,
+            "Emoji": "🟢"
+        },
+        {
+            "Id": "monster_slime_ice",
+            "Name": "아이스 슬라임",
+            "Sprite": "Raw_Green/monster_slime_ice.png",
+            "BaseHp": 24,
+            "HpGrowth": 5,
+            "BaseGold": 11,
+            "GoldGrowth": 2,
+            "Emoji": "🟢"
+        },
+        {
+            "Id": "monster_slime_wind",
+            "Name": "윈드 슬라임",
+            "Sprite": "Raw_Green/monster_slime_wind.png",
+            "BaseHp": 26,
+            "HpGrowth": 5,
+            "BaseGold": 11,
+            "GoldGrowth": 2,
+            "Emoji": "🟢"
+        },
+        {
+            "Id": "monster_slime_holy",
+            "Name": "엔젤 슬라임",
+            "Sprite": "Raw_Green/monster_slime_holy.png",
+            "BaseHp": 28,
+            "HpGrowth": 5,
+            "BaseGold": 32,
+            "GoldGrowth": 2,
+            "Emoji": "🟢"
+        },
+        {
+            "Id": "monster_slime_dark",
+            "Name": "맹독 슬라임",
+            "Sprite": "Raw_Green/monster_slime_dark.png",
+            "BaseHp": 45,
+            "HpGrowth": 5,
             "BaseGold": 12,
-            "GoldGrowth": 3,
+            "GoldGrowth": 2,
+            "Emoji": "🟢"
+        },
+        {
+            "Id": "monster_bat_normal",
+            "Name": "동굴 박쥐",
+            "Sprite": "Raw_Green/monster_bat_normal.png",
+            "BaseHp": 32,
+            "HpGrowth": 5,
+            "BaseGold": 13,
+            "GoldGrowth": 2,
             "Emoji": "🦇"
         },
         {
-            "Id": "monster_skeletonA",
-            "Name": "스켈레톤",
-            "BaseHp": 25,
-            "HpGrowth": 10,
+            "Id": "monster_bat_fire",
+            "Name": "파이어 뱃",
+            "Sprite": "Raw_Green/monster_bat_fire.png",
+            "BaseHp": 44,
+            "HpGrowth": 5,
+            "BaseGold": 13,
+            "GoldGrowth": 2,
+            "Emoji": "🦇"
+        },
+        {
+            "Id": "monster_bat_ice",
+            "Name": "서리 박쥐",
+            "Sprite": "Raw_Green/monster_bat_ice.png",
+            "BaseHp": 36,
+            "HpGrowth": 5,
+            "BaseGold": 14,
+            "GoldGrowth": 2,
+            "Emoji": "🦇"
+        },
+        {
+            "Id": "monster_bat_wind",
+            "Name": "소닉 배트",
+            "Sprite": "Raw_Green/monster_bat_wind.png",
+            "BaseHp": 38,
+            "HpGrowth": 5,
+            "BaseGold": 14,
+            "GoldGrowth": 2,
+            "Emoji": "🦇"
+        },
+        {
+            "Id": "monster_bat_holy",
+            "Name": "황금 박쥐",
+            "Sprite": "Raw_Green/monster_bat_holy.png",
+            "BaseHp": 40,
+            "HpGrowth": 5,
+            "BaseGold": 35,
+            "GoldGrowth": 2,
+            "Emoji": "🦇"
+        },
+        {
+            "Id": "monster_bat_dark",
+            "Name": "뱀파이어 배트",
+            "Sprite": "Raw_Green/monster_bat_dark.png",
+            "BaseHp": 57,
+            "HpGrowth": 5,
             "BaseGold": 15,
-            "GoldGrowth": 4,
+            "GoldGrowth": 2,
+            "Emoji": "🦇"
+        },
+        {
+            "Id": "monster_skeleton_normal",
+            "Name": "해골 병사",
+            "Sprite": "Raw_Green/monster_skeleton_normal.png",
+            "BaseHp": 44,
+            "HpGrowth": 5,
+            "BaseGold": 16,
+            "GoldGrowth": 2,
             "Emoji": "💀"
+        },
+        {
+            "Id": "monster_skeleton_fire",
+            "Name": "타오르는 해골",
+            "Sprite": "Raw_Green/monster_skeleton_fire.png",
+            "BaseHp": 56,
+            "HpGrowth": 5,
+            "BaseGold": 16,
+            "GoldGrowth": 2,
+            "Emoji": "💀"
+        },
+        {
+            "Id": "monster_skeleton_ice",
+            "Name": "프로즌 나이트",
+            "Sprite": "Raw_Green/monster_skeleton_ice.png",
+            "BaseHp": 48,
+            "HpGrowth": 5,
+            "BaseGold": 17,
+            "GoldGrowth": 2,
+            "Emoji": "💀"
+        },
+        {
+            "Id": "monster_skeleton_wind",
+            "Name": "윈드 워리어",
+            "Sprite": "Raw_Green/monster_skeleton_wind.png",
+            "BaseHp": 50,
+            "HpGrowth": 5,
+            "BaseGold": 17,
+            "GoldGrowth": 2,
+            "Emoji": "💀"
+        },
+        {
+            "Id": "monster_skeleton_holy",
+            "Name": "호구와트 가드",
+            "Sprite": "Raw_Green/monster_skeleton_holy.png",
+            "BaseHp": 52,
+            "HpGrowth": 5,
+            "BaseGold": 38,
+            "GoldGrowth": 2,
+            "Emoji": "💀"
+        },
+        {
+            "Id": "monster_skeleton_dark",
+            "Name": "커스드 스켈레톤",
+            "Sprite": "Raw_Green/monster_skeleton_dark.png",
+            "BaseHp": 69,
+            "HpGrowth": 5,
+            "BaseGold": 18,
+            "GoldGrowth": 2,
+            "Emoji": "💀"
+        },
+        {
+            "Id": "monster_goblin_normal",
+            "Name": "숲 고블린",
+            "Sprite": "Raw_Green/monster_goblin_normal.png",
+            "BaseHp": 56,
+            "HpGrowth": 5,
+            "BaseGold": 19,
+            "GoldGrowth": 2,
+            "Emoji": "👺"
+        },
+        {
+            "Id": "monster_goblin_fire",
+            "Name": "고블린 방화광",
+            "Sprite": "Raw_Green/monster_goblin_fire.png",
+            "BaseHp": 68,
+            "HpGrowth": 5,
+            "BaseGold": 19,
+            "GoldGrowth": 2,
+            "Emoji": "👺"
+        },
+        {
+            "Id": "monster_goblin_ice",
+            "Name": "설원 고블린",
+            "Sprite": "Raw_Green/monster_goblin_ice.png",
+            "BaseHp": 60,
+            "HpGrowth": 5,
+            "BaseGold": 20,
+            "GoldGrowth": 2,
+            "Emoji": "👺"
+        },
+        {
+            "Id": "monster_goblin_wind",
+            "Name": "고블린 정찰병",
+            "Sprite": "Raw_Green/monster_goblin_wind.png",
+            "BaseHp": 62,
+            "HpGrowth": 5,
+            "BaseGold": 20,
+            "GoldGrowth": 2,
+            "Emoji": "👺"
+        },
+        {
+            "Id": "monster_goblin_holy",
+            "Name": "고블린 성기사",
+            "Sprite": "Raw_Green/monster_goblin_holy.png",
+            "BaseHp": 64,
+            "HpGrowth": 5,
+            "BaseGold": 41,
+            "GoldGrowth": 2,
+            "Emoji": "👺"
+        },
+        {
+            "Id": "monster_goblin_dark",
+            "Name": "다크 고블린",
+            "Sprite": "Raw_Green/monster_goblin_dark.png",
+            "BaseHp": 81,
+            "HpGrowth": 5,
+            "BaseGold": 21,
+            "GoldGrowth": 2,
+            "Emoji": "👺"
+        },
+        {
+            "Id": "monster_orc_normal",
+            "Name": "오크 전사",
+            "Sprite": "Raw_Green/monster_orc_normal.png",
+            "BaseHp": 68,
+            "HpGrowth": 5,
+            "BaseGold": 22,
+            "GoldGrowth": 2,
+            "Emoji": "👹"
+        },
+        {
+            "Id": "monster_orc_fire",
+            "Name": "화산 오크",
+            "Sprite": "Raw_Green/monster_orc_fire.png",
+            "BaseHp": 80,
+            "HpGrowth": 5,
+            "BaseGold": 22,
+            "GoldGrowth": 2,
+            "Emoji": "👹"
+        },
+        {
+            "Id": "monster_orc_ice",
+            "Name": "빙하 오크",
+            "Sprite": "Raw_Green/monster_orc_ice.png",
+            "BaseHp": 72,
+            "HpGrowth": 5,
+            "BaseGold": 23,
+            "GoldGrowth": 2,
+            "Emoji": "👹"
+        },
+        {
+            "Id": "monster_orc_wind",
+            "Name": "태풍의 오크",
+            "Sprite": "Raw_Green/monster_orc_wind.png",
+            "BaseHp": 74,
+            "HpGrowth": 5,
+            "BaseGold": 23,
+            "GoldGrowth": 2,
+            "Emoji": "👹"
+        },
+        {
+            "Id": "monster_orc_holy",
+            "Name": "오크 대장군",
+            "Sprite": "Raw_Green/monster_orc_holy.png",
+            "BaseHp": 76,
+            "HpGrowth": 5,
+            "BaseGold": 44,
+            "GoldGrowth": 2,
+            "Emoji": "👹"
+        },
+        {
+            "Id": "monster_orc_dark",
+            "Name": "타락한 오크",
+            "Sprite": "Raw_Green/monster_orc_dark.png",
+            "BaseHp": 93,
+            "HpGrowth": 5,
+            "BaseGold": 24,
+            "GoldGrowth": 2,
+            "Emoji": "👹"
+        },
+        {
+            "Id": "monster_ghost_normal",
+            "Name": "떠도는 영혼",
+            "Sprite": "Raw_Green/monster_ghost_normal.png",
+            "BaseHp": 80,
+            "HpGrowth": 5,
+            "BaseGold": 25,
+            "GoldGrowth": 2,
+            "Emoji": "👻"
+        },
+        {
+            "Id": "monster_ghost_fire",
+            "Name": "불타는 원혼",
+            "Sprite": "Raw_Green/monster_ghost_fire.png",
+            "BaseHp": 92,
+            "HpGrowth": 5,
+            "BaseGold": 25,
+            "GoldGrowth": 2,
+            "Emoji": "👻"
+        },
+        {
+            "Id": "monster_ghost_ice",
+            "Name": "냉혹한 망령",
+            "Sprite": "Raw_Green/monster_ghost_ice.png",
+            "BaseHp": 84,
+            "HpGrowth": 5,
+            "BaseGold": 26,
+            "GoldGrowth": 2,
+            "Emoji": "👻"
+        },
+        {
+            "Id": "monster_ghost_wind",
+            "Name": "폭풍의 영혼",
+            "Sprite": "Raw_Green/monster_ghost_wind.png",
+            "BaseHp": 86,
+            "HpGrowth": 5,
+            "BaseGold": 26,
+            "GoldGrowth": 2,
+            "Emoji": "👻"
+        },
+        {
+            "Id": "monster_ghost_holy",
+            "Name": "성령",
+            "Sprite": "Raw_Green/monster_ghost_holy.png",
+            "BaseHp": 88,
+            "HpGrowth": 5,
+            "BaseGold": 47,
+            "GoldGrowth": 2,
+            "Emoji": "👻"
+        },
+        {
+            "Id": "monster_ghost_dark",
+            "Name": "악령",
+            "Sprite": "Raw_Green/monster_ghost_dark.png",
+            "BaseHp": 105,
+            "HpGrowth": 5,
+            "BaseGold": 27,
+            "GoldGrowth": 2,
+            "Emoji": "👻"
+        },
+        {
+            "Id": "monster_golem_normal",
+            "Name": "바위 골렘",
+            "Sprite": "Raw_Green/monster_golem_normal.png",
+            "BaseHp": 92,
+            "HpGrowth": 5,
+            "BaseGold": 28,
+            "GoldGrowth": 2,
+            "Emoji": "🗿"
+        },
+        {
+            "Id": "monster_golem_fire",
+            "Name": "용암 골렘",
+            "Sprite": "Raw_Green/monster_golem_fire.png",
+            "BaseHp": 104,
+            "HpGrowth": 5,
+            "BaseGold": 28,
+            "GoldGrowth": 2,
+            "Emoji": "🗿"
+        },
+        {
+            "Id": "monster_golem_ice",
+            "Name": "빙벽 골렘",
+            "Sprite": "Raw_Green/monster_golem_ice.png",
+            "BaseHp": 96,
+            "HpGrowth": 5,
+            "BaseGold": 29,
+            "GoldGrowth": 2,
+            "Emoji": "🗿"
+        },
+        {
+            "Id": "monster_golem_wind",
+            "Name": "샌드 골렘",
+            "Sprite": "Raw_Green/monster_golem_wind.png",
+            "BaseHp": 98,
+            "HpGrowth": 5,
+            "BaseGold": 29,
+            "GoldGrowth": 2,
+            "Emoji": "🗿"
+        },
+        {
+            "Id": "monster_golem_holy",
+            "Name": "고대 수호자",
+            "Sprite": "Raw_Green/monster_golem_holy.png",
+            "BaseHp": 100,
+            "HpGrowth": 5,
+            "BaseGold": 50,
+            "GoldGrowth": 2,
+            "Emoji": "🗿"
+        },
+        {
+            "Id": "monster_golem_dark",
+            "Name": "흑요석 골렘",
+            "Sprite": "Raw_Green/monster_golem_dark.png",
+            "BaseHp": 117,
+            "HpGrowth": 5,
+            "BaseGold": 30,
+            "GoldGrowth": 2,
+            "Emoji": "🗿"
+        },
+        {
+            "Id": "monster_mushroom_normal",
+            "Name": "독 버섯",
+            "Sprite": "Raw_Green/monster_mushroom_normal.png",
+            "BaseHp": 104,
+            "HpGrowth": 5,
+            "BaseGold": 31,
+            "GoldGrowth": 2,
+            "Emoji": "🍄"
+        },
+        {
+            "Id": "monster_mushroom_fire",
+            "Name": "폭발 버섯",
+            "Sprite": "Raw_Green/monster_mushroom_fire.png",
+            "BaseHp": 116,
+            "HpGrowth": 5,
+            "BaseGold": 31,
+            "GoldGrowth": 2,
+            "Emoji": "🍄"
+        },
+        {
+            "Id": "monster_mushroom_ice",
+            "Name": "아이스 펑거스",
+            "Sprite": "Raw_Green/monster_mushroom_ice.png",
+            "BaseHp": 108,
+            "HpGrowth": 5,
+            "BaseGold": 32,
+            "GoldGrowth": 2,
+            "Emoji": "🍄"
+        },
+        {
+            "Id": "monster_mushroom_wind",
+            "Name": "포자 버섯",
+            "Sprite": "Raw_Green/monster_mushroom_wind.png",
+            "BaseHp": 110,
+            "HpGrowth": 5,
+            "BaseGold": 32,
+            "GoldGrowth": 2,
+            "Emoji": "🍄"
+        },
+        {
+            "Id": "monster_mushroom_holy",
+            "Name": "빛나는 버섯",
+            "Sprite": "Raw_Green/monster_mushroom_holy.png",
+            "BaseHp": 112,
+            "HpGrowth": 5,
+            "BaseGold": 53,
+            "GoldGrowth": 2,
+            "Emoji": "🍄"
+        },
+        {
+            "Id": "monster_mushroom_dark",
+            "Name": "지옥 버섯",
+            "Sprite": "Raw_Green/monster_mushroom_dark.png",
+            "BaseHp": 129,
+            "HpGrowth": 5,
+            "BaseGold": 33,
+            "GoldGrowth": 2,
+            "Emoji": "🍄"
+        },
+        {
+            "Id": "monster_spider_normal",
+            "Name": "숲 거미",
+            "Sprite": "Raw_Green/monster_spider_normal.png",
+            "BaseHp": 116,
+            "HpGrowth": 5,
+            "BaseGold": 34,
+            "GoldGrowth": 2,
+            "Emoji": "🕷️"
+        },
+        {
+            "Id": "monster_spider_fire",
+            "Name": "화염 독거미",
+            "Sprite": "Raw_Green/monster_spider_fire.png",
+            "BaseHp": 128,
+            "HpGrowth": 5,
+            "BaseGold": 34,
+            "GoldGrowth": 2,
+            "Emoji": "🕷️"
+        },
+        {
+            "Id": "monster_spider_ice",
+            "Name": "크리스탈 거미",
+            "Sprite": "Raw_Green/monster_spider_ice.png",
+            "BaseHp": 120,
+            "HpGrowth": 5,
+            "BaseGold": 35,
+            "GoldGrowth": 2,
+            "Emoji": "🕷️"
+        },
+        {
+            "Id": "monster_spider_wind",
+            "Name": "날개 거미",
+            "Sprite": "Raw_Green/monster_spider_wind.png",
+            "BaseHp": 122,
+            "HpGrowth": 5,
+            "BaseGold": 35,
+            "GoldGrowth": 2,
+            "Emoji": "🕷️"
+        },
+        {
+            "Id": "monster_spider_holy",
+            "Name": "빛의 거미",
+            "Sprite": "Raw_Green/monster_spider_holy.png",
+            "BaseHp": 124,
+            "HpGrowth": 5,
+            "BaseGold": 56,
+            "GoldGrowth": 2,
+            "Emoji": "🕷️"
+        },
+        {
+            "Id": "monster_spider_dark",
+            "Name": "그림자 거미",
+            "Sprite": "Raw_Green/monster_spider_dark.png",
+            "BaseHp": 141,
+            "HpGrowth": 5,
+            "BaseGold": 36,
+            "GoldGrowth": 2,
+            "Emoji": "🕷️"
+        },
+        {
+            "Id": "monster_wolf_normal",
+            "Name": "회색 늑대",
+            "Sprite": "Raw_Green/monster_wolf_normal.png",
+            "BaseHp": 128,
+            "HpGrowth": 5,
+            "BaseGold": 37,
+            "GoldGrowth": 2,
+            "Emoji": "🐺"
+        },
+        {
+            "Id": "monster_wolf_fire",
+            "Name": "헬하운드",
+            "Sprite": "Raw_Green/monster_wolf_fire.png",
+            "BaseHp": 140,
+            "HpGrowth": 5,
+            "BaseGold": 37,
+            "GoldGrowth": 2,
+            "Emoji": "🐺"
+        },
+        {
+            "Id": "monster_wolf_ice",
+            "Name": "윈터 울프",
+            "Sprite": "Raw_Green/monster_wolf_ice.png",
+            "BaseHp": 132,
+            "HpGrowth": 5,
+            "BaseGold": 38,
+            "GoldGrowth": 2,
+            "Emoji": "🐺"
+        },
+        {
+            "Id": "monster_wolf_wind",
+            "Name": "스톰 울프",
+            "Sprite": "Raw_Green/monster_wolf_wind.png",
+            "BaseHp": 134,
+            "HpGrowth": 5,
+            "BaseGold": 38,
+            "GoldGrowth": 2,
+            "Emoji": "🐺"
+        },
+        {
+            "Id": "monster_wolf_holy",
+            "Name": "실버 울프",
+            "Sprite": "Raw_Green/monster_wolf_holy.png",
+            "BaseHp": 136,
+            "HpGrowth": 5,
+            "BaseGold": 59,
+            "GoldGrowth": 2,
+            "Emoji": "🐺"
+        },
+        {
+            "Id": "monster_wolf_dark",
+            "Name": "나이트 울프",
+            "Sprite": "Raw_Green/monster_wolf_dark.png",
+            "BaseHp": 153,
+            "HpGrowth": 5,
+            "BaseGold": 39,
+            "GoldGrowth": 2,
+            "Emoji": "🐺"
+        },
+        {
+            "Id": "monster_snake_normal",
+            "Name": "숲 뱀",
+            "Sprite": "Raw_Green/monster_snake_normal.png",
+            "BaseHp": 140,
+            "HpGrowth": 5,
+            "BaseGold": 40,
+            "GoldGrowth": 2,
+            "Emoji": "🐍"
+        },
+        {
+            "Id": "monster_snake_fire",
+            "Name": "살무사",
+            "Sprite": "Raw_Green/monster_snake_fire.png",
+            "BaseHp": 152,
+            "HpGrowth": 5,
+            "BaseGold": 40,
+            "GoldGrowth": 2,
+            "Emoji": "🐍"
+        },
+        {
+            "Id": "monster_snake_ice",
+            "Name": "바다 뱀",
+            "Sprite": "Raw_Green/monster_snake_ice.png",
+            "BaseHp": 144,
+            "HpGrowth": 5,
+            "BaseGold": 41,
+            "GoldGrowth": 2,
+            "Emoji": "🐍"
+        },
+        {
+            "Id": "monster_snake_wind",
+            "Name": "비전 뱀",
+            "Sprite": "Raw_Green/monster_snake_wind.png",
+            "BaseHp": 146,
+            "HpGrowth": 5,
+            "BaseGold": 41,
+            "GoldGrowth": 2,
+            "Emoji": "🐍"
+        },
+        {
+            "Id": "monster_snake_holy",
+            "Name": "황금 뱀",
+            "Sprite": "Raw_Green/monster_snake_holy.png",
+            "BaseHp": 148,
+            "HpGrowth": 5,
+            "BaseGold": 62,
+            "GoldGrowth": 2,
+            "Emoji": "🐍"
+        },
+        {
+            "Id": "monster_snake_dark",
+            "Name": "맹독 코브라",
+            "Sprite": "Raw_Green/monster_snake_dark.png",
+            "BaseHp": 165,
+            "HpGrowth": 5,
+            "BaseGold": 42,
+            "GoldGrowth": 2,
+            "Emoji": "🐍"
+        },
+        {
+            "Id": "monster_boar_normal",
+            "Name": "야생 멧돼지",
+            "Sprite": "Raw_Green/monster_boar_normal.png",
+            "BaseHp": 152,
+            "HpGrowth": 5,
+            "BaseGold": 43,
+            "GoldGrowth": 2,
+            "Emoji": "🐗"
+        },
+        {
+            "Id": "monster_boar_fire",
+            "Name": "레이지 보어",
+            "Sprite": "Raw_Green/monster_boar_fire.png",
+            "BaseHp": 164,
+            "HpGrowth": 5,
+            "BaseGold": 43,
+            "GoldGrowth": 2,
+            "Emoji": "🐗"
+        },
+        {
+            "Id": "monster_boar_ice",
+            "Name": "툰드라 보어",
+            "Sprite": "Raw_Green/monster_boar_ice.png",
+            "BaseHp": 156,
+            "HpGrowth": 5,
+            "BaseGold": 44,
+            "GoldGrowth": 2,
+            "Emoji": "🐗"
+        },
+        {
+            "Id": "monster_boar_wind",
+            "Name": "돌진 멧돼지",
+            "Sprite": "Raw_Green/monster_boar_wind.png",
+            "BaseHp": 158,
+            "HpGrowth": 5,
+            "BaseGold": 44,
+            "GoldGrowth": 2,
+            "Emoji": "🐗"
+        },
+        {
+            "Id": "monster_boar_holy",
+            "Name": "강철 멧돼지",
+            "Sprite": "Raw_Green/monster_boar_holy.png",
+            "BaseHp": 160,
+            "HpGrowth": 5,
+            "BaseGold": 65,
+            "GoldGrowth": 2,
+            "Emoji": "🐗"
+        },
+        {
+            "Id": "monster_boar_dark",
+            "Name": "스컬 보어",
+            "Sprite": "Raw_Green/monster_boar_dark.png",
+            "BaseHp": 177,
+            "HpGrowth": 5,
+            "BaseGold": 45,
+            "GoldGrowth": 2,
+            "Emoji": "🐗"
         }
     ],
     "Bosses": [
@@ -50,16 +743,28 @@
     ],
     "Heroes": [
         {
-            "Id": "hero_archerA",
-            "Name": "궁수"
+            "Id": "hero_archer",
+            "Name": "궁수",
+            "IdleSprite": "Raw_Green/hero_archer",
+            "AttackSprite": "Raw_Green/hero_archer_attack"
         },
         {
-            "Id": "hero_mageA",
-            "Name": "마법사"
+            "Id": "hero_mage",
+            "Name": "마법사",
+            "IdleSprite": "Raw_Green/hero_mage",
+            "AttackSprite": "Raw_Green/hero_mage_attack"
         },
         {
-            "Id": "hero_saintA",
-            "Name": "성녀"
+            "Id": "hero_saint",
+            "Name": "성녀",
+            "IdleSprite": "Raw_Green/hero_saint",
+            "AttackSprite": "Raw_Green/hero_saint_attack"
+        },
+        {
+            "Id": "hero_warrior",
+            "Name": "전사",
+            "IdleSprite": "Raw_Green/hero_warrior",
+            "AttackSprite": "Raw_Green/hero_warrior_attack"
         }
     ]
 }

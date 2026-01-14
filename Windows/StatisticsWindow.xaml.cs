@@ -64,9 +64,9 @@ namespace DeskWarrior.Windows
             LblSummaryGold.Text = loc["ui.statistics.labels.totalGoldEarned"];
             LblInputRatio.Text = loc["ui.statistics.labels.inputRatio"];
 
-            BtnRange1H.Content = loc.CurrentLanguage == "ko-KR" ? "1시간" : "Last 1H";
-            BtnRange24H.Content = loc.CurrentLanguage == "ko-KR" ? "24시간" : "Last 24H";
-            BtnRangeAll.Content = loc.CurrentLanguage == "ko-KR" ? "전체" : "All Time";
+            BtnRange1H.Content = loc.CurrentLanguage == "ko-KR" ? "1시간" : "1H";
+            BtnRange24H.Content = loc.CurrentLanguage == "ko-KR" ? "24시간" : "24H";
+            BtnRange7D.Content = loc.CurrentLanguage == "ko-KR" ? "7일" : "7D";
 
             LblRecentSessions.Text = loc["ui.statistics.sessions.recentSessions"];
 
@@ -100,31 +100,23 @@ namespace DeskWarrior.Windows
 
             List<SessionStats> filteredSessions = new();
 
-            if (filter == "All")
+            DateTime cutoff = filter switch
             {
-                totalKills = _saveManager.CurrentSave.Stats.MonsterKills;
-                totalGold = lifetime.TotalGoldEarned;
-                totalDamage = _saveManager.CurrentSave.Stats.TotalDamage;
-                maxLevel = _saveManager.CurrentSave.Stats.MaxLevel;
-                
-                keyboardInputs = lifetime.KeyboardInputs;
-                mouseInputs = lifetime.MouseInputs;
-                
-                filteredSessions = sessions;
-            }
-            else
-            {
-                DateTime cutoff = filter == "1H" ? DateTime.Now.AddHours(-1) : DateTime.Now.AddHours(-24);
-                filteredSessions = sessions.Where(s => s.EndTime >= cutoff).ToList();
-                
-                totalKills = filteredSessions.Sum(s => (long)s.MonstersKilled);
-                totalGold = filteredSessions.Sum(s => s.TotalGold);
-                totalDamage = filteredSessions.Sum(s => s.TotalDamage);
-                maxLevel = filteredSessions.Any() ? filteredSessions.Max(s => s.MaxLevel) : 0;
-                
-                keyboardInputs = filteredSessions.Sum(s => (long)s.KeyboardInputs);
-                mouseInputs = filteredSessions.Sum(s => (long)s.MouseInputs);
-            }
+                "1H" => DateTime.Now.AddHours(-1),
+                "24H" => DateTime.Now.AddHours(-24),
+                "7D" => DateTime.Now.AddDays(-7),
+                _ => DateTime.Now.AddHours(-24)
+            };
+
+            filteredSessions = sessions.Where(s => s.EndTime >= cutoff).ToList();
+
+            totalKills = filteredSessions.Sum(s => (long)s.MonstersKilled);
+            totalGold = filteredSessions.Sum(s => s.TotalGold);
+            totalDamage = filteredSessions.Sum(s => s.TotalDamage);
+            maxLevel = filteredSessions.Any() ? filteredSessions.Max(s => s.MaxLevel) : 0;
+
+            keyboardInputs = filteredSessions.Sum(s => (long)s.KeyboardInputs);
+            mouseInputs = filteredSessions.Sum(s => (long)s.MouseInputs);
 
             TxtSummaryKills.Text = FormatNumber(totalKills);
             TxtSummaryGold.Text = FormatNumber(totalGold);
@@ -142,7 +134,7 @@ namespace DeskWarrior.Windows
         {
             SetButtonStyle(BtnRange1H, filter == "1H");
             SetButtonStyle(BtnRange24H, filter == "24H");
-            SetButtonStyle(BtnRangeAll, filter == "All");
+            SetButtonStyle(BtnRange7D, filter == "7D");
         }
 
         private void SetButtonStyle(Button btn, bool isActive)

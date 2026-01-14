@@ -1,9 +1,9 @@
 <Window x:Class="DeskWarrior.Windows.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Settings" Height="320" Width="300"
+        Title="Settings" Height="380" Width="300"
         WindowStyle="None" ResizeMode="NoResize"
-        Background="#CC222222" AllowsTransparency="True"
+        Background="#F01a1a2e" AllowsTransparency="True"
         WindowStartupLocation="CenterOwner"
         Topmost="True"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
@@ -11,6 +11,7 @@
     <Border BorderBrush="#666" BorderThickness="1" CornerRadius="10">
         <Grid Margin="20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -23,8 +24,25 @@
                        Foreground="White" FontWeight="Bold" FontSize="16"
                        HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-            <!-- 배경 투명도 -->
+            <!-- 창 투명도 -->
             <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                <TextBlock x:Name="WindowOpacityLabel" Text="Window Opacity" Foreground="#AAA" FontSize="12" Margin="0,0,0,5"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider x:Name="WindowOpacitySlider" Grid.Column="0"
+                            Minimum="0.1" Maximum="1" Value="1.0"
+                            Style="{StaticResource GameSlider}"
+                            ValueChanged="WindowOpacitySlider_ValueChanged"/>
+                    <TextBlock x:Name="WindowOpacityValueText" Grid.Column="1"
+                               Text="100%" Foreground="White" Width="35" TextAlignment="Right"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- 배경 투명도 -->
+            <StackPanel Grid.Row="2" Margin="0,0,0,20">
                 <TextBlock x:Name="OpacityLabel" Text="Background Opacity" Foreground="#AAA" FontSize="12" Margin="0,0,0,5"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -41,7 +59,7 @@
             </StackPanel>
 
             <!-- 사운드 볼륨 -->
-            <StackPanel Grid.Row="2" Margin="0,0,0,20">
+            <StackPanel Grid.Row="3" Margin="0,0,0,20">
                 <TextBlock x:Name="VolumeLabel" Text="Sound Volume" Foreground="#AAA" FontSize="12" Margin="0,0,0,5"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -58,8 +76,8 @@
             </StackPanel>
 
             <!-- 언어 선택 -->
-            <StackPanel Grid.Row="3" Margin="0,0,0,20">
-                <TextBlock x:Name="LanguageLabel" Text="Language / 언어" Foreground="#171717ff" FontSize="12" Margin="0,0,0,5"/>
+            <StackPanel Grid.Row="4" Margin="0,0,0,20">
+                <TextBlock x:Name="LanguageLabel" Text="Language / 언어" Foreground="#AAA" FontSize="12" Margin="0,0,0,5"/>
                 <ComboBox x:Name="LanguageComboBox"
                           SelectionChanged="LanguageComboBox_SelectionChanged"
                           Background="#555" Foreground="Gray"
@@ -94,7 +112,7 @@
             </StackPanel>
 
             <!-- 닫기 버튼 -->
-            <Button Grid.Row="4" x:Name="CloseBtn" Content="CLOSE"
+            <Button Grid.Row="5" x:Name="CloseBtn" Content="CLOSE"
                     Click="CloseButton_Click"
                     Style="{StaticResource CloseButton}"
                     VerticalAlignment="Bottom"/>
