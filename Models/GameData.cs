@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -32,7 +33,10 @@ namespace DeskWarrior.Models
                     return JsonSerializer.Deserialize<GameData>(json) ?? new GameData();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.LogError($"Failed to load GameData from {path}", ex);
+            }
             return new GameData();
         }
     }

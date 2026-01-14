@@ -93,9 +93,6 @@ namespace DeskWarrior
             Closing += MainWindow_Closing;
             LocationChanged += MainWindow_LocationChanged;
 
-            // 초기 UI 업데이트
-            UpdateUI();
-            
             // 게임 시작
             _gameManager.StartGame();
         }
@@ -194,7 +191,10 @@ namespace DeskWarrior
                 _heroAttackTimer.Interval = TimeSpan.FromMilliseconds(150);
                 _heroAttackTimer.Tick += HeroAttackTimer_Tick;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.LogError("Hero image loading failed", ex);
+            }
         }
 
         private void HeroAttackTimer_Tick(object? sender, EventArgs e)
@@ -805,20 +805,6 @@ namespace DeskWarrior
             return false;
         }
 
-        private void SetClickThrough(bool enabled)
-        {
-            if (enabled)
-            {
-                Win32Helper.SetWindowClickThrough(_hwnd);
-            }
-            else
-            {
-                int extendedStyle = Win32Helper.GetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE);
-                Win32Helper.SetWindowLong(_hwnd, Win32Helper.GWL_EXSTYLE,
-                    extendedStyle & ~Win32Helper.WS_EX_TRANSPARENT);
-            }
-        }
-
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_NCHITTEST = 0x0084;
@@ -913,14 +899,104 @@ namespace DeskWarrior
         /// </summary>
         private void UpdateAllUI()
         {
-            // 공통 UI 업데이트
-            UpdateCoreUI();
-
-            // 몬스터 UI 업데이트
+            UpdateLevelUI();
+            UpdateGoldUI();
+            UpdateInputCountUI();
+            UpdatePowerUI();
             UpdateMonsterUI();
-
-            // 타이머 UI 업데이트
             UpdateTimerUI();
+        }
+
+        private void UpdateLevelUI()
+        {
+            LevelText.Text = $"Lv.{_gameManager.CurrentLevel}";
+            MaxLevelText.Text = $"(Best: {Math.Max(_gameManager.CurrentLevel, _saveManager.CurrentSave.Stats.MaxLevel)})";
+        }
+
+        private void UpdateGoldUI()
+        {
+            GoldText.Text = $"💰 {_gameManager.Gold}";
+        }
+
+        private void UpdateInputCountUI()
+        {
+            InputCountText.Text = $"⌨️ {_sessionInputCount}";
+        }
+
+        private void UpdatePowerUI()
+        {
+            KeyboardPowerText.Text = $"⌨️ Atk: {_gameManager.KeyboardPower}";
+            MousePowerText.Text = $"🖱️ Atk: {_gameManager.MousePower}";
+        }
+
+        private void UpdateMonsterUI()
+        {
+            var monster = _gameManager.CurrentMonster;
+            if (monster == null) return;
+
+            UpdateMonsterSpriteUI(monster);
+            UpdateMonsterHpUI(monster);
+        }
+
+        private void UpdateMonsterSpriteUI(Models.Monster monster)
+        {
+            MonsterEmoji.Text = monster.Emoji;
+
+            try
+            {
+                string spritePath = monster.SkinType;
+                string imagePath = spritePath.EndsWith(".png")
+                    ? $"pack://application:,,,/Assets/Images/{spritePath}"
+                    : $"pack://application:,,,/Assets/Images/{spritePath}.png";
+
+                MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
+                MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+                MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+
+                bool needsFlip = NeedsFlip(spritePath);
+                MonsterImage.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
+
+                var transformGroup = new TransformGroup();
+                transformGroup.Children.Add(new ScaleTransform(needsFlip ? -1 : 1, 1));
+                transformGroup.Children.Add(MonsterShakeTransform);
+                MonsterImage.RenderTransform = transformGroup;
+            }
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.Log($"Monster image load failed: {ex.Message}");
+            }
+        }
+
+        private static bool NeedsFlip(string spritePath)
+        {
+            return spritePath.Contains("slime") || spritePath.Contains("bat") ||
+                   spritePath.Contains("skeleton") || spritePath.Contains("goblin") ||
+                   spritePath.Contains("orc") || spritePath.Contains("ghost") ||
+                   spritePath.Contains("golem") || spritePath.Contains("mushroom") ||
+                   spritePath.Contains("spider") || spritePath.Contains("wolf") ||
+                   spritePath.Contains("snake") || spritePath.Contains("boar");
+        }
+
+        private void UpdateMonsterHpUI(Models.Monster monster)
+        {
+            HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
+
+            var hpRatio = monster.HpRatio;
+            double targetWidth = hpRatio * 80;
+
+            var widthAnim = new DoubleAnimation
+            {
+                To = targetWidth,
+                Duration = TimeSpan.FromMilliseconds(300),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            HpBar.BeginAnimation(FrameworkElement.WidthProperty, widthAnim);
+
+            Color targetColor = hpRatio > 0.5 ? Color.FromRgb(0, 255, 0)
+                              : hpRatio > 0.25 ? Color.FromRgb(255, 255, 0)
+                              : Color.FromRgb(255, 0, 0);
+
+            HpBar.Background = new SolidColorBrush(targetColor);
         }
 
         /// <summary>
@@ -1144,81 +1220,7 @@ namespace DeskWarrior
             DebugText.Text = $"+{goldReward} 💰";
         }
 
-        private void GameOverEffect()
-        {
-            // Hard Reset 시 화면 붉은 플래시 효과
-            DebugText.Text = "⚠️ TIME OVER - RESET!";
-            DebugText.Foreground = new SolidColorBrush(Colors.Red);
-            
-            // 타이머 색상 깜빡임
-            var flashAnim = new ColorAnimation
-            {
-                From = Colors.Red,
-                To = Colors.DarkRed,
-                Duration = TimeSpan.FromMilliseconds(100),
-                AutoReverse = true,
-                RepeatBehavior = new RepeatBehavior(3)
-            };
-            
-            var brush = new SolidColorBrush(Colors.Red);
-            TimerText.Foreground = brush;
-            brush.BeginAnimation(SolidColorBrush.ColorProperty, flashAnim);
-        }
-
-        private void BossEntranceEffect()
-        {
-            // 보스 등장 연출
-            DebugText.Text = "⚠️ BOSS APPEARED!";
-            DebugText.Foreground = new SolidColorBrush(Colors.Purple);
-
-            // 몬스터 크기를 보스 크기로 설정
-            MonsterImage.Width = BOSS_SIZE;
-            MonsterImage.Height = BOSS_SIZE;
-        }
-
         #endregion
-
-        /// <summary>
-        /// 기본 UI 업데이트 (애니메이션 없음, 초기화 시 사용)
-        /// </summary>
-        private void UpdateUI()
-        {
-            if (_gameManager == null) return;
-
-            // 공통 UI 업데이트
-            UpdateCoreUI();
-
-            // 업그레이드 비용 업데이트
-            UpdateUpgradeCosts();
-        }
-
-        /// <summary>
-        /// 핵심 UI 요소 업데이트 (공통 로직)
-        /// </summary>
-        private void UpdateCoreUI()
-        {
-            // 레벨, 골드 업데이트
-            if (LevelText != null) LevelText.Text = $"Lv.{_gameManager.CurrentLevel}";
-            if (MaxLevelText != null)
-            {
-                int bestLevel = Math.Max(_gameManager.CurrentLevel, _saveManager.CurrentSave.Stats.MaxLevel);
-                MaxLevelText.Text = $"(Best: {bestLevel})";
-            }
-            if (GoldText != null) GoldText.Text = $"💰 {_gameManager.Gold:N0}";
-
-            // HP 업데이트
-            if (_gameManager.CurrentMonster != null && HpText != null)
-            {
-                HpText.Text = $"{_gameManager.CurrentMonster.CurrentHp:N0}/{_gameManager.CurrentMonster.MaxHp:N0}";
-            }
-
-            // 입력 카운트
-            if (InputCountText != null) InputCountText.Text = $"⌨️ {_sessionInputCount}";
-
-            // 공격력 업데이트
-            if (KeyboardPowerText != null) KeyboardPowerText.Text = $"⌨️ Atk: {_gameManager.KeyboardPower:N0}";
-            if (MousePowerText != null) MousePowerText.Text = $"🖱️ Atk: {_gameManager.MousePower:N0}";
-        }
 
         private void UpdateLocalizedUI()
         {

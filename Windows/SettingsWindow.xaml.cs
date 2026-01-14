@@ -73,30 +73,19 @@ namespace DeskWarrior.Windows
         }
 
         private void WindowOpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (WindowOpacityValueText == null) return;
-
-            WindowOpacityValueText.Text = $"{(int)(e.NewValue * 100)}%";
-            _settings.WindowOpacity = e.NewValue;
-            _onWindowOpacityChanged?.Invoke(e.NewValue);
-        }
+            => HandleSliderChanged(WindowOpacityValueText, e.NewValue, v => { _settings.WindowOpacity = v; _onWindowOpacityChanged?.Invoke(v); });
 
         private void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (OpacityValueText == null) return;
-
-            OpacityValueText.Text = $"{(int)(e.NewValue * 100)}%";
-            _settings.BackgroundOpacity = e.NewValue;
-            _onOpacityChanged?.Invoke(e.NewValue);
-        }
+            => HandleSliderChanged(OpacityValueText, e.NewValue, v => { _settings.BackgroundOpacity = v; _onOpacityChanged?.Invoke(v); });
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (VolumeValueText == null) return;
+            => HandleSliderChanged(VolumeValueText, e.NewValue, v => { _settings.Volume = v; _onVolumeChanged?.Invoke(v); });
 
-            VolumeValueText.Text = $"{(int)(e.NewValue * 100)}%";
-            _settings.Volume = e.NewValue;
-            _onVolumeChanged?.Invoke(e.NewValue);
+        private static void HandleSliderChanged(System.Windows.Controls.TextBlock? textBlock, double value, Action<double> updateAction)
+        {
+            if (textBlock == null) return;
+            textBlock.Text = $"{(int)(value * 100)}%";
+            updateAction(value);
         }
 
         private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

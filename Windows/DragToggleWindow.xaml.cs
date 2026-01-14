@@ -1,9 +1,9 @@
 using System;
-using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using DeskWarrior.Helpers;
 
 namespace DeskWarrior.Windows
 {
@@ -24,15 +24,6 @@ namespace DeskWarrior.Windows
         private Storyboard? _hideStoryboard;
 
         private const double DragThreshold = 5.0;
-
-        private static readonly string LogPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            "dragtoggle_debug.txt");
-
-        private static void Log(string msg)
-        {
-            try { File.AppendAllText(LogPath, $"{DateTime.Now:HH:mm:ss.fff} {msg}\n"); } catch { }
-        }
 
         public DragToggleWindow()
         {
@@ -110,7 +101,7 @@ namespace DeskWarrior.Windows
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Log($"MouseDown - IsHitTestVisible={IsHitTestVisible}, Visibility={Visibility}, _isUnlockedMode={_isUnlockedMode}");
+            Logger.Log($"[DragToggle] MouseDown - IsHitTestVisible={IsHitTestVisible}, Visibility={Visibility}, _isUnlockedMode={_isUnlockedMode}");
             _mouseDownScreenPosition = PointToScreen(e.GetPosition(this));
             _isMouseDown = true;
             _isDragging = false;
@@ -147,7 +138,7 @@ namespace DeskWarrior.Windows
 
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Log($"MouseUp - _isMouseDown={_isMouseDown}, _isDragging={_isDragging}, _isUnlockedMode={_isUnlockedMode}");
+            Logger.Log($"[DragToggle] MouseUp - _isMouseDown={_isMouseDown}, _isDragging={_isDragging}, _isUnlockedMode={_isUnlockedMode}");
 
             if (!_isMouseDown) return;
 
@@ -158,7 +149,7 @@ namespace DeskWarrior.Windows
             // 잠금 모드: 항상 토글
             if (!_isDragging || !_isUnlockedMode)
             {
-                Log("Invoking ToggleRequested");
+                Logger.Log("[DragToggle] Invoking ToggleRequested");
                 ToggleRequested?.Invoke(this, EventArgs.Empty);
             }
 
