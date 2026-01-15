@@ -1,0 +1,89 @@
+{
+  "_comment": "스탯 공식 정의 - 단일 소스 (Single Source of Truth)",
+  "_usage": "tools/generate_stat_code.py로 Python/C# 코드 생성",
+
+  "formulas": {
+    "upgrade_cost": {
+      "name": "업그레이드 비용",
+      "formula": "base_cost * (1 + level * growth_rate) * pow(multiplier, level / softcap_interval)",
+      "params": ["base_cost", "growth_rate", "multiplier", "softcap_interval", "level"],
+      "return_type": "int"
+    },
+    "stat_effect": {
+      "name": "스탯 효과",
+      "formula": "effect_per_level * level",
+      "params": ["effect_per_level", "level"],
+      "return_type": "double"
+    },
+    "damage": {
+      "name": "데미지 계산",
+      "formula": "(base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier",
+      "params": ["base_power", "base_attack", "attack_percent", "crit_multiplier", "multi_hit_multiplier", "combo_multiplier"],
+      "return_type": "int",
+      "steps": [
+        {"name": "기본", "formula": "base_power"},
+        {"name": "가산", "formula": "base_power + base_attack"},
+        {"name": "배수", "formula": "(base_power + base_attack) * (1 + attack_percent)"},
+        {"name": "크리티컬", "formula": "step3 * crit_multiplier"},
+        {"name": "멀티히트", "formula": "step4 * multi_hit_multiplier"},
+        {"name": "콤보", "formula": "step5 * combo_multiplier"}
+      ]
+    },
+    "gold_earned": {
+      "name": "골드 획득",
+      "formula": "(base_gold + gold_flat + gold_flat_perm) * (1 + gold_multi + gold_multi_perm)",
+      "params": ["base_gold", "gold_flat", "gold_flat_perm", "gold_multi", "gold_multi_perm"],
+      "return_type": "int"
+    },
+    "combo_multiplier": {
+      "name": "콤보 배율",
+      "formula": "(1 + combo_damage / 100) * pow(2, combo_stack)",
+      "params": ["combo_damage", "combo_stack"],
+      "return_type": "double",
+      "constraints": {
+        "combo_stack": {"min": 0, "max": 3}
+      }
+    },
+    "time_thief": {
+      "name": "시간 도둑",
+      "formula": "min(current_time + bonus_time, base_time * 2)",
+      "params": ["current_time", "bonus_time", "base_time"],
+      "return_type": "double",
+      "description": "최대 기본시간의 2배까지만 연장"
+    },
+    "combo_tolerance": {
+      "name": "콤보 허용 오차",
+      "formula": "0.01 + combo_flex * 0.005",
+      "params": ["combo_flex"],
+      "return_type": "double",
+      "unit": "seconds"
+    },
+    "crystal_drop_chance": {
+      "name": "크리스탈 드롭 확률",
+      "formula": "min(base_chance + crystal_multi / 100, max_chance)",
+      "params": ["base_chance", "crystal_multi", "max_chance"],
+      "return_type": "double"
+    },
+    "crystal_drop_amount": {
+      "name": "크리스탈 드롭량",
+      "formula": "base_amount + crystal_flat",
+      "params": ["base_amount", "crystal_flat"],
+      "return_type": "int"
+    },
+    "discounted_cost": {
+      "name": "할인된 비용",
+      "formula": "original_cost * (1 - upgrade_discount / 100)",
+      "params": ["original_cost", "upgrade_discount"],
+      "return_type": "int"
+    }
+  },
+
+  "constants": {
+    "BASE_CRIT_CHANCE": 0.1,
+    "BASE_CRIT_MULTIPLIER": 2.0,
+    "BASE_TIME_LIMIT": 30,
+    "COMBO_DURATION": 3.0,
+    "MAX_COMBO_STACK": 3,
+    "GOLD_TO_CRYSTAL_RATE": 1000
+  }
+}

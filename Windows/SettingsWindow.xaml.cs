@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using DeskWarrior.Interfaces;
 using DeskWarrior.Managers;
 using DeskWarrior.Models;
 
@@ -13,9 +14,11 @@ namespace DeskWarrior.Windows
         private readonly Action<double> _onOpacityChanged;
         private readonly Action<double> _onVolumeChanged;
         private readonly Action? _onLanguageChanged;
+        private readonly IGameManager? _gameManager;
+        private readonly SaveManager? _saveManager;
         private bool _isInitializing = true;
 
-        public SettingsWindow(UserSettings settings, Action<double> onWindowOpacityChanged, Action<double> onOpacityChanged, Action<double> onVolumeChanged, Action? onLanguageChanged = null)
+        public SettingsWindow(UserSettings settings, Action<double> onWindowOpacityChanged, Action<double> onOpacityChanged, Action<double> onVolumeChanged, Action? onLanguageChanged = null, IGameManager? gameManager = null, SaveManager? saveManager = null)
         {
             InitializeComponent();
             _settings = settings;
@@ -23,6 +26,8 @@ namespace DeskWarrior.Windows
             _onOpacityChanged = onOpacityChanged;
             _onVolumeChanged = onVolumeChanged;
             _onLanguageChanged = onLanguageChanged;
+            _gameManager = gameManager;
+            _saveManager = saveManager;
 
             // 초기값 설정
             WindowOpacitySlider.Value = _settings.WindowOpacity;
@@ -113,6 +118,20 @@ namespace DeskWarrior.Windows
             {
                 DragMove();
             }
+        }
+
+        private void BalanceTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_gameManager == null || _saveManager == null)
+            {
+                MessageBox.Show("Balance Test Tool requires GameManager and SaveManager.",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var balanceTestWindow = new BalanceTestWindow(_gameManager, _saveManager);
+            balanceTestWindow.Owner = this;
+            balanceTestWindow.ShowDialog();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

@@ -32,6 +32,14 @@ namespace DeskWarrior.Interfaces
         GameData GameData { get; }
         List<HeroData> Heroes { get; }
 
+        // In-Game Stats
+        InGameStats InGameStats { get; }
+        double GoldFlat { get; }
+        double GoldMulti { get; }
+        double TimeThief { get; }
+        double ComboFlex { get; }
+        double ComboDamage { get; }
+
         // Session Stats
         long SessionDamage { get; }
         long SessionTotalGold { get; }
@@ -51,6 +59,8 @@ namespace DeskWarrior.Interfaces
         void OnMouseInput();
         bool UpgradeKeyboardPower();
         bool UpgradeMousePower();
+        bool UpgradeInGameStat(string statId);
+        int GetInGameStatUpgradeCost(string statId);
         int CalculateUpgradeCost(int currentLevel);
         void LoadUpgrades(int keyboardPower, int mousePower);
         void RestartGame();

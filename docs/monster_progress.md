@@ -25,14 +25,9 @@
 | 7 | **골렘** | `monster_golemA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
 | 8 | **버섯** | `monster_mushroomA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
 | 9 | **거미** | `monster_spiderA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
-| 10 | **늑대** | `monster_wolfA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
-| 11 | **뱀** | `monster_snakeA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
-| 12 | **멧돼지** | `monster_boarA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
-| 13 | **벌** | `monster_beeA.png` | **[완료]** (B~F 생성 완료) | |
-| 14 | **게** | `monster_crabA.png` | **[완료]** (B~F 생성 완료) | |
-| 15 | **거북이** | `monster_turtleA.png` | **[완료]** (B~F 생성 완료) | |
-| 16 | **식인식물** | `monster_plantA.png` | **[완료]** (B~F 생성 완료) | |
-| 17 | **미믹** | `monster_mimicA.png` | **[완료]** (B~F 생성 완료) | |
+| 10 | **좀비** | `monster_zombieA.png` | **[완료]** | |
+| 11 | **밴시** | `monster_bansheeA.png` | **[대기]** | |
+| 12 | **가고일** | `monster_gargoyleA.png` | **[대기]** | |
 | 18 | **눈알괴물** | `monster_eyeballA.png` | **[완료]** (B~F 생성 완료) | |
 | 19 | **정령** | `monster_elementalA.png` | **[완료]** (B~F 생성 완료) | |
 | 20 | **쥐** | `monster_ratA.png` | **[완료]** (B~F 생성 완료) | |

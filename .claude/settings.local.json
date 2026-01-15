@@ -9,7 +9,10 @@
       "Bash(start DeskWarrior.exe)",
       "Bash(taskkill:*)",
       "Bash(dir /s /b C:UserssaintirondeskHero)",
-      "Bash(start binDebugnet9.0-windowsDeskWarrior.exe)"
+      "Bash(start binDebugnet9.0-windowsDeskWarrior.exe)",
+      "Bash(python generate_stat_code.py:*)",
+      "Bash(python test_stat_formulas.py:*)",
+      "Bash(git reset:*)"
     ]
   }
 }

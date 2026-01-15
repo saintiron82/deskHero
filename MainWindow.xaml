@@ -102,7 +102,7 @@
                 <Border x:Name="TimerInfoBar" Grid.Row="0"
                         Background="#44000000" CornerRadius="8" Padding="10,4"
                         HorizontalAlignment="Left" VerticalAlignment="Top"
-                        Margin="0,0,0,0">
+                        Margin="40,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="⏱️" FontSize="12" Foreground="White" VerticalAlignment="Center"/>
                         <TextBlock Text=" " FontSize="12"/>
@@ -205,42 +205,155 @@
                         Margin="0,5,0,0" Padding="5"
                         Visibility="Collapsed">
                     <StackPanel>
-                        <!-- 업그레이드 버튼 -->
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <!-- 스탯 업그레이드 리스트 (스크롤 가능) -->
+                        <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      Margin="0,0,0,4">
+                            <StackPanel>
+                                <!-- 키보드 공격력 -->
+                                <Button x:Name="UpgradeKeyboardBtn"
+                                        Click="UpgradeKeyboard_Click"
+                                        Style="{StaticResource StatUpgradeButton}"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="⌨️" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="KeyboardNameText" Text="키보드 공격력" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="KeyboardEffectText" Text="Lv.0 (+1 데미지)" FontSize="7" Foreground="#AAA"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="KeyboardCostText" Text="💰 100" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
 
-                            <!-- 키보드 공격력 업그레이드 -->
-                            <Button x:Name="UpgradeKeyboardBtn" Grid.Column="0"
-                                    Click="UpgradeKeyboard_Click"
-                                    Style="{StaticResource KeyboardUpgradeButton}"
-                                    Margin="2" Padding="5,3"
-                                    ToolTip="키보드 공격력 업그레이드">
-                                <StackPanel>
-                                    <TextBlock x:Name="UpgradeKeyboardText" Text="⌨️ UP" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="KeyboardCostText" Text="💰 100" FontSize="8"
-                                               HorizontalAlignment="Center" Foreground="#FFD700"/>
-                                </StackPanel>
-                            </Button>
+                                <!-- 마우스 공격력 -->
+                                <Button x:Name="UpgradeMouseBtn"
+                                        Click="UpgradeMouse_Click"
+                                        Style="{StaticResource StatUpgradeButton}"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="🖱️" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="MouseNameText" Text="마우스 공격력" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="MouseEffectText" Text="Lv.0 (+1 데미지)" FontSize="7" Foreground="#AAA"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="MouseCostText" Text="💰 100" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
 
-                            <!-- 마우스 공격력 업그레이드 -->
-                            <Button x:Name="UpgradeMouseBtn" Grid.Column="1"
-                                    Click="UpgradeMouse_Click"
-                                    Style="{StaticResource MouseUpgradeButton}"
-                                    Margin="2" Padding="5,3"
-                                    ToolTip="마우스 공격력 업그레이드">
-                                <StackPanel>
-                                    <TextBlock x:Name="UpgradeMouseText" Text="🖱️ UP" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="MouseCostText" Text="💰 100" FontSize="8"
-                                               HorizontalAlignment="Center" Foreground="#FFD700"/>
-                                </StackPanel>
-                            </Button>
-                        </Grid>
+                                <!-- 골드+ -->
+                                <Button x:Name="UpgradeGoldFlatBtn"
+                                        Click="UpgradeGoldFlat_Click"
+                                        Style="{StaticResource StatUpgradeButton}"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="💰" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="GoldFlatNameText" Text="골드+" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="GoldFlatEffectText" Text="Lv.0 (+0 골드)" FontSize="7" Foreground="#AAA"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="GoldFlatCostText" Text="💰 150" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
+
+                                <!-- 골드* -->
+                                <Button x:Name="UpgradeGoldMultiBtn"
+                                        Click="UpgradeGoldMulti_Click"
+                                        Style="{StaticResource StatUpgradeButton}"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="🌟" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="GoldMultiNameText" Text="골드*" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="GoldMultiEffectText" Text="Lv.0 (+0%)" FontSize="7" Foreground="#AAA"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="GoldMultiCostText" Text="💰 200" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
+
+                                <!-- 시간 도둑 -->
+                                <Button x:Name="UpgradeTimeThiefBtn"
+                                        Click="UpgradeTimeThief_Click"
+                                        Style="{StaticResource StatUpgradeButton}"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="⏱️" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="TimeThiefNameText" Text="시간 도둑" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="TimeThiefEffectText" Text="Lv.0 (+0초)" FontSize="7" Foreground="#AAA"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="TimeThiefCostText" Text="💰 300" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
+
+                                <!-- 콤보 유연성 -->
+                                <Button x:Name="UpgradeComboFlexBtn"
+                                        Click="UpgradeComboFlex_Click"
+                                        Style="{StaticResource StatUpgradeButton}"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="🎯" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="ComboFlexNameText" Text="콤보 유연성" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="ComboFlexEffectText" Text="Lv.0 (+0.00초)" FontSize="7" Foreground="#AAA"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="ComboFlexCostText" Text="💰 250" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
+
+                                <!-- 콤보 데미지 -->
+                                <Button x:Name="UpgradeComboDamageBtn"
+                                        Click="UpgradeComboDamage_Click"
+                                        Style="{StaticResource StatUpgradeButton}"
+                                        Margin="0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="💥" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="ComboDamageNameText" Text="콤보 데미지" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="ComboDamageEffectText" Text="Lv.0 (+0%)" FontSize="7" Foreground="#AAA"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="ComboDamageCostText" Text="💰 300" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
+                        </ScrollViewer>
 
                         <!-- 유틸리티 버튼 -->
-                        <Grid Margin="0,4,0,0">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>

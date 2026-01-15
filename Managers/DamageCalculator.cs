@@ -10,6 +10,9 @@ namespace DeskWarrior.Managers
     {
         public int Damage { get; init; }
         public bool IsCritical { get; init; }
+        public bool IsMultiHit { get; init; }
+        public bool IsCombo { get; init; }
+        public int ComboStack { get; init; } // 0, 1, 2, 3
     }
 
     /// <summary>
@@ -67,19 +70,27 @@ namespace DeskWarrior.Managers
         /// </summary>
         /// <param name="basePower">기본 공격력</param>
         /// <param name="permStats">영구 스탯 (null 가능)</param>
+        /// <param name="comboDamageBonus">콤보 데미지 보너스 (0.0 ~ 1.0)</param>
+        /// <param name="comboStack">콤보 스택 (0 = 없음, 1-3 = 스택)</param>
         /// <returns>계산된 데미지와 크리티컬 여부</returns>
-        public DamageResult Calculate(int basePower, PermanentStats? permStats)
+        public DamageResult Calculate(int basePower, PermanentStats? permStats, double comboDamageBonus = 0, int comboStack = 0)
         {
+            // ① 기본 = BasePower (keyboard/mouse_power)
             double effectivePower = basePower;
 
-            // 영구 스탯 적용
+            // ② +가산 = 기본 + base_attack
             if (permStats != null)
             {
                 effectivePower += permStats.BaseAttack;
+            }
+
+            // ③ ×배수 = ② × (1 + attack_percent)
+            if (permStats != null)
+            {
                 effectivePower *= (1.0 + permStats.AttackPercentBonus);
             }
 
-            // 크리티컬 계산
+            // ④ ×크리티컬 = ③ × crit_damage (확률: crit_chance)
             double critChance = _criticalChance;
             double critMultiplier = _criticalMultiplier;
 
@@ -95,17 +106,33 @@ namespace DeskWarrior.Managers
                 effectivePower *= critMultiplier;
             }
 
-            // 멀티 히트
+            // ⑤ ×멀티히트 = ④ × 2 (확률: multi_hit)
             bool multiHit = permStats != null && _random.NextDouble() < permStats.MultiHitChance;
             if (multiHit)
             {
                 effectivePower *= 2;
             }
 
+            // ⑥ ×콤보 = ⑤ × (1 + combo_damage) (리듬 발동 시, 스택별 2/4/8배)
+            bool isCombo = comboStack > 0;
+            if (isCombo)
+            {
+                // 콤보 데미지 보너스 적용
+                effectivePower *= (1.0 + comboDamageBonus);
+
+                // 콤보 스택별 배율 (1=×2, 2=×4, 3=×8)
+                double stackMultiplier = Math.Pow(2, comboStack);
+                effectivePower *= stackMultiplier;
+            }
+
+            // 최종 데미지 = (int)⑥
             return new DamageResult
             {
                 Damage = (int)effectivePower,
-                IsCritical = isCritical
+                IsCritical = isCritical,
+                IsMultiHit = multiHit,
+                IsCombo = isCombo,
+                ComboStack = comboStack
             };
         }
 

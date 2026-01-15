@@ -131,6 +131,23 @@
             </Style.Triggers>
         </Style>
 
+        <!-- ========== Stat Upgrade Button Style ========== -->
+        <Style x:Key="StatUpgradeButton" TargetType="Button" BasedOn="{StaticResource GameButton}">
+            <Setter Property="Background" Value="#2a2a3e"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Height" Value="32"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#3a3a5e"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#1a1a1e"/>
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- ========== Slider RepeatButton Style (Hidden) ========== -->
         <Style x:Key="SliderRepeatButtonStyle" TargetType="RepeatButton">
             <Setter Property="SnapsToDevicePixels" Value="true"/>

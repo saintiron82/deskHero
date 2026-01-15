@@ -19,4 +19,4 @@ Tests/*
 
 # OS 생성 파일 제외
 Thumbs.db
-Desktop.ini
+Desktop.ini__pycache__/

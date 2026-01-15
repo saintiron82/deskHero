@@ -1,0 +1,242 @@
+{
+  "_comment": "영구 스탯 성장 곡선 설정 (크리스탈로 업그레이드)",
+  "_formula": "cost = base × (1 + level × growth_rate) × multiplier^(level / softcap_interval)",
+
+  "stats": {
+    "_category_A": "=== 기본 능력 (5종) ===",
+
+    "base_attack": {
+      "name": "기본 공격력",
+      "category": "base",
+      "base_cost": 10,
+      "growth_rate": 0.3,
+      "multiplier": 1.3,
+      "softcap_interval": 20,
+      "effect_per_level": 1,
+      "max_level": 0,
+      "description": "모든 공격에 +{n} 데미지"
+    },
+    "attack_percent": {
+      "name": "공격력 배수",
+      "category": "base",
+      "base_cost": 50,
+      "growth_rate": 0.5,
+      "multiplier": 1.4,
+      "softcap_interval": 10,
+      "effect_per_level": 5,
+      "max_level": 0,
+      "description": "데미지 +{n}%"
+    },
+    "crit_chance": {
+      "name": "크리티컬 확률",
+      "category": "base",
+      "base_cost": 80,
+      "growth_rate": 0.8,
+      "multiplier": 1.6,
+      "softcap_interval": 5,
+      "effect_per_level": 1,
+      "max_level": 50,
+      "description": "크리티컬 확률 +{n}%"
+    },
+    "crit_damage": {
+      "name": "크리티컬 배율",
+      "category": "base",
+      "base_cost": 100,
+      "growth_rate": 1.0,
+      "multiplier": 1.8,
+      "softcap_interval": 5,
+      "effect_per_level": 0.1,
+      "max_level": 30,
+      "description": "크리티컬 시 x{n} 배율"
+    },
+    "multi_hit": {
+      "name": "멀티히트 확률",
+      "category": "base",
+      "base_cost": 120,
+      "growth_rate": 1.0,
+      "multiplier": 1.8,
+      "softcap_interval": 5,
+      "effect_per_level": 1,
+      "max_level": 30,
+      "description": "{n}% 확률로 2배 타격"
+    },
+
+    "_category_B": "=== 재화 보너스 (4종) ===",
+
+    "gold_flat_perm": {
+      "name": "영구 골드+",
+      "category": "currency",
+      "base_cost": 20,
+      "growth_rate": 0.4,
+      "multiplier": 1.3,
+      "softcap_interval": 15,
+      "effect_per_level": 2,
+      "max_level": 0,
+      "description": "몬스터 처치 시 +{n} 골드"
+    },
+    "gold_multi_perm": {
+      "name": "영구 골드*",
+      "category": "currency",
+      "base_cost": 40,
+      "growth_rate": 0.6,
+      "multiplier": 1.5,
+      "softcap_interval": 10,
+      "effect_per_level": 3,
+      "max_level": 0,
+      "description": "골드 획득량 +{n}%"
+    },
+    "crystal_flat": {
+      "name": "크리스탈+",
+      "category": "currency",
+      "base_cost": 100,
+      "growth_rate": 1.0,
+      "multiplier": 2.0,
+      "softcap_interval": 5,
+      "effect_per_level": 1,
+      "max_level": 20,
+      "description": "보스 드롭 +{n} 크리스탈"
+    },
+    "crystal_multi": {
+      "name": "크리스탈*",
+      "category": "currency",
+      "base_cost": 80,
+      "growth_rate": 0.8,
+      "multiplier": 1.7,
+      "softcap_interval": 5,
+      "effect_per_level": 2,
+      "max_level": 25,
+      "description": "크리스탈 드롭 확률 +{n}%"
+    },
+
+    "_category_C": "=== 유틸리티 (2종) ===",
+
+    "time_extend": {
+      "name": "기본 시간 연장",
+      "category": "utility",
+      "base_cost": 150,
+      "growth_rate": 1.2,
+      "multiplier": 2.0,
+      "softcap_interval": 5,
+      "effect_per_level": 5,
+      "max_level": 24,
+      "description": "제한시간 +{n}초"
+    },
+    "upgrade_discount": {
+      "name": "업그레이드 할인",
+      "category": "utility",
+      "base_cost": 200,
+      "growth_rate": 1.5,
+      "multiplier": 2.5,
+      "softcap_interval": 3,
+      "effect_per_level": 2,
+      "max_level": 25,
+      "description": "골드 업그레이드 비용 -{n}%"
+    },
+
+    "_category_D": "=== 시작 보너스 (8종) ===",
+
+    "start_level": {
+      "name": "시작 레벨",
+      "category": "starting",
+      "base_cost": 200,
+      "growth_rate": 1.0,
+      "multiplier": 1.8,
+      "softcap_interval": 10,
+      "effect_per_level": 1,
+      "max_level": 50,
+      "description": "레벨 {n}에서 시작"
+    },
+    "start_gold": {
+      "name": "시작 골드",
+      "category": "starting",
+      "base_cost": 30,
+      "growth_rate": 0.3,
+      "multiplier": 1.2,
+      "softcap_interval": 20,
+      "effect_per_level": 50,
+      "max_level": 0,
+      "description": "골드 {n}에서 시작"
+    },
+    "start_keyboard": {
+      "name": "시작 키보드",
+      "category": "starting",
+      "base_cost": 50,
+      "growth_rate": 0.5,
+      "multiplier": 1.5,
+      "softcap_interval": 10,
+      "effect_per_level": 1,
+      "max_level": 0,
+      "description": "키보드 공격력 +{n}에서 시작"
+    },
+    "start_mouse": {
+      "name": "시작 마우스",
+      "category": "starting",
+      "base_cost": 50,
+      "growth_rate": 0.5,
+      "multiplier": 1.5,
+      "softcap_interval": 10,
+      "effect_per_level": 1,
+      "max_level": 0,
+      "description": "마우스 공격력 +{n}에서 시작"
+    },
+    "start_gold_flat": {
+      "name": "시작 골드+",
+      "category": "starting",
+      "base_cost": 60,
+      "growth_rate": 0.6,
+      "multiplier": 1.5,
+      "softcap_interval": 10,
+      "effect_per_level": 1,
+      "max_level": 0,
+      "description": "골드+ {n}에서 시작"
+    },
+    "start_gold_multi": {
+      "name": "시작 골드*",
+      "category": "starting",
+      "base_cost": 80,
+      "growth_rate": 0.8,
+      "multiplier": 1.6,
+      "softcap_interval": 8,
+      "effect_per_level": 5,
+      "max_level": 0,
+      "description": "골드* +{n}%에서 시작"
+    },
+    "start_combo_flex": {
+      "name": "시작 콤보유연성",
+      "category": "starting",
+      "base_cost": 100,
+      "growth_rate": 1.0,
+      "multiplier": 1.8,
+      "softcap_interval": 5,
+      "effect_per_level": 1,
+      "max_level": 10,
+      "description": "콤보유연성 +{n}에서 시작"
+    },
+    "start_combo_damage": {
+      "name": "시작 콤보데미지",
+      "category": "starting",
+      "base_cost": 100,
+      "growth_rate": 1.0,
+      "multiplier": 1.8,
+      "softcap_interval": 5,
+      "effect_per_level": 5,
+      "max_level": 0,
+      "description": "콤보데미지 +{n}%에서 시작"
+    }
+  },
+
+  "defaults": {
+    "base_cost": 50,
+    "growth_rate": 0.5,
+    "multiplier": 1.5,
+    "softcap_interval": 10,
+    "max_level": 0
+  },
+
+  "categories": {
+    "base": { "name": "기본 능력", "order": 1 },
+    "currency": { "name": "재화 보너스", "order": 2 },
+    "utility": { "name": "유틸리티", "order": 3 },
+    "starting": { "name": "시작 보너스", "order": 4 }
+  }
+}

@@ -20,10 +20,15 @@ namespace DeskWarrior.Managers
         private readonly GameOverMessageManager _messageManager;
         private readonly SessionTracker _sessionTracker;
         private readonly DamageCalculator _damageCalculator;
+        private readonly StatGrowthManager _statGrowth;
+        private readonly ComboTracker _comboTracker;
         private readonly Random _random = new();
         private Monster? _currentMonster;
         private SaveManager? _saveManager;
         private PermanentProgressionManager? _permanentProgression;
+
+        // 인게임 스탯 (세션마다 리셋)
+        private InGameStats _inGameStats = new();
 
         #endregion
 
@@ -43,13 +48,25 @@ namespace DeskWarrior.Managers
 
         public int CurrentLevel { get; private set; } = 1;
         public int Gold { get; private set; }
-        public int KeyboardPower { get; private set; } = 1;
-        public int MousePower { get; private set; } = 1;
         public int RemainingTime { get; private set; }
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
         public GameData GameData => _gameData;
         public System.Collections.Generic.List<HeroData> Heroes => _characterData.Heroes;
+
+        // 인게임 스탯 접근자
+        public InGameStats InGameStats => _inGameStats;
+        public int KeyboardPower => 1 + (int)_statGrowth.GetInGameStatEffect("keyboard_power", _inGameStats.KeyboardPowerLevel);
+        public int MousePower => 1 + (int)_statGrowth.GetInGameStatEffect("mouse_power", _inGameStats.MousePowerLevel);
+        public double GoldFlat => _statGrowth.GetInGameStatEffect("gold_flat", _inGameStats.GoldFlatLevel);
+        public double GoldMulti => _statGrowth.GetInGameStatEffect("gold_multi", _inGameStats.GoldMultiLevel) / 100.0;
+        public double TimeThief => _statGrowth.GetInGameStatEffect("time_thief", _inGameStats.TimeThiefLevel);
+        public double ComboFlex => _statGrowth.GetInGameStatEffect("combo_flex", _inGameStats.ComboFlexLevel);
+        public double ComboDamage => _statGrowth.GetInGameStatEffect("combo_damage", _inGameStats.ComboDamageLevel) / 100.0;
+
+        // 콤보 시스템 접근자
+        public int CurrentComboStack => _comboTracker.ComboStack;
+        public bool IsComboActive => _comboTracker.IsComboActive;
 
         // Session Stats (위임)
         public long SessionDamage => _sessionTracker.TotalDamage;
@@ -85,6 +102,12 @@ namespace DeskWarrior.Managers
             // 데미지 계산기 초기화
             _damageCalculator = new DamageCalculator(_gameData, _random);
 
+            // 스탯 성장 매니저 초기화
+            _statGrowth = new StatGrowthManager();
+
+            // 콤보 트래커 초기화
+            _comboTracker = new ComboTracker();
+
             // 타이머 설정 (1초마다)
             _timer = new DispatcherTimer
             {
@@ -113,11 +136,23 @@ namespace DeskWarrior.Managers
         {
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
 
-            CurrentLevel = 1 + (permStats?.StartingLevelBonus ?? 0);
-            Gold = permStats?.StartingGoldBonus ?? 0;
-            KeyboardPower = 1 + (permStats?.StartingKeyboardPower ?? 0);
-            MousePower = 1 + (permStats?.StartingMousePower ?? 0);
+            // 인게임 스탯 리셋 및 시작 보너스 적용
+            _inGameStats.Reset();
+            _inGameStats.KeyboardPowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_keyboard", permStats?.StartKeyboardLevel ?? 0);
+            _inGameStats.MousePowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_mouse", permStats?.StartMouseLevel ?? 0);
+            _inGameStats.GoldFlatLevel = (int)_statGrowth.GetPermanentStatEffect("start_gold_flat", permStats?.StartGoldFlatLevel ?? 0);
+            _inGameStats.GoldMultiLevel = (int)_statGrowth.GetPermanentStatEffect("start_gold_multi", permStats?.StartGoldMultiLevel ?? 0);
+            _inGameStats.ComboFlexLevel = (int)_statGrowth.GetPermanentStatEffect("start_combo_flex", permStats?.StartComboFlexLevel ?? 0);
+            _inGameStats.ComboDamageLevel = (int)_statGrowth.GetPermanentStatEffect("start_combo_damage", permStats?.StartComboDamageLevel ?? 0);
+
+            CurrentLevel = 1 + (int)_statGrowth.GetPermanentStatEffect("start_level", permStats?.StartLevelLevel ?? 0);
+            Gold = (int)_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0);
             _sessionTracker.Reset();
+
+            // 콤보 트래커 리셋 및 설정
+            _comboTracker.FullReset();
+            _comboTracker.SetComboFlexBonus(ComboFlex);
+
             SpawnMonster();
         }
 
@@ -128,7 +163,10 @@ namespace DeskWarrior.Managers
         {
             if (_currentMonster == null || !_currentMonster.IsAlive) return;
 
-            var result = CalculateDamage(KeyboardPower);
+            // 콤보 처리
+            int comboStack = _comboTracker.ProcessInput();
+
+            var result = CalculateDamage(KeyboardPower, comboStack);
             ApplyDamage(result.Damage, result.IsCritical, isMouse: false);
         }
 
@@ -139,20 +177,29 @@ namespace DeskWarrior.Managers
         {
             if (_currentMonster == null || !_currentMonster.IsAlive) return;
 
-            var result = CalculateDamage(MousePower);
+            // 콤보 처리
+            int comboStack = _comboTracker.ProcessInput();
+
+            var result = CalculateDamage(MousePower, comboStack);
             ApplyDamage(result.Damage, result.IsCritical, isMouse: true);
         }
 
         /// <summary>
-        /// 키보드 공격력 업그레이드
+        /// 인게임 스탯 업그레이드
         /// </summary>
-        public bool UpgradeKeyboardPower()
+        public bool UpgradeInGameStat(string statId)
         {
-            int cost = CalculateUpgradeCost(KeyboardPower);
+            int currentLevel = GetInGameStatLevel(statId);
+            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
+            int cost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+
+            if (!_statGrowth.CanUpgradeInGameStat(statId, currentLevel))
+                return false;
+
             if (Gold >= cost)
             {
                 Gold -= cost;
-                KeyboardPower++;
+                SetInGameStatLevel(statId, currentLevel + 1);
                 StatsChanged?.Invoke(this, EventArgs.Empty);
                 return true;
             }
@@ -160,23 +207,26 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 마우스 공격력 업그레이드
+        /// 키보드 공격력 업그레이드 (레거시 호환)
         /// </summary>
-        public bool UpgradeMousePower()
+        public bool UpgradeKeyboardPower() => UpgradeInGameStat("keyboard_power");
+
+        /// <summary>
+        /// 마우스 공격력 업그레이드 (레거시 호환)
+        /// </summary>
+        public bool UpgradeMousePower() => UpgradeInGameStat("mouse_power");
+
+        /// <summary>
+        /// 업그레이드 로드 (레거시 호환)
+        /// </summary>
+        public void LoadUpgrades(int keyboardPower, int mousePower)
         {
-            int cost = CalculateUpgradeCost(MousePower);
-            if (Gold >= cost)
-            {
-                Gold -= cost;
-                MousePower++;
-                StatsChanged?.Invoke(this, EventArgs.Empty);
-                return true;
-            }
-            return false;
+            _inGameStats.KeyboardPowerLevel = keyboardPower > 0 ? keyboardPower - 1 : 0;
+            _inGameStats.MousePowerLevel = mousePower > 0 ? mousePower - 1 : 0;
         }
 
         /// <summary>
-        /// 업그레이드 비용 계산
+        /// 업그레이드 비용 계산 (레거시 호환)
         /// </summary>
         public int CalculateUpgradeCost(int currentLevel)
         {
@@ -184,12 +234,45 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 저장된 업그레이드 데이터 로드
+        /// 인게임 스탯 업그레이드 비용 조회
         /// </summary>
-        public void LoadUpgrades(int keyboardPower, int mousePower)
+        public int GetInGameStatUpgradeCost(string statId)
         {
-            KeyboardPower = keyboardPower;
-            MousePower = mousePower;
+            int currentLevel = GetInGameStatLevel(statId);
+            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
+            return _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+        }
+
+        /// <summary>
+        /// 인게임 스탯 레벨 조회
+        /// </summary>
+        private int GetInGameStatLevel(string statId) => statId switch
+        {
+            "keyboard_power" => _inGameStats.KeyboardPowerLevel,
+            "mouse_power" => _inGameStats.MousePowerLevel,
+            "gold_flat" => _inGameStats.GoldFlatLevel,
+            "gold_multi" => _inGameStats.GoldMultiLevel,
+            "time_thief" => _inGameStats.TimeThiefLevel,
+            "combo_flex" => _inGameStats.ComboFlexLevel,
+            "combo_damage" => _inGameStats.ComboDamageLevel,
+            _ => 0
+        };
+
+        /// <summary>
+        /// 인게임 스탯 레벨 설정
+        /// </summary>
+        private void SetInGameStatLevel(string statId, int level)
+        {
+            switch (statId)
+            {
+                case "keyboard_power": _inGameStats.KeyboardPowerLevel = level; break;
+                case "mouse_power": _inGameStats.MousePowerLevel = level; break;
+                case "gold_flat": _inGameStats.GoldFlatLevel = level; break;
+                case "gold_multi": _inGameStats.GoldMultiLevel = level; break;
+                case "time_thief": _inGameStats.TimeThiefLevel = level; break;
+                case "combo_flex": _inGameStats.ComboFlexLevel = level; break;
+                case "combo_damage": _inGameStats.ComboDamageLevel = level; break;
+            }
         }
 
         /// <summary>
@@ -197,17 +280,8 @@ namespace DeskWarrior.Managers
         /// </summary>
         public void RestartGame()
         {
-            // 리셋
-            CurrentLevel = 1;
-            Gold = 0;
-            KeyboardPower = 1;
-            MousePower = 1;
-
-            // 세션 트래커 리셋
-            _sessionTracker.Reset();
-
-            // 새 게임 시작
-            SpawnMonster();
+            // StartGame 호출로 통합 (영구 스탯 시작 보너스 자동 적용)
+            StartGame();
         }
 
         /// <summary>
@@ -238,10 +312,10 @@ namespace DeskWarrior.Managers
 
         #region Private Methods
 
-        private DamageResult CalculateDamage(int basePower)
+        private DamageResult CalculateDamage(int basePower, int comboStack = 0)
         {
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            return _damageCalculator.Calculate(basePower, permStats);
+            return _damageCalculator.Calculate(basePower, permStats, ComboDamage, comboStack);
         }
 
         private void ApplyDamage(int damage, bool isCritical, bool isMouse)
@@ -268,10 +342,29 @@ namespace DeskWarrior.Managers
         {
             if (_currentMonster == null) return;
 
-            // 영구 골드 보너스 적용
+            // 골드 획득 공식 (STAT_SYSTEM.md 기준)
+            // 기본 = 몬스터 기본 골드
+            double baseGold = _currentMonster.GoldReward;
+
+            // +가산 = 기본 + gold_flat (인게임) + gold_flat_perm (영구)
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            int goldReward = (int)(_currentMonster.GoldReward * (1.0 + (permStats?.GoldPercentBonus ?? 0)));
+            double goldFlatPerm = _statGrowth.GetPermanentStatEffect("gold_flat_perm", permStats?.GoldFlatPermLevel ?? 0);
+            double goldFlat = baseGold + GoldFlat + goldFlatPerm;
+
+            // ×배수 = +가산 × (1 + gold_multi (인게임) + gold_multi_perm (영구))
+            double goldMultiPerm = _statGrowth.GetPermanentStatEffect("gold_multi_perm", permStats?.GoldMultiPermLevel ?? 0) / 100.0;
+            int goldReward = (int)(goldFlat * (1.0 + GoldMulti + goldMultiPerm));
+
             Gold += goldReward;
+
+            // 시간 도둑: 처치 시 시간 추가 (최대 기본 시간까지)
+            if (_inGameStats.TimeThiefLevel > 0)
+            {
+                int baseTimeLimit = _gameData.Balance.TimeLimit + (permStats?.GameOverTimeExtension ?? 0);
+                double maxAddTime = _statGrowth.CalculateTimeThiefCap(baseTimeLimit);
+                double currentAddTime = Math.Min(TimeThief, maxAddTime);
+                RemainingTime = Math.Min(RemainingTime + (int)currentAddTime, baseTimeLimit);
+            }
 
             // 세션 트래커에 킬 기록
             _sessionTracker.RecordKill(_currentMonster.IsBoss, goldReward);
@@ -328,7 +421,8 @@ namespace DeskWarrior.Managers
 
             // 타이머 시작 (영구 스탯 시간 연장 적용)
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            int timeLimit = _gameData.Balance.TimeLimit + (permStats?.GameOverTimeExtension ?? 0);
+            double timeExtend = _statGrowth.GetPermanentStatEffect("time_extend", permStats?.TimeExtendLevel ?? 0);
+            int timeLimit = _gameData.Balance.TimeLimit + (int)timeExtend;
             RemainingTime = timeLimit;
             _timer.Start();
 
