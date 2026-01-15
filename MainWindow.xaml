@@ -85,6 +85,7 @@
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Name="LevelText" Text="Lv.1" FontSize="12" Foreground="White" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding MonsterName}" FontSize="12" Foreground="#88ff88" Margin="5,0,0,0" FontWeight="SemiBold"/>
                             <TextBlock x:Name="MaxLevelText" Text=" (Best: 1)" FontSize="8" Foreground="#AAA" VerticalAlignment="Bottom" Margin="4,0,0,0" Visibility="Collapsed"/>
                             <TextBlock x:Name="MonsterEmoji" Text=" 👹" FontSize="12"/>
                         </StackPanel>
@@ -97,8 +98,29 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Row 1: 배틀 필드 -->
+                <!-- Row 0: 타이머 (좌측 정렬) - UX 개선: 헤더 영역에 배치하여 시인성 확보 -->
+                <Border x:Name="TimerInfoBar" Grid.Row="0"
+                        Background="#44000000" CornerRadius="8" Padding="10,4"
+                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                        Margin="0,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⏱️" FontSize="12" Foreground="White" VerticalAlignment="Center"/>
+                        <TextBlock Text=" " FontSize="12"/>
+                        <TextBlock x:Name="TimerText" Text="30" FontSize="14" FontWeight="Bold" Foreground="#87CEEB" VerticalAlignment="Center" Width="25" TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                    <!-- 배틀 필드 -->
                 <Grid Grid.Row="1">
+                    <!-- 배경 이미지 (가장 뒤) -->
+                    <Image Source="pack://application:,,,/Assets/Images/bg_floor_sparse_pilot_v2.png"
+                           Stretch="UniformToFill"
+                           HorizontalAlignment="Stretch"
+                           VerticalAlignment="Top"
+                           Height="150"
+                           Margin="0,0,0,0"
+                           Panel.ZIndex="1"/>
+
                     <!-- 적 몬스터 (우상단) -->
                     <Image x:Name="MonsterImage"
                            Source="pack://application:,,,/Assets/Images/monster.png"
@@ -108,7 +130,7 @@
                            VerticalAlignment="Top"
                            Margin="0,5,20,0"
                            RenderTransformOrigin="0.5,0.5"
-                           Panel.ZIndex="10"
+                           Panel.ZIndex="2"
                            MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
                         <Image.RenderTransform>
                             <TranslateTransform x:Name="MonsterShakeTransform"/>
@@ -121,22 +143,23 @@
                             VerticalAlignment="Top"
                             Width="100" Height="100"
                             Margin="0,5,5,0"
+                            Panel.ZIndex="10"
                             IsHitTestVisible="False"/>
 
-                    <!-- 히어로 위 플로팅 정보 (골드 + 타이머) -->
-                    <Border x:Name="HeroInfoBar"
+                    <!-- 히어로 위 플로팅 정보 (골드 Only) -->
+                    <Border x:Name="GoldInfoBar"
                             Background="#CC000000" CornerRadius="12"
                             Padding="10,3"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Bottom"
-                            Margin="5,0,0,85">
+                            Margin="5,0,0,100"
+                            Panel.ZIndex="10">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Name="GoldText" Text="💰 0" FontSize="11" Foreground="#FFD700" FontWeight="SemiBold"/>
-                            <TextBlock Text="  " FontSize="11"/>
-                            <TextBlock Text="⏱️" FontSize="11" Foreground="White"/>
-                            <TextBlock x:Name="TimerText" Text="30" FontSize="11" FontWeight="Bold" Foreground="#87CEEB"/>
                         </StackPanel>
                     </Border>
+
+                    <!-- 몬스터 아래 플로팅 정보 (타이머 Only) - 삭제됨 (Row 0로 이동) -->
 
                     <!-- 플레이어 히어로 (좌하단) -->
                     <Image x:Name="HeroImage"
@@ -146,6 +169,7 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
                            Margin="20,0,0,0"
+                           Panel.ZIndex="3"
                            MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
                         <Image.Clip>
                             <RectangleGeometry x:Name="HeroClip" Rect="0,0,120,100"/>

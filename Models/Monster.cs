@@ -76,6 +76,11 @@ namespace DeskWarrior.Models
         public string SkinType { get; private set; }
 
         /// <summary>
+        /// 몬스터 이름
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
         /// 표시할 이모지
         /// </summary>
         public string Emoji { get; private set; }
@@ -105,6 +110,7 @@ namespace DeskWarrior.Models
             GoldReward = CalculateGoldReward(data.BaseGold, data.GoldGrowth, level);
 
             // 스킨 및 이모지는 데이터에서 가져옴
+            Name = data.Name;
             SkinType = GetSkinType(data);
             Emoji = data.Emoji;
             TotalDamageTaken = 0;

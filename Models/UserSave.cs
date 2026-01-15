@@ -25,6 +25,18 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("settings")]
         public UserSettings Settings { get; set; } = new();
+
+        [JsonPropertyName("permanent_currency")]
+        public PermanentCurrency PermanentCurrency { get; set; } = new();
+
+        [JsonPropertyName("permanent_stats")]
+        public PermanentStats PermanentStats { get; set; } = new();
+
+        [JsonPropertyName("permanent_upgrades")]
+        public List<PermanentUpgradeProgress> PermanentUpgrades { get; set; } = new();
+
+        [JsonPropertyName("boss_kill_counter")]
+        public int BossKillCounter { get; set; } = 0; // 피티 시스템용
     }
 
     public class WindowPosition

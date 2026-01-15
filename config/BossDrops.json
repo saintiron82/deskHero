@@ -1,0 +1,9 @@
+{
+  "base_drop_chance": 0.5,
+  "drop_chance_per_level": 0.005,
+  "max_drop_chance": 0.95,
+  "base_crystal_amount": 5,
+  "crystal_per_level": 1,
+  "crystal_variance": 0.2,
+  "guaranteed_drop_every_n_bosses": 10
+}

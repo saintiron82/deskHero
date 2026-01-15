@@ -115,6 +115,9 @@ namespace DeskWarrior.Managers
                 _userAchievements = new UserAchievements();
             }
 
+            // 새 필드 마이그레이션
+            MigrateSaveData();
+
             // 날짜 확인 - 다른 날이면 오늘 입력 수 초기화 및 연속 플레이 체크
             var today = DateTime.Now.ToString("yyyy-MM-dd");
             if (_currentSave.Stats.LastPlayed != today)
@@ -129,6 +132,28 @@ namespace DeskWarrior.Managers
             // 초기화 후 Dirty flag 리셋
             _isMainDirty = false;
             _isHistoryDirty = false;
+        }
+
+        /// <summary>
+        /// 저장 데이터 마이그레이션 (하위 호환성)
+        /// </summary>
+        private void MigrateSaveData()
+        {
+            // Null 체크 및 초기화
+            if (_currentSave.PermanentCurrency == null)
+            {
+                _currentSave.PermanentCurrency = new PermanentCurrency();
+            }
+
+            if (_currentSave.PermanentStats == null)
+            {
+                _currentSave.PermanentStats = new PermanentStats();
+            }
+
+            if (_currentSave.PermanentUpgrades == null)
+            {
+                _currentSave.PermanentUpgrades = new List<PermanentUpgradeProgress>();
+            }
         }
 
         public void Save()
@@ -314,6 +339,14 @@ namespace DeskWarrior.Managers
 
             // 통산 기록 업데이트
             UpdateLifetimeStats(session);
+
+            // 골드 → 크리스탈 변환 (1000:1 비율)
+            int crystalsEarned = (int)(session.TotalGold / 1000);
+            if (crystalsEarned > 0)
+            {
+                _currentSave.PermanentCurrency.Crystals += crystalsEarned;
+                _currentSave.PermanentCurrency.LifetimeCrystalsEarned += crystalsEarned;
+            }
 
             _isHistoryDirty = true;
             _isMainDirty = true;
@@ -515,18 +548,7 @@ namespace DeskWarrior.Managers
 
     }
 
-    /// <summary>
-    /// 세션 통계 요약
-    /// </summary>
-    public class SessionStatsSummary
-    {
-        public double AverageLevel { get; set; }
-        public double AverageDamage { get; set; }
-        public double AverageGold { get; set; }
-        public double AverageDurationMinutes { get; set; }
-        public SessionStats? BestSession { get; set; }
-        public int TotalSessions { get; set; }
-    }
+
 
     /// <summary>
     /// 시간 범위 타입

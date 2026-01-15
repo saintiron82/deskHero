@@ -27,6 +27,7 @@ namespace DeskWarrior.ViewModels
 
         // Monster UI
         private string _monsterEmoji = "";
+        private string _monsterName = "";
         private string _monsterSkinType = "";
         private int _monsterCurrentHp;
         private int _monsterMaxHp;
@@ -138,6 +139,12 @@ namespace DeskWarrior.ViewModels
         {
             get => _monsterEmoji;
             private set => SetProperty(ref _monsterEmoji, value);
+        }
+
+        public string MonsterName
+        {
+            get => _monsterName;
+            private set => SetProperty(ref _monsterName, value);
         }
 
         public string MonsterSkinType
@@ -342,7 +349,7 @@ namespace DeskWarrior.ViewModels
 
             SessionInputCount++;
 
-            if (e.Type == InputType.Keyboard)
+            if (e.Type == GameInputType.Keyboard)
             {
                 _gameManager.OnKeyboardInput();
             }
@@ -425,6 +432,7 @@ namespace DeskWarrior.ViewModels
             if (monster == null) return;
 
             MonsterEmoji = monster.Emoji;
+            MonsterName = monster.Name;
             MonsterSkinType = monster.SkinType;
             MonsterCurrentHp = monster.CurrentHp;
             MonsterMaxHp = monster.MaxHp;

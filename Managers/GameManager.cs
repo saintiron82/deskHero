@@ -22,6 +22,8 @@ namespace DeskWarrior.Managers
         private readonly DamageCalculator _damageCalculator;
         private readonly Random _random = new();
         private Monster? _currentMonster;
+        private SaveManager? _saveManager;
+        private PermanentProgressionManager? _permanentProgression;
 
         #endregion
 
@@ -33,6 +35,7 @@ namespace DeskWarrior.Managers
         public event EventHandler? GameOver;
         public event EventHandler? StatsChanged;
         public event EventHandler<DamageEventArgs>? DamageDealt;
+        public event EventHandler<BossDropResult>? CrystalDropped;
 
         #endregion
 
@@ -95,14 +98,25 @@ namespace DeskWarrior.Managers
         #region Public Methods
 
         /// <summary>
+        /// SaveManager 및 PermanentProgressionManager 초기화
+        /// </summary>
+        public void Initialize(SaveManager saveManager)
+        {
+            _saveManager = saveManager;
+            _permanentProgression = new PermanentProgressionManager(saveManager);
+        }
+
+        /// <summary>
         /// 게임 시작
         /// </summary>
         public void StartGame()
         {
-            CurrentLevel = 1;
-            Gold = 0;
-            KeyboardPower = 1;
-            MousePower = 1;
+            var permStats = _saveManager?.CurrentSave?.PermanentStats;
+
+            CurrentLevel = 1 + (permStats?.StartingLevelBonus ?? 0);
+            Gold = permStats?.StartingGoldBonus ?? 0;
+            KeyboardPower = 1 + (permStats?.StartingKeyboardPower ?? 0);
+            MousePower = 1 + (permStats?.StartingMousePower ?? 0);
             _sessionTracker.Reset();
             SpawnMonster();
         }
@@ -226,7 +240,8 @@ namespace DeskWarrior.Managers
 
         private DamageResult CalculateDamage(int basePower)
         {
-            return _damageCalculator.Calculate(basePower);
+            var permStats = _saveManager?.CurrentSave?.PermanentStats;
+            return _damageCalculator.Calculate(basePower, permStats);
         }
 
         private void ApplyDamage(int damage, bool isCritical, bool isMouse)
@@ -253,11 +268,24 @@ namespace DeskWarrior.Managers
         {
             if (_currentMonster == null) return;
 
-            // 골드 획득
-            Gold += _currentMonster.GoldReward;
+            // 영구 골드 보너스 적용
+            var permStats = _saveManager?.CurrentSave?.PermanentStats;
+            int goldReward = (int)(_currentMonster.GoldReward * (1.0 + (permStats?.GoldPercentBonus ?? 0)));
+            Gold += goldReward;
 
             // 세션 트래커에 킬 기록
-            _sessionTracker.RecordKill(_currentMonster.IsBoss, _currentMonster.GoldReward);
+            _sessionTracker.RecordKill(_currentMonster.IsBoss, goldReward);
+
+            // 보스 처치 시 크리스탈 드롭 처리
+            if (_currentMonster.IsBoss && _permanentProgression != null)
+            {
+                var dropResult = _permanentProgression.ProcessBossKill(CurrentLevel);
+                if (dropResult.Dropped)
+                {
+                    // UI에 드롭 알림 표시 (이벤트 발생)
+                    CrystalDropped?.Invoke(this, dropResult);
+                }
+            }
 
             // 타이머 정지
             _timer.Stop();
@@ -298,8 +326,10 @@ namespace DeskWarrior.Managers
 
             _currentMonster = new Monster(selectedData, CurrentLevel, isBoss);
 
-            // 타이머 시작
-            RemainingTime = _gameData.Balance.TimeLimit;
+            // 타이머 시작 (영구 스탯 시간 연장 적용)
+            var permStats = _saveManager?.CurrentSave?.PermanentStats;
+            int timeLimit = _gameData.Balance.TimeLimit + (permStats?.GameOverTimeExtension ?? 0);
+            RemainingTime = timeLimit;
             _timer.Start();
 
             MonsterSpawned?.Invoke(this, EventArgs.Empty);

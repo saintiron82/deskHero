@@ -954,8 +954,10 @@ namespace DeskWarrior
                 MainBackgroundBorder.Background = new SolidColorBrush(Color.FromRgb(0x1a, 0x1a, 0x2e)) { Opacity = effectiveOpacity };
             if (EnemyInfoBorder != null)
                 EnemyInfoBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
-            if (HeroInfoBar != null)
-                HeroInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = Math.Max(infoOpacity, 0.7) };
+            if (GoldInfoBar != null)
+                GoldInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = Math.Max(infoOpacity, 0.7) };
+            if (TimerInfoBar != null)
+                TimerInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = Math.Max(infoOpacity, 0.7) };
             if (PowerInfoBar != null)
                 PowerInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
             if (UpgradePanel != null)

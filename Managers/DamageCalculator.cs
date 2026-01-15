@@ -59,17 +59,52 @@ namespace DeskWarrior.Managers
         /// <returns>계산된 데미지와 크리티컬 여부</returns>
         public DamageResult Calculate(int basePower)
         {
-            bool isCritical = _random.NextDouble() < _criticalChance;
-            double damage = basePower;
+            return Calculate(basePower, null);
+        }
 
+        /// <summary>
+        /// 데미지 계산 (영구 스탯 적용)
+        /// </summary>
+        /// <param name="basePower">기본 공격력</param>
+        /// <param name="permStats">영구 스탯 (null 가능)</param>
+        /// <returns>계산된 데미지와 크리티컬 여부</returns>
+        public DamageResult Calculate(int basePower, PermanentStats? permStats)
+        {
+            double effectivePower = basePower;
+
+            // 영구 스탯 적용
+            if (permStats != null)
+            {
+                effectivePower += permStats.BaseAttack;
+                effectivePower *= (1.0 + permStats.AttackPercentBonus);
+            }
+
+            // 크리티컬 계산
+            double critChance = _criticalChance;
+            double critMultiplier = _criticalMultiplier;
+
+            if (permStats != null)
+            {
+                critChance += permStats.CriticalChanceBonus;
+                critMultiplier += permStats.CriticalDamageBonus;
+            }
+
+            bool isCritical = _random.NextDouble() < critChance;
             if (isCritical)
             {
-                damage *= _criticalMultiplier;
+                effectivePower *= critMultiplier;
+            }
+
+            // 멀티 히트
+            bool multiHit = permStats != null && _random.NextDouble() < permStats.MultiHitChance;
+            if (multiHit)
+            {
+                effectivePower *= 2;
             }
 
             return new DamageResult
             {
-                Damage = (int)damage,
+                Damage = (int)effectivePower,
                 IsCritical = isCritical
             };
         }

@@ -18,6 +18,7 @@ namespace DeskWarrior.Managers
         private readonly SaveManager _saveManager;
         private List<AchievementDefinition> _definitions;
         private readonly string _configPath;
+        private PermanentProgressionManager? _permanentProgression;
 
         #endregion
 
@@ -41,6 +42,14 @@ namespace DeskWarrior.Managers
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// PermanentProgressionManager 초기화
+        /// </summary>
+        public void Initialize(PermanentProgressionManager permanentProgression)
+        {
+            _permanentProgression = permanentProgression;
+        }
 
         /// <summary>
         /// 업적 정의 로드
@@ -118,6 +127,12 @@ namespace DeskWarrior.Managers
         private void Unlock(AchievementDefinition def)
         {
             _saveManager.UnlockAchievement(def.Id);
+
+            // 크리스탈 보상 지급
+            if (def.CrystalReward > 0 && _permanentProgression != null)
+            {
+                _permanentProgression.AddCrystals(def.CrystalReward, $"achievement:{def.Id}");
+            }
 
             // 이벤트 발생
             AchievementUnlocked?.Invoke(this, new AchievementUnlockedEventArgs(def));

@@ -43,6 +43,9 @@ namespace DeskWarrior.Models
         [JsonPropertyName("is_hidden")]
         public bool IsHidden { get; set; }
 
+        [JsonPropertyName("crystal_reward")]
+        public int CrystalReward { get; set; } = 0;
+
         [JsonPropertyName("localization")]
         public Dictionary<string, AchievementLocalization> Localization { get; set; } = new();
 
