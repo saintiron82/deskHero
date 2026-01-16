@@ -51,6 +51,16 @@ namespace DeskWarrior.Managers
         public int CriticalHits { get; private set; }
 
         /// <summary>
+        /// 세션 중 보스 드롭으로 획득한 크리스탈
+        /// </summary>
+        public int SessionBossDropCrystals { get; private set; }
+
+        /// <summary>
+        /// 세션 중 업적 보상으로 획득한 크리스탈
+        /// </summary>
+        public int SessionAchievementCrystals { get; private set; }
+
+        /// <summary>
         /// 세션 경과 시간 (분)
         /// </summary>
         public double DurationMinutes => (DateTime.Now - StartTime).TotalMinutes;
@@ -96,6 +106,22 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
+        /// 크리스탈 획득 기록 (보스 드롭)
+        /// </summary>
+        public void RecordBossDropCrystals(int amount)
+        {
+            SessionBossDropCrystals += amount;
+        }
+
+        /// <summary>
+        /// 크리스탈 획득 기록 (업적 보상)
+        /// </summary>
+        public void RecordAchievementCrystals(int amount)
+        {
+            SessionAchievementCrystals += amount;
+        }
+
+        /// <summary>
         /// 세션 초기화
         /// </summary>
         public void Reset()
@@ -108,6 +134,8 @@ namespace DeskWarrior.Managers
             KeyboardInputs = 0;
             MouseInputs = 0;
             CriticalHits = 0;
+            SessionBossDropCrystals = 0;
+            SessionAchievementCrystals = 0;
         }
 
         /// <summary>

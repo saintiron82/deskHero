@@ -12,7 +12,9 @@
       "Bash(start binDebugnet9.0-windowsDeskWarrior.exe)",
       "Bash(python generate_stat_code.py:*)",
       "Bash(python test_stat_formulas.py:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(python -m json.tool:*)",
+      "Bash(dotnet run:*)"
     ]
   }
 }

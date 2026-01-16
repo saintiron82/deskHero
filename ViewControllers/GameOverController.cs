@@ -72,8 +72,8 @@ namespace DeskWarrior.ViewControllers
         {
             Logger.Log("=== GAME OVER START ===");
 
-            // Access ViewModel/Managers via Window properties (Assuming they will be exposed)
-            var vm = _window.ViewModel; 
+            // Access ViewModel/Managers via Window properties
+            var vm = _window.ViewModel;
             var gameManager = vm.GameManager;
             var achievementManager = vm.AchievementManager;
             var saveManager = vm.SaveManager;
@@ -81,8 +81,28 @@ namespace DeskWarrior.ViewControllers
             string? deathType = gameManager.CurrentMonster?.IsBoss == true ? "boss"
                 : gameManager.RemainingTime <= 0 ? "timeout" : "normal";
 
+            // 세션 통계 수집 (크리스탈 변환 전)
+            int sessionGold = (int)gameManager.SessionTotalGold;
+            long sessionDamage = gameManager.SessionDamage;
+            int sessionLevel = gameManager.CurrentLevel;
+            int sessionKills = gameManager.SessionKills;
+
+            // 세션 중 획득한 크리스탈 (보스 드롭, 업적 보상)
+            var sessionTracker = gameManager.GetType().GetField("_sessionTracker",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                ?.GetValue(gameManager) as SessionTracker;
+
+            int bossDropCrystals = sessionTracker?.SessionBossDropCrystals ?? 0;
+            int achievementCrystals = sessionTracker?.SessionAchievementCrystals ?? 0;
+
+            // 골드 → 크리스탈 변환 (1000:1)
+            int convertedCrystals = sessionGold / 1000;
+
+            // 세션 저장 (크리스탈이 자동으로 지급됨)
+            long crystalsBeforeSession = saveManager.CurrentSave.PermanentCurrency.Crystals;
             vm.SaveSession();
 
+            // 업적 체크
             achievementManager.CheckAchievements("total_sessions");
             achievementManager.CheckAchievements("total_gold_earned");
             achievementManager.CheckAchievements("total_playtime_minutes");
@@ -90,11 +110,48 @@ namespace DeskWarrior.ViewControllers
             achievementManager.CheckAchievements("mouse_inputs");
             achievementManager.CheckAchievements("consecutive_days");
 
-            _window.GameOverMessageText.Text = gameManager.GetGameOverMessage(deathType);
-            _window.ReportLevelText.Text = $"{gameManager.CurrentLevel}";
-            _window.ReportGoldText.Text = $"{gameManager.SessionTotalGold:N0}";
-            _window.ReportDamageText.Text = $"{gameManager.SessionDamage:N0}";
+            // 세션 후 크리스탈 잔액
+            long crystalsAfterSession = saveManager.CurrentSave.PermanentCurrency.Crystals;
+            int totalEarned = convertedCrystals + bossDropCrystals + achievementCrystals;
 
+            // UI 업데이트 - 세션 통계
+            _window.GameOverMessageText.Text = gameManager.GetGameOverMessage(deathType);
+            _window.ReportLevelText.Text = $"{sessionLevel}";
+            _window.ReportKillsText.Text = $"{sessionKills}";
+            _window.ReportGoldText.Text = $"{sessionGold:N0}";
+            _window.ReportDamageText.Text = $"{sessionDamage:N0}";
+
+            // UI 업데이트 - 크리스탈 획득 정보
+            _window.SessionGoldRun.Text = $"{sessionGold:N0}";
+            _window.ConvertedCrystalsRun.Text = $"{convertedCrystals}";
+
+            // 보스 드롭 표시 (있는 경우만)
+            if (bossDropCrystals > 0)
+            {
+                _window.BossDropLine.Visibility = Visibility.Visible;
+                _window.BossDropCrystalsRun.Text = $"{bossDropCrystals}";
+            }
+            else
+            {
+                _window.BossDropLine.Visibility = Visibility.Collapsed;
+            }
+
+            // 업적 보상 표시 (있는 경우만)
+            if (achievementCrystals > 0)
+            {
+                _window.AchievementRewardLine.Visibility = Visibility.Visible;
+                _window.AchievementCrystalsRun.Text = $"{achievementCrystals}";
+            }
+            else
+            {
+                _window.AchievementRewardLine.Visibility = Visibility.Collapsed;
+            }
+
+            // 총 획득 및 현재 보유
+            _window.TotalCrystalsEarnedRun.Text = $"{totalEarned}";
+            _window.CurrentCrystalBalanceRun.Text = $"{crystalsAfterSession:N0}";
+
+            // 오버레이 표시
             _window.GameOverOverlay.Opacity = 0;
             _window.GameOverOverlay.Visibility = Visibility.Visible;
             _window.GameOverOverlay.IsHitTestVisible = true;
@@ -102,19 +159,19 @@ namespace DeskWarrior.ViewControllers
             var fadeIn = new DoubleAnimation { From = 0, To = 1, Duration = TimeSpan.FromSeconds(0.5) };
             _window.GameOverOverlay.BeginAnimation(UIElement.OpacityProperty, fadeIn);
 
-            // Apply Background Opacity (via internal method or duplicated logic)
-            // For now, calling the public method on window or duplicating logic. 
-            // Better to expose ApplyBackgroundOpacity as internal on MainWindow.
             _window.ApplyBackgroundOpacity(saveManager.CurrentSave.Settings.BackgroundOpacity);
 
+            // 몬스터 애니메이션 리셋
             _window.MonsterImage.BeginAnimation(FrameworkElement.WidthProperty, null);
             _window.MonsterImage.BeginAnimation(FrameworkElement.HeightProperty, null);
             _window.MonsterImage.Width = MONSTER_SIZE;
             _window.MonsterImage.Height = MONSTER_SIZE;
             _window.MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, null);
 
+            // 게임 재시작
             gameManager.RestartGame();
 
+            // 자동 닫기 타이머 시작
             _autoRestartCountdown = 10;
             UpdateAutoCloseCountdown();
             _autoRestartTimer?.Start();

@@ -20,3 +20,5 @@ Tests/*
 # OS 생성 파일 제외
 Thumbs.db
 Desktop.ini__pycache__/
+nul
+tmpclaude-*

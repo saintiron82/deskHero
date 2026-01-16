@@ -127,7 +127,33 @@ namespace DeskWarrior.Managers
         {
             _saveManager = saveManager;
             _permanentProgression = new PermanentProgressionManager(saveManager);
+
+            // 크리스탈 획득 이벤트 구독 (세션 트래커에 기록)
+            if (_permanentProgression != null)
+            {
+                _permanentProgression.CrystalEarned += OnCrystalEarned;
+            }
         }
+
+        /// <summary>
+        /// 크리스탈 획득 시 세션 트래커에 기록
+        /// </summary>
+        private void OnCrystalEarned(object? sender, CrystalEarnedEventArgs e)
+        {
+            if (e.Source == "boss_drop")
+            {
+                _sessionTracker.RecordBossDropCrystals(e.Amount);
+            }
+            else if (e.Source.StartsWith("achievement:"))
+            {
+                _sessionTracker.RecordAchievementCrystals(e.Amount);
+            }
+        }
+
+        /// <summary>
+        /// PermanentProgressionManager 접근자
+        /// </summary>
+        public PermanentProgressionManager? PermanentProgression => _permanentProgression;
 
         /// <summary>
         /// 게임 시작

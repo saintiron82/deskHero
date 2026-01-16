@@ -228,6 +228,15 @@ namespace DeskWarrior.ViewModels
             _soundManager = new SoundManager();
             _achievementManager = new AchievementManager(_saveManager);
 
+            // GameManager에 SaveManager 연결 (PermanentProgressionManager 자동 생성)
+            _gameManager.Initialize(_saveManager);
+
+            // AchievementManager에 PermanentProgressionManager 연결
+            if (_gameManager.PermanentProgression != null)
+            {
+                _achievementManager.Initialize(_gameManager.PermanentProgression);
+            }
+
             // Commands 초기화
             UpgradeKeyboardCommand = new RelayCommand(ExecuteUpgradeKeyboard, CanUpgradeKeyboard);
             UpgradeMouseCommand = new RelayCommand(ExecuteUpgradeMouse, CanUpgradeMouse);

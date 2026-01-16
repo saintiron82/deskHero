@@ -14,7 +14,8 @@
         WindowStartupLocation="Manual"
         Left="100"
         Top="100"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        KeyDown="Window_KeyDown">
 
     <Grid>
         <!-- 관리 모드 표시 테두리 -->
@@ -146,7 +147,7 @@
                             Panel.ZIndex="10"
                             IsHitTestVisible="False"/>
 
-                    <!-- 히어로 위 플로팅 정보 (골드 Only) -->
+                    <!-- 히어로 위 플로팅 정보 (골드 + 크리스탈) -->
                     <Border x:Name="GoldInfoBar"
                             Background="#CC000000" CornerRadius="12"
                             Padding="10,3"
@@ -154,8 +155,13 @@
                             VerticalAlignment="Bottom"
                             Margin="5,0,0,100"
                             Panel.ZIndex="10">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel>
                             <TextBlock x:Name="GoldText" Text="💰 0" FontSize="11" Foreground="#FFD700" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="CrystalText" Text="💎 0" FontSize="11" Foreground="#00CED1" FontWeight="SemiBold" Margin="0,2,0,0">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="#00CED1" ShadowDepth="0" BlurRadius="8" Opacity="0.6"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
 
@@ -199,178 +205,136 @@
                     </Grid>
                 </Border>
 
-                <!-- Row 3: 업그레이드 패널 (관리 모드에서만 표시) -->
+                <!-- Row 3: 업그레이드 패널 (관리 모드에서만 표시) - 4열 컴팩트 그리드 -->
                 <Border x:Name="UpgradePanel" Grid.Row="3"
                         Background="#88000000" CornerRadius="5"
-                        Margin="0,5,0,0" Padding="5"
+                        Margin="0,5,0,0" Padding="4"
                         Visibility="Collapsed">
                     <StackPanel>
-                        <!-- 스탯 업그레이드 리스트 (스크롤 가능) -->
-                        <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto"
-                                      HorizontalScrollBarVisibility="Disabled"
-                                      Margin="0,0,0,4">
-                            <StackPanel>
-                                <!-- 키보드 공격력 -->
-                                <Button x:Name="UpgradeKeyboardBtn"
-                                        Click="UpgradeKeyboard_Click"
-                                        Style="{StaticResource StatUpgradeButton}"
-                                        Margin="0,2">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="⌨️" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock x:Name="KeyboardNameText" Text="키보드 공격력" FontSize="9" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="KeyboardEffectText" Text="Lv.0 (+1 데미지)" FontSize="7" Foreground="#AAA"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" x:Name="KeyboardCostText" Text="💰 100" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
+                        <!-- 스탯 업그레이드 그리드 (4열) -->
+                        <UniformGrid Columns="4" Rows="2">
+                            <!-- 키보드 공격력 -->
+                            <Button x:Name="UpgradeKeyboardBtn"
+                                    Click="UpgradeKeyboard_Click"
+                                    Style="{StaticResource StatUpgradeButton}"
+                                    Margin="2" Height="40"
+                                    ToolTip="키보드 공격력 증가">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="⌨️" FontSize="12" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="KeyboardLevelText" Text="Lv.0" FontSize="8" HorizontalAlignment="Center" Foreground="#AAA"/>
+                                    <TextBlock x:Name="KeyboardCostText" Text="💰100" FontSize="7" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
 
-                                <!-- 마우스 공격력 -->
-                                <Button x:Name="UpgradeMouseBtn"
-                                        Click="UpgradeMouse_Click"
-                                        Style="{StaticResource StatUpgradeButton}"
-                                        Margin="0,2">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="🖱️" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock x:Name="MouseNameText" Text="마우스 공격력" FontSize="9" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="MouseEffectText" Text="Lv.0 (+1 데미지)" FontSize="7" Foreground="#AAA"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" x:Name="MouseCostText" Text="💰 100" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
+                            <!-- 마우스 공격력 -->
+                            <Button x:Name="UpgradeMouseBtn"
+                                    Click="UpgradeMouse_Click"
+                                    Style="{StaticResource StatUpgradeButton}"
+                                    Margin="2" Height="40"
+                                    ToolTip="마우스 공격력 증가">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="🖱️" FontSize="12" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="MouseLevelText" Text="Lv.0" FontSize="8" HorizontalAlignment="Center" Foreground="#AAA"/>
+                                    <TextBlock x:Name="MouseCostText" Text="💰100" FontSize="7" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
 
-                                <!-- 골드+ -->
-                                <Button x:Name="UpgradeGoldFlatBtn"
-                                        Click="UpgradeGoldFlat_Click"
-                                        Style="{StaticResource StatUpgradeButton}"
-                                        Margin="0,2">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="💰" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock x:Name="GoldFlatNameText" Text="골드+" FontSize="9" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="GoldFlatEffectText" Text="Lv.0 (+0 골드)" FontSize="7" Foreground="#AAA"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" x:Name="GoldFlatCostText" Text="💰 150" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
+                            <!-- 골드+ -->
+                            <Button x:Name="UpgradeGoldFlatBtn"
+                                    Click="UpgradeGoldFlat_Click"
+                                    Style="{StaticResource StatUpgradeButton}"
+                                    Margin="2" Height="40"
+                                    ToolTip="골드 추가 획득">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="💰" FontSize="12" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="GoldFlatLevelText" Text="Lv.0" FontSize="8" HorizontalAlignment="Center" Foreground="#AAA"/>
+                                    <TextBlock x:Name="GoldFlatCostText" Text="💰150" FontSize="7" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
 
-                                <!-- 골드* -->
-                                <Button x:Name="UpgradeGoldMultiBtn"
-                                        Click="UpgradeGoldMulti_Click"
-                                        Style="{StaticResource StatUpgradeButton}"
-                                        Margin="0,2">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="🌟" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock x:Name="GoldMultiNameText" Text="골드*" FontSize="9" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="GoldMultiEffectText" Text="Lv.0 (+0%)" FontSize="7" Foreground="#AAA"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" x:Name="GoldMultiCostText" Text="💰 200" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
+                            <!-- 골드* -->
+                            <Button x:Name="UpgradeGoldMultiBtn"
+                                    Click="UpgradeGoldMulti_Click"
+                                    Style="{StaticResource StatUpgradeButton}"
+                                    Margin="2" Height="40"
+                                    ToolTip="골드 배율 증가">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="🌟" FontSize="12" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="GoldMultiLevelText" Text="Lv.0" FontSize="8" HorizontalAlignment="Center" Foreground="#AAA"/>
+                                    <TextBlock x:Name="GoldMultiCostText" Text="💰200" FontSize="7" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
 
-                                <!-- 시간 도둑 -->
-                                <Button x:Name="UpgradeTimeThiefBtn"
-                                        Click="UpgradeTimeThief_Click"
-                                        Style="{StaticResource StatUpgradeButton}"
-                                        Margin="0,2">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="⏱️" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock x:Name="TimeThiefNameText" Text="시간 도둑" FontSize="9" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="TimeThiefEffectText" Text="Lv.0 (+0초)" FontSize="7" Foreground="#AAA"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" x:Name="TimeThiefCostText" Text="💰 300" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
+                            <!-- 시간 도둑 -->
+                            <Button x:Name="UpgradeTimeThiefBtn"
+                                    Click="UpgradeTimeThief_Click"
+                                    Style="{StaticResource StatUpgradeButton}"
+                                    Margin="2" Height="40"
+                                    ToolTip="처치 시 시간 획득">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="⏱️" FontSize="12" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TimeThiefLevelText" Text="Lv.0" FontSize="8" HorizontalAlignment="Center" Foreground="#AAA"/>
+                                    <TextBlock x:Name="TimeThiefCostText" Text="💰300" FontSize="7" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
 
-                                <!-- 콤보 유연성 -->
-                                <Button x:Name="UpgradeComboFlexBtn"
-                                        Click="UpgradeComboFlex_Click"
-                                        Style="{StaticResource StatUpgradeButton}"
-                                        Margin="0,2">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="🎯" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock x:Name="ComboFlexNameText" Text="콤보 유연성" FontSize="9" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="ComboFlexEffectText" Text="Lv.0 (+0.00초)" FontSize="7" Foreground="#AAA"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" x:Name="ComboFlexCostText" Text="💰 250" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
+                            <!-- 콤보 유연성 -->
+                            <Button x:Name="UpgradeComboFlexBtn"
+                                    Click="UpgradeComboFlex_Click"
+                                    Style="{StaticResource StatUpgradeButton}"
+                                    Margin="2" Height="40"
+                                    ToolTip="콤보 유지 시간 증가">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="🎯" FontSize="12" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="ComboFlexLevelText" Text="Lv.0" FontSize="8" HorizontalAlignment="Center" Foreground="#AAA"/>
+                                    <TextBlock x:Name="ComboFlexCostText" Text="💰250" FontSize="7" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
 
-                                <!-- 콤보 데미지 -->
-                                <Button x:Name="UpgradeComboDamageBtn"
-                                        Click="UpgradeComboDamage_Click"
-                                        Style="{StaticResource StatUpgradeButton}"
-                                        Margin="0,2">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="💥" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock x:Name="ComboDamageNameText" Text="콤보 데미지" FontSize="9" FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="ComboDamageEffectText" Text="Lv.0 (+0%)" FontSize="7" Foreground="#AAA"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" x:Name="ComboDamageCostText" Text="💰 300" FontSize="9" FontWeight="Bold" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
-                            </StackPanel>
-                        </ScrollViewer>
+                            <!-- 콤보 데미지 -->
+                            <Button x:Name="UpgradeComboDamageBtn"
+                                    Click="UpgradeComboDamage_Click"
+                                    Style="{StaticResource StatUpgradeButton}"
+                                    Margin="2" Height="40"
+                                    ToolTip="콤보 데미지 배율 증가">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="💥" FontSize="12" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="ComboDamageLevelText" Text="Lv.0" FontSize="8" HorizontalAlignment="Center" Foreground="#AAA"/>
+                                    <TextBlock x:Name="ComboDamageCostText" Text="💰300" FontSize="7" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- 빈 슬롯 (7개 버튼, 8칸 그리드) -->
+                            <Border Background="Transparent"/>
+                        </UniformGrid>
 
                         <!-- 유틸리티 버튼 -->
-                        <Grid>
+                        <Grid Margin="0,4,0,0">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
                             <!-- 통계 버튼 -->
-                            <Button x:Name="StatsBtn" Grid.Column="0" Content="📊 Stats"
+                            <Button x:Name="StatsBtn" Grid.Column="0" Content="📊"
                                     Click="StatsButton_Click"
                                     Style="{StaticResource SettingsButton}"
-                                    Margin="2,0" Height="20" FontSize="9"
+                                    Margin="2,0" Height="20" FontSize="11"
                                     ToolTip="통계 보기"/>
 
+                            <!-- 영구 상점 버튼 -->
+                            <Button x:Name="PermanentShopBtn" Grid.Column="1" Content="💎"
+                                    Click="PermanentShopButton_Click"
+                                    Style="{StaticResource SettingsButton}"
+                                    Margin="2,0" Height="20" FontSize="11"
+                                    ToolTip="영구 업그레이드 상점"/>
+
                             <!-- 설정 버튼 -->
-                            <Button x:Name="SettingsBtn" Grid.Column="1" Content="⚙️ Settings"
+                            <Button x:Name="SettingsBtn" Grid.Column="2" Content="⚙️"
                                     Click="SettingsButton_Click"
                                     Style="{StaticResource SettingsButton}"
-                                    Margin="2,0" Height="20" FontSize="9"
+                                    Margin="2,0" Height="20" FontSize="11"
                                     ToolTip="설정 열기"/>
                         </Grid>
                     </StackPanel>
@@ -388,52 +352,191 @@
 
         <!-- Game Over Overlay -->
         <Border x:Name="GameOverOverlay" Visibility="Collapsed" Panel.ZIndex="200"
-                Background="#EE000000" MouseLeftButtonDown="Window_MouseLeftButtonDown">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock x:Name="GameOverTitleText" Text="GENERATION ENDED" Foreground="#FF4444" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5">
-                    <TextBlock.Effect>
-                        <DropShadowEffect Color="Red" BlurRadius="10" ShadowDepth="0"/>
-                    </TextBlock.Effect>
-                </TextBlock>
+                Background="#CC000000" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+            <Border Background="#1A1A1A"
+                    BorderBrush="#00CED1"
+                    BorderThickness="2"
+                    CornerRadius="10"
+                    Padding="30"
+                    MaxWidth="400"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect Color="#00CED1" BlurRadius="20" ShadowDepth="0" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <!-- 제목 -->
+                    <TextBlock Text="⚰️ GAME OVER"
+                               FontSize="32"
+                               FontWeight="Bold"
+                               Foreground="#FF4444"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,20">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Red" BlurRadius="10" ShadowDepth="0"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
 
-                <TextBlock x:Name="GameOverMessageText" Text="..." Foreground="#AAA" FontSize="10"
-                           HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,20" TextWrapping="Wrap" MaxWidth="200"/>
+                    <!-- 게임 오버 메시지 -->
+                    <TextBlock x:Name="GameOverMessageText"
+                               Text="..."
+                               Foreground="#AAA"
+                               FontSize="10"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="0,0,0,20"
+                               TextWrapping="Wrap"
+                               MaxWidth="300"/>
 
-                <Border Background="#33000000" CornerRadius="5" Padding="15" Margin="0,0,0,15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                    <!-- 세션 통계 -->
+                    <TextBlock Text="📊 세션 결과"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               Margin="0,0,0,10"/>
+                    <StackPanel Margin="10,0,0,20">
+                        <TextBlock Foreground="#CCC">
+                            <Run Text="레벨: "/>
+                            <Run x:Name="ReportLevelText" Text="0" Foreground="White" FontWeight="Bold"/>
+                        </TextBlock>
+                        <TextBlock Foreground="#CCC" Margin="0,3,0,0">
+                            <Run Text="몬스터: "/>
+                            <Run x:Name="ReportKillsText" Text="0" Foreground="White" FontWeight="Bold"/>
+                            <Run Text="마리"/>
+                        </TextBlock>
+                        <TextBlock Foreground="#CCC" Margin="0,3,0,0">
+                            <Run Text="데미지: "/>
+                            <Run x:Name="ReportDamageText" Text="0" Foreground="#FF8888" FontWeight="Bold"/>
+                        </TextBlock>
+                        <TextBlock Foreground="#CCC" Margin="0,3,0,0">
+                            <Run Text="골드: "/>
+                            <Run x:Name="ReportGoldText" Text="0" Foreground="#FFD700" FontWeight="Bold"/>
+                        </TextBlock>
+                    </StackPanel>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" x:Name="ReportLevelLabel" Text="Max Level:" Foreground="#AAA" Margin="0,0,15,8"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ReportLevelText" Text="0" Foreground="White" FontWeight="Bold"/>
+                    <!-- 크리스탈 획득 섹션 -->
+                    <TextBlock Text="✨ 크리스탈 획득"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#00CED1"
+                               Margin="0,0,0,10">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="#00CED1" BlurRadius="8" ShadowDepth="0" Opacity="0.6"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Border Background="#0D1117"
+                            BorderBrush="#00CED1"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            Padding="15"
+                            Margin="0,0,0,20">
+                        <StackPanel>
+                            <!-- 골드 변환 -->
+                            <TextBlock Text="💰 골드 변환"
+                                       Foreground="#FFD700"
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Foreground="#888" FontSize="12">
+                                <Run x:Name="SessionGoldRun" Text="0"/>
+                                <Run Text=" ÷ 1000 = "/>
+                                <Run Text="+"/>
+                                <Run x:Name="ConvertedCrystalsRun" Text="0" FontSize="16" FontWeight="Bold" Foreground="#00CED1"/>
+                                <Run Text=" 💎"/>
+                            </TextBlock>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" x:Name="ReportGoldLabel" Text="Gold Earned:" Foreground="#AAA" Margin="0,0,15,8"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ReportGoldText" Text="0" Foreground="Gold" FontWeight="Bold"/>
+                            <!-- 보스 드롭 (있는 경우) -->
+                            <TextBlock x:Name="BossDropLine"
+                                       Visibility="Collapsed"
+                                       Margin="0,8,0,0"
+                                       Foreground="#CCC">
+                                <Run Text="🏆 보스 드롭: +"/>
+                                <Run x:Name="BossDropCrystalsRun" Text="0" FontWeight="Bold" Foreground="#00CED1"/>
+                                <Run Text=" 💎"/>
+                            </TextBlock>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" x:Name="ReportDamageLabel" Text="Damage Dealt:" Foreground="#AAA" Margin="0,0,15,8"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ReportDamageText" Text="0" Foreground="#FF8888" FontWeight="Bold"/>
-                    </Grid>
-                </Border>
+                            <!-- 업적 보상 (있는 경우) -->
+                            <TextBlock x:Name="AchievementRewardLine"
+                                       Visibility="Collapsed"
+                                       Margin="0,5,0,0"
+                                       Foreground="#CCC">
+                                <Run Text="⭐ 업적 보상: +"/>
+                                <Run x:Name="AchievementCrystalsRun" Text="0" FontWeight="Bold" Foreground="#00CED1"/>
+                                <Run Text=" 💎"/>
+                            </TextBlock>
 
-                <Button x:Name="CloseOverlayButton" Content="닫기" Click="CloseOverlayButton_Click"
-                        Width="100" Height="30" Background="#333" Foreground="White" BorderBrush="#666" BorderThickness="1" Margin="0,0,0,10">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
+                            <!-- 구분선 -->
+                            <Border Height="1" Background="#333" Margin="0,12,0,12"/>
 
-                <TextBlock x:Name="AutoCloseCountdownText" Text="10초후 닫힘"
-                           Foreground="#888" FontSize="10" HorizontalAlignment="Center"/>
-            </StackPanel>
+                            <!-- 총합 -->
+                            <TextBlock FontSize="16"
+                                       HorizontalAlignment="Center"
+                                       Foreground="White">
+                                <Run Text="총 획득: +"/>
+                                <Run x:Name="TotalCrystalsEarnedRun" Text="0" FontSize="20" FontWeight="Bold" Foreground="#00CED1"/>
+                                <Run Text=" 💎"/>
+                            </TextBlock>
+                            <TextBlock FontSize="14"
+                                       Foreground="#888"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,5,0,0">
+                                <Run Text="현재 보유: "/>
+                                <Run x:Name="CurrentCrystalBalanceRun" Text="0" Foreground="#00CED1" FontWeight="Bold"/>
+                                <Run Text=" 💎"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 액션 버튼 -->
+                    <UniformGrid Columns="2" Rows="1" HorizontalAlignment="Center">
+                        <Button x:Name="ShopButton"
+                                Content="🛒 상점 (S)"
+                                Click="ShopButton_Click"
+                                Width="130"
+                                Height="50"
+                                Margin="0,0,10,0"
+                                Background="#1E3A8A"
+                                Foreground="White"
+                                BorderBrush="#00CED1"
+                                BorderThickness="2"
+                                FontSize="14"
+                                FontWeight="Bold">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="5"/>
+                                </Style>
+                            </Button.Resources>
+                            <Button.Effect>
+                                <DropShadowEffect Color="#00CED1" BlurRadius="8" ShadowDepth="0" Opacity="0.4"/>
+                            </Button.Effect>
+                        </Button>
+                        <Button x:Name="CloseOverlayButton"
+                                Content="▶️ 게임 (SPACE)"
+                                Click="CloseOverlayButton_Click"
+                                Width="150"
+                                Height="50"
+                                Background="#059669"
+                                Foreground="White"
+                                BorderBrush="#047857"
+                                BorderThickness="2"
+                                FontSize="14"
+                                FontWeight="Bold">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="5"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </UniformGrid>
+
+                    <!-- 자동 닫기 카운트다운 -->
+                    <TextBlock x:Name="AutoCloseCountdownText"
+                               Text="10초 후 닫힘"
+                               Foreground="#666"
+                               FontSize="10"
+                               HorizontalAlignment="Center"
+                               Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
         </Border>
     </Grid>
 </Window>

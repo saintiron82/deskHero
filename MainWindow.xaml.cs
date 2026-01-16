@@ -431,6 +431,11 @@ namespace DeskWarrior
             statsWindow.ShowDialog();
         }
 
+        private void PermanentShopButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenPermanentUpgradeShop();
+        }
+
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
@@ -446,6 +451,32 @@ namespace DeskWarrior
         {
             _gameOver.StopTimer();
             _gameOver.CloseGameOverOverlay();
+        }
+
+        private void ShopButton_Click(object sender, RoutedEventArgs e)
+        {
+            _gameOver.StopTimer();
+            OpenPermanentUpgradeShop();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // 게임 오버 오버레이가 표시된 경우에만 키보드 단축키 처리
+            if (GameOverOverlay.Visibility == Visibility.Visible)
+            {
+                if (e.Key == Key.Space || e.Key == Key.Enter)
+                {
+                    // SPACE 또는 ENTER: 게임 재시작
+                    CloseOverlayButton_Click(sender, e);
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.S)
+                {
+                    // S: 상점 열기
+                    ShopButton_Click(sender, e);
+                    e.Handled = true;
+                }
+            }
         }
 
         #endregion
@@ -475,6 +506,7 @@ namespace DeskWarrior
                 MaxLevelText.Text = $"(Best: {bestLevel})";
             }
             if (GoldText != null) GoldText.Text = $"💰 {GameManager.Gold:N0}";
+            if (CrystalText != null) CrystalText.Text = $"💎 {SaveManager.CurrentSave.PermanentCurrency.Crystals:N0}";
 
             if (GameManager.CurrentMonster != null && HpText != null)
             {
@@ -597,8 +629,8 @@ namespace DeskWarrior
             // 키보드 공격력
             int keyboardCost = GameManager.GetInGameStatUpgradeCost("keyboard_power");
             int keyboardLevel = GameManager.InGameStats.KeyboardPowerLevel;
-            KeyboardCostText.Text = $"💰 {keyboardCost:N0}";
-            KeyboardEffectText.Text = $"Lv.{keyboardLevel} (+{GameManager.KeyboardPower} 데미지)";
+            KeyboardCostText.Text = $"💰{keyboardCost:N0}";
+            KeyboardLevelText.Text = $"Lv.{keyboardLevel}";
             bool canBuyKeyboard = gold >= keyboardCost;
             UpgradeKeyboardBtn.IsEnabled = canBuyKeyboard;
             KeyboardCostText.Foreground = new SolidColorBrush(
@@ -607,8 +639,8 @@ namespace DeskWarrior
             // 마우스 공격력
             int mouseCost = GameManager.GetInGameStatUpgradeCost("mouse_power");
             int mouseLevel = GameManager.InGameStats.MousePowerLevel;
-            MouseCostText.Text = $"💰 {mouseCost:N0}";
-            MouseEffectText.Text = $"Lv.{mouseLevel} (+{GameManager.MousePower} 데미지)";
+            MouseCostText.Text = $"💰{mouseCost:N0}";
+            MouseLevelText.Text = $"Lv.{mouseLevel}";
             bool canBuyMouse = gold >= mouseCost;
             UpgradeMouseBtn.IsEnabled = canBuyMouse;
             MouseCostText.Foreground = new SolidColorBrush(
@@ -617,8 +649,8 @@ namespace DeskWarrior
             // 골드+
             int goldFlatCost = GameManager.GetInGameStatUpgradeCost("gold_flat");
             int goldFlatLevel = GameManager.InGameStats.GoldFlatLevel;
-            GoldFlatCostText.Text = $"💰 {goldFlatCost:N0}";
-            GoldFlatEffectText.Text = $"Lv.{goldFlatLevel} (+{GameManager.GoldFlat:N0} 골드)";
+            GoldFlatCostText.Text = $"💰{goldFlatCost:N0}";
+            GoldFlatLevelText.Text = $"Lv.{goldFlatLevel}";
             bool canBuyGoldFlat = gold >= goldFlatCost;
             UpgradeGoldFlatBtn.IsEnabled = canBuyGoldFlat;
             GoldFlatCostText.Foreground = new SolidColorBrush(
@@ -627,8 +659,8 @@ namespace DeskWarrior
             // 골드*
             int goldMultiCost = GameManager.GetInGameStatUpgradeCost("gold_multi");
             int goldMultiLevel = GameManager.InGameStats.GoldMultiLevel;
-            GoldMultiCostText.Text = $"💰 {goldMultiCost:N0}";
-            GoldMultiEffectText.Text = $"Lv.{goldMultiLevel} (+{GameManager.GoldMulti * 100:N0}%)";
+            GoldMultiCostText.Text = $"💰{goldMultiCost:N0}";
+            GoldMultiLevelText.Text = $"Lv.{goldMultiLevel}";
             bool canBuyGoldMulti = gold >= goldMultiCost;
             UpgradeGoldMultiBtn.IsEnabled = canBuyGoldMulti;
             GoldMultiCostText.Foreground = new SolidColorBrush(
@@ -637,8 +669,8 @@ namespace DeskWarrior
             // 시간 도둑
             int timeThiefCost = GameManager.GetInGameStatUpgradeCost("time_thief");
             int timeThiefLevel = GameManager.InGameStats.TimeThiefLevel;
-            TimeThiefCostText.Text = $"💰 {timeThiefCost:N0}";
-            TimeThiefEffectText.Text = $"Lv.{timeThiefLevel} (+{GameManager.TimeThief:N1}초)";
+            TimeThiefCostText.Text = $"💰{timeThiefCost:N0}";
+            TimeThiefLevelText.Text = $"Lv.{timeThiefLevel}";
             bool canBuyTimeThief = gold >= timeThiefCost;
             UpgradeTimeThiefBtn.IsEnabled = canBuyTimeThief;
             TimeThiefCostText.Foreground = new SolidColorBrush(
@@ -647,8 +679,8 @@ namespace DeskWarrior
             // 콤보 유연성
             int comboFlexCost = GameManager.GetInGameStatUpgradeCost("combo_flex");
             int comboFlexLevel = GameManager.InGameStats.ComboFlexLevel;
-            ComboFlexCostText.Text = $"💰 {comboFlexCost:N0}";
-            ComboFlexEffectText.Text = $"Lv.{comboFlexLevel} (+{GameManager.ComboFlex:N3}초)";
+            ComboFlexCostText.Text = $"💰{comboFlexCost:N0}";
+            ComboFlexLevelText.Text = $"Lv.{comboFlexLevel}";
             bool canBuyComboFlex = gold >= comboFlexCost;
             UpgradeComboFlexBtn.IsEnabled = canBuyComboFlex;
             ComboFlexCostText.Foreground = new SolidColorBrush(
@@ -657,8 +689,8 @@ namespace DeskWarrior
             // 콤보 데미지
             int comboDamageCost = GameManager.GetInGameStatUpgradeCost("combo_damage");
             int comboDamageLevel = GameManager.InGameStats.ComboDamageLevel;
-            ComboDamageCostText.Text = $"💰 {comboDamageCost:N0}";
-            ComboDamageEffectText.Text = $"Lv.{comboDamageLevel} (+{GameManager.ComboDamage * 100:N0}%)";
+            ComboDamageCostText.Text = $"💰{comboDamageCost:N0}";
+            ComboDamageLevelText.Text = $"Lv.{comboDamageLevel}";
             bool canBuyComboDamage = gold >= comboDamageCost;
             UpgradeComboDamageBtn.IsEnabled = canBuyComboDamage;
             ComboDamageCostText.Foreground = new SolidColorBrush(
@@ -721,17 +753,38 @@ namespace DeskWarrior
             if (MousePowerText != null)
                 MousePowerText.Text = $"{loc["ui.main.mouseAtk"]}: {GameManager?.MousePower ?? 1:N0}";
 
-            if (GameOverTitleText != null) GameOverTitleText.Text = loc["ui.gameover.title"];
-            if (ReportLevelLabel != null) ReportLevelLabel.Text = loc["ui.gameover.maxLevel"];
-            if (ReportGoldLabel != null) ReportGoldLabel.Text = loc["ui.gameover.goldEarned"];
-            if (ReportDamageLabel != null) ReportDamageLabel.Text = loc["ui.gameover.damageDealt"];
-            if (CloseOverlayButton != null) CloseOverlayButton.Content = loc.CurrentLanguage == "ko-KR" ? "닫기" : "Close";
+            // 게임 오버 버튼 다국어 (재설계된 UI에서는 하드코딩된 텍스트 사용)
+            if (CloseOverlayButton != null)
+                CloseOverlayButton.Content = loc.CurrentLanguage == "ko-KR" ? "▶️ 게임 (SPACE)" : "▶️ Game (SPACE)";
+            if (ShopButton != null)
+                ShopButton.Content = loc.CurrentLanguage == "ko-KR" ? "🛒 상점 (S)" : "🛒 Shop (S)";
 
             if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.ToolTip = loc["tooltips.upgradeKeyboard"];
             if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["tooltips.upgradeMouse"];
             if (StatsBtn != null) StatsBtn.ToolTip = loc["tooltips.stats"];
             if (SettingsBtn != null) SettingsBtn.ToolTip = loc["tooltips.settings"];
             if (ExitButtonBorder != null) ExitButtonBorder.ToolTip = loc["tooltips.exit"];
+        }
+
+        #endregion
+
+        #region Shop Management
+
+        private void OpenPermanentUpgradeShop()
+        {
+            var permanentProgression = GameManager.PermanentProgression;
+            if (permanentProgression == null)
+            {
+                Logger.Log("PermanentProgressionManager not initialized");
+                return;
+            }
+
+            var shopWindow = new PermanentUpgradeShop(permanentProgression, SaveManager);
+            shopWindow.Owner = this;
+            shopWindow.ShowDialog();
+
+            // Refresh UI after shop closes (crystal count may have changed)
+            UpdateAllUI();
         }
 
         #endregion

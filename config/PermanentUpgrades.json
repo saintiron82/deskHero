@@ -3,7 +3,7 @@
     {
       "id": "base_attack",
       "category": "base_stats",
-      "stat_name": "BaseAttack",
+      "stat_name": "BaseAttackLevel",
       "base_cost": 10,
       "cost_multiplier": 1.15,
       "increment_per_level": 1,
@@ -22,88 +22,208 @@
     },
     {
       "id": "attack_percent",
-      "category": "percentage",
-      "stat_name": "AttackPercentBonus",
+      "category": "base_stats",
+      "stat_name": "AttackPercentLevel",
       "base_cost": 50,
       "cost_multiplier": 1.25,
-      "increment_per_level": 0.05,
-      "max_level": 20,
+      "increment_per_level": 1,
+      "max_level": 50,
       "icon": "💪",
       "localization": {
         "ko-KR": {
-          "name": "공격력 증폭",
-          "description": "공격력을 {value}% 증가시킵니다"
+          "name": "공격력 배수",
+          "description": "공격력을 {value}% 증가시킵니다 (레벨당 5%)"
         },
         "en-US": {
-          "name": "Attack Amplification",
-          "description": "Increase attack power by {value}%"
+          "name": "Attack Multiplier",
+          "description": "Increase attack power by {value}% (5% per level)"
         }
       }
     },
     {
-      "id": "gold_percent",
-      "category": "percentage",
-      "stat_name": "GoldPercentBonus",
-      "base_cost": 30,
-      "cost_multiplier": 1.2,
-      "increment_per_level": 0.1,
-      "max_level": 30,
-      "icon": "💰",
-      "localization": {
-        "ko-KR": {
-          "name": "골드 획득량 증가",
-          "description": "획득하는 골드를 {value}% 증가시킵니다"
-        },
-        "en-US": {
-          "name": "Gold Acquisition",
-          "description": "Increase gold earned by {value}%"
-        }
-      }
-    },
-    {
-      "id": "critical_chance",
-      "category": "abilities",
-      "stat_name": "CriticalChanceBonus",
-      "base_cost": 100,
+      "id": "crit_chance",
+      "category": "base_stats",
+      "stat_name": "CritChanceLevel",
+      "base_cost": 80,
       "cost_multiplier": 1.3,
-      "increment_per_level": 0.01,
-      "max_level": 20,
+      "increment_per_level": 1,
+      "max_level": 30,
       "icon": "✨",
       "localization": {
         "ko-KR": {
-          "name": "치명타 확률",
-          "description": "치명타 확률을 {value}% 증가시킵니다"
+          "name": "크리티컬 확률",
+          "description": "치명타 확률을 {value}% 증가시킵니다 (레벨당 1%)"
         },
         "en-US": {
           "name": "Critical Chance",
-          "description": "Increase critical hit chance by {value}%"
+          "description": "Increase critical hit chance by {value}% (1% per level)"
         }
       }
     },
     {
-      "id": "critical_damage",
-      "category": "abilities",
-      "stat_name": "CriticalDamageBonus",
-      "base_cost": 150,
+      "id": "crit_damage",
+      "category": "base_stats",
+      "stat_name": "CritDamageLevel",
+      "base_cost": 100,
       "cost_multiplier": 1.4,
-      "increment_per_level": 0.1,
-      "max_level": 10,
+      "increment_per_level": 1,
+      "max_level": 20,
       "icon": "💥",
       "localization": {
         "ko-KR": {
-          "name": "치명타 데미지",
-          "description": "치명타 배율을 {value} 증가시킵니다"
+          "name": "크리티컬 배율",
+          "description": "치명타 배율을 {value}x 증가시킵니다 (레벨당 0.1x)"
         },
         "en-US": {
           "name": "Critical Damage",
-          "description": "Increase critical damage multiplier by {value}"
+          "description": "Increase critical damage multiplier by {value}x (0.1x per level)"
         }
       }
     },
     {
-      "id": "starting_level",
+      "id": "multi_hit",
+      "category": "base_stats",
+      "stat_name": "MultiHitLevel",
+      "base_cost": 100,
+      "cost_multiplier": 1.35,
+      "increment_per_level": 1,
+      "max_level": 25,
+      "icon": "🎯",
+      "localization": {
+        "ko-KR": {
+          "name": "멀티히트 확률",
+          "description": "멀티히트 확률을 {value}% 증가시킵니다 (레벨당 1%)"
+        },
+        "en-US": {
+          "name": "Multi-Hit Chance",
+          "description": "Increase multi-hit chance by {value}% (1% per level)"
+        }
+      }
+    },
+    {
+      "id": "gold_flat_perm",
+      "category": "currency_bonus",
+      "stat_name": "GoldFlatPermLevel",
+      "base_cost": 30,
+      "cost_multiplier": 1.2,
+      "increment_per_level": 1,
+      "max_level": 0,
+      "icon": "💰",
+      "localization": {
+        "ko-KR": {
+          "name": "영구 골드+",
+          "description": "영구적으로 골드 획득량을 +{value} 증가시킵니다"
+        },
+        "en-US": {
+          "name": "Permanent Gold+",
+          "description": "Permanently increase gold gained by +{value}"
+        }
+      }
+    },
+    {
+      "id": "gold_multi_perm",
+      "category": "currency_bonus",
+      "stat_name": "GoldMultiPermLevel",
+      "base_cost": 50,
+      "cost_multiplier": 1.25,
+      "increment_per_level": 1,
+      "max_level": 50,
+      "icon": "🌟",
+      "localization": {
+        "ko-KR": {
+          "name": "영구 골드*",
+          "description": "영구적으로 골드 획득량을 {value}% 증가시킵니다 (레벨당 3%)"
+        },
+        "en-US": {
+          "name": "Permanent Gold*",
+          "description": "Permanently increase gold gained by {value}% (3% per level)"
+        }
+      }
+    },
+    {
+      "id": "crystal_flat",
+      "category": "currency_bonus",
+      "stat_name": "CrystalFlatLevel",
+      "base_cost": 80,
+      "cost_multiplier": 1.3,
+      "increment_per_level": 1,
+      "max_level": 0,
+      "icon": "💎",
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈+",
+          "description": "크리스탈 획득량을 +{value} 증가시킵니다"
+        },
+        "en-US": {
+          "name": "Crystal+",
+          "description": "Increase crystals gained by +{value}"
+        }
+      }
+    },
+    {
+      "id": "crystal_multi",
+      "category": "currency_bonus",
+      "stat_name": "CrystalMultiLevel",
+      "base_cost": 100,
+      "cost_multiplier": 1.4,
+      "increment_per_level": 1,
+      "max_level": 30,
+      "icon": "✨",
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈*",
+          "description": "크리스탈 획득량을 {value}% 증가시킵니다 (레벨당 5%)"
+        },
+        "en-US": {
+          "name": "Crystal*",
+          "description": "Increase crystals gained by {value}% (5% per level)"
+        }
+      }
+    },
+    {
+      "id": "time_extend",
+      "category": "utility",
+      "stat_name": "TimeExtendLevel",
+      "base_cost": 150,
+      "cost_multiplier": 1.4,
+      "increment_per_level": 1,
+      "max_level": 30,
+      "icon": "⏰",
+      "localization": {
+        "ko-KR": {
+          "name": "기본 시간 연장",
+          "description": "게임 오버 타이머를 {value}초 연장합니다 (레벨당 5초)"
+        },
+        "en-US": {
+          "name": "Time Extension",
+          "description": "Extend game over timer by {value} seconds (5s per level)"
+        }
+      }
+    },
+    {
+      "id": "upgrade_discount",
+      "category": "utility",
+      "stat_name": "UpgradeDiscountLevel",
+      "base_cost": 200,
+      "cost_multiplier": 1.5,
+      "increment_per_level": 1,
+      "max_level": 20,
+      "icon": "🎫",
+      "localization": {
+        "ko-KR": {
+          "name": "업그레이드 할인",
+          "description": "골드 업그레이드 비용을 {value}% 할인합니다 (레벨당 2%)"
+        },
+        "en-US": {
+          "name": "Upgrade Discount",
+          "description": "Reduce gold upgrade cost by {value}% (2% per level)"
+        }
+      }
+    },
+    {
+      "id": "start_level",
       "category": "starting_bonus",
-      "stat_name": "StartingLevelBonus",
+      "stat_name": "StartLevelLevel",
       "base_cost": 200,
       "cost_multiplier": 1.5,
       "increment_per_level": 1,
@@ -121,62 +241,142 @@
       }
     },
     {
-      "id": "starting_gold",
+      "id": "start_gold",
       "category": "starting_bonus",
-      "stat_name": "StartingGoldBonus",
+      "stat_name": "StartGoldLevel",
       "base_cost": 100,
       "cost_multiplier": 1.3,
-      "increment_per_level": 50,
+      "increment_per_level": 1,
       "max_level": 50,
       "icon": "💵",
       "localization": {
         "ko-KR": {
           "name": "시작 골드",
-          "description": "세션을 골드 {value}로 시작합니다"
+          "description": "세션을 골드 {value}로 시작합니다 (레벨당 50G)"
         },
         "en-US": {
           "name": "Starting Gold",
-          "description": "Start sessions with {value} gold"
+          "description": "Start sessions with {value} gold (50G per level)"
         }
       }
     },
     {
-      "id": "game_over_extension",
-      "category": "utility",
-      "stat_name": "GameOverTimeExtension",
+      "id": "start_keyboard",
+      "category": "starting_bonus",
+      "stat_name": "StartKeyboardLevel",
       "base_cost": 150,
       "cost_multiplier": 1.4,
-      "increment_per_level": 5,
-      "max_level": 24,
-      "icon": "⏰",
+      "increment_per_level": 1,
+      "max_level": 30,
+      "icon": "⌨️",
       "localization": {
         "ko-KR": {
-          "name": "제한시간 연장",
-          "description": "게임 오버 타이머를 {value}초 연장합니다"
+          "name": "시작 키보드",
+          "description": "키보드 파워를 {value} 시작합니다"
         },
         "en-US": {
-          "name": "Time Extension",
-          "description": "Extend game over timer by {value} seconds"
+          "name": "Starting Keyboard",
+          "description": "Start with keyboard power at {value}"
         }
       }
     },
     {
-      "id": "upgrade_discount",
-      "category": "utility",
-      "stat_name": "UpgradeCostReduction",
-      "base_cost": 200,
-      "cost_multiplier": 1.5,
-      "increment_per_level": 0.05,
-      "max_level": 10,
-      "icon": "🎫",
+      "id": "start_mouse",
+      "category": "starting_bonus",
+      "stat_name": "StartMouseLevel",
+      "base_cost": 150,
+      "cost_multiplier": 1.4,
+      "increment_per_level": 1,
+      "max_level": 30,
+      "icon": "🖱️",
       "localization": {
         "ko-KR": {
-          "name": "업그레이드 할인",
-          "description": "골드 업그레이드 비용을 {value}% 할인합니다"
+          "name": "시작 마우스",
+          "description": "마우스 파워를 {value} 시작합니다"
         },
         "en-US": {
-          "name": "Upgrade Discount",
-          "description": "Reduce gold upgrade cost by {value}%"
+          "name": "Starting Mouse",
+          "description": "Start with mouse power at {value}"
+        }
+      }
+    },
+    {
+      "id": "start_gold_flat",
+      "category": "starting_bonus",
+      "stat_name": "StartGoldFlatLevel",
+      "base_cost": 120,
+      "cost_multiplier": 1.35,
+      "increment_per_level": 1,
+      "max_level": 0,
+      "icon": "💸",
+      "localization": {
+        "ko-KR": {
+          "name": "시작 골드+",
+          "description": "세션 시작 시 골드 획득량 +{value} 증가"
+        },
+        "en-US": {
+          "name": "Starting Gold+",
+          "description": "Increase starting gold gain by +{value}"
+        }
+      }
+    },
+    {
+      "id": "start_gold_multi",
+      "category": "starting_bonus",
+      "stat_name": "StartGoldMultiLevel",
+      "base_cost": 150,
+      "cost_multiplier": 1.4,
+      "increment_per_level": 1,
+      "max_level": 40,
+      "icon": "💰",
+      "localization": {
+        "ko-KR": {
+          "name": "시작 골드*",
+          "description": "세션 시작 시 골드 획득량을 {value}% 증가 (레벨당 2%)"
+        },
+        "en-US": {
+          "name": "Starting Gold*",
+          "description": "Increase starting gold gain by {value}% (2% per level)"
+        }
+      }
+    },
+    {
+      "id": "start_combo_flex",
+      "category": "starting_bonus",
+      "stat_name": "StartComboFlexLevel",
+      "base_cost": 180,
+      "cost_multiplier": 1.45,
+      "increment_per_level": 1,
+      "max_level": 25,
+      "icon": "🎯",
+      "localization": {
+        "ko-KR": {
+          "name": "시작 콤보유연성",
+          "description": "세션 시작 시 콤보 유연성 {value} 시작"
+        },
+        "en-US": {
+          "name": "Starting Combo Flexibility",
+          "description": "Start with combo flexibility at {value}"
+        }
+      }
+    },
+    {
+      "id": "start_combo_damage",
+      "category": "starting_bonus",
+      "stat_name": "StartComboDamageLevel",
+      "base_cost": 200,
+      "cost_multiplier": 1.5,
+      "increment_per_level": 1,
+      "max_level": 30,
+      "icon": "💥",
+      "localization": {
+        "ko-KR": {
+          "name": "시작 콤보데미지",
+          "description": "세션 시작 시 콤보 데미지 {value} 시작"
+        },
+        "en-US": {
+          "name": "Starting Combo Damage",
+          "description": "Start with combo damage at {value}"
         }
       }
     }
