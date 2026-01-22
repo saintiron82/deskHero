@@ -56,13 +56,26 @@ namespace DeskWarrior.Managers
 
         // 인게임 스탯 접근자
         public InGameStats InGameStats => _inGameStats;
-        public int KeyboardPower => 1 + (int)_statGrowth.GetInGameStatEffect("keyboard_power", _inGameStats.KeyboardPowerLevel);
-        public int MousePower => 1 + (int)_statGrowth.GetInGameStatEffect("mouse_power", _inGameStats.MousePowerLevel);
-        public double GoldFlat => _statGrowth.GetInGameStatEffect("gold_flat", _inGameStats.GoldFlatLevel);
-        public double GoldMulti => _statGrowth.GetInGameStatEffect("gold_multi", _inGameStats.GoldMultiLevel) / 100.0;
-        public double TimeThief => _statGrowth.GetInGameStatEffect("time_thief", _inGameStats.TimeThiefLevel);
-        public double ComboFlex => _statGrowth.GetInGameStatEffect("combo_flex", _inGameStats.ComboFlexLevel);
-        public double ComboDamage => _statGrowth.GetInGameStatEffect("combo_damage", _inGameStats.ComboDamageLevel) / 100.0;
+
+        public int KeyboardPower
+        {
+            get
+            {
+                int basePower = 1 + (int)_statGrowth.GetInGameStatEffect("keyboard_power", _inGameStats.KeyboardPowerLevel);
+                int baseAttack = (int)_statGrowth.GetPermanentStatEffect("base_attack", _saveManager?.CurrentSave?.PermanentStats?.BaseAttackLevel ?? 0);
+                return basePower + baseAttack;
+            }
+        }
+
+        public int MousePower
+        {
+            get
+            {
+                int basePower = 1 + (int)_statGrowth.GetInGameStatEffect("mouse_power", _inGameStats.MousePowerLevel);
+                int baseAttack = (int)_statGrowth.GetPermanentStatEffect("base_attack", _saveManager?.CurrentSave?.PermanentStats?.BaseAttackLevel ?? 0);
+                return basePower + baseAttack;
+            }
+        }
 
         // 콤보 시스템 접근자
         public int CurrentComboStack => _comboTracker.ComboStack;
@@ -166,18 +179,13 @@ namespace DeskWarrior.Managers
             _inGameStats.Reset();
             _inGameStats.KeyboardPowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_keyboard", permStats?.StartKeyboardLevel ?? 0);
             _inGameStats.MousePowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_mouse", permStats?.StartMouseLevel ?? 0);
-            _inGameStats.GoldFlatLevel = (int)_statGrowth.GetPermanentStatEffect("start_gold_flat", permStats?.StartGoldFlatLevel ?? 0);
-            _inGameStats.GoldMultiLevel = (int)_statGrowth.GetPermanentStatEffect("start_gold_multi", permStats?.StartGoldMultiLevel ?? 0);
-            _inGameStats.ComboFlexLevel = (int)_statGrowth.GetPermanentStatEffect("start_combo_flex", permStats?.StartComboFlexLevel ?? 0);
-            _inGameStats.ComboDamageLevel = (int)_statGrowth.GetPermanentStatEffect("start_combo_damage", permStats?.StartComboDamageLevel ?? 0);
 
             CurrentLevel = 1 + (int)_statGrowth.GetPermanentStatEffect("start_level", permStats?.StartLevelLevel ?? 0);
             Gold = (int)_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0);
             _sessionTracker.Reset();
 
-            // 콤보 트래커 리셋 및 설정
+            // 콤보 트래커 리셋
             _comboTracker.FullReset();
-            _comboTracker.SetComboFlexBonus(ComboFlex);
 
             SpawnMonster();
         }
@@ -276,11 +284,6 @@ namespace DeskWarrior.Managers
         {
             "keyboard_power" => _inGameStats.KeyboardPowerLevel,
             "mouse_power" => _inGameStats.MousePowerLevel,
-            "gold_flat" => _inGameStats.GoldFlatLevel,
-            "gold_multi" => _inGameStats.GoldMultiLevel,
-            "time_thief" => _inGameStats.TimeThiefLevel,
-            "combo_flex" => _inGameStats.ComboFlexLevel,
-            "combo_damage" => _inGameStats.ComboDamageLevel,
             _ => 0
         };
 
@@ -293,11 +296,6 @@ namespace DeskWarrior.Managers
             {
                 case "keyboard_power": _inGameStats.KeyboardPowerLevel = level; break;
                 case "mouse_power": _inGameStats.MousePowerLevel = level; break;
-                case "gold_flat": _inGameStats.GoldFlatLevel = level; break;
-                case "gold_multi": _inGameStats.GoldMultiLevel = level; break;
-                case "time_thief": _inGameStats.TimeThiefLevel = level; break;
-                case "combo_flex": _inGameStats.ComboFlexLevel = level; break;
-                case "combo_damage": _inGameStats.ComboDamageLevel = level; break;
             }
         }
 
@@ -334,6 +332,25 @@ namespace DeskWarrior.Managers
             );
         }
 
+        /// <summary>
+        /// 타이머 일시정지
+        /// </summary>
+        public void PauseTimer()
+        {
+            _timer.Stop();
+        }
+
+        /// <summary>
+        /// 타이머 재개
+        /// </summary>
+        public void ResumeTimer()
+        {
+            if (_currentMonster != null && _currentMonster.IsAlive && RemainingTime > 0)
+            {
+                _timer.Start();
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -341,7 +358,7 @@ namespace DeskWarrior.Managers
         private DamageResult CalculateDamage(int basePower, int comboStack = 0)
         {
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            return _damageCalculator.Calculate(basePower, permStats, ComboDamage, comboStack);
+            return _damageCalculator.Calculate(basePower, permStats, 0, comboStack);
         }
 
         private void ApplyDamage(int damage, bool isCritical, bool isMouse)
@@ -368,29 +385,20 @@ namespace DeskWarrior.Managers
         {
             if (_currentMonster == null) return;
 
-            // 골드 획득 공식 (STAT_SYSTEM.md 기준)
+            // 골드 획득 공식 (영구 스탯만 사용)
             // 기본 = 몬스터 기본 골드
             double baseGold = _currentMonster.GoldReward;
 
-            // +가산 = 기본 + gold_flat (인게임) + gold_flat_perm (영구)
+            // +가산 = 기본 + gold_flat_perm (영구)
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
             double goldFlatPerm = _statGrowth.GetPermanentStatEffect("gold_flat_perm", permStats?.GoldFlatPermLevel ?? 0);
-            double goldFlat = baseGold + GoldFlat + goldFlatPerm;
+            double goldFlat = baseGold + goldFlatPerm;
 
-            // ×배수 = +가산 × (1 + gold_multi (인게임) + gold_multi_perm (영구))
+            // ×배수 = +가산 × (1 + gold_multi_perm (영구))
             double goldMultiPerm = _statGrowth.GetPermanentStatEffect("gold_multi_perm", permStats?.GoldMultiPermLevel ?? 0) / 100.0;
-            int goldReward = (int)(goldFlat * (1.0 + GoldMulti + goldMultiPerm));
+            int goldReward = (int)(goldFlat * (1.0 + goldMultiPerm));
 
             Gold += goldReward;
-
-            // 시간 도둑: 처치 시 시간 추가 (최대 기본 시간까지)
-            if (_inGameStats.TimeThiefLevel > 0)
-            {
-                int baseTimeLimit = _gameData.Balance.TimeLimit + (permStats?.GameOverTimeExtension ?? 0);
-                double maxAddTime = _statGrowth.CalculateTimeThiefCap(baseTimeLimit);
-                double currentAddTime = Math.Min(TimeThief, maxAddTime);
-                RemainingTime = Math.Min(RemainingTime + (int)currentAddTime, baseTimeLimit);
-            }
 
             // 세션 트래커에 킬 기록
             _sessionTracker.RecordKill(_currentMonster.IsBoss, goldReward);

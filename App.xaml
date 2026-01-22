@@ -58,7 +58,7 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="border" Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Color="#88FFFF" BlurRadius="10" ShadowDepth="0" Opacity="0.8"/>
+                                        <DropShadowEffect Color="#00CED1" BlurRadius="10" ShadowDepth="0" Opacity="0.8"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -171,19 +171,19 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Thumb">
                         <Grid>
-                            <Ellipse x:Name="grip" Fill="#00FF00" Stroke="#FFF" StrokeThickness="2"/>
+                            <Ellipse x:Name="grip" Fill="#E8D03F" Stroke="#FFF" StrokeThickness="2"/>
                             <Ellipse Fill="#88FFFFFF" Width="6" Height="6"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="grip" Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Color="#00FF00" BlurRadius="8" ShadowDepth="0"/>
+                                        <DropShadowEffect Color="#E8D03F" BlurRadius="8" ShadowDepth="0"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
                             <Trigger Property="IsDragging" Value="True">
-                                <Setter TargetName="grip" Property="Fill" Value="#88FF88"/>
+                                <Setter TargetName="grip" Property="Fill" Value="#F0DC5F"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -206,7 +206,7 @@
                                     <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource SliderRepeatButtonStyle}">
                                         <RepeatButton.Template>
                                             <ControlTemplate TargetType="RepeatButton">
-                                                <Border Height="4" Background="#00FF00" CornerRadius="2" VerticalAlignment="Center"/>
+                                                <Border Height="4" Background="#E8D03F" CornerRadius="2" VerticalAlignment="Center"/>
                                             </ControlTemplate>
                                         </RepeatButton.Template>
                                     </RepeatButton>

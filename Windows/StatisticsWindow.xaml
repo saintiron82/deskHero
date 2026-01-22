@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Statistics" Height="720" Width="600"
         WindowStyle="None" ResizeMode="NoResize"
-        Background="#FF1a1a2e"
-        WindowStartupLocation="CenterOwner"
-        Topmost="True"
+        Background="#FF3A3A3A"
+        WindowStartupLocation="CenterScreen"
+        Topmost="False"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.Resources>
@@ -23,8 +23,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="BorderBrush" Value="#FFAA00"/>
-                                <Setter Property="Foreground" Value="#FFAA00"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#00CED1"/>
+                                <Setter Property="Foreground" Value="#00CED1"/>
                             </Trigger>
                             <Trigger Property="IsSelected" Value="False">
                                 <Setter Property="Foreground" Value="#888"/>
@@ -54,7 +54,7 @@
         </Style>
     </Window.Resources>
 
-    <Border BorderBrush="#666" BorderThickness="1" Background="#FF1a1a2e">
+    <Border BorderBrush="#666" BorderThickness="1" Background="#FF3A3A3A">
         <Grid Margin="15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -148,8 +148,8 @@
                                         <TextBlock Grid.Column="0" x:Name="LblInputRatio" Text="INPUT RATIO" Foreground="#888" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
                                         
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                            <TextBlock x:Name="TxtKeyboardPercent" Text="0% Key" Foreground="#88FFFF" FontSize="11" Margin="0,0,10,0"/>
-                                            <TextBlock x:Name="TxtMousePercent" Text="0% Mouse" Foreground="#FF88FF" FontSize="11"/>
+                                            <TextBlock x:Name="TxtKeyboardPercent" Text="0% Key" Foreground="#00CED1" FontSize="11" Margin="0,0,10,0"/>
+                                            <TextBlock x:Name="TxtMousePercent" Text="0% Mouse" Foreground="#E8D03F" FontSize="11"/>
                                         </StackPanel>
                                         
                                         <!-- Keep hidden canvas for potential drawing logic or remove if using text only -->

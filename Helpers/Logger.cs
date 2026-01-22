@@ -6,7 +6,11 @@ namespace DeskWarrior.Helpers
 {
     public static class Logger
     {
-        public static bool IsEnabled { get; set; } = true; // 기본값 활성화 (디버깅용)
+#if DEBUG
+        public static bool IsEnabled { get; set; } = true; // Debug 빌드에서만 활성화
+#else
+        public static bool IsEnabled { get; set; } = false; // Release 빌드에서는 비활성화
+#endif
 
         private static readonly string _logPath;
         private static readonly Stopwatch _sw = Stopwatch.StartNew();

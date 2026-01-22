@@ -21,7 +21,6 @@ namespace DeskWarrior.ViewModels
         private readonly SoundManager _soundManager;
         private readonly AchievementManager _achievementManager;
 
-        private bool _isManageMode;
         private int _sessionInputCount;
         private bool _disposed;
 
@@ -56,19 +55,6 @@ namespace DeskWarrior.ViewModels
         public int RemainingTime => _gameManager.RemainingTime;
         public Monster? CurrentMonster => _gameManager.CurrentMonster;
         public GameData GameConfig => _gameManager.GameData;
-
-        public bool IsManageMode
-        {
-            get => _isManageMode;
-            set
-            {
-                if (SetProperty(ref _isManageMode, value))
-                {
-                    _trayManager.SetManageMode(value);
-                    ManageModeChanged?.Invoke(this, value);
-                }
-            }
-        }
 
         public int SessionInputCount
         {
@@ -196,7 +182,6 @@ namespace DeskWarrior.ViewModels
 
         public ICommand UpgradeKeyboardCommand { get; }
         public ICommand UpgradeMouseCommand { get; }
-        public ICommand ToggleManageModeCommand { get; }
         public ICommand OpenSettingsCommand { get; }
         public ICommand OpenStatsCommand { get; }
         public ICommand RestartGameCommand { get; }
@@ -205,7 +190,6 @@ namespace DeskWarrior.ViewModels
 
         #region Events
 
-        public event EventHandler<bool>? ManageModeChanged;
         public event EventHandler<DamageEventArgs>? DamageDealt;
         public event EventHandler? MonsterDefeated;
         public event EventHandler? MonsterSpawned;
@@ -240,7 +224,6 @@ namespace DeskWarrior.ViewModels
             // Commands 초기화
             UpgradeKeyboardCommand = new RelayCommand(ExecuteUpgradeKeyboard, CanUpgradeKeyboard);
             UpgradeMouseCommand = new RelayCommand(ExecuteUpgradeMouse, CanUpgradeMouse);
-            ToggleManageModeCommand = new RelayCommand(ExecuteToggleManageMode);
             OpenSettingsCommand = new RelayCommand(_ => SettingsRequested?.Invoke());
             OpenStatsCommand = new RelayCommand(_ => StatsRequested?.Invoke());
             RestartGameCommand = new RelayCommand(ExecuteRestartGame);
@@ -348,14 +331,11 @@ namespace DeskWarrior.ViewModels
             _gameManager.GameOver += OnGameOver;
 
             // Tray Manager
-            _trayManager.ManageModeToggled += OnManageModeToggled;
             _trayManager.SettingsRequested += (s, e) => SettingsRequested?.Invoke();
         }
 
         private void OnInputReceived(object? sender, GameInputEventArgs e)
         {
-            if (_isManageMode) return;
-
             SessionInputCount++;
 
             if (e.Type == GameInputType.Keyboard)
@@ -412,11 +392,6 @@ namespace DeskWarrior.ViewModels
         {
             SaveSession();
             GameOver?.Invoke(this, e);
-        }
-
-        private void OnManageModeToggled(object? sender, EventArgs e)
-        {
-            IsManageMode = _trayManager.IsManageMode;
         }
 
         #endregion
@@ -505,11 +480,6 @@ namespace DeskWarrior.ViewModels
         private bool CanUpgradeMouse(object? parameter)
         {
             return _gameManager.Gold >= _gameManager.CalculateUpgradeCost(_gameManager.MousePower);
-        }
-
-        private void ExecuteToggleManageMode(object? parameter)
-        {
-            IsManageMode = !IsManageMode;
         }
 
         private void ExecuteRestartGame(object? parameter)

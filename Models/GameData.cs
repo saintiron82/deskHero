@@ -47,7 +47,7 @@ namespace DeskWarrior.Models
         public int BaseHp { get; set; } = 100;
 
         [JsonPropertyName("hp_growth")]
-        public int HpGrowth { get; set; } = 50;
+        public double HpGrowth { get; set; } = 1.2;
 
         [JsonPropertyName("boss_interval")]
         public int BossInterval { get; set; } = 10;

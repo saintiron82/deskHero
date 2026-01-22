@@ -34,11 +34,6 @@ namespace DeskWarrior.Interfaces
 
         // In-Game Stats
         InGameStats InGameStats { get; }
-        double GoldFlat { get; }
-        double GoldMulti { get; }
-        double TimeThief { get; }
-        double ComboFlex { get; }
-        double ComboDamage { get; }
 
         // Session Stats
         long SessionDamage { get; }

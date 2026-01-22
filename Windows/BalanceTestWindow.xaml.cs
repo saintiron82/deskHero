@@ -27,15 +27,34 @@ namespace DeskWarrior.Windows
 
         public BalanceTestWindow(IGameManager gameManager, SaveManager saveManager)
         {
-            InitializeComponent();
+            try
+            {
+                DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] Opening Balance Test Window...");
 
-            _gameManager = gameManager;
-            _saveManager = saveManager;
-            _statGrowth = new StatGrowthManager();
-            _permanentProgression = new PermanentProgressionManager(saveManager);
+                InitializeComponent();
 
-            InitializeUI();
-            UpdateStatsDisplay();
+                _gameManager = gameManager;
+                _saveManager = saveManager;
+
+                DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] Creating StatGrowthManager...");
+                _statGrowth = new StatGrowthManager();
+
+                DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] Creating PermanentProgressionManager...");
+                _permanentProgression = new PermanentProgressionManager(saveManager);
+
+                DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] Initializing UI...");
+                InitializeUI();
+
+                DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] Updating stats display...");
+                UpdateStatsDisplay();
+
+                DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] Balance Test Window opened successfully");
+            }
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.LogError("[BalanceTestWindow] Failed to open Balance Test Window", ex);
+                throw;
+            }
         }
 
         #endregion
@@ -62,11 +81,6 @@ namespace DeskWarrior.Windows
             {
                 AddStatItem("keyboard_power", "Keyboard Power");
                 AddStatItem("mouse_power", "Mouse Power");
-                AddStatItem("gold_flat", "Gold+");
-                AddStatItem("gold_multi", "Gold*");
-                AddStatItem("time_thief", "Time Thief");
-                AddStatItem("combo_flex", "Combo Flex");
-                AddStatItem("combo_damage", "Combo Damage");
             }
             else // permanent
             {
@@ -112,11 +126,6 @@ namespace DeskWarrior.Windows
             // In-Game Stats
             AddCheatStatItem("keyboard_power", "[In-Game] Keyboard Power");
             AddCheatStatItem("mouse_power", "[In-Game] Mouse Power");
-            AddCheatStatItem("gold_flat", "[In-Game] Gold+");
-            AddCheatStatItem("gold_multi", "[In-Game] Gold*");
-            AddCheatStatItem("time_thief", "[In-Game] Time Thief");
-            AddCheatStatItem("combo_flex", "[In-Game] Combo Flex");
-            AddCheatStatItem("combo_damage", "[In-Game] Combo Damage");
 
             // Permanent Stats (most useful ones)
             AddCheatStatItem("base_attack", "[Permanent] Base Attack");
@@ -150,28 +159,50 @@ namespace DeskWarrior.Windows
 
         private void UpdateInGameStatsDisplay()
         {
-            InGameStatsGrid.Children.Clear();
-            InGameStatsGrid.RowDefinitions.Clear();
+            try
+            {
+                InGameStatsGrid.Children.Clear();
+                InGameStatsGrid.RowDefinitions.Clear();
 
-            var stats = _gameManager.InGameStats;
-            int row = 0;
+                var stats = _gameManager.InGameStats;
+                if (stats == null)
+                {
+                    DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] InGameStats is null");
+                    return;
+                }
 
-            AddStatRow(ref row, "Keyboard Power", stats.KeyboardPowerLevel, _gameManager.KeyboardPower);
-            AddStatRow(ref row, "Mouse Power", stats.MousePowerLevel, _gameManager.MousePower);
-            AddStatRow(ref row, "Gold+", stats.GoldFlatLevel, _gameManager.GoldFlat);
-            AddStatRow(ref row, "Gold*", stats.GoldMultiLevel, _gameManager.GoldMulti * 100, "%");
-            AddStatRow(ref row, "Time Thief", stats.TimeThiefLevel, _gameManager.TimeThief, "s");
-            AddStatRow(ref row, "Combo Flex", stats.ComboFlexLevel, _gameManager.ComboFlex, "s");
-            AddStatRow(ref row, "Combo Damage", stats.ComboDamageLevel, _gameManager.ComboDamage * 100, "%");
+                int row = 0;
+
+                AddStatRow(ref row, "Keyboard Power", stats.KeyboardPowerLevel, _gameManager.KeyboardPower);
+                AddStatRow(ref row, "Mouse Power", stats.MousePowerLevel, _gameManager.MousePower);
+            }
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.LogError("[BalanceTestWindow] UpdateInGameStatsDisplay failed", ex);
+            }
         }
 
         private void UpdatePermanentStatsDisplay()
         {
-            PermanentStatsGrid.Children.Clear();
-            PermanentStatsGrid.RowDefinitions.Clear();
+            try
+            {
+                PermanentStatsGrid.Children.Clear();
+                PermanentStatsGrid.RowDefinitions.Clear();
 
-            var stats = _saveManager.CurrentSave.PermanentStats;
-            int row = 0;
+                if (_saveManager.CurrentSave == null)
+                {
+                    DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] CurrentSave is null");
+                    return;
+                }
+
+                var stats = _saveManager.CurrentSave.PermanentStats;
+                if (stats == null)
+                {
+                    DeskWarrior.Helpers.Logger.Log("[BalanceTestWindow] PermanentStats is null");
+                    return;
+                }
+
+                int row = 0;
 
             // Base Stats
             AddPermanentStatRow(ref row, "Base Attack", stats.BaseAttackLevel, "base_attack");
@@ -195,6 +226,11 @@ namespace DeskWarrior.Windows
             AddPermanentStatRow(ref row, "Start Gold", stats.StartGoldLevel, "start_gold");
             AddPermanentStatRow(ref row, "Start Keyboard", stats.StartKeyboardLevel, "start_keyboard");
             AddPermanentStatRow(ref row, "Start Mouse", stats.StartMouseLevel, "start_mouse");
+            }
+            catch (Exception ex)
+            {
+                DeskWarrior.Helpers.Logger.LogError("[BalanceTestWindow] UpdatePermanentStatsDisplay failed", ex);
+            }
         }
 
         private void AddStatRow(ref int row, string name, int level, double effect, string suffix = "")
@@ -494,11 +530,6 @@ namespace DeskWarrior.Windows
             {
                 "keyboard_power" => typeof(InGameStats).GetProperty("KeyboardPowerLevel"),
                 "mouse_power" => typeof(InGameStats).GetProperty("MousePowerLevel"),
-                "gold_flat" => typeof(InGameStats).GetProperty("GoldFlatLevel"),
-                "gold_multi" => typeof(InGameStats).GetProperty("GoldMultiLevel"),
-                "time_thief" => typeof(InGameStats).GetProperty("TimeThiefLevel"),
-                "combo_flex" => typeof(InGameStats).GetProperty("ComboFlexLevel"),
-                "combo_damage" => typeof(InGameStats).GetProperty("ComboDamageLevel"),
                 _ => null
             };
 

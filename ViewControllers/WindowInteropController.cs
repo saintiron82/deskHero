@@ -12,29 +12,10 @@ namespace DeskWarrior.ViewControllers
     {
         private readonly MainWindow _window;
         private IntPtr _hwnd;
-        private bool _isManageMode;
-        private bool _isModeButtonVisible;
-        private System.Windows.Threading.DispatcherTimer? _hoverCheckTimer;
-
-        public bool IsManageMode 
-        { 
-            get => _isManageMode; 
-            set => _isManageMode = value; 
-        }
 
         public WindowInteropController(MainWindow window)
         {
             _window = window;
-            InitializeTimers();
-        }
-
-        private void InitializeTimers()
-        {
-            _hoverCheckTimer = new System.Windows.Threading.DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(100)
-            };
-            _hoverCheckTimer.Tick += HoverCheckTimer_Tick;
         }
 
         public void InitializeWindow()
@@ -47,28 +28,11 @@ namespace DeskWarrior.ViewControllers
 
             // 태스크바에서 숨기기
             Win32Helper.SetWindowToolWindow(_hwnd);
-
-            // 호버 타이머 시작
-            _hoverCheckTimer?.Start();
         }
 
         public void HandleMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_isManageMode)
-            {
-                try
-                {
-                    if (e.LeftButton == MouseButtonState.Pressed)
-                    {
-                        _window.DragMove();
-                    }
-                }
-                catch (InvalidOperationException) { }
-                catch (Exception ex)
-                {
-                    Logger.LogError("DragMove Failed", ex);
-                }
-            }
+            // 창 드래그는 InfoBar에서 직접 처리
         }
 
         public bool IsMouseOverWindow()
@@ -94,89 +58,124 @@ namespace DeskWarrior.ViewControllers
 
             if (msg == WM_NCHITTEST)
             {
-                if (!_isManageMode)
+                // GameOverOverlay가 보이면 클릭 가능
+                if (_window.GameOverOverlay.Visibility == Visibility.Visible)
                 {
-                    // GameOverOverlay가 보이면 클릭 가능해야 함 (게임 오버 시)
-                    if (_window.GameOverOverlay.Visibility == Visibility.Visible)
-                    {
-                        handled = true;
-                        return new IntPtr(HTCLIENT);
-                    }
-
-                    int x = (short)(lParam.ToInt32() & 0xFFFF);
-                    int y = (short)(lParam.ToInt32() >> 16);
-                    Point screenPoint = new Point(x, y);
-                    Point clientPoint = _window.PointFromScreen(screenPoint);
-
-                    if (IsPointOverModeButton(clientPoint))
-                    {
-                        handled = true;
-                        return new IntPtr(HTCLIENT);
-                    }
-
                     handled = true;
-                    return new IntPtr(HTTRANSPARENT);
+                    return new IntPtr(HTCLIENT);
                 }
+
+                // 마우스 좌표 계산
+                int x = (short)(lParam.ToInt32() & 0xFFFF);
+                int y = (short)(lParam.ToInt32() >> 16);
+                Point screenPoint = new Point(x, y);
+                Point clientPoint = _window.PointFromScreen(screenPoint);
+
+                // InfoBar, UpgradePanel, UtilityPanel, PowerInfoBar 영역만 클릭 가능
+                if (IsPointOverInfoBar(clientPoint) ||
+                    IsPointOverUpgradePanel(clientPoint) ||
+                    IsPointOverUtilityPanel(clientPoint) ||
+                    IsPointOverPowerInfoBar(clientPoint))
+                {
+                    handled = true;
+                    return new IntPtr(HTCLIENT);
+                }
+
+                // 나머지 영역: 클릭 통과 (투명)
+                handled = true;
+                return new IntPtr(HTTRANSPARENT);
             }
             return IntPtr.Zero;
         }
 
-        private void HoverCheckTimer_Tick(object? sender, EventArgs e)
-        {
-            if (_isManageMode) return;
-
-            bool isOver = IsMouseOverWindow();
-            if (isOver && !_isModeButtonVisible)
-            {
-                _isModeButtonVisible = true;
-                ShowModeButton();
-            }
-            else if (!isOver && _isModeButtonVisible)
-            {
-                _isModeButtonVisible = false;
-                HideModeButton();
-            }
-        }
-
-        private void ShowModeButton()
-        {
-            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150));
-            _window.ModeToggleBorder.BeginAnimation(UIElement.OpacityProperty, fadeIn);
-        }
-
-        private void HideModeButton()
-        {
-            if (_isManageMode) return;
-            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(150));
-            _window.ModeToggleBorder.BeginAnimation(UIElement.OpacityProperty, fadeOut);
-        }
-
-        private bool IsPointOverModeButton(Point point)
+        private bool IsPointOverInfoBar(Point point)
         {
             try
             {
-                GeneralTransform transform = _window.ModeToggleBorder.TransformToAncestor(_window);
+                var actualW = _window.GoldInfoBarTop.ActualWidth;
+                var actualH = _window.GoldInfoBarTop.ActualHeight;
+
+                GeneralTransform transform = _window.GoldInfoBarTop.TransformToAncestor(_window);
                 Rect bounds = transform.TransformBounds(
-                    new Rect(0, 0, _window.ModeToggleBorder.ActualWidth, _window.ModeToggleBorder.ActualHeight));
+                    new Rect(0, 0, actualW, actualH));
+
                 return bounds.Contains(point);
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
-        public void ForceShowModeButton()
+        private bool IsPointOverUpgradePanel(Point point)
         {
-            _isModeButtonVisible = true;
-            // MainWindow에서 직접 UI 조작 (UpdateManageModeUI 호출 시 등)
+            try
+            {
+                if (_window.UpgradePanel.Visibility != Visibility.Visible)
+                    return false;
+
+                var actualW = _window.UpgradePanel.ActualWidth;
+                var actualH = _window.UpgradePanel.ActualHeight;
+
+                GeneralTransform transform = _window.UpgradePanel.TransformToAncestor(_window);
+                Rect bounds = transform.TransformBounds(
+                    new Rect(0, 0, actualW, actualH));
+
+                return bounds.Contains(point);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        public void ForceHideModeButton()
+        private bool IsPointOverUtilityPanel(Point point)
         {
-            _isModeButtonVisible = false;
+            try
+            {
+                if (_window.UtilityPanel.Visibility != Visibility.Visible)
+                    return false;
+
+                var actualW = _window.UtilityPanel.ActualWidth;
+                var actualH = _window.UtilityPanel.ActualHeight;
+
+                GeneralTransform transform = _window.UtilityPanel.TransformToAncestor(_window);
+                Rect bounds = transform.TransformBounds(
+                    new Rect(0, 0, actualW, actualH));
+
+                return bounds.Contains(point);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool IsPointOverPowerInfoBar(Point point)
+        {
+            try
+            {
+                if (_window.PowerInfoBar.Visibility != Visibility.Visible)
+                    return false;
+
+                var actualW = _window.PowerInfoBar.ActualWidth;
+                var actualH = _window.PowerInfoBar.ActualHeight;
+
+                GeneralTransform transform = _window.PowerInfoBar.TransformToAncestor(_window);
+                Rect bounds = transform.TransformBounds(
+                    new Rect(0, 0, actualW, actualH));
+
+                return bounds.Contains(point);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public void Dispose()
         {
-            _hoverCheckTimer?.Stop();
+            // Cleanup if needed
         }
     }
 }

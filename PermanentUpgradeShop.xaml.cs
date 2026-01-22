@@ -50,12 +50,14 @@ namespace DeskWarrior
         /// </summary>
         private void RefreshUI()
         {
+            // InitializeComponent 완료 전에 호출되면 무시
+            if (CurrentCrystalsText == null)
+                return;
+
             _viewModel.LoadData();
 
             // 헤더 통화 정보 업데이트
             CurrentCrystalsText.Text = _viewModel.CurrentCrystals.ToString("N0");
-            LifetimeEarnedText.Text = _viewModel.LifetimeEarned.ToString("N0");
-            LifetimeSpentText.Text = _viewModel.LifetimeSpent.ToString("N0");
 
             // 뱃지 업데이트
             UpdateBadges();
@@ -66,6 +68,10 @@ namespace DeskWarrior
         /// </summary>
         private void UpdateBadges()
         {
+            // InitializeComponent 완료 전에 호출되면 무시
+            if (BadgeBaseStats == null)
+                return;
+
             var categories = new[]
             {
                 new { Key = "base_stats", Badge = BadgeBaseStats },
@@ -77,7 +83,7 @@ namespace DeskWarrior
             foreach (var cat in categories)
             {
                 int affordableCount = _viewModel.AllUpgrades
-                    .Count(u => u.CategoryKey == cat.Key && u.CanAfford && !u.IsMaxed);
+                    .Count(u => u.CategoryKey == cat.Key && u.CanAfford);
 
                 if (affordableCount > 0)
                 {
@@ -97,6 +103,10 @@ namespace DeskWarrior
         /// </summary>
         private void LoadCategoryUpgrades(string category)
         {
+            // InitializeComponent 완료 전에 호출되면 무시
+            if (UpgradeGrid == null)
+                return;
+
             _currentCategory = category;
             UpgradeGrid.Children.Clear();
             UpgradeGrid.ColumnDefinitions.Clear();
@@ -128,7 +138,7 @@ namespace DeskWarrior
             int columns = 3;
             for (int i = 0; i < columns; i++)
             {
-                UpgradeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                UpgradeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             }
 
             // 카드 배치
@@ -155,7 +165,7 @@ namespace DeskWarrior
         }
 
         /// <summary>
-        /// 컴팩트 업그레이드 카드 생성
+        /// 컴팩트 업그레이드 카드 생성 (Casual Game Style)
         /// </summary>
         private Border CreateCompactUpgradeCard(UpgradeCardViewModel upgrade)
         {
@@ -163,154 +173,186 @@ namespace DeskWarrior
             {
                 Style = (Style)FindResource("CompactUpgradeCard"),
                 Tag = upgrade.Id,
-                Padding = new Thickness(10)
+                Padding = new Thickness(8)
             };
 
-            // 툴팁 추가
+            // 카테고리별 테두리 색상
+            Color categoryColor = upgrade.CategoryKey switch
+            {
+                "base_stats" => Color.FromRgb(220, 38, 38),      // 빨강 (전투력)
+                "currency_bonus" => Color.FromRgb(250, 204, 21), // 금색 (재화)
+                "utility" => Color.FromRgb(59, 130, 246),        // 파랑 (유틸)
+                "starting_bonus" => Color.FromRgb(168, 85, 247), // 보라 (시작)
+                _ => Color.FromRgb(156, 163, 175)                // 회색 (기본)
+            };
+
+            // 구매 가능 여부에 따라 카드 스타일 변경
+            if (upgrade.CanAfford)
+            {
+                // 구매 가능: 카테고리 색상 테두리 + 밝은 배경
+                card.Background = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                card.BorderBrush = new SolidColorBrush(categoryColor);
+                card.BorderThickness = new Thickness(3);
+                card.Cursor = Cursors.Hand;
+
+                // 카드 클릭 시 구매 처리
+                card.MouseLeftButtonDown += (s, e) => {
+                    if (s is Border clickedCard && clickedCard.Tag is string upgradeId)
+                    {
+                        TryPurchaseUpgrade(upgradeId);
+                    }
+                };
+            }
+            else
+            {
+                // 구매 불가: 회색 배경 + 회색 테두리
+                card.Background = new SolidColorBrush(Color.FromRgb(200, 200, 200));
+                card.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 180, 180));
+                card.BorderThickness = new Thickness(1);
+                card.Cursor = Cursors.No;
+            }
+
+            // 툴팁 (밝은 스타일)
             var tooltip = new ToolTip
             {
                 Content = CreateTooltipContent(upgrade),
-                Background = new SolidColorBrush(Color.FromRgb(26, 26, 26)),
-                BorderBrush = new SolidColorBrush(Color.FromRgb(0, 206, 209)),
-                BorderThickness = new Thickness(1),
-                Padding = new Thickness(12)
+                Background = Brushes.White,
+                BorderBrush = new SolidColorBrush(Color.FromRgb(229, 231, 235)),
+                BorderThickness = new Thickness(2),
+                Padding = new Thickness(15)
             };
             card.ToolTip = tooltip;
 
-            var mainStack = new StackPanel();
+            // Grid를 사용하여 레벨을 좌상단에, 비용을 우상단에 배치
+            var mainGrid = new Grid();
 
-            // === 헤더: 아이콘 + 이름 + 현재 효과 ===
-            var headerGrid = new Grid { Margin = new Thickness(0, 0, 0, 6) };
-
-            var leftStack = new StackPanel { Orientation = Orientation.Horizontal };
-
-            var icon = new TextBlock
-            {
-                Text = upgrade.Icon,
-                FontSize = 16,
-                Margin = new Thickness(0, 0, 5, 0),
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            var nameText = new TextBlock
-            {
-                Text = upgrade.ShortName,
-                FontSize = 11,
-                FontWeight = FontWeights.Bold,
-                Foreground = Brushes.White,
-                VerticalAlignment = VerticalAlignment.Center,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                MaxWidth = 80
-            };
-
-            leftStack.Children.Add(icon);
-            leftStack.Children.Add(nameText);
-
-            var currentEffect = new TextBlock
-            {
-                Text = upgrade.CurrentEffect,
-                FontSize = 13,
-                FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromRgb(255, 215, 0)),
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            headerGrid.Children.Add(leftStack);
-            headerGrid.Children.Add(currentEffect);
-            mainStack.Children.Add(headerGrid);
-
-            // === 레벨 표시 ===
+            // === 레벨 (좌상단) ===
             var levelText = new TextBlock
             {
                 Text = upgrade.LevelDisplay,
                 FontSize = 9,
-                Foreground = new SolidColorBrush(Color.FromRgb(110, 118, 129)),
-                Margin = new Thickness(0, 0, 0, 8)
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(Color.FromRgb(107, 114, 128)),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0, 0, 0, 0)
             };
-            mainStack.Children.Add(levelText);
+            mainGrid.Children.Add(levelText);
 
-            // === 구분선 ===
-            var separator1 = new Border
+            // === 비용 (우상단) - 항상 표시 ===
+            var costPanel = new StackPanel
             {
-                Height = 1,
-                Background = new SolidColorBrush(Color.FromRgb(48, 54, 61)),
-                Margin = new Thickness(0, 0, 0, 6)
-            };
-            mainStack.Children.Add(separator1);
-
-            // === 다음 레벨 효과 ===
-            var nextLevelStack = new StackPanel { Margin = new Thickness(0, 0, 0, 8) };
-
-            var nextLevelLabel = new TextBlock
-            {
-                Text = upgrade.IsMaxed ? "상태" : "다음",
-                FontSize = 8,
-                Foreground = new SolidColorBrush(Color.FromRgb(110, 118, 129))
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0, 0, 0, 0)
             };
 
-            var nextLevelValue = new TextBlock
+            var costIcon = new Image
             {
-                Text = upgrade.IsMaxed ? "MAX" : upgrade.NextLevelEffect,
-                FontSize = 11,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = upgrade.IsMaxed
-                    ? new SolidColorBrush(Color.FromRgb(96, 165, 250))
-                    : new SolidColorBrush(Color.FromRgb(16, 185, 129))
+                Source = new System.Windows.Media.Imaging.BitmapImage(
+                    new Uri("pack://application:,,,/Assets/Images/UI/crystal.png")),
+                Width = 14,
+                Height = 14,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 2, 0)
+            };
+            costPanel.Children.Add(costIcon);
+
+            var costText = new TextBlock
+            {
+                Text = $"{upgrade.Cost:N0}",
+                FontSize = 9,
+                FontWeight = FontWeights.Bold,
+                Foreground = upgrade.CanAfford
+                    ? new SolidColorBrush(Color.FromRgb(0, 153, 204))  // 파란색 (구매 가능)
+                    : new SolidColorBrush(Color.FromRgb(120, 120, 120)), // 회색 (구매 불가)
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            costPanel.Children.Add(costText);
+
+            mainGrid.Children.Add(costPanel);
+
+            // === 중앙 콘텐츠 StackPanel ===
+            var mainStack = new StackPanel
+            {
+                VerticalAlignment = VerticalAlignment.Center
             };
 
-            nextLevelStack.Children.Add(nextLevelLabel);
-            nextLevelStack.Children.Add(nextLevelValue);
-            mainStack.Children.Add(nextLevelStack);
-
-            // === 구분선 ===
-            var separator2 = new Border
+            // === 아이콘 (중형) ===
+            var icon = new TextBlock
             {
-                Height = 1,
-                Background = new SolidColorBrush(Color.FromRgb(48, 54, 61)),
-                Margin = new Thickness(0, 0, 0, 6)
+                Text = upgrade.Icon,
+                FontSize = 22,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 3)
             };
-            mainStack.Children.Add(separator2);
+            mainStack.Children.Add(icon);
 
-            // === 구매 버튼 ===
-            var button = new Button
+            // === 이름 ===
+            var nameText = new TextBlock
             {
-                Height = 28,
-                Tag = upgrade.Id,
+                Text = upgrade.Name,
                 FontSize = 10,
-                FontWeight = FontWeights.SemiBold
+                FontWeight = FontWeights.Black,
+                Foreground = new SolidColorBrush(Color.FromRgb(31, 41, 55)),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                TextWrapping = TextWrapping.Wrap,
+                MaxWidth = 160,
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 4)
             };
-            button.Click += BuyUpgrade_Click;
+            mainStack.Children.Add(nameText);
 
-            var buttonText = new TextBlock
+            // === 능력치 (1줄로 표기: 현재 → 다음) ===
+            var effectText = new TextBlock
             {
-                Text = upgrade.ButtonText,
-                FontSize = 10
+                Text = $"{upgrade.CurrentEffect} → {upgrade.NextLevelEffect}",
+                FontSize = 9,
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(Color.FromRgb(107, 114, 128)),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 6)
             };
-            button.Content = buttonText;
+            mainStack.Children.Add(effectText);
 
-            // 버튼 스타일 설정 (인라인)
-            if (upgrade.IsMaxed)
+            // === 구매 버튼 (구매 가능할 때만 표시) ===
+            if (upgrade.CanAfford)
             {
-                button.Background = new SolidColorBrush(Color.FromRgb(48, 54, 61));
-                button.Foreground = new SolidColorBrush(Color.FromRgb(96, 165, 250));
-                button.IsEnabled = false;
-            }
-            else if (upgrade.CanAfford)
-            {
-                button.Background = new SolidColorBrush(Color.FromRgb(5, 150, 105));
-                button.Foreground = Brushes.White;
-                button.IsEnabled = true;
-            }
-            else
-            {
-                button.Background = new SolidColorBrush(Color.FromRgb(55, 65, 81));
-                button.Foreground = new SolidColorBrush(Color.FromRgb(156, 163, 175));
-                button.IsEnabled = false;
+                var button = new Button
+                {
+                    Height = 24,
+                    Tag = upgrade.Id,
+                    Content = "구매",
+                    Style = (Style)FindResource("BuyButtonAffordable")
+                };
+                button.Click += BuyUpgrade_Click;
+                mainStack.Children.Add(button);
             }
 
-            mainStack.Children.Add(button);
-            card.Child = mainStack;
+            // StackPanel을 Grid에 추가
+            mainGrid.Children.Add(mainStack);
+
+            // 구매 불가능한 경우 모든 텍스트를 회색으로 처리
+            if (!upgrade.CanAfford)
+            {
+                var grayBrush = new SolidColorBrush(Color.FromRgb(120, 120, 120));
+
+                // 아이콘
+                icon.Foreground = grayBrush;
+
+                // 이름
+                nameText.Foreground = grayBrush;
+
+                // 레벨
+                levelText.Foreground = grayBrush;
+
+                // 능력치
+                effectText.Foreground = grayBrush;
+            }
+
+            card.Child = mainGrid;
 
             return card;
         }
@@ -335,7 +377,7 @@ namespace DeskWarrior
                 Text = upgrade.Name,
                 FontSize = 14,
                 FontWeight = FontWeights.Bold,
-                Foreground = Brushes.White
+                Foreground = new SolidColorBrush(Color.FromRgb(31, 41, 55))
             };
             titleStack.Children.Add(titleIcon);
             titleStack.Children.Add(titleText);
@@ -350,7 +392,7 @@ namespace DeskWarrior
             {
                 Text = upgrade.LevelDisplay,
                 FontSize = 10,
-                Foreground = new SolidColorBrush(Color.FromRgb(139, 148, 158))
+                Foreground = new SolidColorBrush(Color.FromRgb(107, 114, 128))
             };
             Grid.SetColumn(levelText, 0);
 
@@ -373,69 +415,84 @@ namespace DeskWarrior
             {
                 Text = upgrade.Description,
                 FontSize = 11,
-                Foreground = new SolidColorBrush(Color.FromRgb(139, 148, 158)),
+                Foreground = new SolidColorBrush(Color.FromRgb(107, 114, 128)),
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 0, 0, 10)
             };
             tooltipStack.Children.Add(descText);
 
-            // 다음 레벨 정보
-            if (!upgrade.IsMaxed)
+            // 다음 레벨 정보 (항상 표시)
+            var nextBorder = new Border
             {
-                var nextBorder = new Border
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(13, 17, 23)),
-                    CornerRadius = new CornerRadius(5),
-                    Padding = new Thickness(8),
-                    Margin = new Thickness(0, 0, 0, 8)
-                };
+                Background = new SolidColorBrush(Color.FromRgb(236, 253, 245)),
+                CornerRadius = new CornerRadius(8),
+                Padding = new Thickness(10),
+                Margin = new Thickness(0, 0, 0, 8)
+            };
 
-                var nextStack = new StackPanel();
-                var nextLabel = new TextBlock
-                {
-                    Text = "다음 레벨 효과",
-                    FontSize = 9,
-                    Foreground = new SolidColorBrush(Color.FromRgb(110, 118, 129))
-                };
-                var nextValue = new TextBlock
-                {
-                    Text = upgrade.NextLevelEffect,
-                    FontSize = 12,
-                    FontWeight = FontWeights.SemiBold,
-                    Foreground = new SolidColorBrush(Color.FromRgb(16, 185, 129))
-                };
-
-                nextStack.Children.Add(nextLabel);
-                nextStack.Children.Add(nextValue);
-                nextBorder.Child = nextStack;
-                tooltipStack.Children.Add(nextBorder);
-
-                // 비용
-                var costText = new TextBlock
-                {
-                    Text = $"비용: 💎 {upgrade.Cost:N0}",
-                    FontSize = 11,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = upgrade.CanAfford
-                        ? new SolidColorBrush(Color.FromRgb(16, 185, 129))
-                        : new SolidColorBrush(Color.FromRgb(239, 68, 68)),
-                    HorizontalAlignment = HorizontalAlignment.Right
-                };
-                tooltipStack.Children.Add(costText);
-            }
-            else
+            var nextStack = new StackPanel();
+            var nextLabel = new TextBlock
             {
-                var maxText = new TextBlock
-                {
-                    Text = "최대 레벨 달성",
-                    FontSize = 12,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = new SolidColorBrush(Color.FromRgb(96, 165, 250)),
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Margin = new Thickness(0, 8, 0, 0)
-                };
-                tooltipStack.Children.Add(maxText);
-            }
+                Text = "다음 레벨 효과",
+                FontSize = 9,
+                Foreground = new SolidColorBrush(Color.FromRgb(107, 114, 128))
+            };
+            var nextValue = new TextBlock
+            {
+                Text = upgrade.NextLevelEffect,
+                FontSize = 12,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = new SolidColorBrush(Color.FromRgb(16, 185, 129))
+            };
+
+            nextStack.Children.Add(nextLabel);
+            nextStack.Children.Add(nextValue);
+            nextBorder.Child = nextStack;
+            tooltipStack.Children.Add(nextBorder);
+
+            // 비용 (항상 표시)
+            var tooltipCostPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
+            var tooltipCostLabel = new TextBlock
+            {
+                Text = "비용: ",
+                FontSize = 11,
+                FontWeight = FontWeights.Bold,
+                Foreground = upgrade.CanAfford
+                    ? new SolidColorBrush(Color.FromRgb(16, 185, 129))
+                    : new SolidColorBrush(Color.FromRgb(239, 68, 68)),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            tooltipCostPanel.Children.Add(tooltipCostLabel);
+
+            var tooltipCostIcon = new Image
+            {
+                Source = new System.Windows.Media.Imaging.BitmapImage(
+                    new Uri("pack://application:,,,/Assets/Images/UI/crystal.png")),
+                Width = 18,
+                Height = 18,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(2, 0, 2, 0)
+            };
+            tooltipCostPanel.Children.Add(tooltipCostIcon);
+
+            var tooltipCostValue = new TextBlock
+            {
+                Text = $"{upgrade.Cost:N0}",
+                FontSize = 11,
+                FontWeight = FontWeights.Bold,
+                Foreground = upgrade.CanAfford
+                    ? new SolidColorBrush(Color.FromRgb(16, 185, 129))
+                    : new SolidColorBrush(Color.FromRgb(239, 68, 68)),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            tooltipCostPanel.Children.Add(tooltipCostValue);
+
+            tooltipStack.Children.Add(tooltipCostPanel);
 
             return tooltipStack;
         }
@@ -465,14 +522,10 @@ namespace DeskWarrior
         }
 
         /// <summary>
-        /// 업그레이드 구매 버튼 클릭
+        /// 업그레이드 구매 시도 (공통 메서드)
         /// </summary>
-        private void BuyUpgrade_Click(object sender, RoutedEventArgs e)
+        private void TryPurchaseUpgrade(string upgradeId)
         {
-            if (sender is not Button button)
-                return;
-
-            string? upgradeId = button.Tag as string;
             if (string.IsNullOrEmpty(upgradeId))
                 return;
 
@@ -485,12 +538,38 @@ namespace DeskWarrior
                 RefreshUI();
                 LoadCategoryUpgrades(_currentCategory);
 
-                // 성공 피드백
+                // 성공 사운드 (있다면)
+                DeskWarrior.Helpers.Logger.Log($"[PermanentUpgradeShop] Purchased: {upgradeId}");
+            }
+            else
+            {
+                // 실패 로그
+                DeskWarrior.Helpers.Logger.Log($"[PermanentUpgradeShop] Purchase failed: {upgradeId}");
+            }
+        }
+
+        /// <summary>
+        /// 업그레이드 구매 버튼 클릭
+        /// </summary>
+        private void BuyUpgrade_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button button)
+                return;
+
+            string? upgradeId = button.Tag as string;
+            if (string.IsNullOrEmpty(upgradeId))
+                return;
+
+            TryPurchaseUpgrade(upgradeId);
+
+            // 버튼 애니메이션은 구매 성공 여부와 관계없이 피드백 제공
+            var upgrade = _viewModel.AllUpgrades.FirstOrDefault(u => u.Id == upgradeId);
+            if (upgrade != null && upgrade.CanAfford)
+            {
                 PlayPurchaseAnimation(button);
             }
             else
             {
-                // 실패 피드백
                 PlayErrorAnimation(button);
             }
         }
@@ -498,6 +577,21 @@ namespace DeskWarrior
         /// <summary>
         /// 닫기 버튼 클릭
         /// </summary>
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var helpContent =
+                "크리스탈로 영구적인 능력을 강화할 수 있습니다.\n\n" +
+                "• 보스를 처치하면 크리스탈을 획득합니다.\n" +
+                "• 업그레이드는 모든 게임 세션에 적용됩니다.\n" +
+                "• 카드를 클릭하여 구매할 수 있습니다.\n" +
+                "• 레벨이 높을수록 비용이 증가합니다.\n\n" +
+                "탭을 사용하여 카테고리별로 업그레이드를 확인할 수 있습니다.";
+
+            var helpPopup = new Windows.HelpPopup("영구 업그레이드 상점", helpContent);
+            helpPopup.Owner = this;
+            helpPopup.ShowDialog();
+        }
+
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -511,6 +605,17 @@ namespace DeskWarrior
             if (e.Key == Key.Escape)
             {
                 Close();
+            }
+        }
+
+        /// <summary>
+        /// 헤더 드래그로 창 이동
+        /// </summary>
+        private void Header_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                DragMove();
             }
         }
 

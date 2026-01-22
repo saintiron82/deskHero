@@ -84,7 +84,6 @@ namespace DeskWarrior
             ViewModel.MonsterDefeated += OnMonsterDefeated;
             ViewModel.MonsterSpawned += OnMonsterSpawned;
             ViewModel.GameOver += OnGameOver;
-            ViewModel.ManageModeChanged += OnManageModeChanged;
             ViewModel.InputReceived += OnInputReceived;
             ViewModel.SettingsRequested += OnSettingsRequested;
             ViewModel.StatsRequested += OnStatsRequested;
@@ -97,7 +96,6 @@ namespace DeskWarrior
             AchievementManager.AchievementUnlocked += OnAchievementUnlocked;
 
             // TrayManager 이벤트
-            TrayManager.ManageModeToggled += OnTrayManageModeToggled;
             TrayManager.ExitRequested += OnExitRequested;
         }
 
@@ -190,15 +188,9 @@ namespace DeskWarrior
         {
             Dispatcher.Invoke(() =>
             {
-                // F1 키로 관리 모드 토글
+                // F1 키는 무시 (기능 제거됨)
                 if (e.Type == GameInputType.Keyboard && e.VirtualKeyCode == 112)
-                {
-                    if (_windowInterop.IsMouseOverWindow())
-                    {
-                        TrayManager.ToggleManageMode();
-                    }
                     return;
-                }
 
                 if (e.Type == GameInputType.Keyboard)
                 {
@@ -278,17 +270,6 @@ namespace DeskWarrior
             Dispatcher.Invoke(() => _gameOver.StartGameOverSequence(SoundManager));
         }
 
-        private void OnManageModeChanged(object? sender, bool isManageMode)
-        {
-            _windowInterop.IsManageMode = isManageMode;
-            UpdateManageModeUI(isManageMode);
-        }
-
-        private void OnTrayManageModeToggled(object? sender, EventArgs e)
-        {
-            ViewModel.IsManageMode = TrayManager.IsManageMode;
-        }
-
         private void OnTimerTick(object? sender, EventArgs e)
         {
             Dispatcher.Invoke(UpdateTimerUI);
@@ -323,18 +304,23 @@ namespace DeskWarrior
 
         #region UI Event Handlers
 
-        private void ModeToggle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void InfoBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TrayManager.ToggleManageMode();
+            // 상단 바를 잡고 창 이동
+            try
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    DragMove();
+                }
+            }
+            catch (InvalidOperationException) { }
             e.Handled = true;
         }
 
         private void GameElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (!_windowInterop.IsManageMode)
-            {
-                TrayManager.ToggleManageMode();
-            }
+            // 게임 요소 클릭 시 아무 동작 안 함 (관리 모드 제거됨)
             e.Handled = true;
         }
 
@@ -358,58 +344,14 @@ namespace DeskWarrior
             }
         }
 
-        private void UpgradeGoldFlat_Click(object sender, RoutedEventArgs e)
+        private void UpgradePanel_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (GameManager.UpgradeInGameStat("gold_flat"))
-            {
-                SoundManager.Play(SoundType.Upgrade);
-                UpdateAllUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-        private void UpgradeGoldMulti_Click(object sender, RoutedEventArgs e)
-        {
-            if (GameManager.UpgradeInGameStat("gold_multi"))
-            {
-                SoundManager.Play(SoundType.Upgrade);
-                UpdateAllUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-        private void UpgradeTimeThief_Click(object sender, RoutedEventArgs e)
-        {
-            if (GameManager.UpgradeInGameStat("time_thief"))
-            {
-                SoundManager.Play(SoundType.Upgrade);
-                UpdateAllUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-        private void UpgradeComboFlex_Click(object sender, RoutedEventArgs e)
-        {
-            if (GameManager.UpgradeInGameStat("combo_flex"))
-            {
-                SoundManager.Play(SoundType.Upgrade);
-                UpdateAllUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-        private void UpgradeComboDamage_Click(object sender, RoutedEventArgs e)
-        {
-            if (GameManager.UpgradeInGameStat("combo_damage"))
-            {
-                SoundManager.Play(SoundType.Upgrade);
-                UpdateAllUI();
-                UpdateUpgradeCosts();
-            }
+            // 패널 영역 클릭 시 이벤트 전달 허용 (버튼이 자체 클릭 이벤트 처리)
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
+            GameManager.PauseTimer();
             var settingsWindow = new Windows.SettingsWindow(
                 SaveManager.CurrentSave.Settings,
                 ApplyWindowOpacity,
@@ -419,16 +361,20 @@ namespace DeskWarrior
                 GameManager,
                 SaveManager
             );
-            settingsWindow.Owner = this;
-            settingsWindow.ShowDialog();
-            SaveManager.Save();
+            settingsWindow.Closed += (s, args) =>
+            {
+                SaveManager.Save();
+                GameManager.ResumeTimer();
+            };
+            settingsWindow.Show();
         }
 
         private void StatsButton_Click(object sender, RoutedEventArgs e)
         {
+            GameManager.PauseTimer();
             var statsWindow = new Windows.StatisticsWindow(SaveManager, AchievementManager, GameManager);
-            statsWindow.Owner = this;
-            statsWindow.ShowDialog();
+            statsWindow.Closed += (s, args) => GameManager.ResumeTimer();
+            statsWindow.Show();
         }
 
         private void PermanentShopButton_Click(object sender, RoutedEventArgs e)
@@ -456,6 +402,7 @@ namespace DeskWarrior
         private void ShopButton_Click(object sender, RoutedEventArgs e)
         {
             _gameOver.StopTimer();
+            _gameOver.CloseGameOverOverlay();
             OpenPermanentUpgradeShop();
         }
 
@@ -495,6 +442,7 @@ namespace DeskWarrior
             UpdateCoreUI();
             UpdateMonsterUI();
             UpdateTimerUI();
+            UpdateUpgradeCosts();
         }
 
         private void UpdateCoreUI()
@@ -505,8 +453,8 @@ namespace DeskWarrior
                 int bestLevel = Math.Max(GameManager.CurrentLevel, SaveManager.CurrentSave.Stats.MaxLevel);
                 MaxLevelText.Text = $"(Best: {bestLevel})";
             }
-            if (GoldText != null) GoldText.Text = $"💰 {GameManager.Gold:N0}";
-            if (CrystalText != null) CrystalText.Text = $"💎 {SaveManager.CurrentSave.PermanentCurrency.Crystals:N0}";
+            if (GoldTextTop != null) GoldTextTop.Text = $"{GameManager.Gold:N0}";
+            if (CrystalTextTop != null) CrystalTextTop.Text = $"{SaveManager.CurrentSave.PermanentCurrency.Crystals:N0}";
 
             if (GameManager.CurrentMonster != null && HpText != null)
             {
@@ -625,119 +573,87 @@ namespace DeskWarrior
         private void UpdateUpgradeCosts()
         {
             int gold = GameManager.Gold;
+            Logger.Log($"[UpdateUpgradeCosts] Gold={gold}");
 
             // 키보드 공격력
             int keyboardCost = GameManager.GetInGameStatUpgradeCost("keyboard_power");
+            Logger.Log($"[UpdateUpgradeCosts] KeyboardCost={keyboardCost}, CanBuy={gold >= keyboardCost}");
             int keyboardLevel = GameManager.InGameStats.KeyboardPowerLevel;
-            KeyboardCostText.Text = $"💰{keyboardCost:N0}";
+            KeyboardCostText.Text = $"{keyboardCost:N0}";
             KeyboardLevelText.Text = $"Lv.{keyboardLevel}";
             bool canBuyKeyboard = gold >= keyboardCost;
             UpgradeKeyboardBtn.IsEnabled = canBuyKeyboard;
             KeyboardCostText.Foreground = new SolidColorBrush(
                 canBuyKeyboard ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
 
+            // 관찰 모드: 구매 가능 여부에 따라 색상 변경
+            if (canBuyKeyboard)
+            {
+                // 구매 가능: 금색 계열
+                KeyboardIconText.Foreground = new SolidColorBrush(Color.FromRgb(232, 208, 63));
+                KeyboardLevelText.Foreground = new SolidColorBrush(Color.FromRgb(232, 208, 63));
+                UpgradeKeyboardBtn.BorderBrush = new SolidColorBrush(Color.FromRgb(232, 208, 63));
+                UpgradeKeyboardBtn.BorderThickness = new Thickness(2);
+            }
+            else
+            {
+                // 구매 불가: 회색
+                KeyboardIconText.Foreground = new SolidColorBrush(Color.FromRgb(156, 163, 175));
+                KeyboardLevelText.Foreground = new SolidColorBrush(Color.FromRgb(156, 163, 175));
+                UpgradeKeyboardBtn.BorderBrush = new SolidColorBrush(Color.FromRgb(229, 231, 235));
+                UpgradeKeyboardBtn.BorderThickness = new Thickness(1);
+            }
+
+            // 툴팁 업데이트 (관찰 모드에서 비용 확인용)
+            UpgradeKeyboardBtn.ToolTip = $"⌨️ 키보드 공격력 증가\nLv.{keyboardLevel} → Lv.{keyboardLevel + 1}\n비용: 💰{keyboardCost:N0}";
+
+
             // 마우스 공격력
             int mouseCost = GameManager.GetInGameStatUpgradeCost("mouse_power");
             int mouseLevel = GameManager.InGameStats.MousePowerLevel;
-            MouseCostText.Text = $"💰{mouseCost:N0}";
+            MouseCostText.Text = $"{mouseCost:N0}";
             MouseLevelText.Text = $"Lv.{mouseLevel}";
             bool canBuyMouse = gold >= mouseCost;
             UpgradeMouseBtn.IsEnabled = canBuyMouse;
             MouseCostText.Foreground = new SolidColorBrush(
                 canBuyMouse ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
 
-            // 골드+
-            int goldFlatCost = GameManager.GetInGameStatUpgradeCost("gold_flat");
-            int goldFlatLevel = GameManager.InGameStats.GoldFlatLevel;
-            GoldFlatCostText.Text = $"💰{goldFlatCost:N0}";
-            GoldFlatLevelText.Text = $"Lv.{goldFlatLevel}";
-            bool canBuyGoldFlat = gold >= goldFlatCost;
-            UpgradeGoldFlatBtn.IsEnabled = canBuyGoldFlat;
-            GoldFlatCostText.Foreground = new SolidColorBrush(
-                canBuyGoldFlat ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
-
-            // 골드*
-            int goldMultiCost = GameManager.GetInGameStatUpgradeCost("gold_multi");
-            int goldMultiLevel = GameManager.InGameStats.GoldMultiLevel;
-            GoldMultiCostText.Text = $"💰{goldMultiCost:N0}";
-            GoldMultiLevelText.Text = $"Lv.{goldMultiLevel}";
-            bool canBuyGoldMulti = gold >= goldMultiCost;
-            UpgradeGoldMultiBtn.IsEnabled = canBuyGoldMulti;
-            GoldMultiCostText.Foreground = new SolidColorBrush(
-                canBuyGoldMulti ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
-
-            // 시간 도둑
-            int timeThiefCost = GameManager.GetInGameStatUpgradeCost("time_thief");
-            int timeThiefLevel = GameManager.InGameStats.TimeThiefLevel;
-            TimeThiefCostText.Text = $"💰{timeThiefCost:N0}";
-            TimeThiefLevelText.Text = $"Lv.{timeThiefLevel}";
-            bool canBuyTimeThief = gold >= timeThiefCost;
-            UpgradeTimeThiefBtn.IsEnabled = canBuyTimeThief;
-            TimeThiefCostText.Foreground = new SolidColorBrush(
-                canBuyTimeThief ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
-
-            // 콤보 유연성
-            int comboFlexCost = GameManager.GetInGameStatUpgradeCost("combo_flex");
-            int comboFlexLevel = GameManager.InGameStats.ComboFlexLevel;
-            ComboFlexCostText.Text = $"💰{comboFlexCost:N0}";
-            ComboFlexLevelText.Text = $"Lv.{comboFlexLevel}";
-            bool canBuyComboFlex = gold >= comboFlexCost;
-            UpgradeComboFlexBtn.IsEnabled = canBuyComboFlex;
-            ComboFlexCostText.Foreground = new SolidColorBrush(
-                canBuyComboFlex ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
-
-            // 콤보 데미지
-            int comboDamageCost = GameManager.GetInGameStatUpgradeCost("combo_damage");
-            int comboDamageLevel = GameManager.InGameStats.ComboDamageLevel;
-            ComboDamageCostText.Text = $"💰{comboDamageCost:N0}";
-            ComboDamageLevelText.Text = $"Lv.{comboDamageLevel}";
-            bool canBuyComboDamage = gold >= comboDamageCost;
-            UpgradeComboDamageBtn.IsEnabled = canBuyComboDamage;
-            ComboDamageCostText.Foreground = new SolidColorBrush(
-                canBuyComboDamage ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
-        }
-
-        private void UpdateManageModeUI(bool isManageMode)
-        {
-            // _windowInterop.IsManageMode is updated already
-            if (isManageMode)
+            // 관찰 모드: 구매 가능 여부에 따라 색상 변경
+            if (canBuyMouse)
             {
-                ManageModeBorder.Visibility = Visibility.Visible;
-                UpgradePanel.Visibility = Visibility.Visible;
-                PowerInfoBar.Visibility = Visibility.Visible;
-                ExitButtonBorder.Visibility = Visibility.Visible;
-                MaxLevelText.Visibility = Visibility.Visible;
-                HpText.Visibility = Visibility.Visible;
-
-                ModeIcon.Text = "✋";
-                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(255, 165, 0));
-                ModeToggleBorder.ToolTip = "👁️ 관전 모드로 전환 (F1)";
-                ModeToggleBorder.Opacity = 1;
-                _windowInterop.ForceShowModeButton();
-
-                UpdateUpgradeCosts();
+                // 구매 가능: 금색 계열
+                MouseIconText.Foreground = new SolidColorBrush(Color.FromRgb(232, 208, 63));
+                MouseLevelText.Foreground = new SolidColorBrush(Color.FromRgb(232, 208, 63));
+                UpgradeMouseBtn.BorderBrush = new SolidColorBrush(Color.FromRgb(232, 208, 63));
+                UpgradeMouseBtn.BorderThickness = new Thickness(2);
             }
             else
             {
-                ManageModeBorder.Visibility = Visibility.Collapsed;
-                UpgradePanel.Visibility = Visibility.Collapsed;
-                PowerInfoBar.Visibility = Visibility.Collapsed;
-                ExitButtonBorder.Visibility = Visibility.Collapsed;
-                MaxLevelText.Visibility = Visibility.Collapsed;
-                HpText.Visibility = Visibility.Collapsed;
-
-                ModeIcon.Text = "👁️";
-                ModeIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 206, 209));
-                ModeToggleBorder.ToolTip = "✋ 관리 모드로 전환 (F1)";
-
-                if (!_windowInterop.IsMouseOverWindow())
-                {
-                    ModeToggleBorder.Opacity = 0;
-                    _windowInterop.ForceHideModeButton();
-                }
+                // 구매 불가: 회색
+                MouseIconText.Foreground = new SolidColorBrush(Color.FromRgb(156, 163, 175));
+                MouseLevelText.Foreground = new SolidColorBrush(Color.FromRgb(156, 163, 175));
+                UpgradeMouseBtn.BorderBrush = new SolidColorBrush(Color.FromRgb(229, 231, 235));
+                UpgradeMouseBtn.BorderThickness = new Thickness(1);
             }
 
-            ApplyBackgroundOpacity(SaveManager.CurrentSave.Settings.BackgroundOpacity);
+            // 툴팁 업데이트
+            UpgradeMouseBtn.ToolTip = $"🖱️ 마우스 공격력 증가\nLv.{mouseLevel} → Lv.{mouseLevel + 1}\n비용: 💰{mouseCost:N0}";
+        }
+
+        private void SetUpgradeButtonsOpacity(double opacity)
+        {
+            if (double.IsNaN(opacity))
+            {
+                // 기본값으로 복원 (ClearValue 사용)
+                UpgradeKeyboardBtn?.ClearValue(OpacityProperty);
+                UpgradeMouseBtn?.ClearValue(OpacityProperty);
+            }
+            else
+            {
+                // 명시적으로 Opacity 설정
+                if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.Opacity = opacity;
+                if (UpgradeMouseBtn != null) UpgradeMouseBtn.Opacity = opacity;
+            }
         }
 
         private void UpdateLocalizedUI()
@@ -763,7 +679,7 @@ namespace DeskWarrior
             if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["tooltips.upgradeMouse"];
             if (StatsBtn != null) StatsBtn.ToolTip = loc["tooltips.stats"];
             if (SettingsBtn != null) SettingsBtn.ToolTip = loc["tooltips.settings"];
-            if (ExitButtonBorder != null) ExitButtonBorder.ToolTip = loc["tooltips.exit"];
+            if (ExitButtonBorderInline != null) ExitButtonBorderInline.ToolTip = loc["tooltips.exit"];
         }
 
         #endregion
@@ -779,12 +695,14 @@ namespace DeskWarrior
                 return;
             }
 
+            GameManager.PauseTimer();
             var shopWindow = new PermanentUpgradeShop(permanentProgression, SaveManager);
-            shopWindow.Owner = this;
-            shopWindow.ShowDialog();
-
-            // Refresh UI after shop closes (crystal count may have changed)
-            UpdateAllUI();
+            shopWindow.Closed += (s, args) =>
+            {
+                UpdateAllUI();
+                GameManager.ResumeTimer();
+            };
+            shopWindow.Show();
         }
 
         #endregion
@@ -806,7 +724,7 @@ namespace DeskWarrior
 
         public void ApplyBackgroundOpacity(double opacity)
         {
-            double effectiveOpacity = _windowInterop.IsManageMode ? Math.Max(opacity, 0.05) : opacity;
+            double effectiveOpacity = opacity;
             double infoOpacity = Math.Clamp(effectiveOpacity, 0.0, 0.8);
             double upgradeOpacity = Math.Clamp(effectiveOpacity * 1.5, 0.0, 0.95);
 
@@ -814,14 +732,14 @@ namespace DeskWarrior
                 MainBackgroundBorder.Background = new SolidColorBrush(Color.FromRgb(0x1a, 0x1a, 0x2e)) { Opacity = effectiveOpacity };
             if (EnemyInfoBorder != null)
                 EnemyInfoBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
-            if (GoldInfoBar != null)
-                GoldInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = Math.Max(infoOpacity, 0.7) };
-            if (TimerInfoBar != null)
-                TimerInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = Math.Max(infoOpacity, 0.7) };
+            if (GoldInfoBarTop != null)
+                GoldInfoBarTop.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
             if (PowerInfoBar != null)
                 PowerInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
             if (UpgradePanel != null)
                 UpgradePanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
+            if (UtilityPanel != null)
+                UtilityPanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
             if (GameOverOverlay != null)
             {
                 byte overlayAlpha = (byte)(Math.Max(opacity, 0.8) * 255);

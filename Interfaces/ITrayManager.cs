@@ -9,23 +9,14 @@ namespace DeskWarrior.Interfaces
     {
         #region Events
 
-        event EventHandler? ManageModeToggled;
         event EventHandler? SettingsRequested;
         event EventHandler? ExitRequested;
-
-        #endregion
-
-        #region Properties
-
-        bool IsManageMode { get; }
 
         #endregion
 
         #region Methods
 
         void Initialize();
-        void SetManageMode(bool enabled);
-        void ToggleManageMode();
         void UpdateLanguage();
 
         #endregion

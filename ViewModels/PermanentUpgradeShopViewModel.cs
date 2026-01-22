@@ -77,13 +77,17 @@ namespace DeskWarrior.ViewModels
 
                 string fullName = def.Localization.ContainsKey("ko-KR") ? def.Localization["ko-KR"].Name : def.Id;
 
+                // 설명문에서 {value}를 실제 값으로 치환
+                string description = def.Localization.ContainsKey("ko-KR") ? def.Localization["ko-KR"].Description : "";
+                string formattedDescription = FormatDescription(def, currentLevel, description);
+
                 var card = new UpgradeCardViewModel
                 {
                     Id = def.Id,
                     Icon = def.Icon,
                     Name = fullName,
                     ShortName = GenerateShortName(fullName),
-                    Description = def.Localization.ContainsKey("ko-KR") ? def.Localization["ko-KR"].Description : "",
+                    Description = formattedDescription,
                     Category = GetCategoryDisplayName(def.Category),
                     CategoryKey = def.Category,
                     CurrentLevel = currentLevel,
@@ -118,6 +122,50 @@ namespace DeskWarrior.ViewModels
                 LoadData(); // 데이터 새로고침
             }
             return success;
+        }
+
+        /// <summary>
+        /// 설명문 포맷팅 ({value} 치환)
+        /// </summary>
+        private string FormatDescription(PermanentUpgradeDefinition def, int level, string template)
+        {
+            double rawValue = def.IncrementPerLevel * level;
+            string formattedValue = "";
+
+            // ID 기반 값 포맷팅
+            formattedValue = def.Id switch
+            {
+                // A. 기본 능력
+                "base_attack" => $"{rawValue:F0}",
+                "attack_percent" => $"{(rawValue * 5):F0}",
+                "crit_chance" => $"{rawValue:F0}",
+                "crit_damage" => $"{(rawValue * 0.1):F1}",
+                "multi_hit" => $"{rawValue:F0}",
+
+                // B. 재화 보너스
+                "gold_flat_perm" => $"{rawValue:F0}",
+                "gold_multi_perm" => $"{(rawValue * 3):F0}",
+                "crystal_flat" => $"{rawValue:F0}",
+                "crystal_multi" => $"{(rawValue * 5):F0}",
+
+                // C. 유틸리티
+                "time_extend" => $"{(rawValue * 5):F0}",
+                "upgrade_discount" => $"{(rawValue * 2):F0}",
+
+                // D. 시작 보너스
+                "start_level" => $"{rawValue:F0}",
+                "start_gold" => $"{(rawValue * 50):F0}",
+                "start_keyboard" => $"{rawValue:F0}",
+                "start_mouse" => $"{rawValue:F0}",
+                "start_gold_flat" => $"{rawValue:F0}",
+                "start_gold_multi" => $"{(rawValue * 2):F0}",
+                "start_combo_flex" => $"{rawValue:F0}",
+                "start_combo_damage" => $"{rawValue:F0}",
+
+                _ => $"{rawValue:F0}"
+            };
+
+            return template.Replace("{value}", formattedValue);
         }
 
         /// <summary>

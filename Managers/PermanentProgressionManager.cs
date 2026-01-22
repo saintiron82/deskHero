@@ -166,7 +166,8 @@ namespace DeskWarrior.Managers
         /// </summary>
         public int CalculateUpgradeCost(PermanentUpgradeDefinition def, int currentLevel)
         {
-            return (int)(def.BaseCost * Math.Pow(def.CostMultiplier, currentLevel));
+            double cost = def.BaseCost * Math.Pow(def.CostMultiplier, currentLevel);
+            return Math.Max(1, (int)Math.Round(cost));
         }
 
         /// <summary>

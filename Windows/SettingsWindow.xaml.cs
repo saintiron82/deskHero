@@ -49,6 +49,13 @@ namespace DeskWarrior.Windows
                 }
             };
 
+            // DEBUG 빌드에서만 Balance Test Tool 버튼 표시
+#if DEBUG
+            BalanceTestBtn.Visibility = Visibility.Visible;
+#else
+            BalanceTestBtn.Visibility = Visibility.Collapsed;
+#endif
+
             _isInitializing = false;
         }
 

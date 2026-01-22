@@ -76,7 +76,7 @@ namespace DeskWarrior.ViewControllers
         public void FlashEffect(int goldReward)
         {
             var brush = new SolidColorBrush(Colors.Gold);
-            _window.GoldText.Foreground = brush;
+            _window.GoldTextTop.Foreground = brush;
 
             var colorAnim = new ColorAnimation
             {

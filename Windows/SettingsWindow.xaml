@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Settings" Height="380" Width="300"
         WindowStyle="None" ResizeMode="NoResize"
-        Background="#F01a1a2e" AllowsTransparency="True"
-        WindowStartupLocation="CenterOwner"
-        Topmost="True"
+        Background="#F03A3A3A" AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        Topmost="False"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Border BorderBrush="#666" BorderThickness="1" CornerRadius="10">
@@ -19,6 +19,24 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
+
+            <!-- X 닫기 버튼 (우측 상단) -->
+            <Border Background="#662222"
+                    BorderBrush="#FF4444" BorderThickness="1"
+                    CornerRadius="6"
+                    Width="28" Height="28"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,-10,-10,0"
+                    Cursor="Hand"
+                    MouseLeftButtonDown="CloseButton_Click"
+                    Panel.ZIndex="999">
+                <TextBlock Text="❌"
+                           FontSize="14"
+                           Foreground="#FF8888"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
 
             <!-- 타이틀 -->
             <TextBlock Grid.Row="0" x:Name="TitleText" Text="⚙️ SETTINGS"
@@ -102,7 +120,7 @@
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Background" Value="#555"/>
-                                    <Setter Property="Foreground" Value="#FFD700"/>
+                                    <Setter Property="Foreground" Value="#00CED1"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -118,7 +136,8 @@
                         Click="BalanceTestButton_Click"
                         Background="#8B4513" Foreground="White"
                         BorderThickness="0" Padding="10,8"
-                        Cursor="Hand" FontSize="11">
+                        Cursor="Hand" FontSize="11"
+                        Visibility="Collapsed">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
@@ -143,8 +162,29 @@
             <!-- 닫기 버튼 -->
             <Button Grid.Row="6" x:Name="CloseBtn" Content="CLOSE"
                     Click="CloseButton_Click"
-                    Style="{StaticResource CloseButton}"
-                    VerticalAlignment="Bottom"/>
+                    Background="#4A5A6A" Foreground="White"
+                    BorderThickness="0" Padding="10,8"
+                    Cursor="Hand" FontSize="12" FontWeight="Bold"
+                    VerticalAlignment="Bottom">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#5A6A7A"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
     </Border>
 </Window>

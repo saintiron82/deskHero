@@ -14,7 +14,20 @@
       "Bash(python test_stat_formulas.py:*)",
       "Bash(git reset:*)",
       "Bash(python -m json.tool:*)",
-      "Bash(dotnet run:*)"
+      "Bash(dotnet run:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 47512 -Force\")",
+      "Bash(python tools/balance_calculator.py:*)",
+      "Bash(python tools/generate_stat_code.py:*)",
+      "Bash(python tools/test_stat_formulas.py:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(Select-String -Pattern \"error|warning|succeeded\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(move crystal.png AssetsImages)",
+      "Bash(copy /Y crystal.png AssetsImagescrystal.png)",
+      "Bash(ls:*)",
+      "Bash(start \"\" \"bin\\\\Debug\\\\net9.0-windows\\\\DeskWarrior.exe\")",
+      "Bash(dir \"%APPDATA%\\\\DeskWarrior\"\" 2>nul || echo \"Directory not found \")",
+      "Bash(powershell -Command:*)"
     ]
   }
 }

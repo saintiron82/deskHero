@@ -5,7 +5,7 @@
   "stats": {
     "keyboard_power": {
       "name": "키보드 공격력",
-      "base_cost": 100,
+      "base_cost": 10,
       "growth_rate": 0.5,
       "multiplier": 1.5,
       "softcap_interval": 10,
@@ -15,69 +15,18 @@
     },
     "mouse_power": {
       "name": "마우스 공격력",
-      "base_cost": 100,
+      "base_cost": 10,
       "growth_rate": 0.5,
       "multiplier": 1.5,
       "softcap_interval": 10,
       "effect_per_level": 1,
       "max_level": 0,
       "description": "마우스 입력 시 +{n} 데미지"
-    },
-    "gold_flat": {
-      "name": "골드+",
-      "base_cost": 150,
-      "growth_rate": 0.6,
-      "multiplier": 1.6,
-      "softcap_interval": 8,
-      "effect_per_level": 5,
-      "max_level": 0,
-      "description": "몬스터 처치 시 +{n} 골드"
-    },
-    "gold_multi": {
-      "name": "골드*",
-      "base_cost": 200,
-      "growth_rate": 0.7,
-      "multiplier": 1.7,
-      "softcap_interval": 5,
-      "effect_per_level": 5,
-      "max_level": 0,
-      "description": "골드 획득량 +{n}%"
-    },
-    "time_thief": {
-      "name": "시간 도둑",
-      "base_cost": 300,
-      "growth_rate": 1.0,
-      "multiplier": 2.0,
-      "softcap_interval": 5,
-      "effect_per_level": 0.5,
-      "max_level": 0,
-      "cap_type": "base_time",
-      "description": "몬스터 처치 시 +{n}초 (최대 기본시간까지)"
-    },
-    "combo_flex": {
-      "name": "콤보 유연성",
-      "base_cost": 250,
-      "growth_rate": 0.8,
-      "multiplier": 1.8,
-      "softcap_interval": 5,
-      "effect_per_level": 0.005,
-      "max_level": 20,
-      "description": "리듬 허용 오차 +{n}초"
-    },
-    "combo_damage": {
-      "name": "콤보 데미지",
-      "base_cost": 300,
-      "growth_rate": 0.9,
-      "multiplier": 1.9,
-      "softcap_interval": 5,
-      "effect_per_level": 10,
-      "max_level": 0,
-      "description": "콤보 시 데미지 +{n}%"
     }
   },
 
   "defaults": {
-    "base_cost": 100,
+    "base_cost": 10,
     "growth_rate": 0.5,
     "multiplier": 1.5,
     "softcap_interval": 10,

@@ -25,14 +25,14 @@
 | 7 | **골렘** | `monster_golemA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
 | 8 | **버섯** | `monster_mushroomA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
 | 9 | **거미** | `monster_spiderA.png` | **[완료]** (B~F 생성 완료) | 3/4 Front View |
-| 10 | **좀비** | `monster_zombieA.png` | **[완료]** | |
-| 11 | **밴시** | `monster_bansheeA.png` | **[완료]** | |
-| 12 | **가고일** | `monster_gargoyleA.png` | **[완료]** | |
+| 32 | **좀비** | `monster_zombieA.png` | **[완료]** | |
+| 33 | **밴시** | `monster_bansheeA.png` | **[완료]** | |
+| 34 | **가고일** | `monster_gargoyleA.png` | **[대기]** | |
 | 13 | **켄타우로스** | `monster_centaurA.png` | **[완료]** | 3/4 Front-left View |
 | 14 | **메두사** | `monster_medusaA.png` | **[완료]** | 3/4 Front-left View |
-| 15 | **바실리스크** | `monster_basiliskA.png` | **[대기]** | |
-| 16 | **그리폰** | `monster_griffinA.png` | **[대기]** | |
-| 17 | **키메라** | `monster_chimeraA.png` | **[대기]** | |
+| 15 | **바실리스크** | `monster_basiliskA.png` | **[완료]** | |
+| 16 | **그리폰** | `monster_griffinA.png` | **[완료]** | |
+| 17 | **키메라** | `monster_chimeraA.png` | **[완료]** | |
 | 18 | **눈알괴물** | `monster_eyeballA.png` | **[완료]** (B~F 생성 완료) | |
 | 19 | **정령** | `monster_elementalA.png` | **[완료]** (B~F 생성 완료) | |
 | 20 | **쥐** | `monster_ratA.png` | **[완료]** (B~F 생성 완료) | |
