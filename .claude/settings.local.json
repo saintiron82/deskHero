@@ -27,7 +27,9 @@
       "Bash(ls:*)",
       "Bash(start \"\" \"bin\\\\Debug\\\\net9.0-windows\\\\DeskWarrior.exe\")",
       "Bash(dir \"%APPDATA%\\\\DeskWarrior\"\" 2>nul || echo \"Directory not found \")",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Skill(adaptive-refactoring-v2)",
+      "Bash(find:*)"
     ]
   }
 }

@@ -261,7 +261,7 @@ namespace DeskWarrior
                     SoundManager.Play(SoundType.BossAppear);
                     _visualEffect.BossEntranceEffect();
                 }
-                UpdateMonsterUI();
+                UpdateMonsterUI(instantHpBar: true);
             });
         }
 
@@ -361,6 +361,7 @@ namespace DeskWarrior
                 GameManager,
                 SaveManager
             );
+            settingsWindow.Owner = this;
             settingsWindow.Closed += (s, args) =>
             {
                 SaveManager.Save();
@@ -373,6 +374,7 @@ namespace DeskWarrior
         {
             GameManager.PauseTimer();
             var statsWindow = new Windows.StatisticsWindow(SaveManager, AchievementManager, GameManager);
+            statsWindow.Owner = this;
             statsWindow.Closed += (s, args) => GameManager.ResumeTimer();
             statsWindow.Show();
         }
@@ -466,7 +468,7 @@ namespace DeskWarrior
             if (MousePowerText != null) MousePowerText.Text = $"🖱️ Atk: {GameManager.MousePower:N0}";
         }
 
-        private void UpdateMonsterUI()
+        private void UpdateMonsterUI(bool instantHpBar = false)
         {
             var monster = GameManager.CurrentMonster;
             if (monster == null) return;
@@ -474,7 +476,7 @@ namespace DeskWarrior
             MonsterEmoji.Text = monster.Emoji;
             UpdateMonsterImage(monster);
             HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
-            UpdateHpBar(monster);
+            UpdateHpBar(monster, instantHpBar);
         }
 
         private void UpdateMonsterImage(Monster monster)
@@ -514,18 +516,28 @@ namespace DeskWarrior
                    spritePath.Contains("snake") || spritePath.Contains("boar");
         }
 
-        private void UpdateHpBar(Monster monster)
+        private void UpdateHpBar(Monster monster, bool instant = false)
         {
             var hpRatio = monster.HpRatio;
             double targetWidth = hpRatio * 80;
 
-            var widthAnim = new DoubleAnimation
+            if (instant)
             {
-                To = targetWidth,
-                Duration = TimeSpan.FromMilliseconds(300),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-            HpBar.BeginAnimation(WidthProperty, widthAnim);
+                // 새 몬스터 스폰 시: 애니메이션 없이 즉시 설정
+                HpBar.BeginAnimation(WidthProperty, null);
+                HpBar.Width = targetWidth;
+            }
+            else
+            {
+                // 데미지 시: 애니메이션으로 부드럽게 감소
+                var widthAnim = new DoubleAnimation
+                {
+                    To = targetWidth,
+                    Duration = TimeSpan.FromMilliseconds(300),
+                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                };
+                HpBar.BeginAnimation(WidthProperty, widthAnim);
+            }
             HpBar.Background = new SolidColorBrush(GetHpBarColor(hpRatio));
         }
 
@@ -697,6 +709,7 @@ namespace DeskWarrior
 
             GameManager.PauseTimer();
             var shopWindow = new PermanentUpgradeShop(permanentProgression, SaveManager);
+            shopWindow.Owner = this;
             shopWindow.Closed += (s, args) =>
             {
                 UpdateAllUI();

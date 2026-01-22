@@ -254,7 +254,7 @@
                                 Click="PermanentShopButton_Click"
                                 Style="{StaticResource SettingsButton}"
                                 Margin="1" Height="24"
-                                ToolTip="영구 업그레이드 상점">
+                                ToolTip="상점">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Image Source="pack://application:,,,/Assets/Images/UI/crystal.png" Width="12" Height="12" VerticalAlignment="Center" Margin="0,0,3,0"/>
                                 <TextBlock Text="상점" FontSize="10" VerticalAlignment="Center" Foreground="White"/>

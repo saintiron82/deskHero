@@ -587,7 +587,7 @@ namespace DeskWarrior
                 "• 레벨이 높을수록 비용이 증가합니다.\n\n" +
                 "탭을 사용하여 카테고리별로 업그레이드를 확인할 수 있습니다.";
 
-            var helpPopup = new Windows.HelpPopup("영구 업그레이드 상점", helpContent);
+            var helpPopup = new Windows.HelpPopup("상점", helpContent);
             helpPopup.Owner = this;
             helpPopup.ShowDialog();
         }
