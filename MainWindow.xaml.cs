@@ -411,7 +411,7 @@ namespace DeskWarrior
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             // 게임 오버 오버레이가 표시된 경우에만 키보드 단축키 처리
-            if (GameOverOverlay.Visibility == Visibility.Visible)
+            if (GameOverOverlayControl.Visibility == Visibility.Visible)
             {
                 if (e.Key == Key.Space || e.Key == Key.Enter)
                 {
@@ -449,23 +449,16 @@ namespace DeskWarrior
 
         private void UpdateCoreUI()
         {
-            if (LevelText != null) LevelText.Text = $"Lv.{GameManager.CurrentLevel}";
-            if (MaxLevelText != null)
-            {
-                int bestLevel = Math.Max(GameManager.CurrentLevel, SaveManager.CurrentSave.Stats.MaxLevel);
-                MaxLevelText.Text = $"(Best: {bestLevel})";
-            }
-            if (GoldTextTop != null) GoldTextTop.Text = $"{GameManager.Gold:N0}";
-            if (CrystalTextTop != null) CrystalTextTop.Text = $"{SaveManager.CurrentSave.PermanentCurrency.Crystals:N0}";
+            // 대부분의 UI는 ViewModel 바인딩으로 자동 업데이트됨
+            // 여기서는 바인딩되지 않은 요소만 직접 업데이트
 
-            if (GameManager.CurrentMonster != null && HpText != null)
-            {
-                HpText.Text = $"{GameManager.CurrentMonster.CurrentHp:N0}/{GameManager.CurrentMonster.MaxHp:N0}";
-            }
+            // 크리스탈 (ViewModel에 아직 없음)
+            if (CrystalTextTop != null)
+                CrystalTextTop.Text = $"{SaveManager.CurrentSave.PermanentCurrency.Crystals:N0}";
 
-            if (InputCountText != null) InputCountText.Text = $"⌨️ {ViewModel.SessionInputCount}";
-            if (KeyboardPowerText != null) KeyboardPowerText.Text = $"⌨️ Atk: {GameManager.KeyboardPower:N0}";
-            if (MousePowerText != null) MousePowerText.Text = $"🖱️ Atk: {GameManager.MousePower:N0}";
+            // 입력 카운트 (디버그용)
+            if (InputCountText != null)
+                InputCountText.Text = $"⌨️ {ViewModel.SessionInputCount}";
         }
 
         private void UpdateMonsterUI(bool instantHpBar = false)
@@ -473,9 +466,8 @@ namespace DeskWarrior
             var monster = GameManager.CurrentMonster;
             if (monster == null) return;
 
-            MonsterEmoji.Text = monster.Emoji;
+            // MonsterEmoji, HpText는 ViewModel 바인딩으로 처리됨
             UpdateMonsterImage(monster);
-            HpText.Text = $"{monster.CurrentHp}/{monster.MaxHp}";
             UpdateHpBar(monster, instantHpBar);
         }
 
@@ -672,21 +664,19 @@ namespace DeskWarrior
         {
             var loc = LocalizationManager.Instance;
 
-            // Stat names (already in JSON config, no need to localize here)
+            // 버튼 텍스트 다국어
             if (StatsBtn != null) StatsBtn.Content = loc["ui.main.stats"];
             if (SettingsBtn != null) SettingsBtn.Content = loc["ui.main.settings"];
 
-            if (KeyboardPowerText != null)
-                KeyboardPowerText.Text = $"{loc["ui.main.keyboardAtk"]}: {GameManager?.KeyboardPower ?? 1:N0}";
-            if (MousePowerText != null)
-                MousePowerText.Text = $"{loc["ui.main.mouseAtk"]}: {GameManager?.MousePower ?? 1:N0}";
+            // 공격력 텍스트는 ViewModel 바인딩으로 처리됨 (KeyboardPowerDisplayText, MousePowerDisplayText)
 
-            // 게임 오버 버튼 다국어 (재설계된 UI에서는 하드코딩된 텍스트 사용)
-            if (CloseOverlayButton != null)
-                CloseOverlayButton.Content = loc.CurrentLanguage == "ko-KR" ? "▶️ 게임 (SPACE)" : "▶️ Game (SPACE)";
-            if (ShopButton != null)
-                ShopButton.Content = loc.CurrentLanguage == "ko-KR" ? "🛒 상점 (S)" : "🛒 Shop (S)";
+            // 게임 오버 버튼 다국어 (UserControl)
+            GameOverOverlayControl?.UpdateButtonTexts(
+                loc.CurrentLanguage == "ko-KR" ? "🛒 상점 (S)" : "🛒 Shop (S)",
+                loc.CurrentLanguage == "ko-KR" ? "▶️ 게임 (SPACE)" : "▶️ Game (SPACE)"
+            );
 
+            // 툴팁 다국어
             if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.ToolTip = loc["tooltips.upgradeKeyboard"];
             if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["tooltips.upgradeMouse"];
             if (StatsBtn != null) StatsBtn.ToolTip = loc["tooltips.stats"];
@@ -753,11 +743,7 @@ namespace DeskWarrior
                 UpgradePanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
             if (UtilityPanel != null)
                 UtilityPanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
-            if (GameOverOverlay != null)
-            {
-                byte overlayAlpha = (byte)(Math.Max(opacity, 0.8) * 255);
-                GameOverOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayAlpha, 0, 0, 0));
-            }
+            // GameOverOverlay는 UserControl 내부에서 배경색 관리
         }
 
         #endregion

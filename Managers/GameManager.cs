@@ -90,6 +90,8 @@ namespace DeskWarrior.Managers
         public int SessionMouseInputs => _sessionTracker.MouseInputs;
         public int SessionCriticalHits => _sessionTracker.CriticalHits;
         public DateTime SessionStartTime => _sessionTracker.StartTime;
+        public int SessionBossDropCrystals => _sessionTracker.SessionBossDropCrystals;
+        public int SessionAchievementCrystals => _sessionTracker.SessionAchievementCrystals;
 
         #endregion
 

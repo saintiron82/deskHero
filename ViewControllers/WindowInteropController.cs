@@ -59,7 +59,7 @@ namespace DeskWarrior.ViewControllers
             if (msg == WM_NCHITTEST)
             {
                 // GameOverOverlay가 보이면 클릭 가능
-                if (_window.GameOverOverlay.Visibility == Visibility.Visible)
+                if (_window.GameOverOverlayControl.Visibility == Visibility.Visible)
                 {
                     handled = true;
                     return new IntPtr(HTCLIENT);

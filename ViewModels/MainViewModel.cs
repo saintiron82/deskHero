@@ -120,6 +120,10 @@ namespace DeskWarrior.ViewModels
             private set => SetProperty(ref _mouseUpgradeCost, value);
         }
 
+        // 공격력 표시용 프로퍼티 (UI 바인딩)
+        public string KeyboardPowerDisplayText => $"⌨️ Atk: {_gameManager?.KeyboardPower ?? 1:N0}";
+        public string MousePowerDisplayText => $"🖱️ Atk: {_gameManager?.MousePower ?? 1:N0}";
+
         // Monster Properties
         public string MonsterEmoji
         {
@@ -408,6 +412,10 @@ namespace DeskWarrior.ViewModels
             GoldText = $"{_gameManager.Gold:N0}";
             KeyboardPowerText = $"{_gameManager.KeyboardPower:N0}";
             MousePowerText = $"{_gameManager.MousePower:N0}";
+
+            // 공격력 표시 프로퍼티 알림
+            OnPropertyChanged(nameof(KeyboardPowerDisplayText));
+            OnPropertyChanged(nameof(MousePowerDisplayText));
         }
 
         private void UpdateMonsterUI()
