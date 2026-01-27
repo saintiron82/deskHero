@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -22,6 +23,13 @@ namespace DeskWarrior
         private PermanentUpgradeShopViewModel _viewModel;
         private string _currentCategory = "base_stats";
 
+        // 연속 구매 시 UI 업데이트를 위한 요소 참조 (버튼 포함)
+        private readonly Dictionary<string, (TextBlock levelText, TextBlock effectText, TextBlock costText, Button button, TextBlock icon, TextBlock nameText)> _cardElements = new();
+
+        // 연속 구매용 타이머
+        private System.Windows.Threading.DispatcherTimer? _repeatPurchaseTimer;
+        private string? _repeatPurchaseUpgradeId;
+
         public PermanentUpgradeShop(PermanentProgressionManager progressionManager, SaveManager saveManager)
         {
             try
@@ -38,9 +46,37 @@ namespace DeskWarrior
             catch (Exception ex)
             {
                 DeskWarrior.Helpers.Logger.LogError("PermanentUpgradeShop Initialization Failed", ex);
-                MessageBox.Show($"상점 초기화 오류: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                var loc = LocalizationManager.Instance;
+                MessageBox.Show($"{loc["ui.shop.error.init"]}: {ex.Message}", loc["ui.common.error"], MessageBoxButton.OK, MessageBoxImage.Error);
                 Close();
             }
+        }
+
+        /// <summary>
+        /// 로컬라이즈된 UI 텍스트 업데이트
+        /// </summary>
+        private void UpdateLocalizedUI()
+        {
+            var loc = LocalizationManager.Instance;
+
+            // 윈도우 타이틀
+            Title = loc["ui.shop.title"];
+
+            // 헤더 텍스트
+            if (ShopTitleText != null) ShopTitleText.Text = loc["ui.shop.title"].Replace("💎 ", "");
+
+            // 버튼 툴팁
+            if (HelpButton != null) HelpButton.ToolTip = loc["ui.shop.help"];
+            if (CloseButton != null) CloseButton.ToolTip = loc["ui.shop.close"];
+
+            // 탭 텍스트
+            if (TabBaseStatsText != null) TabBaseStatsText.Text = loc["ui.shop.category.baseStats"];
+            if (TabCurrencyBonusText != null) TabCurrencyBonusText.Text = loc["ui.shop.category.currencyBonus"];
+            if (TabUtilityText != null) TabUtilityText.Text = loc["ui.shop.category.utility"];
+            if (TabStartingBonusText != null) TabStartingBonusText.Text = loc["ui.shop.category.startingBonus"];
+
+            // 힌트 텍스트
+            if (HintText != null) HintText.Text = loc["ui.shop.hint"];
         }
 
         #region UI Update
@@ -58,6 +94,9 @@ namespace DeskWarrior
 
             // 헤더 통화 정보 업데이트
             CurrentCrystalsText.Text = _viewModel.CurrentCrystals.ToString("N0");
+
+            // 로컬라이즈된 UI 텍스트 업데이트
+            UpdateLocalizedUI();
 
             // 뱃지 업데이트
             UpdateBadges();
@@ -107,7 +146,10 @@ namespace DeskWarrior
             if (UpgradeGrid == null)
                 return;
 
+            DeskWarrior.Helpers.Logger.Log($"[Shop] LoadCategoryUpgrades: {category}");
+
             _currentCategory = category;
+            _cardElements.Clear(); // 카드 요소 참조 초기화
             UpgradeGrid.Children.Clear();
             UpgradeGrid.ColumnDefinitions.Clear();
             UpgradeGrid.RowDefinitions.Clear();
@@ -117,12 +159,14 @@ namespace DeskWarrior
                 .Where(u => u.CategoryKey == category)
                 .ToList();
 
+            DeskWarrior.Helpers.Logger.Log($"[Shop] Found {categoryUpgrades.Count} upgrades for category '{category}'");
+
             if (categoryUpgrades.Count == 0)
             {
                 // 업그레이드가 없는 경우 메시지 표시
                 var message = new TextBlock
                 {
-                    Text = "이 카테고리에는 업그레이드가 없습니다.",
+                    Text = LocalizationManager.Instance["ui.shop.noUpgrades"],
                     FontSize = 14,
                     Foreground = new SolidColorBrush(Color.FromRgb(139, 148, 158)),
                     HorizontalAlignment = HorizontalAlignment.Center,
@@ -317,19 +361,21 @@ namespace DeskWarrior
             };
             mainStack.Children.Add(effectText);
 
-            // === 구매 버튼 (구매 가능할 때만 표시) ===
-            if (upgrade.CanAfford)
+            // === 구매 버튼 (항상 생성, 스타일로 활성/비활성 표시) - 연속 구매 지원 ===
+            var button = new Button
             {
-                var button = new Button
-                {
-                    Height = 24,
-                    Tag = upgrade.Id,
-                    Content = "구매",
-                    Style = (Style)FindResource("BuyButtonAffordable")
-                };
-                button.Click += BuyUpgrade_Click;
-                mainStack.Children.Add(button);
-            }
+                Height = 24,
+                Tag = upgrade.Id,
+                Content = LocalizationManager.Instance["ui.common.buy"],
+                Style = (Style)FindResource(upgrade.CanAfford ? "BuyButtonAffordable" : "BuyButtonUnaffordable"),
+                IsEnabled = upgrade.CanAfford
+            };
+            button.Click += BuyUpgrade_Click;
+            // 연속 구매: 마우스 누르고 있으면 반복 구매
+            button.PreviewMouseLeftButtonDown += BuyButton_MouseDown;
+            button.PreviewMouseLeftButtonUp += BuyButton_MouseUp;
+            button.MouseLeave += BuyButton_MouseLeave;
+            mainStack.Children.Add(button);
 
             // StackPanel을 Grid에 추가
             mainGrid.Children.Add(mainStack);
@@ -354,7 +400,107 @@ namespace DeskWarrior
 
             card.Child = mainGrid;
 
+            // 연속 구매 시 UI 업데이트를 위해 요소 참조 저장
+            _cardElements[upgrade.Id] = (levelText, effectText, costText, button, icon, nameText);
+
             return card;
+        }
+
+        /// <summary>
+        /// 특정 카드의 UI 요소만 업데이트 (연속 구매 시 사용)
+        /// </summary>
+        private void UpdateCardUI(string upgradeId)
+        {
+            if (!_cardElements.TryGetValue(upgradeId, out var elements))
+                return;
+
+            var upgrade = _viewModel.AllUpgrades.FirstOrDefault(u => u.Id == upgradeId);
+            if (upgrade == null)
+                return;
+
+            // 레벨 업데이트
+            elements.levelText.Text = upgrade.LevelDisplay;
+
+            // 효과 업데이트
+            elements.effectText.Text = $"{upgrade.CurrentEffect} → {upgrade.NextLevelEffect}";
+
+            // 비용 업데이트
+            elements.costText.Text = $"{upgrade.Cost:N0}";
+
+            // 구매 가능 여부에 따른 스타일 업데이트
+            if (upgrade.CanAfford)
+            {
+                var normalColor = new SolidColorBrush(Color.FromRgb(0, 153, 204)); // Blue
+                var darkColor = new SolidColorBrush(Color.FromRgb(31, 41, 55));
+                var grayColor = new SolidColorBrush(Color.FromRgb(107, 114, 128));
+
+                elements.costText.Foreground = normalColor;
+                elements.button.Style = (Style)FindResource("BuyButtonAffordable");
+                elements.button.IsEnabled = true;
+                elements.icon.Foreground = new SolidColorBrush(Colors.Black);
+                elements.nameText.Foreground = darkColor;
+                elements.levelText.Foreground = grayColor;
+                elements.effectText.Foreground = grayColor;
+            }
+            else
+            {
+                var grayBrush = new SolidColorBrush(Color.FromRgb(120, 120, 120));
+
+                elements.costText.Foreground = grayBrush;
+                elements.button.Style = (Style)FindResource("BuyButtonUnaffordable");
+                elements.button.IsEnabled = false;
+                elements.icon.Foreground = grayBrush;
+                elements.nameText.Foreground = grayBrush;
+                elements.levelText.Foreground = grayBrush;
+                elements.effectText.Foreground = grayBrush;
+
+                // 현재 연속 구매 중인 업그레이드가 구매 불가능해지면 타이머 중지
+                if (_repeatPurchaseUpgradeId == upgradeId)
+                {
+                    StopRepeatPurchase();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 모든 카드의 구매 가능 상태 업데이트 (크리스탈 변경 시)
+        /// </summary>
+        private void UpdateAllCardsAffordability()
+        {
+            foreach (var kvp in _cardElements)
+            {
+                var upgrade = _viewModel.AllUpgrades.FirstOrDefault(u => u.Id == kvp.Key);
+                if (upgrade == null) continue;
+
+                var elements = kvp.Value;
+
+                if (upgrade.CanAfford)
+                {
+                    var normalColor = new SolidColorBrush(Color.FromRgb(0, 153, 204));
+                    var darkColor = new SolidColorBrush(Color.FromRgb(31, 41, 55));
+                    var grayColor = new SolidColorBrush(Color.FromRgb(107, 114, 128));
+
+                    elements.costText.Foreground = normalColor;
+                    elements.button.Style = (Style)FindResource("BuyButtonAffordable");
+                    elements.button.IsEnabled = true;
+                    elements.icon.Foreground = new SolidColorBrush(Colors.Black);
+                    elements.nameText.Foreground = darkColor;
+                    elements.levelText.Foreground = grayColor;
+                    elements.effectText.Foreground = grayColor;
+                }
+                else
+                {
+                    var grayBrush = new SolidColorBrush(Color.FromRgb(120, 120, 120));
+
+                    elements.costText.Foreground = grayBrush;
+                    elements.button.Style = (Style)FindResource("BuyButtonUnaffordable");
+                    elements.button.IsEnabled = false;
+                    elements.icon.Foreground = grayBrush;
+                    elements.nameText.Foreground = grayBrush;
+                    elements.levelText.Foreground = grayBrush;
+                    elements.effectText.Foreground = grayBrush;
+                }
+            }
         }
 
         /// <summary>
@@ -398,7 +544,7 @@ namespace DeskWarrior
 
             var currentEffectText = new TextBlock
             {
-                Text = $"현재: {upgrade.CurrentEffect}",
+                Text = LocalizationManager.Instance.Format("ui.shop.currentEffect", upgrade.CurrentEffect),
                 FontSize = 11,
                 FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(Color.FromRgb(255, 215, 0)),
@@ -433,7 +579,7 @@ namespace DeskWarrior
             var nextStack = new StackPanel();
             var nextLabel = new TextBlock
             {
-                Text = "다음 레벨 효과",
+                Text = LocalizationManager.Instance["ui.shop.nextLevel"],
                 FontSize = 9,
                 Foreground = new SolidColorBrush(Color.FromRgb(107, 114, 128))
             };
@@ -459,7 +605,7 @@ namespace DeskWarrior
 
             var tooltipCostLabel = new TextBlock
             {
-                Text = "비용: ",
+                Text = $"{LocalizationManager.Instance["ui.common.cost"]}: ",
                 FontSize = 11,
                 FontWeight = FontWeights.Bold,
                 Foreground = upgrade.CanAfford
@@ -534,9 +680,23 @@ namespace DeskWarrior
 
             if (success)
             {
-                // 성공 시 UI 새로고침
+                // 즉시 저장 (크래시 시 데이터 손실 방지)
+                _saveManager.Save();
+
+                // 성공 시 통화 정보 업데이트
                 RefreshUI();
-                LoadCategoryUpgrades(_currentCategory);
+
+                // 구매한 카드 업데이트 (레벨, 효과, 비용)
+                UpdateCardUI(upgradeId);
+
+                // 모든 카드의 구매 가능 상태 업데이트 (크리스탈 감소로 인해)
+                UpdateAllCardsAffordability();
+
+                // 메인 윈도우 크리스탈 표시도 업데이트
+                if (Owner is MainWindow mainWindow)
+                {
+                    mainWindow.UpdateCrystalDisplay();
+                }
 
                 // 성공 사운드 (있다면)
                 DeskWarrior.Helpers.Logger.Log($"[PermanentUpgradeShop] Purchased: {upgradeId}");
@@ -553,7 +713,7 @@ namespace DeskWarrior
         /// </summary>
         private void BuyUpgrade_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button button)
+            if (sender is not ButtonBase button)
                 return;
 
             string? upgradeId = button.Tag as string;
@@ -575,19 +735,117 @@ namespace DeskWarrior
         }
 
         /// <summary>
+        /// 구매 버튼 마우스 다운 - 연속 구매 타이머 시작
+        /// </summary>
+        private void BuyButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            DeskWarrior.Helpers.Logger.Log("[Shop] MouseDown fired");
+
+            if (sender is not ButtonBase button)
+            {
+                DeskWarrior.Helpers.Logger.Log("[Shop] sender is not ButtonBase");
+                return;
+            }
+
+            string? upgradeId = button.Tag as string;
+            if (string.IsNullOrEmpty(upgradeId))
+            {
+                DeskWarrior.Helpers.Logger.Log("[Shop] upgradeId is null or empty");
+                return;
+            }
+
+            DeskWarrior.Helpers.Logger.Log($"[Shop] Starting repeat timer for {upgradeId}");
+            _repeatPurchaseUpgradeId = upgradeId;
+
+            // 400ms 후 연속 구매 시작
+            _repeatPurchaseTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(400)
+            };
+            _repeatPurchaseTimer.Tick += RepeatPurchase_FirstTick;
+            _repeatPurchaseTimer.Start();
+        }
+
+        /// <summary>
+        /// 첫 번째 틱 - 딜레이 후 빠른 반복으로 전환
+        /// </summary>
+        private void RepeatPurchase_FirstTick(object? sender, EventArgs e)
+        {
+            DeskWarrior.Helpers.Logger.Log("[Shop] FirstTick fired");
+            if (_repeatPurchaseTimer == null) return;
+
+            // 첫 구매 실행
+            if (!string.IsNullOrEmpty(_repeatPurchaseUpgradeId))
+            {
+                DeskWarrior.Helpers.Logger.Log($"[Shop] FirstTick purchase: {_repeatPurchaseUpgradeId}");
+                TryPurchaseUpgrade(_repeatPurchaseUpgradeId);
+            }
+
+            // 타이머가 StopRepeatPurchase()에 의해 null이 되었을 수 있음
+            if (_repeatPurchaseTimer == null) return;
+
+            // 빠른 반복 간격으로 전환 (80ms)
+            _repeatPurchaseTimer.Stop();
+            _repeatPurchaseTimer.Tick -= RepeatPurchase_FirstTick;
+            _repeatPurchaseTimer.Tick += RepeatPurchase_Tick;
+            _repeatPurchaseTimer.Interval = TimeSpan.FromMilliseconds(80);
+            _repeatPurchaseTimer.Start();
+        }
+
+        /// <summary>
+        /// 연속 구매 틱
+        /// </summary>
+        private void RepeatPurchase_Tick(object? sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_repeatPurchaseUpgradeId))
+            {
+                DeskWarrior.Helpers.Logger.Log($"[Shop] RepeatTick purchase: {_repeatPurchaseUpgradeId}");
+                TryPurchaseUpgrade(_repeatPurchaseUpgradeId);
+            }
+        }
+
+        /// <summary>
+        /// 구매 버튼 마우스 업 - 연속 구매 중지
+        /// </summary>
+        private void BuyButton_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            StopRepeatPurchase();
+            // 카드 전체 갱신 (버튼 상태 업데이트)
+            LoadCategoryUpgrades(_currentCategory);
+        }
+
+        /// <summary>
+        /// 구매 버튼에서 마우스 벗어남 - 연속 구매 중지
+        /// </summary>
+        private void BuyButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            StopRepeatPurchase();
+        }
+
+        /// <summary>
+        /// 연속 구매 타이머 중지
+        /// </summary>
+        private void StopRepeatPurchase()
+        {
+            if (_repeatPurchaseTimer != null)
+            {
+                _repeatPurchaseTimer.Stop();
+                _repeatPurchaseTimer.Tick -= RepeatPurchase_FirstTick;
+                _repeatPurchaseTimer.Tick -= RepeatPurchase_Tick;
+                _repeatPurchaseTimer = null;
+            }
+            _repeatPurchaseUpgradeId = null;
+        }
+
+        /// <summary>
         /// 닫기 버튼 클릭
         /// </summary>
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            var helpContent =
-                "크리스탈로 영구적인 능력을 강화할 수 있습니다.\n\n" +
-                "• 보스를 처치하면 크리스탈을 획득합니다.\n" +
-                "• 업그레이드는 모든 게임 세션에 적용됩니다.\n" +
-                "• 카드를 클릭하여 구매할 수 있습니다.\n" +
-                "• 레벨이 높을수록 비용이 증가합니다.\n\n" +
-                "탭을 사용하여 카테고리별로 업그레이드를 확인할 수 있습니다.";
+            var loc = LocalizationManager.Instance;
+            var helpContent = loc["ui.shop.help.content"];
 
-            var helpPopup = new Windows.HelpPopup("상점", helpContent);
+            var helpPopup = new Windows.HelpPopup(loc["ui.shop.title"], helpContent);
             helpPopup.Owner = this;
             helpPopup.ShowDialog();
         }
@@ -626,7 +884,7 @@ namespace DeskWarrior
         /// <summary>
         /// 구매 성공 애니메이션
         /// </summary>
-        private void PlayPurchaseAnimation(Button button)
+        private void PlayPurchaseAnimation(ButtonBase button)
         {
             var card = FindVisualParent<Border>(button);
             if (card == null)
@@ -651,7 +909,7 @@ namespace DeskWarrior
         /// <summary>
         /// 구매 실패 애니메이션
         /// </summary>
-        private void PlayErrorAnimation(Button button)
+        private void PlayErrorAnimation(ButtonBase button)
         {
             var card = FindVisualParent<Border>(button);
             if (card == null)

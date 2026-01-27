@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using DeskWarrior.Managers;
+using DeskWarrior.Interfaces;
 
 namespace DeskWarrior.Models
 {
@@ -49,11 +49,40 @@ namespace DeskWarrior.Models
         [JsonPropertyName("localization")]
         public Dictionary<string, AchievementLocalization> Localization { get; set; } = new();
 
-        // 현재 언어에 맞는 로컬라이즈 텍스트 가져오기
+        /// <summary>
+        /// 로컬라이제이션 프로바이더 (의존성 주입)
+        /// </summary>
+        [JsonIgnore]
+        public static ILocalizationProvider? LocalizationProvider { get; set; }
+
+        /// <summary>
+        /// 현재 언어에 맞는 로컬라이즈 텍스트 가져오기
+        /// </summary>
         private AchievementLocalization GetCurrentLocalization()
         {
-            var lang = LocalizationManager.Instance.CurrentLanguage;
-            if (Localization.TryGetValue(lang, out var loc))
+            // 의존성 주입된 프로바이더 사용
+            if (LocalizationProvider != null)
+            {
+                return LocalizationProvider.GetAchievementLocalization(this);
+            }
+
+            // Fallback: 기본 로컬라이제이션 (en-US)
+            if (Localization.TryGetValue("en-US", out var fallback))
+                return fallback;
+            if (Localization.Count > 0)
+            {
+                foreach (var val in Localization.Values)
+                    return val;
+            }
+            return new AchievementLocalization();
+        }
+
+        /// <summary>
+        /// 특정 언어로 로컬라이즈 텍스트 가져오기
+        /// </summary>
+        public AchievementLocalization GetLocalization(string languageCode)
+        {
+            if (Localization.TryGetValue(languageCode, out var loc))
                 return loc;
             if (Localization.TryGetValue("en-US", out var fallback))
                 return fallback;
@@ -63,6 +92,14 @@ namespace DeskWarrior.Models
                     return val;
             }
             return new AchievementLocalization();
+        }
+
+        /// <summary>
+        /// ILocalizationProvider를 사용하여 로컬라이즈 텍스트 가져오기
+        /// </summary>
+        public AchievementLocalization GetLocalization(ILocalizationProvider provider)
+        {
+            return provider.GetAchievementLocalization(this);
         }
 
         // 동적 속성들 (현재 언어 기반)

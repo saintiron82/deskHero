@@ -75,6 +75,7 @@ namespace DeskWarrior.Windows
 
         private void PopulateStatCombo(string type)
         {
+            if (StatCombo == null) return; // 초기화 중 호출 방지
             StatCombo.Items.Clear();
 
             if (type == "ingame")
@@ -328,6 +329,7 @@ namespace DeskWarrior.Windows
 
         private void StatTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!IsLoaded) return; // 초기화 중 호출 방지
             if (StatTypeCombo.SelectedItem is ComboBoxItem item)
             {
                 string type = item.Tag?.ToString() ?? "ingame";

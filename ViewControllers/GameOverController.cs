@@ -176,9 +176,7 @@ namespace DeskWarrior.ViewControllers
         public void UpdateAutoCloseCountdown()
         {
             var loc = LocalizationManager.Instance;
-            _viewModel.CountdownText = loc.CurrentLanguage == "ko-KR"
-                ? $"{_autoRestartCountdown}초후 닫힘"
-                : $"Closes in {_autoRestartCountdown}s";
+            _viewModel.CountdownText = loc.Format("ui.gameover.closesIn", _autoRestartCountdown);
         }
 
         public void StopTimer()

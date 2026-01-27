@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text.Json;
+using DeskWarrior.Interfaces;
+using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
 {
-    public class LocalizationManager : INotifyPropertyChanged
+    public class LocalizationManager : INotifyPropertyChanged, ILocalizationProvider
     {
         private static LocalizationManager? _instance;
         public static LocalizationManager Instance => _instance ??= new LocalizationManager();
@@ -190,6 +192,22 @@ namespace DeskWarrior.Managers
             return list[random.Next(list.Count)];
         }
 
+        /// <summary>
+        /// 형식 문자열로 로컬라이즈된 문자열 가져오기
+        /// </summary>
+        public string Format(string key, params object[] args)
+        {
+            string template = GetString(key);
+            try
+            {
+                return string.Format(template, args);
+            }
+            catch
+            {
+                return template;
+            }
+        }
+
         private void LoadAvailableLanguages()
         {
             try
@@ -226,6 +244,23 @@ namespace DeskWarrior.Managers
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// 업적 로컬라이즈 텍스트 가져오기 (ILocalizationProvider)
+        /// </summary>
+        public AchievementLocalization GetAchievementLocalization(AchievementDefinition definition)
+        {
+            if (definition.Localization.TryGetValue(_currentLanguage, out var loc))
+                return loc;
+            if (definition.Localization.TryGetValue("en-US", out var fallback))
+                return fallback;
+            if (definition.Localization.Count > 0)
+            {
+                foreach (var val in definition.Localization.Values)
+                    return val;
+            }
+            return new AchievementLocalization();
         }
     }
 

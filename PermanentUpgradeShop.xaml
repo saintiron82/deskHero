@@ -63,9 +63,9 @@
 
         <!-- Upgrade Card Style -->
         <Style x:Key="CompactUpgradeCard" TargetType="Border">
-            <Setter Property="Background" Value="#fafafaff"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background" Value="#CC1A1A1A"/>
+            <Setter Property="BorderBrush" Value="#44FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="Width" Value="180"/>
             <Setter Property="MinHeight" Value="95"/>
@@ -74,7 +74,7 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="BorderBrush" Value="#0099CC"/>
-                    <Setter Property="BorderThickness" Value="3"/>
+                    <Setter Property="BorderThickness" Value="2"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -150,6 +150,38 @@
             </Setter>
         </Style>
 
+        <!-- Buy RepeatButton - Affordable (Green) - 연속 구매 지원 -->
+        <Style x:Key="BuyRepeatButtonAffordable" TargetType="RepeatButton">
+            <Setter Property="Background" Value="#10B981"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Delay" Value="400"/>
+            <Setter Property="Interval" Value="80"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#059669"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#047857"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
 
     <!-- Main Container: 검은색 배경 (글래스의 베이스) -->
@@ -167,7 +199,7 @@
             </Grid.RowDefinitions>
 
             <!-- ⭐ HEADER: Glass Morphism (Top) -->
-            <Border Grid.Row="0" Background="#66666666" CornerRadius="10,10,0,0" Padding="12,10"
+            <Border Grid.Row="0" Background="#CC666666" CornerRadius="10,10,0,0" Padding="12,10"
                     BorderBrush="#33FFFFFF" BorderThickness="1"
                     MouseLeftButtonDown="Header_MouseLeftButtonDown" Cursor="SizeAll">
                 <Border.Effect>
@@ -186,9 +218,9 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Help Button (Left) -->
-                    <Button Grid.Column="0" Width="32" Height="32" Margin="0,0,10,0"
+                    <Button x:Name="HelpButton" Grid.Column="0" Width="32" Height="32" Margin="0,0,10,0"
                             Background="#44FFFFFF" BorderBrush="#33FFFFFF" BorderThickness="1"
-                            Cursor="Hand" ToolTip="도움말"
+                            Cursor="Hand"
                             Click="HelpButton_Click">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
@@ -215,7 +247,7 @@
                     <!-- Title (Center) -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image Source="pack://application:,,,/Assets/Images/UI/crystal.png" Width="28" Height="28" Margin="0,0,6,0"/>
-                        <TextBlock Text="상점" FontSize="16" FontWeight="Bold"
+                        <TextBlock x:Name="ShopTitleText" FontSize="16" FontWeight="Bold"
                                    Foreground="#0099CC" VerticalAlignment="Center"/>
                     </StackPanel>
 
@@ -233,9 +265,9 @@
                     </StackPanel>
 
                     <!-- Close Button (Right) -->
-                    <Button Grid.Column="3" Width="32" Height="32"
+                    <Button x:Name="CloseButton" Grid.Column="3" Width="32" Height="32"
                             Background="#66FF4444" BorderBrush="#FF6666" BorderThickness="1"
-                            Cursor="Hand" ToolTip="닫기"
+                            Cursor="Hand"
                             Click="CloseButton_Click">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
@@ -262,7 +294,7 @@
             </Border>
 
             <!-- 🎯 TABS: Glass Morphism -->
-            <Border Grid.Row="1" Background="#66666666" Padding="15,10"
+            <Border Grid.Row="1" Background="#CC666666" Padding="15,10"
                     BorderBrush="#33FFFFFF" BorderThickness="0,0,0,1">
                 <Border.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="0" Opacity="0.2"/>
@@ -271,7 +303,7 @@
                     <RadioButton x:Name="TabBaseStats" Style="{StaticResource TabButton}"
                                  Margin="0,0,8,0" IsChecked="True" Checked="Tab_Checked">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="⚔️ 기본 능력"/>
+                            <TextBlock x:Name="TabBaseStatsText"/>
                             <TextBlock x:Name="BadgeBaseStats" Text="" FontSize="10" FontWeight="Bold"
                                        Foreground="#10B981" Margin="6,0,0,0"/>
                         </StackPanel>
@@ -279,7 +311,7 @@
                     <RadioButton x:Name="TabCurrencyBonus" Style="{StaticResource TabButton}"
                                  Margin="0,0,8,0" Checked="Tab_Checked">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="💰 재화 보너스"/>
+                            <TextBlock x:Name="TabCurrencyBonusText"/>
                             <TextBlock x:Name="BadgeCurrencyBonus" Text="" FontSize="10" FontWeight="Bold"
                                        Foreground="#10B981" Margin="6,0,0,0"/>
                         </StackPanel>
@@ -287,7 +319,7 @@
                     <RadioButton x:Name="TabUtility" Style="{StaticResource TabButton}"
                                  Margin="0,0,8,0" Checked="Tab_Checked">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="⚙️ 유틸리티"/>
+                            <TextBlock x:Name="TabUtilityText"/>
                             <TextBlock x:Name="BadgeUtility" Text="" FontSize="10" FontWeight="Bold"
                                        Foreground="#10B981" Margin="6,0,0,0"/>
                         </StackPanel>
@@ -295,7 +327,7 @@
                     <RadioButton x:Name="TabStartingBonus" Style="{StaticResource TabButton}"
                                  Checked="Tab_Checked">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🚀 시작 보너스"/>
+                            <TextBlock x:Name="TabStartingBonusText"/>
                             <TextBlock x:Name="BadgeStartingBonus" Text="" FontSize="10" FontWeight="Bold"
                                        Foreground="#10B981" Margin="6,0,0,0"/>
                         </StackPanel>
@@ -307,14 +339,14 @@
             <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
                           Padding="15,15,15,15"
-                          Background="#99666666">
+                          Background="#DD666666">
                 <Grid x:Name="UpgradeGrid" HorizontalAlignment="Center">
                     <!-- Dynamically populated -->
                 </Grid>
             </ScrollViewer>
 
             <!-- 🔽 FOOTER: Glass Morphism -->
-            <Border Grid.Row="3" Background="#66666666" CornerRadius="0,0,10,10" Padding="15,10"
+            <Border Grid.Row="3" Background="#CC666666" CornerRadius="0,0,10,10" Padding="15,10"
                     BorderBrush="#33FFFFFF" BorderThickness="1">
                 <Border.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="0" Opacity="0.3"/>
@@ -325,7 +357,7 @@
                             BorderBrush="#33FFFFFF" BorderThickness="1">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="💡" FontSize="11" Margin="0,0,4,0"/>
-                            <TextBlock Text="보스를 처치하면 크리스탈 획득!" FontSize="11"
+                            <TextBlock x:Name="HintText" FontSize="11"
                                        Foreground="#FFFFFF" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Border>

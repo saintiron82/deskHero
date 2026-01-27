@@ -71,11 +71,10 @@ namespace DeskWarrior.ViewControllers
                 Point screenPoint = new Point(x, y);
                 Point clientPoint = _window.PointFromScreen(screenPoint);
 
-                // InfoBar, UpgradePanel, UtilityPanel, PowerInfoBar 영역만 클릭 가능
+                // InfoBar, UpgradePanel, UtilityPanel 영역만 클릭 가능
                 if (IsPointOverInfoBar(clientPoint) ||
                     IsPointOverUpgradePanel(clientPoint) ||
-                    IsPointOverUtilityPanel(clientPoint) ||
-                    IsPointOverPowerInfoBar(clientPoint))
+                    IsPointOverUtilityPanel(clientPoint))
                 {
                     handled = true;
                     return new IntPtr(HTCLIENT);
@@ -140,28 +139,6 @@ namespace DeskWarrior.ViewControllers
                 var actualH = _window.UtilityPanel.ActualHeight;
 
                 GeneralTransform transform = _window.UtilityPanel.TransformToAncestor(_window);
-                Rect bounds = transform.TransformBounds(
-                    new Rect(0, 0, actualW, actualH));
-
-                return bounds.Contains(point);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private bool IsPointOverPowerInfoBar(Point point)
-        {
-            try
-            {
-                if (_window.PowerInfoBar.Visibility != Visibility.Visible)
-                    return false;
-
-                var actualW = _window.PowerInfoBar.ActualWidth;
-                var actualH = _window.PowerInfoBar.ActualHeight;
-
-                GeneralTransform transform = _window.PowerInfoBar.TransformToAncestor(_window);
                 Rect bounds = transform.TransformBounds(
                     new Rect(0, 0, actualW, actualH));
 

@@ -1,7 +1,6 @@
 {
   "_comment": "영구 스탯 성장 곡선 설정 (크리스탈로 업그레이드)",
   "_formula": "cost = base × (1 + level × growth_rate) × multiplier^(level / softcap_interval)",
-
   "stats": {
     "base_attack": {
       "name": "기본 공격력",
@@ -109,7 +108,7 @@
       "growth_rate": 1.2,
       "multiplier": 2.0,
       "softcap_interval": 5,
-      "effect_per_level": 5,
+      "effect_per_level": 5.0,
       "max_level": 0,
       "description": "제한시간 +{n}초"
     },
@@ -213,7 +212,6 @@
       "description": "콤보데미지 +{n}%에서 시작"
     }
   },
-
   "defaults": {
     "base_cost": 1,
     "growth_rate": 0.5,
@@ -221,11 +219,22 @@
     "softcap_interval": 10,
     "max_level": 0
   },
-
   "categories": {
-    "base": { "name": "기본 능력", "order": 1 },
-    "currency": { "name": "재화 보너스", "order": 2 },
-    "utility": { "name": "유틸리티", "order": 3 },
-    "starting": { "name": "시작 보너스", "order": 4 }
+    "base": {
+      "name": "기본 능력",
+      "order": 1
+    },
+    "currency": {
+      "name": "재화 보너스",
+      "order": 2
+    },
+    "utility": {
+      "name": "유틸리티",
+      "order": 3
+    },
+    "starting": {
+      "name": "시작 보너스",
+      "order": 4
+    }
   }
 }

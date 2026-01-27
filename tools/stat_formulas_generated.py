@@ -1,6 +1,6 @@
 """
 DeskWarrior 스탯 공식 (자동 생성)
-생성일: 2026-01-20 23:30:02
+생성일: 2026-01-26 18:57:40
 경고: 이 파일을 직접 수정하지 마세요!
       config/StatFormulas.json을 수정 후 generate_stat_code.py 실행
 """
@@ -17,6 +17,11 @@ BASE_TIME_LIMIT = 30
 COMBO_DURATION = 3.0
 MAX_COMBO_STACK = 3
 GOLD_TO_CRYSTAL_RATE = 1000
+BASE_HP = 100
+HP_GROWTH = 1.2
+BOSS_INTERVAL = 10
+BOSS_HP_MULTI = 5.0
+BASE_GOLD_MULTI = 1.5
 
 
 # ============================================================
@@ -102,4 +107,40 @@ def calc_discounted_cost(original_cost, upgrade_discount):
     공식: original_cost * (1 - upgrade_discount / 100)
     """
     return int(original_cost * (1 - upgrade_discount / 100))
+
+
+def calc_monster_hp(stage):
+    """
+    몬스터 HP
+    스테이지별 일반 몬스터 HP
+    공식: BASE_HP * pow(HP_GROWTH, stage)
+    """
+    return int(BASE_HP * math.pow(HP_GROWTH, stage))
+
+
+def calc_boss_hp(stage):
+    """
+    보스 HP
+    보스 몬스터 HP (BOSS_INTERVAL 스테이지마다 등장)
+    공식: BASE_HP * pow(HP_GROWTH, stage) * BOSS_HP_MULTI
+    """
+    return int(BASE_HP * math.pow(HP_GROWTH, stage) * BOSS_HP_MULTI)
+
+
+def calc_base_gold(stage):
+    """
+    기본 골드
+    스테이지별 기본 골드 획득량
+    공식: stage * BASE_GOLD_MULTI
+    """
+    return int(stage * BASE_GOLD_MULTI)
+
+
+def calc_required_cps(monster_hp, damage, time_limit):
+    """
+    필요 CPS
+    해당 스테이지 클리어에 필요한 초당 클릭 수
+    공식: monster_hp / damage / time_limit
+    """
+    return monster_hp / damage / time_limit
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
@@ -8,6 +9,18 @@ namespace DeskWarrior.Managers
     /// </summary>
     public class SessionTracker
     {
+        #region Constants
+
+        private const int MaxDamageRecords = 100;
+
+        #endregion
+
+        #region Fields
+
+        private readonly Queue<DamageRecord> _damageRecords = new();
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -65,12 +78,17 @@ namespace DeskWarrior.Managers
         /// </summary>
         public double DurationMinutes => (DateTime.Now - StartTime).TotalMinutes;
 
+        /// <summary>
+        /// 최근 데미지 기록 (최대 100개)
+        /// </summary>
+        public IReadOnlyCollection<DamageRecord> DamageRecords => _damageRecords;
+
         #endregion
 
         #region Public Methods
 
         /// <summary>
-        /// 데미지 기록
+        /// 데미지 기록 (간단 버전 - 하위 호환용)
         /// </summary>
         public void RecordDamage(int damage, bool isCritical, bool isMouse)
         {
@@ -88,6 +106,35 @@ namespace DeskWarrior.Managers
             else
             {
                 KeyboardInputs++;
+            }
+        }
+
+        /// <summary>
+        /// 데미지 기록 (상세 버전)
+        /// </summary>
+        public void RecordDamageDetailed(DamageRecord record)
+        {
+            TotalDamage += record.FinalDamage;
+
+            if (record.IsCritical)
+            {
+                CriticalHits++;
+            }
+
+            if (record.IsMouse)
+            {
+                MouseInputs++;
+            }
+            else
+            {
+                KeyboardInputs++;
+            }
+
+            // 최근 100개만 유지
+            _damageRecords.Enqueue(record);
+            while (_damageRecords.Count > MaxDamageRecords)
+            {
+                _damageRecords.Dequeue();
             }
         }
 
@@ -136,6 +183,7 @@ namespace DeskWarrior.Managers
             CriticalHits = 0;
             SessionBossDropCrystals = 0;
             SessionAchievementCrystals = 0;
+            _damageRecords.Clear();
         }
 
         /// <summary>

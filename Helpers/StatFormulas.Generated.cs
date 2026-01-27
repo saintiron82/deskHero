@@ -1,6 +1,6 @@
 // ============================================================
 // DeskWarrior 스탯 공식 (자동 생성)
-// 생성일: 2026-01-20 23:30:02
+// 생성일: 2026-01-26 18:57:40
 // 경고: 이 파일을 직접 수정하지 마세요!
 //       config/StatFormulas.json을 수정 후 generate_stat_code.py 실행
 // ============================================================
@@ -22,6 +22,11 @@ namespace DeskWarrior.Helpers
         public const double COMBO_DURATION = 3.0;
         public const int MAX_COMBO_STACK = 3;
         public const int GOLD_TO_CRYSTAL_RATE = 1000;
+        public const int BASE_HP = 100;
+        public const double HP_GROWTH = 1.2;
+        public const int BOSS_INTERVAL = 10;
+        public const double BOSS_HP_MULTI = 5.0;
+        public const double BASE_GOLD_MULTI = 1.5;
 
         #endregion
 
@@ -116,6 +121,46 @@ namespace DeskWarrior.Helpers
         public static int CalcDiscountedCost(double original_cost, double upgrade_discount)
         {
             return (int)(original_cost * (1 - upgrade_discount / 100));
+        }
+
+        /// <summary>
+        /// 몬스터 HP
+        /// 스테이지별 일반 몬스터 HP
+        /// 공식: BASE_HP * pow(HP_GROWTH, stage)
+        /// </summary>
+        public static int CalcMonsterHp(double stage)
+        {
+            return (int)(BASE_HP * Math.Pow(HP_GROWTH, stage));
+        }
+
+        /// <summary>
+        /// 보스 HP
+        /// 보스 몬스터 HP (BOSS_INTERVAL 스테이지마다 등장)
+        /// 공식: BASE_HP * pow(HP_GROWTH, stage) * BOSS_HP_MULTI
+        /// </summary>
+        public static int CalcBossHp(double stage)
+        {
+            return (int)(BASE_HP * Math.Pow(HP_GROWTH, stage) * BOSS_HP_MULTI);
+        }
+
+        /// <summary>
+        /// 기본 골드
+        /// 스테이지별 기본 골드 획득량
+        /// 공식: stage * BASE_GOLD_MULTI
+        /// </summary>
+        public static int CalcBaseGold(double stage)
+        {
+            return (int)(stage * BASE_GOLD_MULTI);
+        }
+
+        /// <summary>
+        /// 필요 CPS
+        /// 해당 스테이지 클리어에 필요한 초당 클릭 수
+        /// 공식: monster_hp / damage / time_limit
+        /// </summary>
+        public static double CalcRequiredCps(double monster_hp, double damage, double time_limit)
+        {
+            return monster_hp / damage / time_limit;
         }
 
         #endregion

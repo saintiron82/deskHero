@@ -75,10 +75,12 @@ namespace DeskWarrior.ViewModels
                 var progress = _saveManager.CurrentSave.PermanentUpgrades.FirstOrDefault(p => p.Id == def.Id);
                 int currentLevel = progress?.CurrentLevel ?? 0;
 
-                string fullName = def.Localization.ContainsKey("ko-KR") ? def.Localization["ko-KR"].Name : def.Id;
+                // 현재 언어에 맞는 로컬라이제이션 사용
+                string currentLang = LocalizationManager.Instance.CurrentLanguage;
+                string fullName = GetLocalizedText(def.Localization, currentLang, l => l.Name, def.Id);
 
                 // 설명문에서 {value}를 실제 값으로 치환
-                string description = def.Localization.ContainsKey("ko-KR") ? def.Localization["ko-KR"].Description : "";
+                string description = GetLocalizedText(def.Localization, currentLang, l => l.Description, "");
                 string formattedDescription = FormatDescription(def, currentLevel, description);
 
                 var card = new UpgradeCardViewModel
@@ -174,6 +176,7 @@ namespace DeskWarrior.ViewModels
         private string FormatEffect(PermanentUpgradeDefinition def, int level)
         {
             double value = def.IncrementPerLevel * level;
+            var loc = LocalizationManager.Instance;
 
             // ID 기반 개별 포맷팅
             return def.Id switch
@@ -192,12 +195,12 @@ namespace DeskWarrior.ViewModels
                 "crystal_multi" => $"{(value * 5):F1}%",         // 레벨당 5%
 
                 // C. 유틸리티 (2종)
-                "time_extend" => $"{(value * 5):F0}초",          // 레벨당 5초
+                "time_extend" => loc.Format("ui.shop.effectUnit.seconds", $"{(value * 5):F0}"),  // 레벨당 5초
                 "upgrade_discount" => $"{(value * 2):F0}%",      // 레벨당 2%
 
                 // D. 시작 보너스 (8종)
-                "start_level" => $"Lv.{value:F0}",
-                "start_gold" => $"{(value * 50):F0}G",           // 레벨당 50G
+                "start_level" => loc.Format("ui.shop.effectUnit.level", $"{value:F0}"),
+                "start_gold" => loc.Format("ui.shop.effectUnit.gold", $"{(value * 50):F0}"),  // 레벨당 50G
                 "start_keyboard" => $"{value:F0}",
                 "start_mouse" => $"{value:F0}",
                 "start_gold_flat" => $"+{value:F0}",
@@ -215,17 +218,43 @@ namespace DeskWarrior.ViewModels
         /// </summary>
         private string GetCategoryDisplayName(string category)
         {
+            var loc = LocalizationManager.Instance;
             return category switch
             {
-                "base_stats" => "기본 능력",
-                "currency_bonus" => "재화 보너스",
-                "utility" => "유틸리티",
-                "starting_bonus" => "시작 보너스",
+                "base_stats" => loc["ui.shop.categoryName.baseStats"],
+                "currency_bonus" => loc["ui.shop.categoryName.currencyBonus"],
+                "utility" => loc["ui.shop.categoryName.utility"],
+                "starting_bonus" => loc["ui.shop.categoryName.startingBonus"],
                 // Legacy 카테고리 (하위 호환)
-                "percentage" => "배율 증가",
-                "abilities" => "특수 능력",
+                "percentage" => loc["ui.shop.categoryName.percentage"],
+                "abilities" => loc["ui.shop.categoryName.abilities"],
                 _ => category
             };
+        }
+
+        /// <summary>
+        /// 현재 언어에 맞는 로컬라이즈된 텍스트 가져오기
+        /// </summary>
+        private string GetLocalizedText(
+            Dictionary<string, UpgradeLocalization> localizations,
+            string currentLang,
+            Func<UpgradeLocalization, string> selector,
+            string fallback)
+        {
+            // 현재 언어 우선
+            if (localizations.ContainsKey(currentLang))
+                return selector(localizations[currentLang]);
+
+            // 영어 폴백
+            if (localizations.ContainsKey("en-US"))
+                return selector(localizations["en-US"]);
+
+            // 한국어 폴백
+            if (localizations.ContainsKey("ko-KR"))
+                return selector(localizations["ko-KR"]);
+
+            // 아무것도 없으면 기본값
+            return fallback;
         }
 
         /// <summary>
@@ -233,30 +262,12 @@ namespace DeskWarrior.ViewModels
         /// </summary>
         private string GenerateShortName(string fullName)
         {
-            var shortNameMap = new Dictionary<string, string>
-            {
-                { "기본 공격력", "공격력" },
-                { "공격력 배수", "공격*" },
-                { "크리티컬 확률", "크리확률" },
-                { "크리티컬 배율", "크리배율" },
-                { "멀티히트 확률", "멀티히트" },
-                { "영구 골드+", "골드+" },
-                { "영구 골드*", "골드*" },
-                { "크리스탈+", "크리+" },
-                { "크리스탈*", "크리*" },
-                { "기본 시간 연장", "시간↑" },
-                { "업그레이드 할인", "할인" },
-                { "시작 레벨", "시작Lv" },
-                { "시작 골드", "시작G" },
-                { "시작 키보드", "시작⌨️" },
-                { "시작 마우스", "시작🖱️" },
-                { "시작 골드+", "시작G+" },
-                { "시작 골드*", "시작G*" },
-                { "시작 콤보유연성", "시작콤보" },
-                { "시작 콤보데미지", "시작콤보D" }
-            };
+            var loc = LocalizationManager.Instance;
+            string shortNameKey = $"ui.shop.shortName.{fullName}";
+            string shortName = loc[shortNameKey];
 
-            return shortNameMap.ContainsKey(fullName) ? shortNameMap[fullName] : fullName;
+            // 키가 존재하면 약식 이름 반환, 아니면 원본 이름 반환
+            return shortName != shortNameKey ? shortName : fullName;
         }
 
         #endregion
@@ -300,9 +311,10 @@ namespace DeskWarrior.ViewModels
         {
             get
             {
+                var loc = LocalizationManager.Instance;
                 if (MaxLevel > 0)
-                    return $"Lv.{CurrentLevel}/{MaxLevel}";
-                return $"Lv.{CurrentLevel}";
+                    return loc.Format("ui.shop.levelFormat", CurrentLevel, MaxLevel);
+                return loc.Format("ui.shop.levelUnlimited", CurrentLevel);
             }
         }
 
@@ -311,7 +323,7 @@ namespace DeskWarrior.ViewModels
             get
             {
                 if (IsMaxed)
-                    return "MAX";
+                    return LocalizationManager.Instance["ui.common.max"];
                 return $"💎 {Cost:N0}";
             }
         }

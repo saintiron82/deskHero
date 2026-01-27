@@ -1,6 +1,8 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using DeskWarrior.Helpers;
 using DeskWarrior.Interfaces;
 using DeskWarrior.Managers;
 using DeskWarrior.Models;
@@ -49,13 +51,6 @@ namespace DeskWarrior.Windows
                 }
             };
 
-            // DEBUG 빌드에서만 Balance Test Tool 버튼 표시
-#if DEBUG
-            BalanceTestBtn.Visibility = Visibility.Visible;
-#else
-            BalanceTestBtn.Visibility = Visibility.Collapsed;
-#endif
-
             _isInitializing = false;
         }
 
@@ -81,6 +76,7 @@ namespace DeskWarrior.Windows
             OpacityLabel.Text = loc["ui.settings.opacity"];
             VolumeLabel.Text = loc["ui.settings.volume"];
             LanguageLabel.Text = loc["ui.settings.language"];
+            ResetGameBtn.Content = loc["ui.settings.resetGame"];
             CloseBtn.Content = loc["ui.settings.close"];
         }
 
@@ -127,23 +123,55 @@ namespace DeskWarrior.Windows
             }
         }
 
-        private void BalanceTestButton_Click(object sender, RoutedEventArgs e)
+        private void ResetGameButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_gameManager == null || _saveManager == null)
+            if (_saveManager == null)
             {
-                MessageBox.Show("Balance Test Tool requires GameManager and SaveManager.",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var balanceTestWindow = new BalanceTestWindow(_gameManager, _saveManager);
-            balanceTestWindow.Owner = this;
-            balanceTestWindow.ShowDialog();
+            var loc = LocalizationManager.Instance;
+
+            // 확인 대화상자 표시
+            var result = MessageBox.Show(
+                loc["ui.settings.resetConfirmMessage"],
+                loc["ui.settings.resetConfirmTitle"],
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                // 모든 데이터 초기화
+                _saveManager.ResetAllData();
+
+                // 게임 재시작을 위해 애플리케이션 재시작
+                System.Diagnostics.Process.Start(Environment.ProcessPath ?? "");
+                Application.Current.Shutdown();
+            }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // F12: 개발자 밸런스 테스트 창
+            if (e.Key == Key.F12 && _gameManager != null && _saveManager != null)
+            {
+                try
+                {
+                    var balanceWindow = new BalanceTestWindow(_gameManager, _saveManager);
+                    balanceWindow.Owner = this;
+                    balanceWindow.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[SettingsWindow] Failed to open BalanceTestWindow", ex);
+                }
+                e.Handled = true;
+            }
         }
     }
 }

@@ -92,6 +92,7 @@ namespace DeskWarrior.Managers
         public DateTime SessionStartTime => _sessionTracker.StartTime;
         public int SessionBossDropCrystals => _sessionTracker.SessionBossDropCrystals;
         public int SessionAchievementCrystals => _sessionTracker.SessionAchievementCrystals;
+        public System.Collections.Generic.IReadOnlyCollection<DamageRecord> SessionDamageRecords => _sessionTracker.DamageRecords;
 
         #endregion
 
@@ -203,7 +204,7 @@ namespace DeskWarrior.Managers
             int comboStack = _comboTracker.ProcessInput();
 
             var result = CalculateDamage(KeyboardPower, comboStack);
-            ApplyDamage(result.Damage, result.IsCritical, isMouse: false);
+            ApplyDamage(result, isMouse: false);
         }
 
         /// <summary>
@@ -217,7 +218,7 @@ namespace DeskWarrior.Managers
             int comboStack = _comboTracker.ProcessInput();
 
             var result = CalculateDamage(MousePower, comboStack);
-            ApplyDamage(result.Damage, result.IsCritical, isMouse: true);
+            ApplyDamage(result, isMouse: true);
         }
 
         /// <summary>
@@ -363,17 +364,32 @@ namespace DeskWarrior.Managers
             return _damageCalculator.Calculate(basePower, permStats, 0, comboStack);
         }
 
-        private void ApplyDamage(int damage, bool isCritical, bool isMouse)
+        private void ApplyDamage(DamageResult result, bool isMouse)
         {
             if (_currentMonster == null) return;
 
-            _currentMonster.TakeDamage(damage);
+            _currentMonster.TakeDamage(result.Damage);
 
-            // 세션 트래커에 기록
-            _sessionTracker.RecordDamage(damage, isCritical, isMouse);
+            // 상세 데미지 기록 생성
+            var record = new DamageRecord
+            {
+                BasePower = result.BasePower,
+                BaseAttackBonus = result.BaseAttackBonus,
+                AttackMultiplier = result.AttackMultiplier,
+                IsCritical = result.IsCritical,
+                CritMultiplier = result.CritMultiplier,
+                IsMultiHit = result.IsMultiHit,
+                IsCombo = result.IsCombo,
+                ComboStack = result.ComboStack,
+                FinalDamage = result.Damage,
+                IsMouse = isMouse
+            };
+
+            // 세션 트래커에 상세 기록
+            _sessionTracker.RecordDamageDetailed(record);
 
             // 데미지 이벤트 발생
-            DamageDealt?.Invoke(this, new DamageEventArgs(damage, isCritical, isMouse));
+            DamageDealt?.Invoke(this, new DamageEventArgs(result.Damage, result.IsCritical, isMouse));
 
             StatsChanged?.Invoke(this, EventArgs.Empty);
 

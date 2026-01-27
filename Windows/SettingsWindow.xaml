@@ -6,7 +6,8 @@
         Background="#F03A3A3A" AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
         Topmost="False"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        KeyDown="Window_KeyDown">
 
     <Border BorderBrush="#666" BorderThickness="1" CornerRadius="10">
         <Grid Margin="20">
@@ -130,14 +131,13 @@
                 </ComboBox>
             </StackPanel>
 
-            <!-- Developer Tools -->
+            <!-- 처음부터 다시 시작 버튼 -->
             <StackPanel Grid.Row="5" Margin="0,0,0,20">
-                <Button x:Name="BalanceTestBtn" Content="🔧 Balance Test Tool (DEV)"
-                        Click="BalanceTestButton_Click"
-                        Background="#8B4513" Foreground="White"
+                <Button x:Name="ResetGameBtn"
+                        Click="ResetGameButton_Click"
+                        Background="#8B2222" Foreground="White"
                         BorderThickness="0" Padding="10,8"
-                        Cursor="Hand" FontSize="11"
-                        Visibility="Collapsed">
+                        Cursor="Hand" FontSize="11">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
@@ -151,7 +151,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#A0522D"/>
+                                    <Setter Property="Background" Value="#A02222"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

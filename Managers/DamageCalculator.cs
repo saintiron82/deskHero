@@ -13,6 +13,12 @@ namespace DeskWarrior.Managers
         public bool IsMultiHit { get; init; }
         public bool IsCombo { get; init; }
         public int ComboStack { get; init; } // 0, 1, 2, 3
+
+        // 계산 과정 상세 (Damage Meter용)
+        public int BasePower { get; init; }
+        public int BaseAttackBonus { get; init; }
+        public double AttackMultiplier { get; init; }
+        public double CritMultiplier { get; init; }
     }
 
     /// <summary>
@@ -79,15 +85,19 @@ namespace DeskWarrior.Managers
             double effectivePower = basePower;
 
             // ② +가산 = 기본 + base_attack
+            int baseAttackBonus = 0;
             if (permStats != null)
             {
-                effectivePower += permStats.BaseAttack;
+                baseAttackBonus = (int)permStats.BaseAttack;
+                effectivePower += baseAttackBonus;
             }
 
             // ③ ×배수 = ② × (1 + attack_percent)
+            double attackMultiplier = 0;
             if (permStats != null)
             {
-                effectivePower *= (1.0 + permStats.AttackPercentBonus);
+                attackMultiplier = permStats.AttackPercentBonus;
+                effectivePower *= (1.0 + attackMultiplier);
             }
 
             // ④ ×크리티컬 = ③ × crit_damage (확률: crit_chance)
@@ -132,7 +142,11 @@ namespace DeskWarrior.Managers
                 IsCritical = isCritical,
                 IsMultiHit = multiHit,
                 IsCombo = isCombo,
-                ComboStack = comboStack
+                ComboStack = comboStack,
+                BasePower = basePower,
+                BaseAttackBonus = baseAttackBonus,
+                AttackMultiplier = attackMultiplier,
+                CritMultiplier = critMultiplier
             };
         }
 

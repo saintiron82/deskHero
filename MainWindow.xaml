@@ -16,7 +16,8 @@
         Left="100"
         Top="100"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        KeyDown="Window_KeyDown">
+        PreviewKeyDown="Window_PreviewKeyDown"
+        Focusable="True">
 
     <Grid>
         <!-- 배경 이미지 (윈도우 전체, 가장 뒤) -->
@@ -35,7 +36,6 @@
                     <RowDefinition Height="22"/>
                     <RowDefinition Height="32"/>
                     <RowDefinition Height="*" MinHeight="50"/>
-                    <RowDefinition Height="22"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
@@ -114,14 +114,13 @@
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock x:Name="LevelText" Text="{Binding LevelText}" FontSize="12" Foreground="White" FontWeight="Bold"/>
                             <TextBlock Text="{Binding MonsterName}" FontSize="12" Foreground="#88ff88" Margin="5,0,0,0" FontWeight="SemiBold"/>
-                            <TextBlock x:Name="MonsterEmoji" Text="{Binding MonsterEmoji}" FontSize="12"/>
                             <TextBlock x:Name="MaxLevelText" Text="{Binding MaxLevelText}" FontSize="8" Foreground="#AAA" VerticalAlignment="Bottom" Margin="4,0,0,0" Visibility="Collapsed"/>
                         </StackPanel>
 
-                        <!-- HP 바 -->
-                        <Grid Grid.Column="1" Height="8" Margin="8,0,0,0" VerticalAlignment="Center">
+                        <!-- HP 바 (동적 크기) -->
+                        <Grid x:Name="HpBarContainer" Grid.Column="1" Height="8" Margin="8,0,8,0" VerticalAlignment="Center">
                             <Border Background="#333" CornerRadius="3"/>
-                            <Border x:Name="HpBar" Background="#00FF00" CornerRadius="3" HorizontalAlignment="Left" Width="80"/>
+                            <Border x:Name="HpBar" Background="#00FF00" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
                         </Grid>
                         <TextBlock x:Name="HpText" Text="{Binding HpText}" FontSize="9" Foreground="#AAA" HorizontalAlignment="Left" Visibility="Collapsed"/>
                     </Grid>
@@ -161,30 +160,13 @@
                            Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
-                           Margin="10,0,0,-35"
+                           Margin="10,0,0,0"
                            Panel.ZIndex="3"
                            MouseLeftButtonDown="GameElement_MouseLeftButtonDown"/>
                 </Grid>
 
-                <!-- Row 3: 공격력 정보바 (항상 표시) -->
-                <Border x:Name="PowerInfoBar" Grid.Row="3"
-                        Background="#44000000" CornerRadius="5"
-                        Padding="8,6" Margin="0,4,0,0"
-                        VerticalAlignment="Stretch"
-                        Visibility="Visible">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <TextBlock x:Name="KeyboardPowerText"
-                                   Text="{Binding KeyboardPowerDisplayText}" FontSize="10" Foreground="#00CED1"
-                                   VerticalAlignment="Center"/>
-                        <Border Width="1" Height="12" Background="#444" Margin="12,0"/>
-                        <TextBlock x:Name="MousePowerText"
-                                   Text="{Binding MousePowerDisplayText}" FontSize="10" Foreground="#E8D03F"
-                                   VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Row 4: 업그레이드 버튼 패널 -->
-                <Border x:Name="UpgradePanel" Grid.Row="4"
+                <!-- Row 3: 업그레이드 버튼 패널 -->
+                <Border x:Name="UpgradePanel" Grid.Row="3"
                         Background="#88000000" CornerRadius="4"
                         Margin="0,2,0,0" Padding="2"
                         Visibility="Visible"
@@ -192,47 +174,37 @@
                         PreviewMouseLeftButtonDown="UpgradePanel_PreviewMouseLeftButtonDown">
                     <UniformGrid Columns="2" Rows="1">
                         <!-- 키보드 공격력 -->
-                        <Button x:Name="UpgradeKeyboardBtn"
+                        <RepeatButton x:Name="UpgradeKeyboardBtn"
                                 Click="UpgradeKeyboard_Click"
-                                Style="{StaticResource StatUpgradeButton}"
+                                Style="{StaticResource StatUpgradeRepeatButton}"
                                 Margin="1" Height="24"
+                                Delay="400" Interval="80"
                                 ToolTip="키보드 공격력 증가">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock x:Name="KeyboardIconText" Text="⌨" FontSize="14" VerticalAlignment="Center" Margin="0,0,3,0" Foreground="#E8D03F" FontWeight="Bold"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock x:Name="KeyboardNameText" Text="Keyboard" FontSize="7" Foreground="White" Margin="0,1,0,0" Visibility="Collapsed"/>
-                                    <TextBlock x:Name="KeyboardLevelText" Text="Lv.0" FontSize="10" Foreground="#E8D03F" FontWeight="Black"/>
-                                    <StackPanel x:Name="KeyboardCostPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0" Visibility="Collapsed">
-                                        <Image Source="pack://application:,,,/Assets/Images/UI/gold.png" Width="10" Height="10" VerticalAlignment="Center" Margin="0,0,2,0"/>
-                                        <TextBlock x:Name="KeyboardCostText" Text="100" FontSize="7" FontWeight="Bold"/>
-                                    </StackPanel>
-                                </StackPanel>
+                                <TextBlock x:Name="KeyboardLevelText" Text="Lv.0" FontSize="10" Foreground="#AAAAAA" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,3,0"/>
+                                <TextBlock x:Name="KeyboardIconText" Text="⌨" FontSize="11" VerticalAlignment="Center" Margin="0,0,3,0" Foreground="#00CED1" FontWeight="Bold"/>
+                                <TextBlock x:Name="KeyboardPowerText" Text="{Binding KeyboardPowerText}" FontSize="10" Foreground="#00CED1" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </RepeatButton>
 
                         <!-- 마우스 공격력 -->
-                        <Button x:Name="UpgradeMouseBtn"
+                        <RepeatButton x:Name="UpgradeMouseBtn"
                                 Click="UpgradeMouse_Click"
-                                Style="{StaticResource StatUpgradeButton}"
+                                Style="{StaticResource StatUpgradeRepeatButton}"
                                 Margin="1" Height="24"
+                                Delay="400" Interval="80"
                                 ToolTip="마우스 공격력 증가">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock x:Name="MouseIconText" Text="🖰" FontSize="14" VerticalAlignment="Center" Margin="0,0,3,0" Foreground="#E8D03F" FontWeight="Bold"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock x:Name="MouseNameText" Text="Mouse" FontSize="7" Foreground="White" Margin="0,1,0,0" Visibility="Collapsed"/>
-                                    <TextBlock x:Name="MouseLevelText" Text="Lv.0" FontSize="10" Foreground="#E8D03F" FontWeight="Black"/>
-                                    <StackPanel x:Name="MouseCostPanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,0" Visibility="Collapsed">
-                                        <Image Source="pack://application:,,,/Assets/Images/UI/gold.png" Width="10" Height="10" VerticalAlignment="Center" Margin="0,0,2,0"/>
-                                        <TextBlock x:Name="MouseCostText" Text="100" FontSize="7" FontWeight="Bold"/>
-                                    </StackPanel>
-                                </StackPanel>
+                                <TextBlock x:Name="MouseLevelText" Text="Lv.0" FontSize="10" Foreground="#AAAAAA" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,3,0"/>
+                                <TextBlock x:Name="MouseIconText" Text="🖰" FontSize="11" VerticalAlignment="Center" Margin="0,0,3,0" Foreground="#E8D03F" FontWeight="Bold"/>
+                                <TextBlock x:Name="MousePowerText" Text="{Binding MousePowerText}" FontSize="10" Foreground="#E8D03F" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </RepeatButton>
                     </UniformGrid>
                 </Border>
 
-                <!-- Row 5: 유틸리티 버튼 패널 (통계, 상점, 설정) -->
-                <Border x:Name="UtilityPanel" Grid.Row="5"
+                <!-- Row 4: 유틸리티 버튼 패널 (통계, 상점, 설정) -->
+                <Border x:Name="UtilityPanel" Grid.Row="4"
                         Background="#88000000" CornerRadius="4"
                         Margin="0,2,0,0" Padding="2"
                         Visibility="Visible"
@@ -242,11 +214,10 @@
                         <Button x:Name="StatsBtn"
                                 Click="StatsButton_Click"
                                 Style="{StaticResource SettingsButton}"
-                                Margin="1" Height="24"
-                                ToolTip="통계 보기">
+                                Margin="1" Height="24">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock Text="📊" FontSize="12" VerticalAlignment="Center" Margin="0,0,3,0"/>
-                                <TextBlock Text="통계" FontSize="10" VerticalAlignment="Center" Foreground="White"/>
+                                <TextBlock x:Name="StatsBtnText" FontSize="10" VerticalAlignment="Center" Foreground="White"/>
                             </StackPanel>
                         </Button>
 
@@ -254,11 +225,10 @@
                         <Button x:Name="PermanentShopBtn"
                                 Click="PermanentShopButton_Click"
                                 Style="{StaticResource SettingsButton}"
-                                Margin="1" Height="24"
-                                ToolTip="상점">
+                                Margin="1" Height="24">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Image Source="pack://application:,,,/Assets/Images/UI/crystal.png" Width="12" Height="12" VerticalAlignment="Center" Margin="0,0,3,0"/>
-                                <TextBlock Text="상점" FontSize="10" VerticalAlignment="Center" Foreground="White"/>
+                                <TextBlock x:Name="ShopBtnText" FontSize="10" VerticalAlignment="Center" Foreground="White"/>
                             </StackPanel>
                         </Button>
 
@@ -266,11 +236,10 @@
                         <Button x:Name="SettingsBtn"
                                 Click="SettingsButton_Click"
                                 Style="{StaticResource SettingsButton}"
-                                Margin="1" Height="24"
-                                ToolTip="설정 열기">
+                                Margin="1" Height="24">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock Text="⚙️" FontSize="12" VerticalAlignment="Center" Margin="0,0,3,0"/>
-                                <TextBlock Text="설정" FontSize="10" VerticalAlignment="Center" Foreground="White"/>
+                                <TextBlock x:Name="SettingsBtnText" FontSize="10" VerticalAlignment="Center" Foreground="White"/>
                             </StackPanel>
                         </Button>
                     </UniformGrid>

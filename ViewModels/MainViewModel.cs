@@ -8,7 +8,7 @@ using DeskWarrior.Models;
 namespace DeskWarrior.ViewModels
 {
     /// <summary>
-    /// 메인 윈도우 ViewModel (MVVM 패턴)
+    /// 메인 윈도우 ViewModel (MVVM + Composition 패턴)
     /// </summary>
     public class MainViewModel : ViewModelBase, IDisposable
     {
@@ -21,32 +21,27 @@ namespace DeskWarrior.ViewModels
         private readonly SoundManager _soundManager;
         private readonly AchievementManager _achievementManager;
 
+        // Composed ViewModels
+        private readonly GameStateViewModel _gameState;
+        private readonly MonsterViewModel _monster;
+        private readonly UpgradeViewModel _upgrade;
+        private readonly TimerViewModel _timer;
+
         private int _sessionInputCount;
         private bool _disposed;
 
-        // Monster UI
-        private string _monsterEmoji = "";
-        private string _monsterName = "";
-        private string _monsterSkinType = "";
-        private int _monsterCurrentHp;
-        private int _monsterMaxHp;
-        private double _hpRatio = 1.0;
-        private bool _isBoss;
+        #endregion
 
-        // Game UI
-        private string _levelText = "Lv.1";
-        private string _maxLevelText = "(Best: 1)";
-        private string _goldText = "0";
-        private string _timerText = "30";
-        private Color _timerColor = Colors.SkyBlue;
-        private string _keyboardPowerText = "1";
-        private string _mousePowerText = "1";
-        private string _keyboardUpgradeCost = "100";
-        private string _mouseUpgradeCost = "100";
+        #region Properties - Composed ViewModels
+
+        public GameStateViewModel GameState => _gameState;
+        public MonsterViewModel Monster => _monster;
+        public UpgradeViewModel Upgrade => _upgrade;
+        public TimerViewModel Timer => _timer;
 
         #endregion
 
-        #region Properties - Game State
+        #region Properties - Game State (Direct Access)
 
         public int CurrentLevel => _gameManager.CurrentLevel;
         public int Gold => _gameManager.Gold;
@@ -64,110 +59,31 @@ namespace DeskWarrior.ViewModels
 
         #endregion
 
-        #region Properties - UI Binding
+        #region Properties - UI Binding (Backwards Compatibility)
 
-        public string LevelText
-        {
-            get => _levelText;
-            private set => SetProperty(ref _levelText, value);
-        }
+        // These properties delegate to composed ViewModels for backwards compatibility
+        public string LevelText => _gameState.LevelText;
+        public string MaxLevelText => _gameState.MaxLevelText;
+        public string GoldText => _gameState.GoldText;
 
-        public string MaxLevelText
-        {
-            get => _maxLevelText;
-            private set => SetProperty(ref _maxLevelText, value);
-        }
+        public string TimerText => _timer.TimerText;
+        public Color TimerColor => _timer.TimerColor;
 
-        public string GoldText
-        {
-            get => _goldText;
-            private set => SetProperty(ref _goldText, value);
-        }
+        public string KeyboardPowerText => _upgrade.KeyboardPowerText;
+        public string MousePowerText => _upgrade.MousePowerText;
+        public string KeyboardUpgradeCost => _upgrade.KeyboardUpgradeCost;
+        public string MouseUpgradeCost => _upgrade.MouseUpgradeCost;
+        public string KeyboardPowerDisplayText => _upgrade.KeyboardPowerDisplayText;
+        public string MousePowerDisplayText => _upgrade.MousePowerDisplayText;
 
-        public string TimerText
-        {
-            get => _timerText;
-            private set => SetProperty(ref _timerText, value);
-        }
-
-        public Color TimerColor
-        {
-            get => _timerColor;
-            private set => SetProperty(ref _timerColor, value);
-        }
-
-        public string KeyboardPowerText
-        {
-            get => _keyboardPowerText;
-            private set => SetProperty(ref _keyboardPowerText, value);
-        }
-
-        public string MousePowerText
-        {
-            get => _mousePowerText;
-            private set => SetProperty(ref _mousePowerText, value);
-        }
-
-        public string KeyboardUpgradeCost
-        {
-            get => _keyboardUpgradeCost;
-            private set => SetProperty(ref _keyboardUpgradeCost, value);
-        }
-
-        public string MouseUpgradeCost
-        {
-            get => _mouseUpgradeCost;
-            private set => SetProperty(ref _mouseUpgradeCost, value);
-        }
-
-        // 공격력 표시용 프로퍼티 (UI 바인딩)
-        public string KeyboardPowerDisplayText => $"⌨️ Atk: {_gameManager?.KeyboardPower ?? 1:N0}";
-        public string MousePowerDisplayText => $"🖱️ Atk: {_gameManager?.MousePower ?? 1:N0}";
-
-        // Monster Properties
-        public string MonsterEmoji
-        {
-            get => _monsterEmoji;
-            private set => SetProperty(ref _monsterEmoji, value);
-        }
-
-        public string MonsterName
-        {
-            get => _monsterName;
-            private set => SetProperty(ref _monsterName, value);
-        }
-
-        public string MonsterSkinType
-        {
-            get => _monsterSkinType;
-            private set => SetProperty(ref _monsterSkinType, value);
-        }
-
-        public int MonsterCurrentHp
-        {
-            get => _monsterCurrentHp;
-            private set => SetProperty(ref _monsterCurrentHp, value);
-        }
-
-        public int MonsterMaxHp
-        {
-            get => _monsterMaxHp;
-            private set => SetProperty(ref _monsterMaxHp, value);
-        }
-
-        public double HpRatio
-        {
-            get => _hpRatio;
-            private set => SetProperty(ref _hpRatio, value);
-        }
-
-        public bool IsBoss
-        {
-            get => _isBoss;
-            private set => SetProperty(ref _isBoss, value);
-        }
-
-        public string HpText => $"{MonsterCurrentHp:N0}/{MonsterMaxHp:N0}";
+        public string MonsterEmoji => _monster.Emoji;
+        public string MonsterName => _monster.Name;
+        public string MonsterSkinType => _monster.SkinType;
+        public int MonsterCurrentHp => _monster.CurrentHp;
+        public int MonsterMaxHp => _monster.MaxHp;
+        public double HpRatio => _monster.HpRatio;
+        public bool IsBoss => _monster.IsBoss;
+        public string HpText => _monster.HpText;
 
         #endregion
 
@@ -184,8 +100,8 @@ namespace DeskWarrior.ViewModels
 
         #region Commands
 
-        public ICommand UpgradeKeyboardCommand { get; }
-        public ICommand UpgradeMouseCommand { get; }
+        public ICommand UpgradeKeyboardCommand => _upgrade.UpgradeKeyboardCommand;
+        public ICommand UpgradeMouseCommand => _upgrade.UpgradeMouseCommand;
         public ICommand OpenSettingsCommand { get; }
         public ICommand OpenStatsCommand { get; }
         public ICommand RestartGameCommand { get; }
@@ -208,7 +124,7 @@ namespace DeskWarrior.ViewModels
 
         public MainViewModel()
         {
-            // Managers 초기화
+            // Core Managers 초기화
             _inputHandler = new GlobalInputManager();
             _trayManager = new TrayManager();
             _saveManager = new SaveManager();
@@ -225,9 +141,13 @@ namespace DeskWarrior.ViewModels
                 _achievementManager.Initialize(_gameManager.PermanentProgression);
             }
 
+            // Composed ViewModels 초기화
+            _gameState = new GameStateViewModel(_gameManager, _saveManager);
+            _monster = new MonsterViewModel(_gameManager);
+            _upgrade = new UpgradeViewModel(_gameManager, _saveManager, _soundManager);
+            _timer = new TimerViewModel(_gameManager);
+
             // Commands 초기화
-            UpgradeKeyboardCommand = new RelayCommand(ExecuteUpgradeKeyboard, CanUpgradeKeyboard);
-            UpgradeMouseCommand = new RelayCommand(ExecuteUpgradeMouse, CanUpgradeMouse);
             OpenSettingsCommand = new RelayCommand(_ => SettingsRequested?.Invoke());
             OpenStatsCommand = new RelayCommand(_ => StatsRequested?.Invoke());
             RestartGameCommand = new RelayCommand(ExecuteRestartGame);
@@ -311,10 +231,13 @@ namespace DeskWarrior.ViewModels
         /// </summary>
         public void RefreshAllUI()
         {
-            UpdateGameUI();
-            UpdateMonsterUI();
-            UpdateTimerUI();
-            UpdateUpgradeCosts();
+            _gameState.Update();
+            _monster.Update();
+            _timer.Update();
+            _upgrade.Update();
+
+            // PropertyChanged 전파 (Backwards Compatibility)
+            NotifyUIPropertiesChanged();
         }
 
         #endregion
@@ -336,6 +259,15 @@ namespace DeskWarrior.ViewModels
 
             // Tray Manager
             _trayManager.SettingsRequested += (s, e) => SettingsRequested?.Invoke();
+
+            // Upgrade ViewModel
+            _upgrade.UpgradePerformed += OnUpgradePerformed;
+
+            // Composed ViewModels PropertyChanged 전파
+            _gameState.PropertyChanged += (s, e) => OnPropertyChanged(e.PropertyName!);
+            _monster.PropertyChanged += (s, e) => OnPropertyChanged(e.PropertyName!);
+            _timer.PropertyChanged += (s, e) => OnPropertyChanged(e.PropertyName!);
+            _upgrade.PropertyChanged += (s, e) => OnPropertyChanged(e.PropertyName!);
         }
 
         private void OnInputReceived(object? sender, GameInputEventArgs e)
@@ -357,39 +289,45 @@ namespace DeskWarrior.ViewModels
         private void OnDamageDealt(object? sender, DamageEventArgs e)
         {
             _soundManager.Play(SoundType.Hit);
-            UpdateMonsterUI();
+            _monster.Update();
+            NotifyUIPropertiesChanged();
             DamageDealt?.Invoke(this, e);
         }
 
         private void OnMonsterDefeated(object? sender, EventArgs e)
         {
             _soundManager.Play(SoundType.Defeat);
-            UpdateGameUI();
+            _gameState.Update();
+            NotifyUIPropertiesChanged();
             MonsterDefeated?.Invoke(this, e);
         }
 
         private void OnMonsterSpawned(object? sender, EventArgs e)
         {
-            UpdateMonsterUI();
-            UpdateTimerUI();
+            _monster.Update();
+            _timer.Update();
 
             if (_gameManager.CurrentMonster?.IsBoss == true)
             {
                 _soundManager.Play(SoundType.BossAppear);
             }
 
+            NotifyUIPropertiesChanged();
             MonsterSpawned?.Invoke(this, e);
         }
 
         private void OnTimerTick(object? sender, EventArgs e)
         {
-            UpdateTimerUI();
+            _timer.Update();
+            OnPropertyChanged(nameof(TimerText));
+            OnPropertyChanged(nameof(TimerColor));
         }
 
         private void OnStatsChanged(object? sender, EventArgs e)
         {
-            UpdateGameUI();
-            UpdateUpgradeCosts();
+            _gameState.Update();
+            _upgrade.Update();
+            NotifyUIPropertiesChanged();
         }
 
         private void OnGameOver(object? sender, EventArgs e)
@@ -398,96 +336,10 @@ namespace DeskWarrior.ViewModels
             GameOver?.Invoke(this, e);
         }
 
-        #endregion
-
-        #region Private Methods - UI Updates
-
-        private void UpdateGameUI()
+        private void OnUpgradePerformed(object? sender, EventArgs e)
         {
-            LevelText = $"Lv.{_gameManager.CurrentLevel}";
-
-            int bestLevel = Math.Max(_gameManager.CurrentLevel, _saveManager.CurrentSave.Stats.MaxLevel);
-            MaxLevelText = $"(Best: {bestLevel})";
-
-            GoldText = $"{_gameManager.Gold:N0}";
-            KeyboardPowerText = $"{_gameManager.KeyboardPower:N0}";
-            MousePowerText = $"{_gameManager.MousePower:N0}";
-
-            // 공격력 표시 프로퍼티 알림
-            OnPropertyChanged(nameof(KeyboardPowerDisplayText));
-            OnPropertyChanged(nameof(MousePowerDisplayText));
-        }
-
-        private void UpdateMonsterUI()
-        {
-            var monster = _gameManager.CurrentMonster;
-            if (monster == null) return;
-
-            MonsterEmoji = monster.Emoji;
-            MonsterName = monster.Name;
-            MonsterSkinType = monster.SkinType;
-            MonsterCurrentHp = monster.CurrentHp;
-            MonsterMaxHp = monster.MaxHp;
-            HpRatio = monster.HpRatio;
-            IsBoss = monster.IsBoss;
-
-            OnPropertyChanged(nameof(HpText));
-        }
-
-        private void UpdateTimerUI()
-        {
-            int time = _gameManager.RemainingTime;
-            TimerText = time.ToString();
-
-            // 타이머 색상
-            if (time > 20)
-                TimerColor = Color.FromRgb(135, 206, 235); // 하늘색
-            else if (time > 10)
-                TimerColor = Color.FromRgb(255, 200, 100); // 주황색
-            else
-                TimerColor = Color.FromRgb(255, 100, 100); // 빨간색
-        }
-
-        private void UpdateUpgradeCosts()
-        {
-            KeyboardUpgradeCost = $"{_gameManager.CalculateUpgradeCost(_gameManager.KeyboardPower):N0}";
-            MouseUpgradeCost = $"{_gameManager.CalculateUpgradeCost(_gameManager.MousePower):N0}";
-        }
-
-        #endregion
-
-        #region Private Methods - Commands
-
-        private void ExecuteUpgradeKeyboard(object? parameter)
-        {
-            if (_gameManager.UpgradeKeyboardPower())
-            {
-                _soundManager.Play(SoundType.Upgrade);
-                _saveManager.UpdateUpgrades(_gameManager.KeyboardPower, _gameManager.MousePower);
-                UpdateGameUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-        private bool CanUpgradeKeyboard(object? parameter)
-        {
-            return _gameManager.Gold >= _gameManager.CalculateUpgradeCost(_gameManager.KeyboardPower);
-        }
-
-        private void ExecuteUpgradeMouse(object? parameter)
-        {
-            if (_gameManager.UpgradeMousePower())
-            {
-                _soundManager.Play(SoundType.Upgrade);
-                _saveManager.UpdateUpgrades(_gameManager.KeyboardPower, _gameManager.MousePower);
-                UpdateGameUI();
-                UpdateUpgradeCosts();
-            }
-        }
-
-        private bool CanUpgradeMouse(object? parameter)
-        {
-            return _gameManager.Gold >= _gameManager.CalculateUpgradeCost(_gameManager.MousePower);
+            _gameState.Update();
+            NotifyUIPropertiesChanged();
         }
 
         private void ExecuteRestartGame(object? parameter)
@@ -495,6 +347,30 @@ namespace DeskWarrior.ViewModels
             _gameManager.RestartGame();
             SessionInputCount = 0;
             RefreshAllUI();
+        }
+
+        /// <summary>
+        /// Backwards Compatibility를 위한 PropertyChanged 알림
+        /// </summary>
+        private void NotifyUIPropertiesChanged()
+        {
+            OnPropertyChanged(nameof(LevelText));
+            OnPropertyChanged(nameof(MaxLevelText));
+            OnPropertyChanged(nameof(GoldText));
+            OnPropertyChanged(nameof(MonsterEmoji));
+            OnPropertyChanged(nameof(MonsterName));
+            OnPropertyChanged(nameof(MonsterSkinType));
+            OnPropertyChanged(nameof(MonsterCurrentHp));
+            OnPropertyChanged(nameof(MonsterMaxHp));
+            OnPropertyChanged(nameof(HpRatio));
+            OnPropertyChanged(nameof(IsBoss));
+            OnPropertyChanged(nameof(HpText));
+            OnPropertyChanged(nameof(KeyboardPowerText));
+            OnPropertyChanged(nameof(MousePowerText));
+            OnPropertyChanged(nameof(KeyboardUpgradeCost));
+            OnPropertyChanged(nameof(MouseUpgradeCost));
+            OnPropertyChanged(nameof(KeyboardPowerDisplayText));
+            OnPropertyChanged(nameof(MousePowerDisplayText));
         }
 
         #endregion

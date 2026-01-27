@@ -11,6 +11,7 @@ using DeskWarrior.Managers;
 using DeskWarrior.Models;
 using DeskWarrior.ViewModels;
 using DeskWarrior.ViewControllers;
+using DeskWarrior.Windows;
 
 namespace DeskWarrior
 {
@@ -68,6 +69,9 @@ namespace DeskWarrior
             Loaded += MainWindow_Loaded;
             Closing += MainWindow_Closing;
             LocationChanged += MainWindow_LocationChanged;
+
+            // HP 바 컨테이너 크기 변경 시 HP 바 업데이트
+            HpBarContainer.SizeChanged += HpBarContainer_SizeChanged;
 
             // 초기 UI 업데이트
             UpdateUI();
@@ -148,8 +152,10 @@ namespace DeskWarrior
             // 이미지 로드
             _heroAvatar.LoadCharacterImages(GameManager.Heroes);
 
-            // UI 초기화
-            UpdateAllUI();
+            // UI 초기화 (HP 바는 OnMonsterSpawned에서 이미 설정됨)
+            UpdateCoreUI();
+            UpdateTimerUI();
+            UpdateUpgradeCosts();
         }
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -178,6 +184,7 @@ namespace DeskWarrior
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _windowInterop.HandleMouseLeftButtonDown(sender, e);
+            Focus(); // 키보드 포커스 확보
         }
 
         #endregion
@@ -224,7 +231,11 @@ namespace DeskWarrior
             Dispatcher.Invoke(() =>
             {
                 _visualEffect.ShowDamagePopup(e.Damage, e.IsCritical);
-                UpdateMonsterUI();
+                // 몬스터가 살아있을 때만 HP 바 애니메이션 (죽으면 OnMonsterSpawned에서 처리)
+                if (GameManager.CurrentMonster?.IsAlive == true)
+                {
+                    UpdateMonsterUI();
+                }
             });
         }
 
@@ -248,7 +259,11 @@ namespace DeskWarrior
                 }
 
                 _visualEffect.FlashEffect(GameManager.CurrentMonster?.GoldReward ?? 0);
-                UpdateAllUI();
+                // HP 바는 OnMonsterSpawned에서 업데이트하므로 여기서는 제외
+                // (애니메이션 충돌 방지)
+                UpdateCoreUI();
+                UpdateTimerUI();
+                UpdateUpgradeCosts();
             });
         }
 
@@ -277,7 +292,13 @@ namespace DeskWarrior
 
         private void OnStatsChanged(object? sender, EventArgs e)
         {
-            Dispatcher.Invoke(UpdateAllUI);
+            // HP 바는 OnDamageDealt/OnMonsterSpawned에서 처리하므로 여기서는 제외
+            Dispatcher.Invoke(() =>
+            {
+                UpdateCoreUI();
+                UpdateTimerUI();
+                UpdateUpgradeCosts();
+            });
         }
 
         private void OnSettingsRequested()
@@ -408,8 +429,19 @@ namespace DeskWarrior
             OpenPermanentUpgradeShop();
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            Logger.Log($"[MainWindow] PreviewKeyDown: {e.Key}");
+
+            // F12: 개발자 밸런스 테스트 창 (항상 사용 가능)
+            if (e.Key == Key.F12)
+            {
+                Logger.Log("[MainWindow] F12 pressed, opening BalanceTestWindow");
+                OpenBalanceTestWindow();
+                e.Handled = true;
+                return;
+            }
+
             // 게임 오버 오버레이가 표시된 경우에만 키보드 단축키 처리
             if (GameOverOverlayControl.Visibility == Visibility.Visible)
             {
@@ -425,6 +457,20 @@ namespace DeskWarrior
                     ShopButton_Click(sender, e);
                     e.Handled = true;
                 }
+            }
+        }
+
+        private void OpenBalanceTestWindow()
+        {
+            try
+            {
+                var balanceWindow = new BalanceTestWindow(GameManager, SaveManager);
+                balanceWindow.Owner = this;
+                balanceWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("[MainWindow] Failed to open BalanceTestWindow", ex);
             }
         }
 
@@ -447,6 +493,15 @@ namespace DeskWarrior
             UpdateUpgradeCosts();
         }
 
+        /// <summary>
+        /// 크리스탈 표시만 업데이트 (상점에서 호출)
+        /// </summary>
+        public void UpdateCrystalDisplay()
+        {
+            if (CrystalTextTop != null)
+                CrystalTextTop.Text = $"{SaveManager.CurrentSave.PermanentCurrency.Crystals:N0}";
+        }
+
         private void UpdateCoreUI()
         {
             // 대부분의 UI는 ViewModel 바인딩으로 자동 업데이트됨
@@ -461,9 +516,10 @@ namespace DeskWarrior
                 InputCountText.Text = $"⌨️ {ViewModel.SessionInputCount}";
         }
 
-        private void UpdateMonsterUI(bool instantHpBar = false)
+        private void UpdateMonsterUI(bool instantHpBar = false, [System.Runtime.CompilerServices.CallerMemberName] string caller = "")
         {
             var monster = GameManager.CurrentMonster;
+            LogHpBar($"[UpdateMonsterUI] caller={caller}, instantHpBar={instantHpBar}, monster={monster?.Name ?? "null"}");
             if (monster == null) return;
 
             // MonsterEmoji, HpText는 ViewModel 바인딩으로 처리됨
@@ -508,29 +564,69 @@ namespace DeskWarrior
                    spritePath.Contains("snake") || spritePath.Contains("boar");
         }
 
+        private static void LogHpBar(string message)
+        {
+            var logPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hpbar_log.txt");
+            var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+            System.IO.File.AppendAllText(logPath, $"[{timestamp}] {message}\n");
+        }
+
+        private void HpBarContainer_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // 컨테이너 크기 변경 시 HP 바 재계산
+            var monster = GameManager?.CurrentMonster;
+            if (monster != null && e.NewSize.Width > 0)
+            {
+                UpdateHpBar(monster, instant: true);
+            }
+        }
+
         private void UpdateHpBar(Monster monster, bool instant = false)
         {
-            var hpRatio = monster.HpRatio;
-            double targetWidth = hpRatio * 80;
+            try
+            {
+                var hpRatio = monster.HpRatio;
+                // HP 바 컨테이너의 실제 너비 사용 (레이아웃 전이면 0)
+                double maxWidth = HpBarContainer?.ActualWidth ?? 0;
+                if (maxWidth <= 0) return; // 레이아웃 완료 전이면 무시
 
-            if (instant)
-            {
-                // 새 몬스터 스폰 시: 애니메이션 없이 즉시 설정
-                HpBar.BeginAnimation(WidthProperty, null);
-                HpBar.Width = targetWidth;
-            }
-            else
-            {
-                // 데미지 시: 애니메이션으로 부드럽게 감소
-                var widthAnim = new DoubleAnimation
+                double targetWidth = hpRatio * maxWidth;
+                double currentWidth = HpBar?.ActualWidth ?? 0;
+
+                // 디버그 로그
+                LogHpBar($"[HP바] instant={instant}, hpRatio={hpRatio:F2}, target={targetWidth:F1}, current={currentWidth:F1}, maxWidth={maxWidth:F1}, HP={monster.CurrentHp}/{monster.MaxHp}");
+
+                if (HpBar == null) return;
+
+                if (instant)
                 {
-                    To = targetWidth,
-                    Duration = TimeSpan.FromMilliseconds(300),
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                };
-                HpBar.BeginAnimation(WidthProperty, widthAnim);
+                    // 새 몬스터 스폰 시: 즉시 완료되는 애니메이션으로 강제 설정
+                    var instantAnim = new DoubleAnimation
+                    {
+                        To = targetWidth,
+                        Duration = TimeSpan.Zero,
+                        FillBehavior = FillBehavior.HoldEnd
+                    };
+                    HpBar.BeginAnimation(WidthProperty, instantAnim);
+                    LogHpBar($"[HP바] 즉시 애니메이션 적용: target={targetWidth}");
+                }
+                else
+                {
+                    // 데미지 시: 애니메이션으로 부드럽게 감소
+                    var widthAnim = new DoubleAnimation
+                    {
+                        To = targetWidth,
+                        Duration = TimeSpan.FromMilliseconds(300),
+                        EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    HpBar.BeginAnimation(WidthProperty, widthAnim);
+                }
+                HpBar.Background = new SolidColorBrush(GetHpBarColor(hpRatio));
             }
-            HpBar.Background = new SolidColorBrush(GetHpBarColor(hpRatio));
+            catch (Exception ex)
+            {
+                LogHpBar($"[HP바 오류] {ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         private static Color GetHpBarColor(double hpRatio)
@@ -583,12 +679,9 @@ namespace DeskWarrior
             int keyboardCost = GameManager.GetInGameStatUpgradeCost("keyboard_power");
             Logger.Log($"[UpdateUpgradeCosts] KeyboardCost={keyboardCost}, CanBuy={gold >= keyboardCost}");
             int keyboardLevel = GameManager.InGameStats.KeyboardPowerLevel;
-            KeyboardCostText.Text = $"{keyboardCost:N0}";
             KeyboardLevelText.Text = $"Lv.{keyboardLevel}";
             bool canBuyKeyboard = gold >= keyboardCost;
             UpgradeKeyboardBtn.IsEnabled = canBuyKeyboard;
-            KeyboardCostText.Foreground = new SolidColorBrush(
-                canBuyKeyboard ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
 
             // 관찰 모드: 구매 가능 여부에 따라 색상 변경
             if (canBuyKeyboard)
@@ -609,18 +702,16 @@ namespace DeskWarrior
             }
 
             // 툴팁 업데이트 (관찰 모드에서 비용 확인용)
-            UpgradeKeyboardBtn.ToolTip = $"⌨️ 키보드 공격력 증가\nLv.{keyboardLevel} → Lv.{keyboardLevel + 1}\n비용: 💰{keyboardCost:N0}";
+            var loc = LocalizationManager.Instance;
+            UpgradeKeyboardBtn.ToolTip = $"{loc["ui.main.tooltip.keyboardUpgrade"]}\nLv.{keyboardLevel} → Lv.{keyboardLevel + 1}\n{loc["ui.common.cost"]}: 💰{keyboardCost:N0}";
 
 
             // 마우스 공격력
             int mouseCost = GameManager.GetInGameStatUpgradeCost("mouse_power");
             int mouseLevel = GameManager.InGameStats.MousePowerLevel;
-            MouseCostText.Text = $"{mouseCost:N0}";
             MouseLevelText.Text = $"Lv.{mouseLevel}";
             bool canBuyMouse = gold >= mouseCost;
             UpgradeMouseBtn.IsEnabled = canBuyMouse;
-            MouseCostText.Foreground = new SolidColorBrush(
-                canBuyMouse ? Color.FromRgb(255, 215, 0) : Color.FromRgb(255, 100, 100));
 
             // 관찰 모드: 구매 가능 여부에 따라 색상 변경
             if (canBuyMouse)
@@ -641,7 +732,7 @@ namespace DeskWarrior
             }
 
             // 툴팁 업데이트
-            UpgradeMouseBtn.ToolTip = $"🖱️ 마우스 공격력 증가\nLv.{mouseLevel} → Lv.{mouseLevel + 1}\n비용: 💰{mouseCost:N0}";
+            UpgradeMouseBtn.ToolTip = $"{loc["ui.main.tooltip.mouseUpgrade"]}\nLv.{mouseLevel} → Lv.{mouseLevel + 1}\n{loc["ui.common.cost"]}: 💰{mouseCost:N0}";
         }
 
         private void SetUpgradeButtonsOpacity(double opacity)
@@ -664,24 +755,26 @@ namespace DeskWarrior
         {
             var loc = LocalizationManager.Instance;
 
-            // 버튼 텍스트 다국어
-            if (StatsBtn != null) StatsBtn.Content = loc["ui.main.stats"];
-            if (SettingsBtn != null) SettingsBtn.Content = loc["ui.main.settings"];
+            // 버튼 텍스트 다국어 (TextBlock 직접 참조)
+            if (StatsBtnText != null) StatsBtnText.Text = loc["ui.main.button.stats"];
+            if (ShopBtnText != null) ShopBtnText.Text = loc["ui.main.button.shop"];
+            if (SettingsBtnText != null) SettingsBtnText.Text = loc["ui.main.button.settings"];
 
             // 공격력 텍스트는 ViewModel 바인딩으로 처리됨 (KeyboardPowerDisplayText, MousePowerDisplayText)
 
             // 게임 오버 버튼 다국어 (UserControl)
             GameOverOverlayControl?.UpdateButtonTexts(
-                loc.CurrentLanguage == "ko-KR" ? "🛒 상점 (S)" : "🛒 Shop (S)",
-                loc.CurrentLanguage == "ko-KR" ? "▶️ 게임 (SPACE)" : "▶️ Game (SPACE)"
+                loc["ui.gameover.button.shop"],
+                loc["ui.gameover.button.game"]
             );
 
             // 툴팁 다국어
-            if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.ToolTip = loc["tooltips.upgradeKeyboard"];
-            if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["tooltips.upgradeMouse"];
-            if (StatsBtn != null) StatsBtn.ToolTip = loc["tooltips.stats"];
-            if (SettingsBtn != null) SettingsBtn.ToolTip = loc["tooltips.settings"];
-            if (ExitButtonBorderInline != null) ExitButtonBorderInline.ToolTip = loc["tooltips.exit"];
+            if (UpgradeKeyboardBtn != null) UpgradeKeyboardBtn.ToolTip = loc["ui.main.tooltip.keyboardUpgrade"];
+            if (UpgradeMouseBtn != null) UpgradeMouseBtn.ToolTip = loc["ui.main.tooltip.mouseUpgrade"];
+            if (StatsBtn != null) StatsBtn.ToolTip = loc["ui.main.tooltip.stats"];
+            if (PermanentShopBtn != null) PermanentShopBtn.ToolTip = loc["ui.main.tooltip.shop"];
+            if (SettingsBtn != null) SettingsBtn.ToolTip = loc["ui.main.tooltip.settings"];
+            if (ExitButtonBorderInline != null) ExitButtonBorderInline.ToolTip = loc["ui.main.tooltip.exit"];
         }
 
         #endregion
@@ -737,8 +830,6 @@ namespace DeskWarrior
                 EnemyInfoBorder.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
             if (GoldInfoBarTop != null)
                 GoldInfoBarTop.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
-            if (PowerInfoBar != null)
-                PowerInfoBar.Background = new SolidColorBrush(Colors.Black) { Opacity = infoOpacity };
             if (UpgradePanel != null)
                 UpgradePanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
             if (UtilityPanel != null)

@@ -148,6 +148,74 @@
             </Style.Triggers>
         </Style>
 
+        <!-- ========== Stat Upgrade RepeatButton Style ========== -->
+        <Style x:Key="StatUpgradeRepeatButton" TargetType="RepeatButton">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2a2a3e"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="borderScale" ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#3a3a5e"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#00CED1" BlurRadius="10" ShadowDepth="0" Opacity="0.8"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="borderScale"
+                                                           Storyboard.TargetProperty="ScaleX"
+                                                           To="0.95" Duration="0:0:0.05"/>
+                                            <DoubleAnimation Storyboard.TargetName="borderScale"
+                                                           Storyboard.TargetProperty="ScaleY"
+                                                           To="0.95" Duration="0:0:0.05"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="borderScale"
+                                                           Storyboard.TargetProperty="ScaleX"
+                                                           To="1" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="borderScale"
+                                                           Storyboard.TargetProperty="ScaleY"
+                                                           To="1" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#1a1a1e"/>
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- ========== Slider RepeatButton Style (Hidden) ========== -->
         <Style x:Key="SliderRepeatButtonStyle" TargetType="RepeatButton">
             <Setter Property="SnapsToDevicePixels" Value="true"/>
