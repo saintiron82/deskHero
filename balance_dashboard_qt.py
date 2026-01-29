@@ -33,7 +33,7 @@ class BalanceDashboard(QMainWindow):
         # 설정 로드
         try:
             self.config = {
-                'permanent': load_json('PermanentStatGrowth.json'),
+                'permanent': load_json('PermanentStats.json'),
                 'ingame': load_json('InGameStatGrowth.json'),
                 'formulas': load_json('StatFormulas.json'),
                 'game': load_json('GameData.json')

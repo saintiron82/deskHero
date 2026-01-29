@@ -16,7 +16,6 @@
       "Bash(python -m json.tool:*)",
       "Bash(dotnet run:*)",
       "Bash(powershell -Command \"Stop-Process -Id 47512 -Force\")",
-      "Bash(python tools/balance_calculator.py:*)",
       "Bash(python tools/generate_stat_code.py:*)",
       "Bash(python tools/test_stat_formulas.py:*)",
       "Bash(dotnet clean:*)",
@@ -69,7 +68,8 @@
       "Bash(dotnet DeskWarrior.Simulator.dll:*)",
       "Bash(tee:*)",
       "Bash(Get-Content \"C:\\\\Users\\\\saint\\\\.claude\\\\projects\\\\C--Users-saint-Game-DeskWarrior\\\\c39f5f1e-a598-43f3-8242-245e1ad8eb3e\\\\tool-results\\\\toolu_014s61AyCsk1wfyY3vaFfr4v.txt\")",
-      "Bash(Select-Object -Last 60)"
+      "Bash(Select-Object -Last 60)",
+      "Bash(grep:*)"
     ]
   }
 }

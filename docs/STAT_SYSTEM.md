@@ -167,7 +167,7 @@ Lv50: 100 × 26.0 × 1.5^5 = 19,760
 ### Config 파일
 
 - 인게임: `config/InGameStatGrowth.json`
-- 영구: `config/PermanentStatGrowth.json`
+- 영구: `config/PermanentStats.json`
 
 ---
 

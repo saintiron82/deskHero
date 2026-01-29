@@ -315,7 +315,7 @@ _gameManager.DamageDealt += (s, e) =>
 }
 ```
 
-### config/PermanentStatGrowth.json
+### config/PermanentStats.json
 
 ```json
 {
