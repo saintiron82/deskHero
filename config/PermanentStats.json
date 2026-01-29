@@ -41,7 +41,9 @@
       "multiplier": 1.4,
       "softcap_interval": 12,
       "effect_per_level": 0.5,
-      "max_level": 50,
+      "max_level": 0,
+      "max_effect": 90,
+      "_comment": "기본 10% + 최대 90% = 100%",
       "localization": {
         "ko-KR": { "name": "크리티컬 확률", "description": "크리티컬 확률 +{n}%" },
         "en-US": { "name": "Critical Chance", "description": "+{n}% critical chance" }
@@ -56,7 +58,9 @@
       "multiplier": 1.2,
       "softcap_interval": 18,
       "effect_per_level": 0.15,
-      "max_level": 100,
+      "max_level": 0,
+      "max_effect": 0,
+      "_comment": "배율 무제한",
       "localization": {
         "ko-KR": { "name": "크리티컬 배율", "description": "크리티컬 시 x{n} 배율" },
         "en-US": { "name": "Critical Damage", "description": "x{n} critical multiplier" }
@@ -71,7 +75,9 @@
       "multiplier": 1.3,
       "softcap_interval": 12,
       "effect_per_level": 1.0,
-      "max_level": 100,
+      "max_level": 0,
+      "max_effect": 100,
+      "_comment": "100% 확률이 한계",
       "localization": {
         "ko-KR": { "name": "멀티히트 확률", "description": "{n}% 확률로 2배 타격" },
         "en-US": { "name": "Multi-Hit Chance", "description": "{n}% chance for double hit" }
@@ -122,7 +128,7 @@
         "en-US": { "name": "Crystal+", "description": "+{n} crystals from boss" }
       }
     },
-    "crystal_multi": {
+    "crystal_chance": {
       "stat_name": "CrystalMultiLevel",
       "category": "currency_bonus",
       "icon": "✨",
@@ -131,7 +137,9 @@
       "multiplier": 1.7,
       "softcap_interval": 5,
       "effect_per_level": 2,
-      "max_level": 50,
+      "max_level": 0,
+      "max_effect": 100,
+      "_comment": "100% 확률이 한계",
       "localization": {
         "ko-KR": { "name": "크리스탈*", "description": "크리스탈 드롭 확률 +{n}%" },
         "en-US": { "name": "Crystal*", "description": "+{n}% crystal drop chance" }
@@ -146,7 +154,9 @@
       "multiplier": 1.35,
       "softcap_interval": 12,
       "effect_per_level": 0.4,
-      "max_level": 50,
+      "max_level": 0,
+      "max_effect": 30,
+      "_comment": "기본 30초에서 최대 +30초 = 60초",
       "localization": {
         "ko-KR": { "name": "기본 시간 연장", "description": "제한시간 +{n}초" },
         "en-US": { "name": "Time Extension", "description": "+{n}s time limit" }
@@ -161,7 +171,9 @@
       "multiplier": 1.2,
       "softcap_interval": 15,
       "effect_per_level": 2.0,
-      "max_level": 25,
+      "max_level": 0,
+      "max_effect": 50,
+      "_comment": "최대 50% 할인 (무료는 게임 붕괴)",
       "localization": {
         "ko-KR": { "name": "업그레이드 할인", "description": "골드 업그레이드 비용 -{n}%" },
         "en-US": { "name": "Upgrade Discount", "description": "-{n}% gold upgrade cost" }

@@ -33,10 +33,18 @@ public class SimulationEngine
     }
 
     /// <summary>
+    /// 영구 스탯 Config 참조 반환 (외부에서 SimPermanentStats 생성 시 사용)
+    /// </summary>
+    public Dictionary<string, StatGrowthConfig> PermanentStatConfigs => _permanentStatConfigs;
+
+    /// <summary>
     /// 단일 세션 시뮬레이션
     /// </summary>
     public SessionResult SimulateSession(SimPermanentStats permStats, InputProfile profile)
     {
+        // Config 자동 주입 (효과 계산에 사용)
+        permStats.SetConfig(_permanentStatConfigs);
+
         var result = new SessionResult();
         var inGameStats = new SimInGameStats();
         var crystalTracker = new CrystalTracker(_bossDropConfig, _random);
@@ -56,10 +64,21 @@ public class SimulationEngine
 
         while (true)
         {
+            // 세션 시간 초과 체크
+            if (sessionTime >= baseTimeLimit)
+            {
+                result.MaxLevel = currentLevel;
+                result.EndReason = "session_timeout";
+                result.SessionDuration = sessionTime;
+                result.CrystalsFromStages = crystalTracker.GetStageCompletionCrystals();
+                result.CrystalsFromGoldConvert = crystalTracker.ConvertGoldToCrystals(gold);
+                return result;
+            }
+
             // 몬스터 스폰
             bool isBoss = currentLevel > 0 && currentLevel % _gameConfig.Balance.BossInterval == 0;
             var monster = CreateMonster(currentLevel, isBoss);
-            double timeRemaining = baseTimeLimit;
+            double timeRemaining = Math.Min(baseTimeLimit, baseTimeLimit - sessionTime);
 
             // 전투 시뮬레이션
             while (timeRemaining > 0 && monster.IsAlive)
@@ -81,6 +100,13 @@ public class SimulationEngine
                 timeRemaining -= inputInterval;
                 sessionTime += inputInterval;
                 result.TotalInputs++;
+
+                // 세션 시간 초과 체크
+                if (sessionTime >= baseTimeLimit)
+                {
+                    timeRemaining = 0;
+                    break;
+                }
 
                 // 콤보 판정
                 comboStack = ProcessCombo(profile, comboStack, inputInterval, ref lastInputInterval);

@@ -965,13 +965,22 @@ Examples:
     /// <summary>
     /// 전략 비교 모드 분석
     /// 크리스탈 0에서 시작하여 각 전략별로 게임 시간 동안 시뮬레이션
+    /// 시간별 추이 기록 (1시간 단위)
     /// </summary>
     static void RunStrategyComparisonAnalysis(SimulationOptions options, string configPath, string balanceDocPath)
     {
+        int runsPerStrategy = Math.Max(1, options.NumRuns / 100);  // 기본 10회, --runs로 조절
+        if (runsPerStrategy > 20) runsPerStrategy = 20;  // 최대 20회
+
+        int totalHours = (int)Math.Ceiling(options.GameHours);
+        int checkpointInterval = 1;  // 1시간 단위 체크포인트
+
         Console.WriteLine("=== Strategy Comparison Analysis (Zero-Start) ===\n");
         Console.WriteLine($"  Mode: Zero-Crystal Start (Real Progression)");
         Console.WriteLine($"  Game Time: {options.GameHours} hours");
         Console.WriteLine($"  CPS: {options.Cps:F1}");
+        Console.WriteLine($"  Runs per Strategy: {runsPerStrategy}");
+        Console.WriteLine($"  Checkpoints: Every {checkpointInterval} hour(s)");
         Console.WriteLine();
 
         var profile = new InputProfile
@@ -993,7 +1002,10 @@ Examples:
         };
 
         var progressionSim = SimulatorFactory.CreateProgressionSimulator(configPath);
-        var results = new List<(UpgradeStrategy Strategy, ProgressionResult Result)>();
+        var aggregatedResults = new List<StrategyAggregatedResult>();
+
+        // 시간별 추이 데이터: [전략][시간] = 평균 레벨
+        var hourlyData = new Dictionary<UpgradeStrategy, Dictionary<int, double>>();
 
         var sw = Stopwatch.StartNew();
 
@@ -1001,50 +1013,133 @@ Examples:
 
         foreach (var strategy in strategies)
         {
-            Console.Write($"  {strategy,-15}: ");
+            hourlyData[strategy] = new Dictionary<int, double>();
+            var runResults = new List<ProgressionResult>();
 
-            var result = progressionSim.SimulateByGameTime(
-                new SimPermanentStats(),  // 크리스탈 0, 스탯 0에서 시작
-                profile,
-                options.GameHours,
-                strategy,
-                (currentTime, targetTime) =>
+            // 시간별 레벨 수집: [시간][실행번호] = 레벨
+            var hourlyLevels = new Dictionary<int, List<long>>();
+            for (int h = 1; h <= totalHours; h++)
+            {
+                hourlyLevels[h] = new List<long>();
+            }
+
+            for (int run = 1; run <= runsPerStrategy; run++)
+            {
+                Console.Write($"\r  {strategy,-15}: Run {run}/{runsPerStrategy}");
+
+                // 1시간씩 시뮬레이션하면서 체크포인트 기록
+                var currentStats = new SimPermanentStats();
+                long crystals = 0;
+                long bestLevelEver = 0;
+                double totalGameTime = 0;
+                int totalSessions = 0;
+                long totalCrystalsEarned = 0;
+
+                for (int hour = 1; hour <= totalHours; hour++)
                 {
-                    var percent = currentTime / targetTime * 100;
-                    Console.Write($"\r  {strategy,-15}: {percent:F0}%");
-                }
-            );
+                    // 1시간 시뮬레이션
+                    var hourResult = progressionSim.SimulateByGameTime(
+                        currentStats,
+                        profile,
+                        1.0,  // 1시간씩
+                        strategy,
+                        null
+                    );
 
-            results.Add((strategy, result));
-            Console.WriteLine($"\r  {strategy,-15}: Lv.{result.BestLevelEver,5} (Sessions: {result.AttemptsNeeded,4})");
+                    // 상태 업데이트
+                    currentStats = hourResult.FinalStats;
+                    bestLevelEver = Math.Max(bestLevelEver, hourResult.BestLevelEver);
+                    totalGameTime += hourResult.TotalGameTimeSeconds;
+                    totalSessions += hourResult.AttemptsNeeded;
+                    totalCrystalsEarned += hourResult.TotalCrystalsEarned;
+
+                    // 시간별 레벨 기록
+                    hourlyLevels[hour].Add(bestLevelEver);
+                }
+
+                // 최종 결과 저장
+                runResults.Add(new ProgressionResult
+                {
+                    BestLevelEver = bestLevelEver,
+                    AttemptsNeeded = totalSessions,
+                    TotalCrystalsEarned = totalCrystalsEarned,
+                    FinalStats = currentStats
+                });
+            }
+
+            // 시간별 평균 계산
+            for (int h = 1; h <= totalHours; h++)
+            {
+                hourlyData[strategy][h] = hourlyLevels[h].Average();
+            }
+
+            // 최종 통계 계산
+            var levels = runResults.Select(r => r.BestLevelEver).ToList();
+            var sessions = runResults.Select(r => r.AttemptsNeeded).ToList();
+            var crystalsEarned = runResults.Select(r => r.TotalCrystalsEarned).ToList();
+
+            var aggregated = new StrategyAggregatedResult
+            {
+                Strategy = strategy,
+                AvgLevel = levels.Average(),
+                MinLevel = levels.Min(),
+                MaxLevel = levels.Max(),
+                StdDevLevel = CalculateStdDev(levels),
+                AvgSessions = sessions.Average(),
+                AvgCrystals = crystalsEarned.Average(),
+                RepresentativeFinalStats = runResults.LastOrDefault()?.FinalStats
+            };
+
+            aggregatedResults.Add(aggregated);
+            Console.WriteLine($"\r  {strategy,-15}: Avg Lv.{aggregated.AvgLevel,7:F0} (±{aggregated.StdDevLevel:F0})  Range: {aggregated.MinLevel}-{aggregated.MaxLevel}");
         }
 
         sw.Stop();
         Console.WriteLine($"\nCompleted in {sw.Elapsed.TotalSeconds:F1}s\n");
 
+        // 시간별 추이 출력
+        Console.WriteLine("=== Hourly Progression ===");
+        Console.Write("  Hour |");
+        foreach (var strategy in strategies)
+        {
+            Console.Write($" {strategy.ToString().Substring(0, Math.Min(8, strategy.ToString().Length)),8} |");
+        }
+        Console.WriteLine();
+        Console.WriteLine("  " + new string('-', 7 + strategies.Length * 11));
+
+        for (int h = 1; h <= totalHours; h++)
+        {
+            Console.Write($"  {h,4}h |");
+            foreach (var strategy in strategies)
+            {
+                Console.Write($" {hourlyData[strategy][h],8:F0} |");
+            }
+            Console.WriteLine();
+        }
+        Console.WriteLine();
+
         // 결과 정렬 및 분석
-        var sortedResults = results.OrderByDescending(r => r.Result.BestLevelEver).ToList();
+        var sortedResults = aggregatedResults.OrderByDescending(r => r.AvgLevel).ToList();
         var best = sortedResults[0];
         var second = sortedResults.Count > 1 ? sortedResults[1] : sortedResults[0];
 
-        // Dominance Ratio 계산
-        double dominanceRatio = second.Result.BestLevelEver > 0
-            ? (double)best.Result.BestLevelEver / second.Result.BestLevelEver
+        // Dominance Ratio 계산 (평균 기준)
+        double dominanceRatio = second.AvgLevel > 0
+            ? best.AvgLevel / second.AvgLevel
             : 1.0;
 
         // 결과 출력
-        Console.WriteLine("=== Results (Ranked by Best Level) ===");
+        Console.WriteLine("=== Final Results (Ranked by Average Level) ===");
         int rank = 1;
-        foreach (var (strategy, result) in sortedResults)
+        foreach (var result in sortedResults)
         {
-            var diffFromBest = best.Result.BestLevelEver - result.BestLevelEver;
-            var diffPercent = best.Result.BestLevelEver > 0
-                ? (double)diffFromBest / best.Result.BestLevelEver * 100
+            var diffPercent = best.AvgLevel > 0
+                ? (best.AvgLevel - result.AvgLevel) / best.AvgLevel * 100
                 : 0;
 
-            Console.WriteLine($"  {rank}. {strategy,-15} Lv.{result.BestLevelEver,5}  " +
-                $"Sessions:{result.AttemptsNeeded,4}  " +
-                $"Crystals:{result.TotalCrystalsEarned,6}  " +
+            Console.WriteLine($"  {rank}. {result.Strategy,-15} Avg:{result.AvgLevel,6:F0} (±{result.StdDevLevel,4:F0})  " +
+                $"Sessions:{result.AvgSessions,5:F0}  " +
+                $"Crystals:{result.AvgCrystals,8:F0}  " +
                 $"{(rank == 1 ? "" : $"(-{diffPercent:F1}%)")}");
             rank++;
         }
@@ -1077,8 +1172,45 @@ Examples:
         Console.ResetColor();
         Console.WriteLine();
 
-        // 보고서 저장
-        SaveStrategyComparisonReport(sortedResults, options, dominanceRatio, grade, balanceDocPath);
+        // 최종 스탯 출력
+        Console.WriteLine("=== Final Permanent Stats (Representative Run) ===");
+        foreach (var result in sortedResults)
+        {
+            var stats = result.RepresentativeFinalStats;
+            if (stats != null)
+            {
+                Console.WriteLine($"\n{result.Strategy}:");
+                Console.WriteLine($"  base_attack: {stats.BaseAttackLevel,3} → +{stats.BaseAttack:F0} dmg");
+                Console.WriteLine($"  attack_percent: {stats.AttackPercentLevel,3} → +{stats.AttackPercentBonus * 100:F1}%");
+                Console.WriteLine($"  crit_damage: {stats.CritDamageLevel,3} → x{stats.CriticalDamageBonus:F2}");
+                Console.WriteLine($"  time_extend: {stats.TimeExtendLevel,3} → +{stats.TimeExtend:F1}s");
+                Console.WriteLine($"  upgrade_discount: {stats.UpgradeDiscountLevel,3} → -{stats.UpgradeCostReduction * 100:F1}%");
+            }
+        }
+        Console.WriteLine();
+
+        // 보고서 저장 (시간별 추이 포함)
+        SaveStrategyComparisonReportWithHourly(sortedResults, hourlyData, strategies, totalHours, options, runsPerStrategy, dominanceRatio, grade, balanceDocPath, configPath);
+    }
+
+    static double CalculateStdDev(List<long> values)
+    {
+        if (values.Count <= 1) return 0;
+        double avg = values.Average();
+        double sumSquares = values.Sum(v => (v - avg) * (v - avg));
+        return Math.Sqrt(sumSquares / (values.Count - 1));
+    }
+
+    class StrategyAggregatedResult
+    {
+        public UpgradeStrategy Strategy { get; set; }
+        public double AvgLevel { get; set; }
+        public long MinLevel { get; set; }
+        public long MaxLevel { get; set; }
+        public double StdDevLevel { get; set; }
+        public double AvgSessions { get; set; }
+        public double AvgCrystals { get; set; }
+        public SimPermanentStats? RepresentativeFinalStats { get; set; }
     }
 
     static void SaveStrategyComparisonReport(
@@ -1155,6 +1287,306 @@ Examples:
         }
 
         sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## 분석");
+        sb.AppendLine();
+
+        if (dominanceRatio > 1.5)
+        {
+            sb.AppendLine($"**{best.Strategy}** 전략이 다른 전략을 압도하고 있습니다.");
+            sb.AppendLine($"- 1위와 2위의 격차: {dominanceRatio:F2}배");
+            sb.AppendLine("- 전략 다양성 부족");
+        }
+        else if (dominanceRatio > 1.3)
+        {
+            sb.AppendLine("전략 간 격차가 존재하지만 심각한 수준은 아닙니다.");
+        }
+        else
+        {
+            sb.AppendLine("전략 간 밸런스가 양호합니다.");
+        }
+
+        // 파일 저장
+        File.WriteAllText(reportPath, sb.ToString());
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Report saved: {reportPath}");
+        Console.ResetColor();
+    }
+
+    static void SaveStrategyComparisonReportAggregated(
+        List<StrategyAggregatedResult> results,
+        SimulationOptions options,
+        int runsPerStrategy,
+        double dominanceRatio,
+        string grade,
+        string balanceDocPath)
+    {
+        // 오늘 날짜 폴더 생성
+        var today = DateTime.Now.ToString("yyyy-MM-dd");
+        var todayFolder = Path.Combine(balanceDocPath, today);
+        if (!Directory.Exists(todayFolder))
+        {
+            Directory.CreateDirectory(todayFolder);
+        }
+
+        // 회차 번호 결정
+        var existingReports = Directory.GetFiles(todayFolder, "*.md")
+            .Select(f => Path.GetFileName(f))
+            .Where(f => f.Length >= 2 && char.IsDigit(f[0]) && char.IsDigit(f[1]))
+            .OrderByDescending(f => f)
+            .ToList();
+
+        int nextNumber = 1;
+        if (existingReports.Count > 0)
+        {
+            var lastReport = existingReports[0];
+            if (int.TryParse(lastReport[..2], out int lastNum))
+            {
+                nextNumber = lastNum + 1;
+            }
+        }
+
+        var reportFileName = $"{nextNumber:D2}_strategy_comparison.md";
+        var reportPath = Path.Combine(todayFolder, reportFileName);
+
+        // 보고서 내용 생성
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"# 밸런스 테스트 보고서: 전략 비교 (#{nextNumber:D2})");
+        sb.AppendLine();
+        sb.AppendLine($"**테스트 일시:** {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        sb.AppendLine($"**테스트 조건:**");
+        sb.AppendLine($"- 시작 크리스탈: **0** (Zero-Start)");
+        sb.AppendLine($"- 게임 시간: {options.GameHours}시간");
+        sb.AppendLine($"- CPS: {options.Cps:F1}");
+        sb.AppendLine($"- **전략당 실행 횟수: {runsPerStrategy}회**");
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## 테스트 결과");
+        sb.AppendLine();
+        sb.AppendLine("### 핵심 지표");
+        sb.AppendLine();
+        sb.AppendLine("| 지표 | 결과 | 판정 |");
+        sb.AppendLine("|------|------|------|");
+        sb.AppendLine($"| Dominance Ratio | **{dominanceRatio:F2}** | {(dominanceRatio <= 1.3 ? "✅" : "❌")} |");
+        sb.AppendLine($"| Balance Grade | **{grade}** | |");
+        sb.AppendLine();
+        sb.AppendLine("### 전략별 성과 (평균)");
+        sb.AppendLine();
+        sb.AppendLine("| 순위 | 전략 | 평균 레벨 | 편차 | 범위 | 평균 세션 |");
+        sb.AppendLine("|------|------|-----------|------|------|-----------|");
+
+        int rank = 1;
+        var best = results[0];
+        foreach (var result in results)
+        {
+            var diffPercent = best.AvgLevel > 0
+                ? (best.AvgLevel - result.AvgLevel) / best.AvgLevel * 100
+                : 0;
+            var diffStr = rank == 1 ? "" : $" (-{diffPercent:F1}%)";
+            sb.AppendLine($"| {rank} | {result.Strategy} | **{result.AvgLevel:F0}**{diffStr} | ±{result.StdDevLevel:F0} | {result.MinLevel}-{result.MaxLevel} | {result.AvgSessions:F0} |");
+            rank++;
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## 분석");
+        sb.AppendLine();
+
+        if (dominanceRatio > 1.5)
+        {
+            sb.AppendLine($"**{best.Strategy}** 전략이 다른 전략을 압도하고 있습니다.");
+            sb.AppendLine($"- 1위와 2위의 격차: {dominanceRatio:F2}배");
+            sb.AppendLine("- 전략 다양성 부족");
+        }
+        else if (dominanceRatio > 1.3)
+        {
+            sb.AppendLine("전략 간 격차가 존재하지만 심각한 수준은 아닙니다.");
+        }
+        else
+        {
+            sb.AppendLine("전략 간 밸런스가 양호합니다.");
+        }
+
+        // 파일 저장
+        File.WriteAllText(reportPath, sb.ToString());
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Report saved: {reportPath}");
+        Console.ResetColor();
+    }
+
+    static void SaveStrategyComparisonReportWithHourly(
+        List<StrategyAggregatedResult> results,
+        Dictionary<UpgradeStrategy, Dictionary<int, double>> hourlyData,
+        UpgradeStrategy[] strategies,
+        int totalHours,
+        SimulationOptions options,
+        int runsPerStrategy,
+        double dominanceRatio,
+        string grade,
+        string balanceDocPath,
+        string configPath)
+    {
+        // 오늘 날짜 폴더 생성
+        var today = DateTime.Now.ToString("yyyy-MM-dd");
+        var todayFolder = Path.Combine(balanceDocPath, today);
+        if (!Directory.Exists(todayFolder))
+        {
+            Directory.CreateDirectory(todayFolder);
+        }
+
+        // 회차 번호 결정
+        var existingReports = Directory.GetFiles(todayFolder, "*.md")
+            .Select(f => Path.GetFileName(f))
+            .Where(f => f.Length >= 2 && char.IsDigit(f[0]) && char.IsDigit(f[1]))
+            .OrderByDescending(f => f)
+            .ToList();
+
+        int nextNumber = 1;
+        if (existingReports.Count > 0)
+        {
+            var lastReport = existingReports[0];
+            if (int.TryParse(lastReport[..2], out int lastNum))
+            {
+                nextNumber = lastNum + 1;
+            }
+        }
+
+        var reportFileName = $"{nextNumber:D2}_strategy_comparison.md";
+        var reportPath = Path.Combine(todayFolder, reportFileName);
+
+        // 보고서 내용 생성
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"# 밸런스 테스트 보고서: 전략 비교 (#{nextNumber:D2})");
+        sb.AppendLine();
+        sb.AppendLine($"**테스트 일시:** {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        sb.AppendLine($"**테스트 조건:**");
+        sb.AppendLine($"- 시작 크리스탈: **0** (Zero-Start)");
+        sb.AppendLine($"- 게임 시간: {options.GameHours}시간");
+        sb.AppendLine($"- CPS: {options.Cps:F1}");
+        sb.AppendLine($"- 전략당 실행 횟수: {runsPerStrategy}회");
+        sb.AppendLine();
+
+        // Config 파라미터 기록 (재현성 보장)
+        sb.AppendLine("**핵심 파라미터:**");
+        try
+        {
+            var permanentStatsPath = Path.Combine(configPath, "PermanentStats.json");
+            if (File.Exists(permanentStatsPath))
+            {
+                var json = File.ReadAllText(permanentStatsPath);
+                using var doc = System.Text.Json.JsonDocument.Parse(json);
+                var stats = doc.RootElement.GetProperty("stats");
+
+                // 핵심 스탯의 effect_per_level 기록
+                var keyStats = new[] { "base_attack", "attack_percent", "crit_damage", "time_extend", "crystal_bonus" };
+                foreach (var statKey in keyStats)
+                {
+                    if (stats.TryGetProperty(statKey, out var stat) && stat.TryGetProperty("effect_per_level", out var effect))
+                    {
+                        sb.AppendLine($"- {statKey}: effect_per_level = {effect}");
+                    }
+                }
+            }
+        }
+        catch
+        {
+            sb.AppendLine("- (config 로드 실패)");
+        }
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+
+        // 핵심 지표
+        sb.AppendLine("## 핵심 지표");
+        sb.AppendLine();
+        sb.AppendLine("| 지표 | 결과 | 판정 |");
+        sb.AppendLine("|------|------|------|");
+        sb.AppendLine($"| Dominance Ratio | **{dominanceRatio:F2}** | {(dominanceRatio <= 1.3 ? "✅" : "❌")} |");
+        sb.AppendLine($"| Balance Grade | **{grade}** | |");
+        sb.AppendLine();
+
+        // 최종 결과
+        sb.AppendLine("## 최종 결과 (평균)");
+        sb.AppendLine();
+        sb.AppendLine("| 순위 | 전략 | 평균 레벨 | 편차 | 범위 | 평균 세션 |");
+        sb.AppendLine("|------|------|-----------|------|------|-----------|");
+
+        int rank = 1;
+        var best = results[0];
+        foreach (var result in results)
+        {
+            var diffPercent = best.AvgLevel > 0
+                ? (best.AvgLevel - result.AvgLevel) / best.AvgLevel * 100
+                : 0;
+            var diffStr = rank == 1 ? "" : $" (-{diffPercent:F1}%)";
+            sb.AppendLine($"| {rank} | {result.Strategy} | **{result.AvgLevel:F0}**{diffStr} | ±{result.StdDevLevel:F0} | {result.MinLevel}-{result.MaxLevel} | {result.AvgSessions:F0} |");
+            rank++;
+        }
+        sb.AppendLine();
+
+        // 시간별 추이
+        sb.AppendLine("## 시간별 추이");
+        sb.AppendLine();
+        sb.Append("| 시간 |");
+        foreach (var strategy in strategies)
+        {
+            sb.Append($" {strategy} |");
+        }
+        sb.AppendLine();
+        sb.Append("|------|");
+        foreach (var _ in strategies)
+        {
+            sb.Append("------|");
+        }
+        sb.AppendLine();
+
+        for (int h = 1; h <= totalHours; h++)
+        {
+            sb.Append($"| {h}h |");
+
+            // 해당 시간의 순위 계산
+            var hourRanking = strategies
+                .Select(s => (Strategy: s, Level: hourlyData[s][h]))
+                .OrderByDescending(x => x.Level)
+                .ToList();
+
+            foreach (var strategy in strategies)
+            {
+                var level = hourlyData[strategy][h];
+                var hourRank = hourRanking.FindIndex(x => x.Strategy == strategy) + 1;
+                var rankMark = hourRank == 1 ? " **1위**" : "";
+                sb.Append($" {level:F0}{rankMark} |");
+            }
+            sb.AppendLine();
+        }
+        sb.AppendLine();
+
+        // 시간별 1위 변화
+        sb.AppendLine("### 시간별 1위 변화");
+        sb.AppendLine();
+        var leaderChanges = new List<string>();
+        UpgradeStrategy? prevLeader = null;
+        for (int h = 1; h <= totalHours; h++)
+        {
+            var leader = strategies.OrderByDescending(s => hourlyData[s][h]).First();
+            if (leader != prevLeader)
+            {
+                leaderChanges.Add($"- **{h}시간**: {leader}");
+                prevLeader = leader;
+            }
+        }
+        foreach (var change in leaderChanges)
+        {
+            sb.AppendLine(change);
+        }
+        sb.AppendLine();
+
+        // 분석
         sb.AppendLine("---");
         sb.AppendLine();
         sb.AppendLine("## 분석");

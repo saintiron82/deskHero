@@ -42,10 +42,10 @@ public class ProgressionSimulator
         double targetTimeSeconds = targetGameTimeHours * 3600;
         var result = new ProgressionResult();
         var currentStats = initialStats.Clone();
-        int crystals = 0;
-        int totalCrystalsEarned = 0;
-        int totalCrystalsSpent = 0;
-        int bestLevelEver = 0;
+        long crystals = 0;
+        long totalCrystalsEarned = 0;
+        long totalCrystalsSpent = 0;
+        long bestLevelEver = 0;
         double totalGameTime = 0;
         int sessionNumber = 0;
 
@@ -63,7 +63,7 @@ public class ProgressionSimulator
             totalGameTime += session.SessionDuration;
 
             // 세션 기록
-            int crystalsEarned = session.TotalCrystals;
+            long crystalsEarned = session.TotalCrystals;
             totalCrystalsEarned += crystalsEarned;
 
             result.SessionHistory.Add(new SessionProgressRecord
@@ -81,7 +81,7 @@ public class ProgressionSimulator
             bestLevelEver = Math.Max(bestLevelEver, session.MaxLevel);
 
             // 업그레이드 전략 적용
-            int crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, sessionNumber, result.UpgradeHistory);
+            long crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, sessionNumber, result.UpgradeHistory);
             totalCrystalsSpent += crystalsSpent;
         }
 
@@ -117,10 +117,10 @@ public class ProgressionSimulator
     {
         var result = new ProgressionResult();
         var currentStats = initialStats.Clone();
-        int crystals = 0;
-        int totalCrystalsEarned = 0;
-        int totalCrystalsSpent = 0;
-        int bestLevel = 0;
+        long crystals = 0;
+        long totalCrystalsEarned = 0;
+        long totalCrystalsSpent = 0;
+        long bestLevel = 0;
 
         for (int attempt = 1; attempt <= maxAttempts; attempt++)
         {
@@ -131,7 +131,7 @@ public class ProgressionSimulator
             var session = _engine.SimulateSession(currentStats, profile);
 
             // 세션 기록
-            int crystalsEarned = session.TotalCrystals;
+            long crystalsEarned = session.TotalCrystals;
             totalCrystalsEarned += crystalsEarned;
 
             result.SessionHistory.Add(new SessionProgressRecord
@@ -159,7 +159,7 @@ public class ProgressionSimulator
             }
 
             // 업그레이드 전략 적용
-            int crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, attempt, result.UpgradeHistory);
+            long crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, attempt, result.UpgradeHistory);
             totalCrystalsSpent += crystalsSpent;
         }
 
@@ -176,17 +176,17 @@ public class ProgressionSimulator
     /// <summary>
     /// 업그레이드 전략 적용
     /// </summary>
-    private int ApplyUpgradeStrategy(
+    private long ApplyUpgradeStrategy(
         SimPermanentStats stats,
         UpgradeStrategy strategy,
-        ref int crystals,
+        ref long crystals,
         int afterSession,
         List<UpgradeRecord> upgradeHistory)
     {
         if (strategy == UpgradeStrategy.None)
             return 0;
 
-        int totalSpent = 0;
+        long totalSpent = 0;
 
         switch (strategy)
         {
@@ -222,13 +222,13 @@ public class ProgressionSimulator
     /// <summary>
     /// 그리디 전략: 비용 대비 효율 최대화
     /// </summary>
-    private int ApplyGreedyStrategy(
+    private long ApplyGreedyStrategy(
         SimPermanentStats stats,
-        ref int crystals,
+        ref long crystals,
         int afterSession,
         List<UpgradeRecord> history)
     {
-        int totalSpent = 0;
+        long totalSpent = 0;
 
         while (crystals > 0)
         {
@@ -259,9 +259,9 @@ public class ProgressionSimulator
     /// <summary>
     /// 공격력 우선 전략
     /// </summary>
-    private int ApplyDamageFirstStrategy(
+    private long ApplyDamageFirstStrategy(
         SimPermanentStats stats,
-        ref int crystals,
+        ref long crystals,
         int afterSession,
         List<UpgradeRecord> history)
     {
@@ -272,9 +272,9 @@ public class ProgressionSimulator
     /// <summary>
     /// 생존 우선 전략
     /// </summary>
-    private int ApplySurvivalFirstStrategy(
+    private long ApplySurvivalFirstStrategy(
         SimPermanentStats stats,
-        ref int crystals,
+        ref long crystals,
         int afterSession,
         List<UpgradeRecord> history)
     {
@@ -285,9 +285,9 @@ public class ProgressionSimulator
     /// <summary>
     /// 크리스털 파밍 전략
     /// </summary>
-    private int ApplyCrystalFarmStrategy(
+    private long ApplyCrystalFarmStrategy(
         SimPermanentStats stats,
-        ref int crystals,
+        ref long crystals,
         int afterSession,
         List<UpgradeRecord> history)
     {
@@ -298,9 +298,9 @@ public class ProgressionSimulator
     /// <summary>
     /// 균형 전략: 카테고리별 순환
     /// </summary>
-    private int ApplyBalancedStrategy(
+    private long ApplyBalancedStrategy(
         SimPermanentStats stats,
-        ref int crystals,
+        ref long crystals,
         int afterSession,
         List<UpgradeRecord> history)
     {
@@ -312,7 +312,7 @@ public class ProgressionSimulator
             new[] { "time_extend" }
         };
 
-        int totalSpent = 0;
+        long totalSpent = 0;
         int categoryIndex = afterSession % categories.Length;
 
         // 해당 카테고리에서 업그레이드
@@ -327,14 +327,14 @@ public class ProgressionSimulator
     /// <summary>
     /// 우선순위 기반 업그레이드
     /// </summary>
-    private int ApplyPriorityStrategy(
+    private long ApplyPriorityStrategy(
         SimPermanentStats stats,
-        ref int crystals,
+        ref long crystals,
         int afterSession,
         List<UpgradeRecord> history,
         string[] priorityStats)
     {
-        int totalSpent = 0;
+        long totalSpent = 0;
 
         // 우선순위 스탯들에 대해 업그레이드
         foreach (var statId in priorityStats)

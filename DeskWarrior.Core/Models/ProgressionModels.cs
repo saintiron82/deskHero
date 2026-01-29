@@ -15,10 +15,10 @@ public class ProgressionResult
     public SimPermanentStats FinalStats { get; set; } = new();
 
     /// <summary>총 획득 크리스털</summary>
-    public int TotalCrystalsEarned { get; set; }
+    public long TotalCrystalsEarned { get; set; }
 
     /// <summary>총 소비 크리스털</summary>
-    public int TotalCrystalsSpent { get; set; }
+    public long TotalCrystalsSpent { get; set; }
 
     /// <summary>세션별 기록</summary>
     public List<SessionProgressRecord> SessionHistory { get; set; } = new();
@@ -27,13 +27,13 @@ public class ProgressionResult
     public List<UpgradeRecord> UpgradeHistory { get; set; } = new();
 
     /// <summary>최종 도달 레벨 (실패 시 마지막 최고 레벨)</summary>
-    public int FinalMaxLevel { get; set; }
+    public long FinalMaxLevel { get; set; }
 
     /// <summary>총 게임 플레이 시간 (초)</summary>
     public double TotalGameTimeSeconds { get; set; }
 
     /// <summary>역대 최고 도달 레벨</summary>
-    public int BestLevelEver { get; set; }
+    public long BestLevelEver { get; set; }
 }
 
 /// <summary>
@@ -42,10 +42,10 @@ public class ProgressionResult
 public class SessionProgressRecord
 {
     public int SessionNumber { get; set; }
-    public int MaxLevel { get; set; }
-    public int CrystalsEarned { get; set; }
-    public int CrystalsBeforeSession { get; set; }
-    public int CrystalsAfterSession { get; set; }
+    public long MaxLevel { get; set; }
+    public long CrystalsEarned { get; set; }
+    public long CrystalsBeforeSession { get; set; }
+    public long CrystalsAfterSession { get; set; }
     public double SessionDurationSeconds { get; set; }
     public double CumulativeGameTimeSeconds { get; set; }
 }
@@ -59,7 +59,7 @@ public class UpgradeRecord
     public string StatId { get; set; } = "";
     public int FromLevel { get; set; }
     public int ToLevel { get; set; }
-    public int CrystalsCost { get; set; }
+    public long CrystalsCost { get; set; }
 }
 
 /// <summary>

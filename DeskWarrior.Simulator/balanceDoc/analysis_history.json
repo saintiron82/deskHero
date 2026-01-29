@@ -1,31 +1,6 @@
 {
   "Records": [
     {
-      "RecordId": "2ad76732",
-      "AnalyzedAt": "2026-01-28T23:54:16.3506683+09:00",
-      "BalanceGrade": "C",
-      "TargetLevel": 50,
-      "Cps": 5,
-      "CrystalBudget": 500,
-      "TopStats": [
-        "time_extend",
-        "multi_hit",
-        "crit_chance",
-        "attack_percent",
-        "gold_multi_perm"
-      ],
-      "BottomStats": [
-        "start_level",
-        "start_keyboard",
-        "start_gold",
-        "start_mouse",
-        "start_combo_damage"
-      ],
-      "FocusStats": [],
-      "BestPatternId": "ga_optimized",
-      "BestPatternLevel": 1754
-    },
-    {
       "RecordId": "edd51ab2",
       "AnalyzedAt": "2026-01-29T09:40:22.7908464+09:00",
       "BalanceGrade": "B",
@@ -249,6 +224,31 @@
       "FocusStats": [],
       "BestPatternId": "single_base_attack",
       "BestPatternLevel": 339
+    },
+    {
+      "RecordId": "91b64962",
+      "AnalyzedAt": "2026-01-29T17:27:11.2149376+09:00",
+      "BalanceGrade": "C",
+      "TargetLevel": 50,
+      "Cps": 5,
+      "CrystalBudget": 0,
+      "TopStats": [
+        "base_attack",
+        "attack_percent",
+        "crit_chance",
+        "crit_damage",
+        "multi_hit"
+      ],
+      "BottomStats": [
+        "start_combo_damage",
+        "start_combo_flex",
+        "start_gold_multi",
+        "start_gold_flat",
+        "start_mouse"
+      ],
+      "FocusStats": [],
+      "BestPatternId": "single_base_attack",
+      "BestPatternLevel": 10
     }
   ]
 }

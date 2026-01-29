@@ -97,7 +97,7 @@
 | :-- | :--- | :--- | :--- | :--- |
 | 51 | **코카트리스** | `monster_cockatriceA.png` | **[완료]** | |
 | 52 | **와이번** | `monster_wyvernA.png` | **[완료]** | |
-| 53 | **드레이크** | `monster_drakeA.png` | **[대기]** | 폐기 후 재생성 필요 |
+| 53 | **드레이크** | `monster_drakeA.png` | **[완료]** | |
 | 54 | **히포그리프** | `monster_hippogriffA.png` | **[완료]** | |
 | 55 | **페가수스** | `monster_pegasusA.png` | **[완료]** | |
 | 56 | **사이클롭스** | `monster_cyclopsA.png` | **[완료]** | |
@@ -109,7 +109,7 @@
 | 62 | **드라이더** | `monster_driderA.png` | **[완료]** | |
 | 63 | **도플갱어** | `monster_doppelgangerA.png` | **[완료]** | |
 | 64 | **쉐이드** | `monster_shadeA.png` | **[완료]** | |
-| 65 | **팬텀** | `monster_phantomA.png` | **[대기]** | 폐기 후 재생성 필요 |
+| 65 | **팬텀** | `monster_phantomA.png` | **[완료]** | |
 | 66 | **호문쿨루스** | `monster_homunculusA.png` | **[완료]** | |
 | 67 | **리빙 아머** | `monster_livingarmorA.png` | **[완료]** | |
 | 68 | **플라잉 소드** | `monster_flyingswordA.png` | **[완료]** | |
@@ -119,11 +119,11 @@
 #### F. 보스 몬스터 (Boss - 5종)
 | No. | 몬스터 | 파일명 | 상태 | 비고 |
 | :-- | :--- | :--- | :--- | :--- |
-| 71 | **크라켄** | `boss_krakenA.png` | **[대기]** | |
-| 72 | **피닉스** | `boss_phoenixA.png` | **[대기]** | |
-| 73 | **히드라** | `boss_hydraA.png` | **[대기]** | |
-| 74 | **미노타우로스** | `boss_minotaurA.png` | **[대기]** | |
-| 75 | **뱀파이어 로드** | `boss_vampirelordA.png` | **[대기]** | |
+| 71 | **크라켄** | `boss_krakenA.png` | **[완료]** | |
+| 72 | **피닉스** | `boss_phoenixA.png` | **[완료]** | |
+| 73 | **히드라** | `boss_hydraA.png` | **[완료]** | |
+| 74 | **미노타우로스** | `boss_minotaurA.png` | **[완료]** | |
+| 75 | **뱀파이어 로드** | `boss_vampirelordA.png` | **[완료]** | |
 
 ---
 

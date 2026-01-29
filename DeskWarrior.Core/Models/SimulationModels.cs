@@ -2,9 +2,18 @@ namespace DeskWarrior.Core.Models;
 
 /// <summary>
 /// 시뮬레이션용 영구 스탯 (게임의 PermanentStats와 동일 구조)
+/// Config에서 effect_per_level을 읽어서 효과 계산
 /// </summary>
 public class SimPermanentStats
 {
+    // Config 참조 (효과 계산에 사용)
+    private Dictionary<string, StatGrowthConfig>? _config;
+
+    public void SetConfig(Dictionary<string, StatGrowthConfig> config)
+    {
+        _config = config;
+    }
+
     // 기본 능력
     public int BaseAttackLevel { get; set; } = 0;
     public int AttackPercentLevel { get; set; } = 0;
@@ -32,26 +41,37 @@ public class SimPermanentStats
     public int StartComboFlexLevel { get; set; } = 0;
     public int StartComboDamageLevel { get; set; } = 0;
 
-    // 계산된 효과 (PermanentStats의 Legacy Properties와 동일)
-    public int BaseAttack => BaseAttackLevel;
-    public double AttackPercentBonus => AttackPercentLevel * 0.01;  // PermanentStats.json: 1% per level
-    public double CriticalChanceBonus => CritChanceLevel * 0.005;   // 0.5% per level
-    public double CriticalDamageBonus => CritDamageLevel * 0.002;   // 0.2 per level
-    public double MultiHitChance => MultiHitLevel * 0.005;          // 0.5% per level
-    public double GoldFlatPerm => GoldFlatPermLevel * 2;            // +2 gold per level
-    public double GoldMultiPerm => GoldMultiPermLevel * 3;          // +3% per level
-    public int CrystalFlat => CrystalFlatLevel;                     // +1 crystal per level
-    public double CrystalDropChanceBonus => CrystalMultiLevel * 0.02; // +2% drop chance per level
-    public double TimeExtend => TimeExtendLevel * 0.1;              // +0.1s per level
-    public double UpgradeCostReduction => UpgradeDiscountLevel * 0.001; // 0.1% per level
-    public int StartLevel => StartLevelLevel;
-    public int StartGold => StartGoldLevel * 50;
-    public int StartKeyboardPower => (int)(StartKeyboardLevel * 0.1);
-    public int StartMousePower => (int)(StartMouseLevel * 0.1);
+    // Config에서 효과 계산하는 헬퍼 메서드
+    private double GetEffect(string statKey, int level)
+    {
+        if (_config != null && _config.TryGetValue(statKey, out var cfg))
+        {
+            return cfg.CalculateEffect(level);
+        }
+        // Config가 없으면 레벨 그대로 반환 (fallback)
+        return level;
+    }
+
+    // 계산된 효과 (Config의 effect_per_level 사용)
+    public int BaseAttack => (int)GetEffect("base_attack", BaseAttackLevel);
+    public double AttackPercentBonus => GetEffect("attack_percent", AttackPercentLevel) / 100.0;  // % → 소수
+    public double CriticalChanceBonus => GetEffect("crit_chance", CritChanceLevel) / 100.0;       // % → 소수
+    public double CriticalDamageBonus => GetEffect("crit_damage", CritDamageLevel);
+    public double MultiHitChance => GetEffect("multi_hit", MultiHitLevel) / 100.0;               // % → 소수
+    public double GoldFlatPerm => GetEffect("gold_flat_perm", GoldFlatPermLevel);
+    public double GoldMultiPerm => GetEffect("gold_multi_perm", GoldMultiPermLevel) / 100.0;     // % → 소수
+    public int CrystalFlat => (int)GetEffect("crystal_flat", CrystalFlatLevel);
+    public double CrystalDropChanceBonus => GetEffect("crystal_chance", CrystalMultiLevel) / 100.0; // % → 소수
+    public double TimeExtend => GetEffect("time_extend", TimeExtendLevel);
+    public double UpgradeCostReduction => GetEffect("upgrade_discount", UpgradeDiscountLevel) / 100.0; // % → 소수
+    public int StartLevel => (int)GetEffect("start_level", StartLevelLevel);
+    public int StartGold => (int)GetEffect("start_gold", StartGoldLevel);
+    public int StartKeyboardPower => (int)GetEffect("start_keyboard", StartKeyboardLevel);
+    public int StartMousePower => (int)GetEffect("start_mouse", StartMouseLevel);
 
     public SimPermanentStats Clone()
     {
-        return new SimPermanentStats
+        var clone = new SimPermanentStats
         {
             BaseAttackLevel = this.BaseAttackLevel,
             AttackPercentLevel = this.AttackPercentLevel,
@@ -73,6 +93,11 @@ public class SimPermanentStats
             StartComboFlexLevel = this.StartComboFlexLevel,
             StartComboDamageLevel = this.StartComboDamageLevel
         };
+        if (_config != null)
+        {
+            clone.SetConfig(_config);
+        }
+        return clone;
     }
 }
 
@@ -134,8 +159,8 @@ public class SimMonster
 /// </summary>
 public class SessionResult
 {
-    public int MaxLevel { get; set; }
-    public int TotalGold { get; set; }
+    public long MaxLevel { get; set; }
+    public long TotalGold { get; set; }
     public long TotalDamage { get; set; }
     public int MonstersKilled { get; set; }
     public int BossesKilled { get; set; }
@@ -145,10 +170,10 @@ public class SessionResult
     public string EndReason { get; set; } = "timeout";
 
     // 크리스털 획득 (Phase 2)
-    public int CrystalsFromBosses { get; set; }     // 보스 드롭
-    public int CrystalsFromStages { get; set; }     // 스테이지 클리어 보너스
-    public int CrystalsFromGoldConvert { get; set; } // 골드 변환
-    public int TotalCrystals => CrystalsFromBosses + CrystalsFromStages + CrystalsFromGoldConvert;
+    public long CrystalsFromBosses { get; set; }     // 보스 드롭
+    public long CrystalsFromStages { get; set; }     // 스테이지 클리어 보너스
+    public long CrystalsFromGoldConvert { get; set; } // 골드 변환
+    public long TotalCrystals => CrystalsFromBosses + CrystalsFromStages + CrystalsFromGoldConvert;
 }
 
 /// <summary>

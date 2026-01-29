@@ -104,6 +104,9 @@ public class StatGrowthConfig
     [JsonPropertyName("max_level")]
     public int MaxLevel { get; set; } = 0;
 
+    [JsonPropertyName("max_effect")]
+    public double MaxEffect { get; set; } = 0;  // 0 = 무제한
+
     public int CalculateCost(int level, double? discountPercent = null)
     {
         if (level <= 0) return 0;
@@ -123,7 +126,42 @@ public class StatGrowthConfig
 
     public double CalculateEffect(int level)
     {
-        return level * EffectPerLevel;
+        double effect = level * EffectPerLevel;
+        // 데이터 한계 적용
+        if (MaxEffect > 0 && effect > MaxEffect)
+        {
+            return MaxEffect;
+        }
+        return effect;
+    }
+
+    /// <summary>
+    /// 데이터 한계 기반 실제 만렙 계산
+    /// </summary>
+    public int CalculateMaxLevel()
+    {
+        // max_effect가 0이면 무제한
+        if (MaxEffect <= 0 || EffectPerLevel <= 0)
+        {
+            return MaxLevel > 0 ? MaxLevel : int.MaxValue;
+        }
+        // 데이터 한계 기반 만렙 = max_effect / effect_per_level
+        int dataLimit = (int)Math.Ceiling(MaxEffect / EffectPerLevel);
+        // max_level이 지정되어 있으면 둘 중 작은 값
+        if (MaxLevel > 0)
+        {
+            return Math.Min(MaxLevel, dataLimit);
+        }
+        return dataLimit;
+    }
+
+    /// <summary>
+    /// 해당 레벨에서 업그레이드 가능한지 확인
+    /// </summary>
+    public bool CanUpgrade(int currentLevel)
+    {
+        int maxLv = CalculateMaxLevel();
+        return currentLevel < maxLv;
     }
 }
 

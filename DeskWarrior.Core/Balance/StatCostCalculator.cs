@@ -91,7 +91,7 @@ public class StatCostCalculator
     /// </summary>
     public (string statId, int cost, double efficiency)? FindBestUpgrade(
         SimPermanentStats stats,
-        int availableCrystals)
+        long availableCrystals)
     {
         var candidates = new List<(string statId, int cost, double efficiency)>();
 
