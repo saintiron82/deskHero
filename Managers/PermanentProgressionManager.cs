@@ -15,7 +15,7 @@ namespace DeskWarrior.Managers
         #region Fields
 
         private readonly SaveManager _saveManager;
-        private readonly List<PermanentUpgradeDefinition> _upgradeDefinitions;
+        private readonly Dictionary<string, StatGrowthConfig> _statConfigs;
         private readonly BossDropConfig _bossDropConfig;
         private readonly Random _random = new();
 
@@ -33,7 +33,7 @@ namespace DeskWarrior.Managers
         public PermanentProgressionManager(SaveManager saveManager)
         {
             _saveManager = saveManager;
-            _upgradeDefinitions = LoadUpgradeDefinitions();
+            _statConfigs = LoadStatConfigs();
             _bossDropConfig = LoadBossDropConfig();
         }
 
@@ -87,6 +87,15 @@ namespace DeskWarrior.Managers
             };
         }
 
+        /// <summary>
+        /// 스테이지 클리어 시 크리스탈 보상 (초반 부스터)
+        /// </summary>
+        public void ProcessStageClear(int clearedStage)
+        {
+            // 매 스테이지 클리어 시 1 크리스탈
+            AddCrystals(1, "stage_clear");
+        }
+
         #endregion
 
         #region Currency Management
@@ -128,18 +137,18 @@ namespace DeskWarrior.Managers
         /// </summary>
         public bool PurchaseUpgrade(string upgradeId)
         {
-            var definition = _upgradeDefinitions.FirstOrDefault(u => u.Id == upgradeId);
-            if (definition == null) return false;
+            if (!_statConfigs.TryGetValue(upgradeId, out var config))
+                return false;
 
             var save = _saveManager.CurrentSave;
             var progress = GetOrCreateProgress(upgradeId);
 
             // 최대 레벨 체크
-            if (definition.MaxLevel > 0 && progress.CurrentLevel >= definition.MaxLevel)
+            if (config.MaxLevel > 0 && progress.CurrentLevel >= config.MaxLevel)
                 return false;
 
             // 비용 계산
-            int cost = CalculateUpgradeCost(definition, progress.CurrentLevel);
+            int cost = config.CalculateCost(progress.CurrentLevel + 1);
 
             // 크리스탈 체크
             if (save.PermanentCurrency.Crystals < cost)
@@ -154,7 +163,7 @@ namespace DeskWarrior.Managers
             progress.TotalInvested += cost;
 
             // 스탯 업그레이드 적용
-            ApplyStatUpgrade(definition, progress.CurrentLevel);
+            ApplyStatUpgrade(upgradeId, config, progress.CurrentLevel);
 
             UpgradePurchased?.Invoke(this, new UpgradePurchasedEventArgs(upgradeId, progress.CurrentLevel));
 
@@ -164,34 +173,36 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 업그레이드 비용 계산
         /// </summary>
-        public int CalculateUpgradeCost(PermanentUpgradeDefinition def, int currentLevel)
+        public int CalculateUpgradeCost(string upgradeId, int currentLevel)
         {
-            double cost = def.BaseCost * Math.Pow(def.CostMultiplier, currentLevel);
-            return Math.Max(1, (int)Math.Round(cost));
+            if (!_statConfigs.TryGetValue(upgradeId, out var config))
+                return int.MaxValue;
+            return config.CalculateCost(currentLevel + 1);
         }
 
         /// <summary>
-        /// 업그레이드 정의 가져오기
+        /// 스탯 설정 가져오기
         /// </summary>
-        public PermanentUpgradeDefinition? GetUpgradeDefinition(string upgradeId)
+        public StatGrowthConfig? GetStatConfig(string upgradeId)
         {
-            return _upgradeDefinitions.FirstOrDefault(u => u.Id == upgradeId);
+            return _statConfigs.TryGetValue(upgradeId, out var config) ? config : null;
         }
 
         /// <summary>
-        /// 모든 업그레이드 정의 가져오기
+        /// 모든 스탯 설정 가져오기
         /// </summary>
-        public List<PermanentUpgradeDefinition> GetAllUpgradeDefinitions()
+        public Dictionary<string, StatGrowthConfig> GetAllStatConfigs()
         {
-            return _upgradeDefinitions;
+            return _statConfigs;
         }
 
         /// <summary>
-        /// 카테고리별 업그레이드 가져오기
+        /// 카테고리별 스탯 가져오기
         /// </summary>
-        public List<PermanentUpgradeDefinition> GetUpgradesByCategory(string category)
+        public Dictionary<string, StatGrowthConfig> GetStatsByCategory(string category)
         {
-            return _upgradeDefinitions.Where(u => u.Category == category).ToList();
+            return _statConfigs.Where(kvp => kvp.Value.Category == category)
+                               .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         #endregion
@@ -201,14 +212,15 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 스탯 업그레이드 적용
         /// </summary>
-        private void ApplyStatUpgrade(PermanentUpgradeDefinition def, int newLevel)
+        private void ApplyStatUpgrade(string upgradeId, StatGrowthConfig config, int newLevel)
         {
             var stats = _saveManager.CurrentSave.PermanentStats;
-            var property = typeof(PermanentStats).GetProperty(def.StatName);
+            var statName = !string.IsNullOrEmpty(config.StatName) ? config.StatName : upgradeId;
+            var property = typeof(PermanentStats).GetProperty(statName);
 
             if (property == null) return;
 
-            double newValue = def.IncrementPerLevel * newLevel;
+            double newValue = config.EffectPerLevel * newLevel;
 
             if (property.PropertyType == typeof(int))
             {
@@ -242,29 +254,29 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 업그레이드 정의 로드
+        /// 스탯 설정 로드
         /// </summary>
-        private List<PermanentUpgradeDefinition> LoadUpgradeDefinitions()
+        private Dictionary<string, StatGrowthConfig> LoadStatConfigs()
         {
             try
             {
-                var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "PermanentUpgrades.json");
+                var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "PermanentStats.json");
                 if (!File.Exists(configPath))
                 {
-                    return new List<PermanentUpgradeDefinition>();
+                    return new Dictionary<string, StatGrowthConfig>();
                 }
 
                 var json = File.ReadAllText(configPath);
-                var root = JsonSerializer.Deserialize<PermanentUpgradesRoot>(json, new JsonSerializerOptions
+                var root = JsonSerializer.Deserialize<StatGrowthConfigRoot>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
-                return root?.Upgrades ?? new List<PermanentUpgradeDefinition>();
+                return root?.Stats ?? new Dictionary<string, StatGrowthConfig>();
             }
             catch
             {
-                return new List<PermanentUpgradeDefinition>();
+                return new Dictionary<string, StatGrowthConfig>();
             }
         }
 

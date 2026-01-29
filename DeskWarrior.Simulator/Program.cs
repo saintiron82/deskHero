@@ -1,0 +1,1014 @@
+using System.Diagnostics;
+using DeskWarrior.Core.Balance;
+using DeskWarrior.Core.Models;
+using DeskWarrior.Core.Simulation;
+
+namespace DeskWarrior.Simulator;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.WriteLine("=== DeskWarrior Simulator ===\n");
+
+        if (args.Length == 0 || args.Contains("--help") || args.Contains("-h"))
+        {
+            PrintHelp();
+            return;
+        }
+
+        if (args.Contains("--debug"))
+        {
+            DebugRunner.Run(FindConfigPath());
+            return;
+        }
+
+        if (args.Contains("--progress"))
+        {
+            try
+            {
+                var options = ParseArgs(args);
+                RunProgressionSimulation(options);
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.ResetColor();
+                Environment.Exit(1);
+            }
+            return;
+        }
+
+        if (args.Contains("--analyze"))
+        {
+            try
+            {
+                var options = ParseArgs(args);
+                RunBalanceAnalysis(options);
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.ResetColor();
+                Environment.Exit(1);
+            }
+            return;
+        }
+
+        try
+        {
+            var options = ParseArgs(args);
+            RunSimulation(options);
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Error: {ex.Message}");
+            Console.ResetColor();
+            Environment.Exit(1);
+        }
+    }
+
+    static void PrintHelp()
+    {
+        Console.WriteLine(@"Usage: DeskWarrior.Simulator [options]
+
+Modes:
+  (default)            Single session batch simulation
+  --progress           Multi-session progression simulation
+  --analyze            Balance route diversity analysis
+  --debug              Debug single session step-by-step
+
+Options:
+  --target <level>     Target level to analyze (default: 50)
+  --cps <value>        Clicks per second (default: 5.0)
+  --runs <count>       Number of simulations (default: 1000)
+  --combo <level>      Combo skill: none/beginner/intermediate/expert/perfect (default: none)
+  --parallel <count>   Parallel threads (-1 = all cores, default: -1)
+
+Progression Options (--progress mode):
+  --strategy <name>    Upgrade strategy: greedy/damage/survival/crystal/balanced/none (default: greedy)
+  --max-attempts <n>   Maximum session attempts (default: 1000)
+  --game-hours <n>     Game time to simulate in hours (default: 0 = use target level instead)
+                       When set, simulates until game time reached instead of target level
+
+Analysis Options (--analyze mode):
+  --crystals <n>       Crystal budget for pattern testing (default: 1000)
+  --quick              Quick analysis (single-stat patterns only)
+  --output <path>      Output report path (auto-generates .json and .md files)
+  --raw-data           Include raw pattern data in report
+
+Permanent Stats (level):
+  --base-attack <n>    Base Attack level
+  --crit-chance <n>    Critical Chance level
+  --crit-damage <n>    Critical Damage level
+  --multi-hit <n>      Multi-Hit level
+  --time-extend <n>    Time Extension level
+  --gold-flat <n>      Gold Flat level
+  --gold-multi <n>     Gold Multi level
+  --start-level <n>    Start Level bonus
+  --start-gold <n>     Start Gold level
+
+Output:
+  --verbose            Show detailed output
+  --json               Output as JSON
+  --help, -h           Show this help
+
+Examples:
+  simulate --target 50 --cps 5 --runs 10000
+  simulate --target 100 --cps 7 --combo expert --base-attack 10
+  simulate --progress --target 100 --cps 5 --strategy greedy
+  simulate --progress --game-hours 10 --cps 5 --strategy greedy
+  simulate --analyze --cps 5 --crystals 500 --target 100
+  simulate --analyze --cps 5 --crystals 1000 --output balanceDoc/report
+");
+    }
+
+    static SimulationOptions ParseArgs(string[] args)
+    {
+        var options = new SimulationOptions();
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            var arg = args[i];
+            var next = i + 1 < args.Length ? args[i + 1] : null;
+
+            switch (arg)
+            {
+                case "--target":
+                    options.TargetLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--cps":
+                    options.Cps = double.Parse(next!);
+                    i++;
+                    break;
+                case "--runs":
+                    options.NumRuns = int.Parse(next!);
+                    i++;
+                    break;
+                case "--combo":
+                    options.ComboSkill = ParseComboSkill(next!);
+                    i++;
+                    break;
+                case "--parallel":
+                    options.Parallelism = int.Parse(next!);
+                    i++;
+                    break;
+                case "--base-attack":
+                    options.PermanentStats.BaseAttackLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--crit-chance":
+                    options.PermanentStats.CritChanceLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--crit-damage":
+                    options.PermanentStats.CritDamageLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--multi-hit":
+                    options.PermanentStats.MultiHitLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--time-extend":
+                    options.PermanentStats.TimeExtendLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--gold-flat":
+                    options.PermanentStats.GoldFlatPermLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--gold-multi":
+                    options.PermanentStats.GoldMultiPermLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--start-level":
+                    options.PermanentStats.StartLevelLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--start-gold":
+                    options.PermanentStats.StartGoldLevel = int.Parse(next!);
+                    i++;
+                    break;
+                case "--verbose":
+                    options.Verbose = true;
+                    break;
+                case "--json":
+                    options.OutputJson = true;
+                    break;
+                case "--strategy":
+                    options.Strategy = ParseStrategy(next!);
+                    i++;
+                    break;
+                case "--max-attempts":
+                    options.MaxAttempts = int.Parse(next!);
+                    i++;
+                    break;
+                case "--game-hours":
+                    options.GameHours = double.Parse(next!);
+                    i++;
+                    break;
+                case "--crystals":
+                    options.CrystalBudget = int.Parse(next!);
+                    i++;
+                    break;
+                case "--quick":
+                    options.QuickAnalysis = true;
+                    break;
+                case "--output":
+                    options.OutputPath = next!;
+                    i++;
+                    break;
+                case "--raw-data":
+                    options.IncludeRawData = true;
+                    break;
+            }
+        }
+
+        return options;
+    }
+
+    static UpgradeStrategy ParseStrategy(string value)
+    {
+        return value.ToLower() switch
+        {
+            "greedy" => UpgradeStrategy.Greedy,
+            "damage" => UpgradeStrategy.DamageFirst,
+            "survival" => UpgradeStrategy.SurvivalFirst,
+            "crystal" => UpgradeStrategy.CrystalFarm,
+            "balanced" => UpgradeStrategy.Balanced,
+            "none" => UpgradeStrategy.None,
+            _ => UpgradeStrategy.Greedy
+        };
+    }
+
+    static ComboSkillLevel ParseComboSkill(string value)
+    {
+        return value.ToLower() switch
+        {
+            "none" => ComboSkillLevel.None,
+            "beginner" => ComboSkillLevel.Beginner,
+            "intermediate" => ComboSkillLevel.Intermediate,
+            "expert" => ComboSkillLevel.Expert,
+            "perfect" => ComboSkillLevel.Perfect,
+            _ => ComboSkillLevel.None
+        };
+    }
+
+    static void RunSimulation(SimulationOptions options)
+    {
+        // config 폴더 경로 찾기
+        var configPath = FindConfigPath();
+        Console.WriteLine($"Config path: {configPath}\n");
+
+        // 시뮬레이터 생성
+        var simulator = SimulatorFactory.Create(configPath);
+
+        // 입력 프로파일 설정
+        var profile = new InputProfile
+        {
+            AverageCps = options.Cps,
+            CpsVariance = 0.2,
+            ComboSkill = options.ComboSkill,
+            AutoUpgrade = true
+        };
+
+        // 옵션 출력
+        PrintOptions(options, profile);
+
+        // 시뮬레이션 실행
+        Console.WriteLine($"Running {options.NumRuns:N0} simulations...");
+        var sw = Stopwatch.StartNew();
+
+        var result = simulator.RunSimulations(
+            options.PermanentStats,
+            profile,
+            options.NumRuns,
+            options.TargetLevel,
+            options.Parallelism,
+            (current, total) =>
+            {
+                if (!options.OutputJson)
+                {
+                    Console.Write($"\rProgress: {current:N0}/{total:N0} ({100.0 * current / total:F1}%)");
+                }
+            }
+        );
+
+        sw.Stop();
+        Console.WriteLine($"\rCompleted in {sw.Elapsed.TotalSeconds:F2}s                    \n");
+
+        // 결과 출력
+        if (options.OutputJson)
+        {
+            PrintJsonResult(result);
+        }
+        else
+        {
+            PrintResult(result, options);
+        }
+    }
+
+    static string FindConfigPath()
+    {
+        // 현재 디렉토리에서 config 폴더 찾기
+        var current = AppDomain.CurrentDomain.BaseDirectory;
+        var configPath = Path.Combine(current, "config");
+
+        if (Directory.Exists(configPath))
+        {
+            return configPath;
+        }
+
+        // 상위 디렉토리 탐색
+        var parent = Directory.GetParent(current);
+        while (parent != null)
+        {
+            configPath = Path.Combine(parent.FullName, "config");
+            if (Directory.Exists(configPath))
+            {
+                return configPath;
+            }
+            parent = parent.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not find 'config' folder");
+    }
+
+    static string FindBalanceDocPath(string configPath)
+    {
+        // config 폴더가 bin 안에 있으면 프로젝트 루트 찾기
+        var current = Directory.GetParent(configPath);
+        while (current != null)
+        {
+            var balanceDoc = Path.Combine(current.FullName, "balanceDoc");
+            if (Directory.Exists(balanceDoc))
+            {
+                return balanceDoc;
+            }
+
+            // .csproj 파일이 있으면 프로젝트 루트로 간주
+            if (Directory.GetFiles(current.FullName, "*.csproj").Length > 0 ||
+                Directory.GetFiles(current.FullName, "*.sln").Length > 0)
+            {
+                // 여기에 balanceDoc 생성
+                return Path.Combine(current.FullName, "balanceDoc");
+            }
+
+            current = current.Parent;
+        }
+
+        // 못 찾으면 config 폴더 옆에 생성
+        return Path.Combine(Directory.GetParent(configPath)?.FullName ?? configPath, "balanceDoc");
+    }
+
+    static void PrintOptions(SimulationOptions options, InputProfile profile)
+    {
+        Console.WriteLine("=== Simulation Settings ===");
+        Console.WriteLine($"  Target Level: {options.TargetLevel}");
+        Console.WriteLine($"  CPS: {options.Cps:F1}");
+        Console.WriteLine($"  Combo Skill: {profile.ComboSkill}");
+        Console.WriteLine($"  Simulations: {options.NumRuns:N0}");
+        Console.WriteLine();
+
+        if (HasPermanentStats(options.PermanentStats))
+        {
+            Console.WriteLine("=== Permanent Stats ===");
+            var stats = options.PermanentStats;
+            if (stats.BaseAttackLevel > 0) Console.WriteLine($"  Base Attack: Lv.{stats.BaseAttackLevel}");
+            if (stats.CritChanceLevel > 0) Console.WriteLine($"  Crit Chance: Lv.{stats.CritChanceLevel}");
+            if (stats.CritDamageLevel > 0) Console.WriteLine($"  Crit Damage: Lv.{stats.CritDamageLevel}");
+            if (stats.MultiHitLevel > 0) Console.WriteLine($"  Multi-Hit: Lv.{stats.MultiHitLevel}");
+            if (stats.TimeExtendLevel > 0) Console.WriteLine($"  Time Extend: Lv.{stats.TimeExtendLevel}");
+            if (stats.GoldFlatPermLevel > 0) Console.WriteLine($"  Gold Flat: Lv.{stats.GoldFlatPermLevel}");
+            if (stats.GoldMultiPermLevel > 0) Console.WriteLine($"  Gold Multi: Lv.{stats.GoldMultiPermLevel}");
+            if (stats.StartLevelLevel > 0) Console.WriteLine($"  Start Level: Lv.{stats.StartLevelLevel}");
+            if (stats.StartGoldLevel > 0) Console.WriteLine($"  Start Gold: Lv.{stats.StartGoldLevel}");
+            Console.WriteLine();
+        }
+    }
+
+    static bool HasPermanentStats(SimPermanentStats stats)
+    {
+        return stats.BaseAttackLevel > 0 ||
+               stats.CritChanceLevel > 0 ||
+               stats.CritDamageLevel > 0 ||
+               stats.MultiHitLevel > 0 ||
+               stats.TimeExtendLevel > 0 ||
+               stats.GoldFlatPermLevel > 0 ||
+               stats.GoldMultiPermLevel > 0 ||
+               stats.StartLevelLevel > 0 ||
+               stats.StartGoldLevel > 0;
+    }
+
+    static void PrintResult(BatchResult result, SimulationOptions options)
+    {
+        Console.WriteLine("=== Results ===");
+        Console.WriteLine($"  Average Level: {result.AverageLevel:F1}");
+        Console.WriteLine($"  Median Level: {result.MedianLevel:F1}");
+        Console.WriteLine($"  Min Level: {result.MinLevel:F0}");
+        Console.WriteLine($"  Max Level: {result.MaxLevel:F0}");
+        Console.WriteLine($"  Std Deviation: {result.StandardDeviation:F2}");
+        Console.WriteLine();
+
+        // 크리스털 통계
+        Console.WriteLine("=== Crystal Statistics ===");
+        Console.WriteLine($"  Avg Total Crystals: {result.AverageCrystals:F1}");
+        Console.WriteLine($"    From Bosses: {result.AverageCrystalsFromBosses:F1}");
+        Console.WriteLine($"    From Stages: {result.AverageCrystalsFromStages:F1}");
+        Console.WriteLine($"    From Gold Convert: {result.AverageCrystalsFromGoldConvert:F1}");
+        Console.WriteLine();
+
+        if (result.TargetLevel > 0)
+        {
+            Console.WriteLine($"=== Target Level {result.TargetLevel} Analysis ===");
+            Console.WriteLine($"  Success Rate: {result.SuccessRate:P1}");
+            if (result.SuccessRate > 0 && result.SuccessRate < 1)
+            {
+                Console.WriteLine($"  Median Attempts: {result.MedianAttemptsToTarget:F1}");
+                Console.WriteLine($"  Expected Attempts (90% confidence): {CalcAttemptsForConfidence(result.SuccessRate, 0.9):F1}");
+            }
+            else if (result.SuccessRate == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("  Target not reached in any simulation!");
+                Console.ResetColor();
+            }
+            Console.WriteLine();
+        }
+
+        if (options.Verbose)
+        {
+            PrintLevelDistribution(result);
+        }
+    }
+
+    static void RunProgressionSimulation(SimulationOptions options)
+    {
+        var configPath = FindConfigPath();
+        Console.WriteLine($"Config path: {configPath}\n");
+
+        var progressionSim = SimulatorFactory.CreateProgressionSimulator(configPath);
+
+        var profile = new InputProfile
+        {
+            AverageCps = options.Cps,
+            CpsVariance = 0.2,
+            ComboSkill = options.ComboSkill,
+            AutoUpgrade = true
+        };
+
+        // Game-time based simulation
+        if (options.GameHours > 0)
+        {
+            Console.WriteLine("=== Game Time Based Progression ===");
+            Console.WriteLine($"  Target Game Time: {options.GameHours} hours");
+            Console.WriteLine($"  CPS: {options.Cps:F1}");
+            Console.WriteLine($"  Strategy: {options.Strategy}");
+            Console.WriteLine();
+
+            Console.WriteLine("Running game-time simulation...");
+            var sw = Stopwatch.StartNew();
+
+            var result = progressionSim.SimulateByGameTime(
+                options.PermanentStats,
+                profile,
+                options.GameHours,
+                options.Strategy,
+                (currentTime, targetTime) =>
+                {
+                    var percent = currentTime / targetTime * 100;
+                    var hoursPlayed = currentTime / 3600;
+                    Console.Write($"\rGame time: {hoursPlayed:F2}h / {options.GameHours}h ({percent:F1}%)");
+                }
+            );
+
+            sw.Stop();
+            Console.WriteLine($"\rCompleted in {sw.Elapsed.TotalSeconds:F2}s                              \n");
+
+            PrintGameTimeResult(result, options);
+        }
+        else
+        {
+            // Target level based simulation (original behavior)
+            Console.WriteLine("=== Progression Simulation Settings ===");
+            Console.WriteLine($"  Target Level: {options.TargetLevel}");
+            Console.WriteLine($"  CPS: {options.Cps:F1}");
+            Console.WriteLine($"  Strategy: {options.Strategy}");
+            Console.WriteLine($"  Max Attempts: {options.MaxAttempts}");
+            Console.WriteLine();
+
+            Console.WriteLine("Running progression simulation...");
+            var sw = Stopwatch.StartNew();
+
+            var result = progressionSim.SimulateProgression(
+                options.PermanentStats,
+                profile,
+                options.TargetLevel,
+                options.Strategy,
+                options.MaxAttempts,
+                (current, max) =>
+                {
+                    if (current % 10 == 0)
+                        Console.Write($"\rSession {current}/{max}...");
+                }
+            );
+
+            sw.Stop();
+            Console.WriteLine($"\rCompleted in {sw.Elapsed.TotalSeconds:F2}s                    \n");
+
+            PrintProgressionResult(result, options);
+        }
+    }
+
+    static void PrintGameTimeResult(ProgressionResult result, SimulationOptions options)
+    {
+        Console.WriteLine("=== Game Time Simulation Result ===");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine($"  Best Level Ever Reached: {result.BestLevelEver}");
+        Console.ResetColor();
+        Console.WriteLine($"  Final Session Level: {result.FinalMaxLevel}");
+        Console.WriteLine($"  Total Sessions: {result.AttemptsNeeded}");
+        Console.WriteLine($"  Total Game Time: {result.TotalGameTimeSeconds / 3600:F2} hours");
+        Console.WriteLine();
+
+        // Average session duration
+        if (result.SessionHistory.Count > 0)
+        {
+            var avgDuration = result.SessionHistory.Average(s => s.SessionDurationSeconds);
+            Console.WriteLine("=== Session Statistics ===");
+            Console.WriteLine($"  Average Session Duration: {avgDuration:F1} seconds");
+            Console.WriteLine($"  Total Sessions Played: {result.SessionHistory.Count}");
+
+            // Level progression summary
+            var levelGroups = result.SessionHistory
+                .GroupBy(s => s.MaxLevel / 10 * 10)  // Group by 10 levels
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            if (levelGroups.Count > 0)
+            {
+                Console.WriteLine("\n=== Level Progression (sessions per level range) ===");
+                foreach (var group in levelGroups.TakeLast(5))
+                {
+                    Console.WriteLine($"  Lv.{group.Key}-{group.Key + 9}: {group.Count()} sessions");
+                }
+            }
+        }
+        Console.WriteLine();
+
+        Console.WriteLine("=== Crystal Economy ===");
+        Console.WriteLine($"  Total Earned: {result.TotalCrystalsEarned:N0}");
+        Console.WriteLine($"  Total Spent: {result.TotalCrystalsSpent:N0}");
+        Console.WriteLine($"  Remaining: {result.TotalCrystalsEarned - result.TotalCrystalsSpent:N0}");
+        Console.WriteLine();
+
+        if (options.Verbose)
+        {
+            Console.WriteLine("=== Final Stats ===");
+            PrintFinalStats(result.FinalStats);
+
+            // Show upgrade history summary
+            if (result.UpgradeHistory.Count > 0)
+            {
+                Console.WriteLine("=== Upgrade Summary ===");
+                var upgradeGroups = result.UpgradeHistory
+                    .GroupBy(u => u.StatId)
+                    .OrderByDescending(g => g.Count())
+                    .Take(5);
+
+                foreach (var group in upgradeGroups)
+                {
+                    var maxLevel = group.Max(u => u.ToLevel);
+                    Console.WriteLine($"  {group.Key}: {group.Count()} upgrades (max Lv.{maxLevel})");
+                }
+            }
+        }
+    }
+
+    static void PrintProgressionResult(ProgressionResult result, SimulationOptions options)
+    {
+        Console.WriteLine("=== Progression Result ===");
+        if (result.Success)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"  SUCCESS! Target level {options.TargetLevel} reached!");
+            Console.ResetColor();
+            Console.WriteLine($"  Sessions needed: {result.AttemptsNeeded}");
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  Target level {options.TargetLevel} NOT reached in {result.AttemptsNeeded} sessions");
+            Console.ResetColor();
+            Console.WriteLine($"  Best level achieved: {result.FinalMaxLevel}");
+        }
+        Console.WriteLine();
+
+        Console.WriteLine("=== Crystal Economy ===");
+        Console.WriteLine($"  Total Earned: {result.TotalCrystalsEarned:N0}");
+        Console.WriteLine($"  Total Spent: {result.TotalCrystalsSpent:N0}");
+        Console.WriteLine();
+
+        if (options.Verbose && result.SessionHistory.Count > 0)
+        {
+            Console.WriteLine("=== Session History (Last 10) ===");
+            foreach (var session in result.SessionHistory.TakeLast(10))
+            {
+                Console.WriteLine($"  #{session.SessionNumber}: Level {session.MaxLevel}, +{session.CrystalsEarned} crystals");
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("=== Final Stats ===");
+            PrintFinalStats(result.FinalStats);
+        }
+    }
+
+    static void PrintFinalStats(SimPermanentStats stats)
+    {
+        if (stats.BaseAttackLevel > 0) Console.WriteLine($"  Base Attack: Lv.{stats.BaseAttackLevel}");
+        if (stats.AttackPercentLevel > 0) Console.WriteLine($"  Attack %: Lv.{stats.AttackPercentLevel}");
+        if (stats.CritChanceLevel > 0) Console.WriteLine($"  Crit Chance: Lv.{stats.CritChanceLevel}");
+        if (stats.CritDamageLevel > 0) Console.WriteLine($"  Crit Damage: Lv.{stats.CritDamageLevel}");
+        if (stats.MultiHitLevel > 0) Console.WriteLine($"  Multi-Hit: Lv.{stats.MultiHitLevel}");
+        if (stats.GoldFlatPermLevel > 0) Console.WriteLine($"  Gold Flat: Lv.{stats.GoldFlatPermLevel}");
+        if (stats.GoldMultiPermLevel > 0) Console.WriteLine($"  Gold Multi: Lv.{stats.GoldMultiPermLevel}");
+        if (stats.TimeExtendLevel > 0) Console.WriteLine($"  Time Extend: Lv.{stats.TimeExtendLevel}");
+        Console.WriteLine();
+    }
+
+    static void RunBalanceAnalysis(SimulationOptions options)
+    {
+        var configPath = FindConfigPath();
+        Console.WriteLine($"Config path: {configPath}\n");
+
+        // balanceDoc 경로 결정 (프로젝트 루트 찾기)
+        var balanceDocPath = FindBalanceDocPath(configPath);
+
+        Console.WriteLine("=== Balance Route Diversity Analysis ===\n");
+        Console.WriteLine($"  Target Level: {options.TargetLevel}");
+        Console.WriteLine($"  CPS: {options.Cps:F1}");
+        Console.WriteLine($"  Crystal Budget: {options.CrystalBudget:N0}");
+        Console.WriteLine($"  Mode: {(options.QuickAnalysis ? "Quick (single-stat only)" : "Full (Grid + GA)")}");
+        Console.WriteLine();
+
+        // 과거 분석 히스토리 로드
+        var history = AnalysisHistory.Load(balanceDocPath);
+        var latestRecord = history.GetLatest();
+        if (latestRecord != null)
+        {
+            Console.WriteLine($"  Previous analysis: {latestRecord.AnalyzedAt:yyyy-MM-dd HH:mm}");
+            Console.WriteLine($"    Top stats: {string.Join(", ", latestRecord.TopStats.Take(3))}");
+            Console.WriteLine();
+        }
+        else
+        {
+            Console.WriteLine("  No previous analysis history found.\n");
+        }
+
+        var profile = new InputProfile
+        {
+            AverageCps = options.Cps,
+            CpsVariance = 0.2,
+            ComboSkill = options.ComboSkill,
+            AutoUpgrade = true
+        };
+
+        // Create components
+        var batchSimulator = SimulatorFactory.Create(configPath);
+        var costCalculator = SimulatorFactory.CreateCostCalculator(configPath);
+
+        // Get all stat IDs
+        var statIds = costCalculator.AllStatIds.ToArray();
+        Console.WriteLine($"Analyzing {statIds.Length} permanent stats...\n");
+
+        var explorer = new HybridPatternExplorer(batchSimulator, costCalculator, statIds);
+        explorer.SimulationsPerPattern = Math.Max(20, options.NumRuns / 50); // Fewer sims per pattern for speed
+
+        var sw = Stopwatch.StartNew();
+        PatternRepository repository;
+
+        if (options.QuickAnalysis)
+        {
+            Console.WriteLine("Running quick analysis...");
+            repository = explorer.ExploreQuick(
+                options.PermanentStats,
+                profile,
+                options.CrystalBudget,
+                options.TargetLevel,
+                (current, total, msg) =>
+                {
+                    Console.Write($"\r{msg}                    ");
+                }
+            );
+        }
+        else
+        {
+            Console.WriteLine("Running full analysis (Grid + GA)...");
+            repository = explorer.ExploreAll(
+                options.PermanentStats,
+                profile,
+                options.CrystalBudget,
+                options.TargetLevel,
+                history,  // 과거 히스토리 전달
+                (phase, current, total, msg) =>
+                {
+                    Console.Write($"\rPhase {phase}: {msg}                    ");
+                }
+            );
+        }
+
+        sw.Stop();
+        var durationSeconds = sw.Elapsed.TotalSeconds;
+        Console.WriteLine($"\rCompleted in {durationSeconds:F1}s                              \n");
+
+        // Analyze diversity
+        var analyzer = new RouteDiversityAnalyzer();
+        var analysisResult = analyzer.Analyze(repository);
+
+        // Print to console
+        PrintBalanceResult(analysisResult);
+
+        // 분석 기록 저장
+        SaveAnalysisRecord(history, analysisResult, repository, options, balanceDocPath);
+
+        // Export report if output path specified
+        if (!string.IsNullOrEmpty(options.OutputPath))
+        {
+            ExportBalanceReport(
+                repository,
+                analysisResult,
+                options,
+                profile,
+                costCalculator,
+                explorer,
+                durationSeconds
+            );
+        }
+    }
+
+    static void SaveAnalysisRecord(
+        AnalysisHistory history,
+        BalanceQualityResult analysisResult,
+        PatternRepository repository,
+        SimulationOptions options,
+        string balanceDocPath)
+    {
+        // 단일 스탯 패턴에서 순위 추출
+        var singlePatterns = repository.All
+            .Where(p => p.PatternId?.StartsWith("single_") == true && p.Result != null)
+            .OrderByDescending(p => p.Result!.AverageMaxLevel)
+            .ToList();
+
+        var topStats = singlePatterns
+            .Take(5)
+            .Select(p => p.Allocation.Keys.First())
+            .ToList();
+
+        var bottomStats = singlePatterns
+            .TakeLast(5)
+            .Select(p => p.Allocation.Keys.First())
+            .Reverse()
+            .ToList();
+
+        // 최고 패턴
+        var bestPattern = repository.TopByLevel(1).FirstOrDefault();
+
+        var record = new AnalysisRecord
+        {
+            RecordId = Guid.NewGuid().ToString()[..8],
+            AnalyzedAt = DateTime.Now,
+            BalanceGrade = analysisResult.BalanceGrade.ToString(),
+            TargetLevel = options.TargetLevel,
+            Cps = options.Cps,
+            CrystalBudget = options.CrystalBudget,
+            TopStats = topStats,
+            BottomStats = bottomStats,
+            BestPatternId = bestPattern?.PatternId ?? "",
+            BestPatternLevel = bestPattern?.Result?.AverageMaxLevel ?? 0
+        };
+
+        // 히스토리에 추가 및 저장
+        history.AddRecord(record);
+        history.Save(balanceDocPath);
+
+        Console.WriteLine($"Analysis record saved: {record.RecordId}");
+        Console.WriteLine($"  History now contains {history.Records.Count} records");
+        Console.WriteLine();
+    }
+
+    static void ExportBalanceReport(
+        PatternRepository repository,
+        BalanceQualityResult analysisResult,
+        SimulationOptions options,
+        InputProfile profile,
+        StatCostCalculator costCalculator,
+        HybridPatternExplorer explorer,
+        double durationSeconds)
+    {
+        Console.WriteLine("Generating report...");
+
+        // Create analysis config
+        var config = new AnalysisConfig
+        {
+            TargetLevel = options.TargetLevel,
+            Cps = options.Cps,
+            CrystalBudget = options.CrystalBudget,
+            AnalysisMode = options.QuickAnalysis ? "Quick" : "Full",
+            SimulationsPerPattern = explorer.SimulationsPerPattern,
+            GaGenerations = options.QuickAnalysis ? 0 : 100,
+            GaPopulationSize = options.QuickAnalysis ? 0 : 50
+        };
+
+        // Generate report
+        var reportGenerator = new BalanceReportGenerator(costCalculator);
+        var report = reportGenerator.Generate(
+            repository,
+            analysisResult,
+            config,
+            durationSeconds,
+            options.IncludeRawData
+        );
+
+        // Export
+        var exporter = new BalanceReportExporter();
+
+        // Ensure directory exists
+        var outputDir = Path.GetDirectoryName(options.OutputPath);
+        if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+        {
+            Directory.CreateDirectory(outputDir);
+        }
+
+        // Generate file paths
+        var basePath = options.OutputPath!;
+        if (basePath.EndsWith(".json") || basePath.EndsWith(".md"))
+        {
+            basePath = basePath[..^(basePath.EndsWith(".json") ? 5 : 3)];
+        }
+
+        var jsonPath = $"{basePath}.json";
+        var mdPath = $"{basePath}.md";
+
+        // Export both formats
+        exporter.ExportJson(report, jsonPath);
+        exporter.ExportMarkdown(report, mdPath);
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"\nReport exported:");
+        Console.WriteLine($"  JSON: {jsonPath}");
+        Console.WriteLine($"  Markdown: {mdPath}");
+        Console.ResetColor();
+    }
+
+    static void PrintBalanceResult(BalanceQualityResult result)
+    {
+        // Top patterns
+        Console.WriteLine("=== Top 5 Patterns ===");
+        foreach (var pattern in result.TopPatterns.Take(5))
+        {
+            var mainStats = string.Join(", ", pattern.MainStats
+                .OrderByDescending(kvp => kvp.Value)
+                .Take(3)
+                .Select(kvp => $"{kvp.Key}:{kvp.Value:P0}"));
+            Console.WriteLine($"  {pattern.Rank}. {pattern.PatternId,-25} Avg.Lv: {pattern.AverageLevel:F1}  Rate: {pattern.SuccessRate:P0}");
+            Console.WriteLine($"     [{mainStats}]");
+        }
+        Console.WriteLine();
+
+        // Analysis metrics
+        Console.WriteLine("=== Analysis ===");
+        var dominanceStatus = result.HasDominantRoute ? "❌ Dominant route detected!" : "✅ No dominant route";
+        Console.WriteLine($"  Dominance Ratio: {result.DominanceRatio:F2} (1st/2nd)  {dominanceStatus}");
+
+        var diversityStatus = result.DiversityScore >= 0.5 ? "✅ High variety" : (result.DiversityScore >= 0.3 ? "⚠️ Moderate" : "❌ Low variety");
+        Console.WriteLine($"  Diversity Score: {result.DiversityScore:F2}              {diversityStatus}");
+
+        Console.WriteLine($"  Top Pattern Similarity: {result.TopPatternSimilarity:F2}");
+        Console.WriteLine();
+
+        // Category usage
+        Console.WriteLine("=== Category Usage ===");
+        foreach (var (category, usage) in result.CategoryUsage.OrderByDescending(kvp => kvp.Value))
+        {
+            var status = usage >= 0.5 ? "✅ Active" : (usage >= 0.3 ? "⚠️ Moderate" : "❌ Underused");
+            Console.WriteLine($"  {category,-18} {usage:P0}  {status}");
+        }
+        Console.WriteLine();
+
+        // Under/over used stats
+        if (result.UnderusedStats.Count > 0)
+        {
+            Console.WriteLine($"  Underused stats: {string.Join(", ", result.UnderusedStats)}");
+        }
+        if (result.OverusedStats.Count > 0)
+        {
+            Console.WriteLine($"  Overused stats: {string.Join(", ", result.OverusedStats)}");
+        }
+        if (result.UnderusedStats.Count > 0 || result.OverusedStats.Count > 0)
+        {
+            Console.WriteLine();
+        }
+
+        // Balance grade
+        Console.ForegroundColor = result.BalanceGrade switch
+        {
+            BalanceGrade.A => ConsoleColor.Green,
+            BalanceGrade.B => ConsoleColor.Cyan,
+            BalanceGrade.C => ConsoleColor.Yellow,
+            BalanceGrade.D => ConsoleColor.DarkYellow,
+            BalanceGrade.F => ConsoleColor.Red,
+            _ => ConsoleColor.White
+        };
+        Console.WriteLine($"=== Balance Grade: {result.BalanceGrade} ===");
+        Console.ResetColor();
+        Console.WriteLine($"  {result.Summary}");
+        Console.WriteLine();
+
+        // Recommendations
+        if (result.Recommendations.Count > 0)
+        {
+            Console.WriteLine("=== Recommendations ===");
+            foreach (var rec in result.Recommendations)
+            {
+                Console.WriteLine($"  • {rec}");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    static void PrintLevelDistribution(BatchResult result)
+    {
+        Console.WriteLine("=== Level Distribution (Top 10) ===");
+
+        var distribution = result.LevelDistribution
+            .Select((percent, index) => (Level: index + 1, Percent: percent))
+            .Where(x => x.Percent > 0)
+            .OrderByDescending(x => x.Percent)
+            .Take(10);
+
+        foreach (var (level, percent) in distribution)
+        {
+            var bar = new string('#', (int)(percent * 50));
+            Console.WriteLine($"  Lv.{level,3}: {percent:P1} {bar}");
+        }
+        Console.WriteLine();
+    }
+
+    static double CalcAttemptsForConfidence(double successRate, double confidence)
+    {
+        // P(success in n attempts) = 1 - (1-p)^n >= confidence
+        // n >= log(1-confidence) / log(1-p)
+        return Math.Ceiling(Math.Log(1 - confidence) / Math.Log(1 - successRate));
+    }
+
+    static void PrintJsonResult(BatchResult result)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            result.NumSimulations,
+            result.AverageLevel,
+            result.MedianLevel,
+            result.MinLevel,
+            result.MaxLevel,
+            result.StandardDeviation,
+            result.TargetLevel,
+            result.SuccessRate,
+            result.MedianAttemptsToTarget,
+            result.AverageDuration,
+            result.AverageCrystals,
+            result.AverageCrystalsFromBosses,
+            result.AverageCrystalsFromStages,
+            result.AverageCrystalsFromGoldConvert
+        }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+
+        Console.WriteLine(json);
+    }
+}
+
+class SimulationOptions
+{
+    public int TargetLevel { get; set; } = 50;
+    public double Cps { get; set; } = 5.0;
+    public int NumRuns { get; set; } = 1000;
+    public ComboSkillLevel ComboSkill { get; set; } = ComboSkillLevel.None;
+    public int Parallelism { get; set; } = -1;
+    public bool Verbose { get; set; } = false;
+    public bool OutputJson { get; set; } = false;
+    public SimPermanentStats PermanentStats { get; set; } = new();
+
+    // Progression options
+    public UpgradeStrategy Strategy { get; set; } = UpgradeStrategy.Greedy;
+    public int MaxAttempts { get; set; } = 1000;
+    public double GameHours { get; set; } = 0;  // 0 = use target level mode
+
+    // Analysis options
+    public int CrystalBudget { get; set; } = 1000;
+    public bool QuickAnalysis { get; set; } = false;
+    public string? OutputPath { get; set; }
+    public bool IncludeRawData { get; set; } = false;
+}

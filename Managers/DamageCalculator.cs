@@ -19,6 +19,7 @@ namespace DeskWarrior.Managers
         public int BaseAttackBonus { get; init; }
         public double AttackMultiplier { get; init; }
         public double CritMultiplier { get; init; }
+        public double UtilityBonus { get; init; } // NEW: 유틸리티 스탯 보너스
     }
 
     /// <summary>
@@ -81,24 +82,26 @@ namespace DeskWarrior.Managers
         /// <returns>계산된 데미지와 크리티컬 여부</returns>
         public DamageResult Calculate(int basePower, PermanentStats? permStats, double comboDamageBonus = 0, int comboStack = 0)
         {
-            // ① 기본 = BasePower (keyboard/mouse_power)
-            double effectivePower = basePower;
-
-            // ② +가산 = 기본 + base_attack
+            // ① 기본 = BasePower (keyboard/mouse_power) - BaseAttack 분리
+            // basePower에는 이미 BaseAttack이 포함되어 있으므로 분리
             int baseAttackBonus = 0;
             if (permStats != null)
             {
                 baseAttackBonus = (int)permStats.BaseAttack;
-                effectivePower += baseAttackBonus;
             }
+            int pureBasePower = basePower - baseAttackBonus;
+            double effectivePower = pureBasePower;
 
-            // ③ ×배수 = ② × (1 + attack_percent)
+            // ② ×배수 = 기본 × (1 + attack_percent) - attack_percent는 pureBasePower에만 적용
             double attackMultiplier = 0;
             if (permStats != null)
             {
                 attackMultiplier = permStats.AttackPercentBonus;
                 effectivePower *= (1.0 + attackMultiplier);
             }
+
+            // ③ +가산 = ② + base_attack - attack_percent 효과 제외
+            effectivePower += baseAttackBonus;
 
             // ④ ×크리티컬 = ③ × crit_damage (확률: crit_chance)
             double critChance = _criticalChance;
@@ -135,7 +138,15 @@ namespace DeskWarrior.Managers
                 effectivePower *= stackMultiplier;
             }
 
-            // 최종 데미지 = (int)⑥
+            // ⑦ ×유틸리티 = ⑥ × utility_bonus
+            double utilityBonus = 1.0;
+            if (permStats != null)
+            {
+                utilityBonus = 1.0 + (permStats.TimeExtendLevel + permStats.UpgradeDiscountLevel) * 0.003;
+                effectivePower *= utilityBonus;
+            }
+
+            // 최종 데미지 = (int)⑦
             return new DamageResult
             {
                 Damage = (int)effectivePower,
@@ -143,10 +154,11 @@ namespace DeskWarrior.Managers
                 IsMultiHit = multiHit,
                 IsCombo = isCombo,
                 ComboStack = comboStack,
-                BasePower = basePower,
+                BasePower = pureBasePower,
                 BaseAttackBonus = baseAttackBonus,
                 AttackMultiplier = attackMultiplier,
-                CritMultiplier = critMultiplier
+                CritMultiplier = critMultiplier,
+                UtilityBonus = utilityBonus
             };
         }
 

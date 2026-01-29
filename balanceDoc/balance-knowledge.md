@@ -135,6 +135,39 @@ gold_earned = (base_gold + gold_flat + gold_flat_perm) × (1 + gold_multi + gold
 base_gold = stage × 1.5
 ```
 
+### 1.6 크리스탈 획득 공식
+
+**수입원 1: 스테이지 클리어 보상 (초반 부스터)**
+```
+crystal_per_stage = 1  (매 스테이지 클리어 시)
+```
+
+**수입원 2: 보스 드롭 (메인 수입원)**
+```
+drop_chance = min(base_chance + crystal_multi / 100, max_chance)
+crystal_amount = base_crystal + (boss_level × crystal_per_level) × (1 ± variance)
+```
+
+| 상수 | 값 | 설명 |
+|------|-----|------|
+| `base_chance` | 0.5 (50%) | 기본 드롭 확률 |
+| `max_chance` | 0.95 (95%) | 최대 드롭 확률 |
+| `base_crystal` | 5 | 기본 드롭량 |
+| `crystal_per_level` | 1 | 보스 레벨당 추가량 |
+| `variance` | ±20% | 분산 |
+
+**크리스탈 수입 비교 (스테이지별):**
+| 도달 스테이지 | 스테이지 보상 | 보스 보상 (추정) | 비중 |
+|--------------|--------------|-----------------|------|
+| Stage 1-10 | 10💎 | ~5💎 | 스테이지 > 보스 |
+| Stage 20-30 | 10💎 | ~15💎 | 비슷 |
+| Stage 40-50 | 10💎 | ~30💎 | 보스 > 스테이지 |
+
+**설계 의도:**
+- 스테이지 보상: 초반 부스터 (고정 1💎)
+- 보스 보상: 후반 메인 수입원 (레벨 비례)
+- 후반으로 갈수록 보스 드롭 비중 증가
+
 ---
 
 ## 2. 밸런스 판단 기준 (CRITICAL)

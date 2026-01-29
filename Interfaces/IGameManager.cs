@@ -26,7 +26,7 @@ namespace DeskWarrior.Interfaces
         int Gold { get; }
         int KeyboardPower { get; }
         int MousePower { get; }
-        int RemainingTime { get; }
+        double RemainingTime { get; }
         Monster? CurrentMonster { get; }
         GameData Config { get; }
         GameData GameData { get; }

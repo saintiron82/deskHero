@@ -1,0 +1,142 @@
+{
+  "created_at": "2026-01-27T10:37:10.108507",
+  "updated_at": "2026-01-27T10:58:57.121848",
+  "meta": {
+    "goal": "balance_dashboard_qt.py 파일 분리 리팩토링 (3200줄 → 모듈화)",
+    "max_depth": 5,
+    "max_retries": 3
+  },
+  "current_node": "NODE-5",
+  "nodes": {
+    "ROOT": {
+      "id": "ROOT",
+      "goal": "balance_dashboard_qt.py 파일 분리 리팩토링 (3200줄 → 모듈화)",
+      "parent": null,
+      "children": [
+        "NODE-1",
+        "NODE-2",
+        "NODE-3",
+        "NODE-4",
+        "NODE-5"
+      ],
+      "depth": 0,
+      "status": "passed",
+      "is_leaf": false,
+      "retry_count": 0,
+      "test_criteria": []
+    },
+    "NODE-1": {
+      "id": "NODE-1",
+      "goal": "1. 공통 모듈 분리 (config_loader, game_formulas)",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": true,
+      "retry_count": 0,
+      "test_criteria": [
+        {
+          "name": "dashboard/config_loader.py 생성됨",
+          "passed": true
+        },
+        {
+          "name": "dashboard/game_formulas.py 생성됨",
+          "passed": true
+        },
+        {
+          "name": "from dashboard.config_loader import * 정상 import",
+          "passed": true
+        },
+        {
+          "name": "from dashboard.game_formulas import * 정상 import",
+          "passed": true
+        }
+      ]
+    },
+    "NODE-2": {
+      "id": "NODE-2",
+      "goal": "2. 소형 탭 분리 (stage_sim, dps_calc, investment, cps_measure, terminal)",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": true,
+      "retry_count": 0,
+      "test_criteria": [
+        {
+          "name": "dashboard/tabs/__init__.py 생성",
+          "passed": null
+        },
+        {
+          "name": "stage_simulator.py import 성공",
+          "passed": null
+        },
+        {
+          "name": "dps_calculator.py import 성공",
+          "passed": null
+        },
+        {
+          "name": "investment_guide.py import 성공",
+          "passed": null
+        },
+        {
+          "name": "cps_measure.py import 성공",
+          "passed": null
+        },
+        {
+          "name": "terminal.py import 성공",
+          "passed": null
+        }
+      ],
+      "fast_track": true
+    },
+    "NODE-3": {
+      "id": "NODE-3",
+      "goal": "3. StatEditorTab 분리 (960줄 → 별도 모듈)",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": true,
+      "retry_count": 0,
+      "test_criteria": [
+        {
+          "name": "dashboard/tabs/stat_editor.py 생성",
+          "passed": null
+        },
+        {
+          "name": "from dashboard.tabs import StatEditorTab 성공",
+          "passed": null
+        },
+        {
+          "name": "StatEditorTab 클래스 포함 (960줄)",
+          "passed": null
+        }
+      ],
+      "fast_track": true
+    },
+    "NODE-4": {
+      "id": "NODE-4",
+      "goal": "4. ComparisonAnalyzerTab 분리 (899줄 → 별도 모듈)",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": true,
+      "retry_count": 0,
+      "test_criteria": [],
+      "fast_track": true
+    },
+    "NODE-5": {
+      "id": "NODE-5",
+      "goal": "5. 메인 엔트리포인트 정리 및 테스트",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": false,
+      "retry_count": 0,
+      "test_criteria": []
+    }
+  }
+}

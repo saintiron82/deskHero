@@ -8,6 +8,7 @@
     "time_limit": 30,
     "critical_chance": 0.1,
     "critical_multiplier": 2.0,
+    "upgrade_cost_interval": 50,
     "game_over_messages": [
       "Your finger needs a gym membership.",
       "Monster: 'Is that all you got?'",

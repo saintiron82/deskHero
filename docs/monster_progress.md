@@ -70,7 +70,7 @@
 | 36 | **리자드맨** | `monster_lizardmanA.png` | **[완료]** | |
 | 37 | **놀** | `monster_gnollA.png` | **[완료]** | |
 | 38 | **코볼트** | `monster_koboldA.png` | **[완료]** | |
-| 39 | **트롤** | `monster_trollA.png` | **[완료]** | |
+| 39 | **트롤** | `monster_trollA.png` | **[대기]** | 폐기 후 재생성 필요 |
 | 40 | **오우거** | `monster_ogreA.png` | **[완료]** | |
 | 41 | **켄타우로스** | `monster_centaurA.png` | **[완료]** | |
 | 42 | **메두사** | `monster_medusaA.png` | **[완료]** | |
@@ -81,10 +81,10 @@
 #### D. 보스 몬스터 (Boss - 5종)
 | No. | 몬스터 | 파일명 | 상태 | 비고 |
 | :-- | :--- | :--- | :--- | :--- |
-| 46 | **슬라임 킹** | `boss_slimekingA.png` | **[대기]** | |
-| 47 | **머미 로드** | `boss_mummylordA.png` | **[대기]** | |
-| 48 | **오크 로드** | `boss_orclordA.png` | **[대기]** | |
-| 49 | **고블린 킹** | `boss_goblinkingA.png` | **[대기]** | |
+| 46 | **슬라임 킹** | `boss_slimekingA.png` | **[완료]** | |
+| 47 | **머미 로드** | `boss_mummylordA.png` | **[완료]** | |
+| 48 | **오크 로드** | `boss_orclordA.png` | **[완료]** | |
+| 49 | **고블린 킹** | `boss_goblinkingA.png` | **[완료]** | |
 | 50 | **스켈레톤 킹** | `boss_skeletonkingA.png` | **[대기]** | |
 | - | **서큐버스** | `monster_sercubusA.png` | **[완료]** | Special |
 
@@ -97,7 +97,7 @@
 | :-- | :--- | :--- | :--- | :--- |
 | 51 | **코카트리스** | `monster_cockatriceA.png` | **[완료]** | |
 | 52 | **와이번** | `monster_wyvernA.png` | **[완료]** | |
-| 53 | **드레이크** | `monster_drakeA.png` | **[완료]** | |
+| 53 | **드레이크** | `monster_drakeA.png` | **[대기]** | 폐기 후 재생성 필요 |
 | 54 | **히포그리프** | `monster_hippogriffA.png` | **[완료]** | |
 | 55 | **페가수스** | `monster_pegasusA.png` | **[완료]** | |
 | 56 | **사이클롭스** | `monster_cyclopsA.png` | **[완료]** | |
@@ -109,7 +109,7 @@
 | 62 | **드라이더** | `monster_driderA.png` | **[완료]** | |
 | 63 | **도플갱어** | `monster_doppelgangerA.png` | **[완료]** | |
 | 64 | **쉐이드** | `monster_shadeA.png` | **[완료]** | |
-| 65 | **팬텀** | `monster_phantomA.png` | **[완료]** | |
+| 65 | **팬텀** | `monster_phantomA.png` | **[대기]** | 폐기 후 재생성 필요 |
 | 66 | **호문쿨루스** | `monster_homunculusA.png` | **[완료]** | |
 | 67 | **리빙 아머** | `monster_livingarmorA.png` | **[완료]** | |
 | 68 | **플라잉 소드** | `monster_flyingswordA.png` | **[완료]** | |
@@ -128,4 +128,4 @@
 ---
 
 ## 3. 파일 저장 위치
-*   `c:\Users\saint\Game\DeskWarrior\Assets\Images\Raw_Green`
+*   `c:\Users\saint\Game\DeskWarrior\Resources\Org`

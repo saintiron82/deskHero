@@ -152,7 +152,7 @@ namespace DeskWarrior.Managers
             {
                 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 var inGamePath = Path.Combine(baseDir, "config", "InGameStatGrowth.json");
-                var permanentPath = Path.Combine(baseDir, "config", "PermanentStatGrowth.json");
+                var permanentPath = Path.Combine(baseDir, "config", "PermanentStats.json");
 
                 // 인게임 스탯 로드
                 if (File.Exists(inGamePath))

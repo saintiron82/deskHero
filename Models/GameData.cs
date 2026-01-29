@@ -67,6 +67,9 @@ namespace DeskWarrior.Models
         [JsonPropertyName("critical_multiplier")]
         public double CriticalMultiplier { get; set; } = 2.0;
 
+        [JsonPropertyName("upgrade_cost_interval")]
+        public int UpgradeCostInterval { get; set; } = 50;  // 50스테이지마다 비용 2배
+
         [JsonPropertyName("game_over_messages")]
         public List<string> GameOverMessages { get; set; } = new();
     }

@@ -48,7 +48,7 @@ namespace DeskWarrior.Managers
 
         public int CurrentLevel { get; private set; } = 1;
         public int Gold { get; private set; }
-        public int RemainingTime { get; private set; }
+        public double RemainingTime { get; private set; }
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
         public GameData GameData => _gameData;
@@ -124,10 +124,10 @@ namespace DeskWarrior.Managers
             // 콤보 트래커 초기화
             _comboTracker = new ComboTracker();
 
-            // 타이머 설정 (1초마다)
+            // 타이머 설정 (0.1초마다)
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(1)
+                Interval = TimeSpan.FromMilliseconds(100)
             };
             _timer.Tick += OnTimerTick;
         }
@@ -228,7 +228,8 @@ namespace DeskWarrior.Managers
         {
             int currentLevel = GetInGameStatLevel(statId);
             var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
-            int cost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            int cost = ApplyStageCostMultiplier(baseCost);
 
             if (!_statGrowth.CanUpgradeInGameStat(statId, currentLevel))
                 return false;
@@ -277,7 +278,22 @@ namespace DeskWarrior.Managers
         {
             int currentLevel = GetInGameStatLevel(statId);
             var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
-            return _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            return ApplyStageCostMultiplier(baseCost);
+        }
+
+        /// <summary>
+        /// 스테이지 구간별 업그레이드 비용 배율 적용
+        /// 50스테이지마다 비용 2배 증가 (로그라이크 진행 벽)
+        /// </summary>
+        private int ApplyStageCostMultiplier(int baseCost)
+        {
+            int interval = _gameData.Balance.UpgradeCostInterval;
+            if (interval <= 0) interval = 50;  // 기본값
+
+            int tier = (CurrentLevel - 1) / interval;
+            double multiplier = Math.Pow(2, tier);
+            return (int)(baseCost * multiplier);
         }
 
         /// <summary>
@@ -441,6 +457,9 @@ namespace DeskWarrior.Managers
             // 다음 레벨
             CurrentLevel++;
 
+            // 스테이지 클리어 크리스탈 보상 (초반 부스터)
+            _permanentProgression?.ProcessStageClear(CurrentLevel - 1);
+
             // 즉시 리스폰
             SpawnMonster();
         }
@@ -484,7 +503,7 @@ namespace DeskWarrior.Managers
 
         private void OnTimerTick(object? sender, EventArgs e)
         {
-            RemainingTime--;
+            RemainingTime -= 0.1;
             TimerTick?.Invoke(this, EventArgs.Empty);
 
             if (RemainingTime <= 0)

@@ -69,43 +69,46 @@ namespace DeskWarrior.ViewModels
 
             AllUpgrades.Clear();
 
-            var definitions = _progressionManager.GetAllUpgradeDefinitions();
-            foreach (var def in definitions)
+            var statConfigs = _progressionManager.GetAllStatConfigs();
+            foreach (var kvp in statConfigs)
             {
-                var progress = _saveManager.CurrentSave.PermanentUpgrades.FirstOrDefault(p => p.Id == def.Id);
+                string id = kvp.Key;
+                var config = kvp.Value;
+
+                var progress = _saveManager.CurrentSave.PermanentUpgrades.FirstOrDefault(p => p.Id == id);
                 int currentLevel = progress?.CurrentLevel ?? 0;
 
                 // 현재 언어에 맞는 로컬라이제이션 사용
                 string currentLang = LocalizationManager.Instance.CurrentLanguage;
-                string fullName = GetLocalizedText(def.Localization, currentLang, l => l.Name, def.Id);
+                string fullName = GetLocalizedText(config.Localization, currentLang, l => l.Name, config.Name);
 
-                // 설명문에서 {value}를 실제 값으로 치환
-                string description = GetLocalizedText(def.Localization, currentLang, l => l.Description, "");
-                string formattedDescription = FormatDescription(def, currentLevel, description);
+                // 설명문에서 {n}을 실제 값으로 치환
+                string description = GetLocalizedText(config.Localization, currentLang, l => l.Description, config.Description);
+                string formattedDescription = FormatDescription(id, config, currentLevel, description);
 
                 var card = new UpgradeCardViewModel
                 {
-                    Id = def.Id,
-                    Icon = def.Icon,
+                    Id = id,
+                    Icon = config.Icon,
                     Name = fullName,
                     ShortName = GenerateShortName(fullName),
                     Description = formattedDescription,
-                    Category = GetCategoryDisplayName(def.Category),
-                    CategoryKey = def.Category,
+                    Category = GetCategoryDisplayName(config.Category ?? ""),
+                    CategoryKey = config.Category ?? "",
                     CurrentLevel = currentLevel,
-                    MaxLevel = def.MaxLevel,
-                    IncrementPerLevel = def.IncrementPerLevel,
-                    IsMaxed = def.MaxLevel > 0 && currentLevel >= def.MaxLevel
+                    MaxLevel = config.MaxLevel,
+                    IncrementPerLevel = config.EffectPerLevel,
+                    IsMaxed = config.MaxLevel > 0 && currentLevel >= config.MaxLevel
                 };
 
                 // 현재 효과 계산
-                card.CurrentEffect = FormatEffect(def, currentLevel);
+                card.CurrentEffect = FormatEffect(id, config, currentLevel);
 
                 // 다음 레벨 효과 계산
                 if (!card.IsMaxed)
                 {
-                    card.NextLevelEffect = FormatEffect(def, currentLevel + 1);
-                    card.Cost = _progressionManager.CalculateUpgradeCost(def, currentLevel);
+                    card.NextLevelEffect = FormatEffect(id, config, currentLevel + 1);
+                    card.Cost = _progressionManager.CalculateUpgradeCost(id, currentLevel);
                     card.CanAfford = CurrentCrystals >= card.Cost;
                 }
 
@@ -127,107 +130,66 @@ namespace DeskWarrior.ViewModels
         }
 
         /// <summary>
-        /// 설명문 포맷팅 ({value} 치환)
+        /// 설명문 포맷팅 ({n} 치환)
         /// </summary>
-        private string FormatDescription(PermanentUpgradeDefinition def, int level, string template)
+        private string FormatDescription(string id, StatGrowthConfig config, int level, string template)
         {
-            double rawValue = def.IncrementPerLevel * level;
-            string formattedValue = "";
+            // effect_per_level이 이미 실제 효과값을 가지고 있음
+            double effectValue = config.EffectPerLevel * level;
+            string formattedValue = $"{effectValue:F0}";
 
-            // ID 기반 값 포맷팅
-            formattedValue = def.Id switch
+            // 소수점이 필요한 경우
+            if (effectValue != Math.Floor(effectValue))
             {
-                // A. 기본 능력
-                "base_attack" => $"{rawValue:F0}",
-                "attack_percent" => $"{(rawValue * 5):F0}",
-                "crit_chance" => $"{rawValue:F0}",
-                "crit_damage" => $"{(rawValue * 0.1):F1}",
-                "multi_hit" => $"{rawValue:F0}",
+                formattedValue = $"{effectValue:F1}";
+            }
 
-                // B. 재화 보너스
-                "gold_flat_perm" => $"{rawValue:F0}",
-                "gold_multi_perm" => $"{(rawValue * 3):F0}",
-                "crystal_flat" => $"{rawValue:F0}",
-                "crystal_multi" => $"{(rawValue * 5):F0}",
-
-                // C. 유틸리티
-                "time_extend" => $"{(rawValue * 5):F0}",
-                "upgrade_discount" => $"{(rawValue * 2):F0}",
-
-                // D. 시작 보너스
-                "start_level" => $"{rawValue:F0}",
-                "start_gold" => $"{(rawValue * 50):F0}",
-                "start_keyboard" => $"{rawValue:F0}",
-                "start_mouse" => $"{rawValue:F0}",
-                "start_gold_flat" => $"{rawValue:F0}",
-                "start_gold_multi" => $"{(rawValue * 2):F0}",
-                "start_combo_flex" => $"{rawValue:F0}",
-                "start_combo_damage" => $"{rawValue:F0}",
-
-                _ => $"{rawValue:F0}"
-            };
-
-            return template.Replace("{value}", formattedValue);
+            return template.Replace("{n}", formattedValue);
         }
 
         /// <summary>
-        /// 효과 포맷팅 (19종 스탯 대응)
+        /// 효과 포맷팅 - effect_per_level 기반
         /// </summary>
-        private string FormatEffect(PermanentUpgradeDefinition def, int level)
+        private string FormatEffect(string id, StatGrowthConfig config, int level)
         {
-            double value = def.IncrementPerLevel * level;
-            var loc = LocalizationManager.Instance;
+            // effect_per_level이 이미 실제 효과값을 가지고 있음
+            double value = config.EffectPerLevel * level;
 
-            // ID 기반 개별 포맷팅
-            return def.Id switch
+            // 카테고리/ID 기반 포맷팅
+            return id switch
             {
-                // A. 기본 능력 (5종)
-                "base_attack" => $"+{value:F0}",
-                "attack_percent" => $"{(value * 5):F1}%",        // 레벨당 5%
-                "crit_chance" => $"{value:F1}%",                 // 레벨당 1%
-                "crit_damage" => $"{(value * 0.1):F1}x",         // 레벨당 0.1x
-                "multi_hit" => $"{value:F1}%",                   // 레벨당 1%
+                // 퍼센트 스탯
+                "attack_percent" or "crit_chance" or "multi_hit" or
+                "gold_multi_perm" or "crystal_multi" or "upgrade_discount" or
+                "start_gold_multi" or "start_combo_damage" => $"{value:F1}%",
 
-                // B. 재화 보너스 (4종)
-                "gold_flat_perm" => $"+{value:F0}",
-                "gold_multi_perm" => $"{(value * 3):F1}%",       // 레벨당 3%
-                "crystal_flat" => $"+{value:F0}",
-                "crystal_multi" => $"{(value * 5):F1}%",         // 레벨당 5%
+                // 배율 스탯
+                "crit_damage" => $"{value:F1}x",
 
-                // C. 유틸리티 (2종)
-                "time_extend" => loc.Format("ui.shop.effectUnit.seconds", $"{(value * 5):F0}"),  // 레벨당 5초
-                "upgrade_discount" => $"{(value * 2):F0}%",      // 레벨당 2%
+                // 시간 스탯
+                "time_extend" => $"+{value:F1}s",
 
-                // D. 시작 보너스 (8종)
-                "start_level" => loc.Format("ui.shop.effectUnit.level", $"{value:F0}"),
-                "start_gold" => loc.Format("ui.shop.effectUnit.gold", $"{(value * 50):F0}"),  // 레벨당 50G
-                "start_keyboard" => $"{value:F0}",
-                "start_mouse" => $"{value:F0}",
-                "start_gold_flat" => $"+{value:F0}",
-                "start_gold_multi" => $"{(value * 2):F1}%",      // 레벨당 2%
-                "start_combo_flex" => $"{value:F0}",
-                "start_combo_damage" => $"{value:F0}",
-
-                // 기본값
-                _ => $"+{value:F0}"
+                // 기본값 (정수 또는 소수)
+                _ => value == Math.Floor(value) ? $"+{value:F0}" : $"+{value:F1}"
             };
         }
 
         /// <summary>
-        /// 카테고리 표시 이름 가져오기 (19종 스탯 카테고리)
+        /// 카테고리 표시 이름 가져오기
         /// </summary>
         private string GetCategoryDisplayName(string category)
         {
             var loc = LocalizationManager.Instance;
             return category switch
             {
+                "base" => loc["ui.shop.categoryName.baseStats"],
+                "currency" => loc["ui.shop.categoryName.currencyBonus"],
+                "utility" => loc["ui.shop.categoryName.utility"],
+                "starting" => loc["ui.shop.categoryName.startingBonus"],
+                // Legacy 카테고리 (하위 호환)
                 "base_stats" => loc["ui.shop.categoryName.baseStats"],
                 "currency_bonus" => loc["ui.shop.categoryName.currencyBonus"],
-                "utility" => loc["ui.shop.categoryName.utility"],
                 "starting_bonus" => loc["ui.shop.categoryName.startingBonus"],
-                // Legacy 카테고리 (하위 호환)
-                "percentage" => loc["ui.shop.categoryName.percentage"],
-                "abilities" => loc["ui.shop.categoryName.abilities"],
                 _ => category
             };
         }
@@ -236,11 +198,13 @@ namespace DeskWarrior.ViewModels
         /// 현재 언어에 맞는 로컬라이즈된 텍스트 가져오기
         /// </summary>
         private string GetLocalizedText(
-            Dictionary<string, UpgradeLocalization> localizations,
+            Dictionary<string, LocalizedText>? localizations,
             string currentLang,
-            Func<UpgradeLocalization, string> selector,
+            Func<LocalizedText, string> selector,
             string fallback)
         {
+            if (localizations == null) return fallback;
+
             // 현재 언어 우선
             if (localizations.ContainsKey(currentLang))
                 return selector(localizations[currentLang]);

@@ -1,6 +1,6 @@
 // ============================================================
 // DeskWarrior 스탯 공식 (자동 생성)
-// 생성일: 2026-01-26 18:57:40
+// 생성일: 2026-01-29 11:12:19
 // 경고: 이 파일을 직접 수정하지 마세요!
 //       config/StatFormulas.json을 수정 후 generate_stat_code.py 실행
 // ============================================================
@@ -52,11 +52,22 @@ namespace DeskWarrior.Helpers
 
         /// <summary>
         /// 데미지 계산
-        /// 공식: (base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier
+        /// attack_percent는 base_power + base_attack의 40%에 적용, 나머지 60%는 고정 가산
+        /// 공식: ((base_power + base_attack * 0.4) * (1 + attack_percent) + base_attack * 0.6) * crit_multiplier * multi_hit_multiplier * combo_multiplier * utility_bonus
         /// </summary>
-        public static int CalcDamage(double base_power, double base_attack, double attack_percent, double crit_multiplier, double multi_hit_multiplier, double combo_multiplier)
+        public static int CalcDamage(double base_power, double base_attack, double attack_percent, double crit_multiplier, double multi_hit_multiplier, double combo_multiplier, double utility_bonus)
         {
-            return (int)((base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier);
+            return (int)(((base_power + base_attack * 0.4) * (1 + attack_percent) + base_attack * 0.6) * crit_multiplier * multi_hit_multiplier * combo_multiplier * utility_bonus);
+        }
+
+        /// <summary>
+        /// 유틸리티 보너스
+        /// 유틸리티 스탯 투자에 따른 데미지 보너스 (0.1%/레벨)
+        /// 공식: 1 + (time_extend_level + upgrade_discount_level) * 0.001
+        /// </summary>
+        public static double CalcUtilityBonus(int time_extend_level, int upgrade_discount_level)
+        {
+            return 1 + (time_extend_level + upgrade_discount_level) * 0.001;
         }
 
         /// <summary>

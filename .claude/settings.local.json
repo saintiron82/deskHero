@@ -55,7 +55,19 @@
       "Bash(start \"\" distBalanceDashboard.exe)",
       "Bash(timeout /t 3)",
       "Bash(start \"\" BalanceDashboard.exe)",
-      "Bash(./BalanceDashboard.exe)"
+      "Bash(./BalanceDashboard.exe)",
+      "Bash(PYTHONIOENCODING=utf-8 python:*)",
+      "Bash(set:*)",
+      "Bash(cmd /c \"set PYTHONIOENCODING=utf-8 && python .agent/recursive-refactor/orchestrator.py update NODE-4 --status passed -a\")",
+      "Bash(del \"C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior\\\\balanceDoc\\\\EXECUTIVE_SUMMARY.md\" \"C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior\\\\balanceDoc\\\\graph_cost_curves.json\" \"C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior\\\\balanceDoc\\\\graph_required_cps.json\" \"C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior\\\\balanceDoc\\\\graph_cps_contribution.json\" \"C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior\\\\balanceDoc\\\\graph_efficiency.json\" \"C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior\\\\balanceDoc\\\\comprehensive_balance_report.md\" \"C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior\\\\balanceDoc\\\\balance_data_export.csv\")",
+      "Bash(start bin/Debug/net9.0-windows/ImageProcessor.exe)",
+      "Bash(cmd /c \"taskkill /IM ImageProcessor.exe /F\")",
+      "Bash(timeout:*)",
+      "Bash(start \"\" \"bin\\\\Debug\\\\net9.0-windows\\\\ImageProcessor.exe\")",
+      "Bash(start binDebugnet9.0-windowsImageProcessor.exe)",
+      "Bash(start \"\" \"C:\\\\Users\\\\saint\\\\Game\\\\ImageProcessor\\\\bin\\\\Debug\\\\net9.0-windows\\\\ImageProcessor.exe\")",
+      "Bash(dotnet DeskWarrior.Simulator.dll:*)",
+      "Bash(tee:*)"
     ]
   }
 }

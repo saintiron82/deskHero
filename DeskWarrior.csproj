@@ -18,6 +18,13 @@
     <Compile Remove="Tests\**" />
     <EmbeddedResource Remove="Tests\**" />
     <None Remove="Tests\**" />
+    <!-- 하위 프로젝트 폴더 제외 -->
+    <Compile Remove="DeskWarrior.Core\**" />
+    <Compile Remove="DeskWarrior.Simulator\**" />
+    <EmbeddedResource Remove="DeskWarrior.Core\**" />
+    <EmbeddedResource Remove="DeskWarrior.Simulator\**" />
+    <None Remove="DeskWarrior.Core\**" />
+    <None Remove="DeskWarrior.Simulator\**" />
   </ItemGroup>
 
   <ItemGroup>

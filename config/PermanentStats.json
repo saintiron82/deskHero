@@ -1,0 +1,297 @@
+{
+  "_comment": "영구 스탯 통합 데이터 - 게임(C#)과 대시보드(Python) 공용",
+  "_formula": "cost = base_cost × (1 + level × growth_rate) × multiplier^(level / softcap_interval)",
+  "stats": {
+    "base_attack": {
+      "stat_name": "BaseAttackLevel",
+      "category": "base_stats",
+      "icon": "⚔️",
+      "base_cost": 10,
+      "growth_rate": 0.8,
+      "multiplier": 1.6,
+      "softcap_interval": 12,
+      "effect_per_level": 3,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "기본 공격력", "description": "모든 공격에 +{n} 데미지" },
+        "en-US": { "name": "Base Attack", "description": "+{n} damage to all attacks" }
+      }
+    },
+    "attack_percent": {
+      "stat_name": "AttackPercentLevel",
+      "category": "base_stats",
+      "icon": "💪",
+      "base_cost": 5,
+      "growth_rate": 0.7,
+      "multiplier": 1.5,
+      "softcap_interval": 12,
+      "effect_per_level": 2.5,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "공격력 배수", "description": "데미지 +{n}%" },
+        "en-US": { "name": "Attack Multiplier", "description": "+{n}% damage" }
+      }
+    },
+    "crit_chance": {
+      "stat_name": "CritChanceLevel",
+      "category": "base_stats",
+      "icon": "✨",
+      "base_cost": 1,
+      "growth_rate": 0.45,
+      "multiplier": 1.4,
+      "softcap_interval": 12,
+      "effect_per_level": 0.5,
+      "max_level": 50,
+      "localization": {
+        "ko-KR": { "name": "크리티컬 확률", "description": "크리티컬 확률 +{n}%" },
+        "en-US": { "name": "Critical Chance", "description": "+{n}% critical chance" }
+      }
+    },
+    "crit_damage": {
+      "stat_name": "CritDamageLevel",
+      "category": "base_stats",
+      "icon": "💥",
+      "base_cost": 1,
+      "growth_rate": 0.25,
+      "multiplier": 1.2,
+      "softcap_interval": 18,
+      "effect_per_level": 0.15,
+      "max_level": 100,
+      "localization": {
+        "ko-KR": { "name": "크리티컬 배율", "description": "크리티컬 시 x{n} 배율" },
+        "en-US": { "name": "Critical Damage", "description": "x{n} critical multiplier" }
+      }
+    },
+    "multi_hit": {
+      "stat_name": "MultiHitLevel",
+      "category": "base_stats",
+      "icon": "🎯",
+      "base_cost": 1,
+      "growth_rate": 0.4,
+      "multiplier": 1.3,
+      "softcap_interval": 12,
+      "effect_per_level": 1.0,
+      "max_level": 100,
+      "localization": {
+        "ko-KR": { "name": "멀티히트 확률", "description": "{n}% 확률로 2배 타격" },
+        "en-US": { "name": "Multi-Hit Chance", "description": "{n}% chance for double hit" }
+      }
+    },
+    "gold_flat_perm": {
+      "stat_name": "GoldFlatPermLevel",
+      "category": "currency_bonus",
+      "icon": "💰",
+      "base_cost": 1,
+      "growth_rate": 0.4,
+      "multiplier": 1.3,
+      "softcap_interval": 15,
+      "effect_per_level": 2,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "영구 골드+", "description": "몬스터 처치 시 +{n} 골드" },
+        "en-US": { "name": "Permanent Gold+", "description": "+{n} gold per kill" }
+      }
+    },
+    "gold_multi_perm": {
+      "stat_name": "GoldMultiPermLevel",
+      "category": "currency_bonus",
+      "icon": "🌟",
+      "base_cost": 2,
+      "growth_rate": 0.5,
+      "multiplier": 1.4,
+      "softcap_interval": 12,
+      "effect_per_level": 12,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "영구 골드*", "description": "골드 획득량 +{n}%" },
+        "en-US": { "name": "Permanent Gold*", "description": "+{n}% gold gain" }
+      }
+    },
+    "crystal_flat": {
+      "stat_name": "CrystalFlatLevel",
+      "category": "currency_bonus",
+      "icon": "💎",
+      "base_cost": 1,
+      "growth_rate": 1.0,
+      "multiplier": 2.0,
+      "softcap_interval": 5,
+      "effect_per_level": 1,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "크리스탈+", "description": "보스 드롭 +{n} 크리스탈" },
+        "en-US": { "name": "Crystal+", "description": "+{n} crystals from boss" }
+      }
+    },
+    "crystal_multi": {
+      "stat_name": "CrystalMultiLevel",
+      "category": "currency_bonus",
+      "icon": "✨",
+      "base_cost": 1,
+      "growth_rate": 0.8,
+      "multiplier": 1.7,
+      "softcap_interval": 5,
+      "effect_per_level": 2,
+      "max_level": 50,
+      "localization": {
+        "ko-KR": { "name": "크리스탈*", "description": "크리스탈 드롭 확률 +{n}%" },
+        "en-US": { "name": "Crystal*", "description": "+{n}% crystal drop chance" }
+      }
+    },
+    "time_extend": {
+      "stat_name": "TimeExtendLevel",
+      "category": "utility",
+      "icon": "⏰",
+      "base_cost": 1,
+      "growth_rate": 0.5,
+      "multiplier": 1.35,
+      "softcap_interval": 12,
+      "effect_per_level": 0.4,
+      "max_level": 50,
+      "localization": {
+        "ko-KR": { "name": "기본 시간 연장", "description": "제한시간 +{n}초" },
+        "en-US": { "name": "Time Extension", "description": "+{n}s time limit" }
+      }
+    },
+    "upgrade_discount": {
+      "stat_name": "UpgradeDiscountLevel",
+      "category": "utility",
+      "icon": "🎫",
+      "base_cost": 1,
+      "growth_rate": 0.25,
+      "multiplier": 1.2,
+      "softcap_interval": 15,
+      "effect_per_level": 2.0,
+      "max_level": 25,
+      "localization": {
+        "ko-KR": { "name": "업그레이드 할인", "description": "골드 업그레이드 비용 -{n}%" },
+        "en-US": { "name": "Upgrade Discount", "description": "-{n}% gold upgrade cost" }
+      }
+    },
+    "start_level": {
+      "stat_name": "StartLevelLevel",
+      "category": "starting_bonus",
+      "icon": "🚀",
+      "base_cost": 1,
+      "growth_rate": 0.8,
+      "multiplier": 1.4,
+      "softcap_interval": 15,
+      "effect_per_level": 2,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 레벨", "description": "레벨 {n}에서 시작" },
+        "en-US": { "name": "Starting Level", "description": "Start at level {n}" }
+      }
+    },
+    "start_gold": {
+      "stat_name": "StartGoldLevel",
+      "category": "starting_bonus",
+      "icon": "💵",
+      "base_cost": 1,
+      "growth_rate": 0.3,
+      "multiplier": 1.2,
+      "softcap_interval": 20,
+      "effect_per_level": 50,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 골드", "description": "골드 {n}에서 시작" },
+        "en-US": { "name": "Starting Gold", "description": "Start with {n} gold" }
+      }
+    },
+    "start_keyboard": {
+      "stat_name": "StartKeyboardLevel",
+      "category": "starting_bonus",
+      "icon": "⌨️",
+      "base_cost": 1,
+      "growth_rate": 0.5,
+      "multiplier": 1.5,
+      "softcap_interval": 10,
+      "effect_per_level": 1.0,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 키보드", "description": "키보드 공격력 +{n}에서 시작" },
+        "en-US": { "name": "Starting Keyboard", "description": "Start with +{n} keyboard power" }
+      }
+    },
+    "start_mouse": {
+      "stat_name": "StartMouseLevel",
+      "category": "starting_bonus",
+      "icon": "🖱️",
+      "base_cost": 1,
+      "growth_rate": 0.5,
+      "multiplier": 1.5,
+      "softcap_interval": 10,
+      "effect_per_level": 1.0,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 마우스", "description": "마우스 공격력 +{n}에서 시작" },
+        "en-US": { "name": "Starting Mouse", "description": "Start with +{n} mouse power" }
+      }
+    },
+    "start_gold_flat": {
+      "stat_name": "StartGoldFlatLevel",
+      "category": "starting_bonus",
+      "icon": "💸",
+      "base_cost": 1,
+      "growth_rate": 0.6,
+      "multiplier": 1.5,
+      "softcap_interval": 10,
+      "effect_per_level": 0.1,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 골드+", "description": "골드+ {n}에서 시작" },
+        "en-US": { "name": "Starting Gold+", "description": "Start with +{n} gold bonus" }
+      }
+    },
+    "start_gold_multi": {
+      "stat_name": "StartGoldMultiLevel",
+      "category": "starting_bonus",
+      "icon": "💰",
+      "base_cost": 1,
+      "growth_rate": 0.8,
+      "multiplier": 1.6,
+      "softcap_interval": 8,
+      "effect_per_level": 0.1,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 골드*", "description": "골드* +{n}%에서 시작" },
+        "en-US": { "name": "Starting Gold*", "description": "Start with +{n}% gold multiplier" }
+      }
+    },
+    "start_combo_flex": {
+      "stat_name": "StartComboFlexLevel",
+      "category": "starting_bonus",
+      "icon": "🎯",
+      "base_cost": 1,
+      "growth_rate": 1.0,
+      "multiplier": 1.8,
+      "softcap_interval": 5,
+      "effect_per_level": 0.1,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 콤보유연성", "description": "콤보유연성 +{n}에서 시작" },
+        "en-US": { "name": "Starting Combo Flex", "description": "Start with +{n} combo flexibility" }
+      }
+    },
+    "start_combo_damage": {
+      "stat_name": "StartComboDamageLevel",
+      "category": "starting_bonus",
+      "icon": "💥",
+      "base_cost": 1,
+      "growth_rate": 1.0,
+      "multiplier": 1.8,
+      "softcap_interval": 5,
+      "effect_per_level": 0.5,
+      "max_level": 0,
+      "localization": {
+        "ko-KR": { "name": "시작 콤보데미지", "description": "콤보데미지 +{n}%에서 시작" },
+        "en-US": { "name": "Starting Combo Damage", "description": "Start with +{n}% combo damage" }
+      }
+    }
+  },
+  "categories": {
+    "base_stats": { "name": "기본 능력", "order": 1 },
+    "currency_bonus": { "name": "재화 보너스", "order": 2 },
+    "utility": { "name": "유틸리티", "order": 3 },
+    "starting_bonus": { "name": "시작 보너스", "order": 4 }
+  }
+}

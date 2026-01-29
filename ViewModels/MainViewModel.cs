@@ -47,7 +47,7 @@ namespace DeskWarrior.ViewModels
         public int Gold => _gameManager.Gold;
         public int KeyboardPower => _gameManager.KeyboardPower;
         public int MousePower => _gameManager.MousePower;
-        public int RemainingTime => _gameManager.RemainingTime;
+        public double RemainingTime => _gameManager.RemainingTime;
         public Monster? CurrentMonster => _gameManager.CurrentMonster;
         public GameData GameConfig => _gameManager.GameData;
 

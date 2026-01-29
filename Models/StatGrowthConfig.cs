@@ -11,8 +11,14 @@ namespace DeskWarrior.Models
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";
 
+        [JsonPropertyName("stat_name")]
+        public string StatName { get; set; } = "";
+
         [JsonPropertyName("category")]
         public string? Category { get; set; }
+
+        [JsonPropertyName("icon")]
+        public string Icon { get; set; } = "";
 
         [JsonPropertyName("base_cost")]
         public double BaseCost { get; set; } = 100;
@@ -37,6 +43,9 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("description")]
         public string Description { get; set; } = "";
+
+        [JsonPropertyName("localization")]
+        public Dictionary<string, LocalizedText>? Localization { get; set; }
 
         /// <summary>
         /// 비용 계산
@@ -99,5 +108,17 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("order")]
         public int Order { get; set; } = 0;
+    }
+
+    /// <summary>
+    /// 다국어 텍스트
+    /// </summary>
+    public class LocalizedText
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = "";
     }
 }

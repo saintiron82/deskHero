@@ -1,0 +1,911 @@
+﻿{
+  "metadata": {
+    "report_id": "735547f8",
+    "generated_at": "2026-01-28T20:57:15.5478885+09:00",
+    "version": "1.0",
+    "generator_version": "DeskWarrior.Simulator v1.0",
+    "analysis_duration_seconds": 202.8919091,
+    "total_patterns_evaluated": 3068,
+    "total_simulations_run": 61360
+  },
+  "config": {
+    "target_level": 50,
+    "cps": 5,
+    "crystal_budget": 500,
+    "analysis_mode": "Full",
+    "simulations_per_pattern": 20,
+    "ga_generations": 100,
+    "ga_population_size": 50,
+    "initial_stats": {}
+  },
+  "summary": {
+    "grade": "D",
+    "grade_description": "Poor balance - significant path preference.",
+    "has_dominant_route": false,
+    "dominance_ratio": 1.0617200674536256,
+    "diversity_score": 0.1148148148148148,
+    "top_pattern_similarity": 0.8062750495612511,
+    "best_pattern_level": 1574,
+    "worst_pattern_level": 1415,
+    "average_pattern_level": 1436.145,
+    "level_spread": 159,
+    "active_categories": 2,
+    "total_categories": 4,
+    "underused_categories": [
+      "utility",
+      "starting_bonus"
+    ]
+  },
+  "top_patterns": [
+    {
+      "rank": 1,
+      "pattern_id": "ga_optimized",
+      "description": "attack_percent:30% \u002B gold_multi_perm:25% \u002B crit_chance:21%",
+      "average_level": 1574,
+      "median_level": 1575,
+      "min_level": 1480,
+      "max_level": 1650,
+      "standard_deviation": 50.83306010855534,
+      "success_rate": 1,
+      "allocation": {
+        "attack_percent": 0.2997634466740939,
+        "crit_chance": 0.2055513429909471,
+        "multi_hit": 0.15359963875764185,
+        "gold_multi_perm": 0.24960350631465567,
+        "time_extend": 0.036876488204196534,
+        "upgrade_discount": 0.02077489953435478,
+        "start_combo_flex": 0.027188100957146393
+      },
+      "main_stats": [
+        "attack_percent",
+        "gold_multi_perm",
+        "crit_chance",
+        "multi_hit"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": 0,
+      "level_diff_percent": 0
+    },
+    {
+      "rank": 2,
+      "pattern_id": "53043e4e",
+      "description": "attack_percent:50% \u002B gold_multi_perm:30% \u002B multi_hit:20%",
+      "average_level": 1482.5,
+      "median_level": 1495,
+      "min_level": 1390,
+      "max_level": 1530,
+      "standard_deviation": 36.038174204584784,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.2,
+        "attack_percent": 0.5,
+        "gold_multi_perm": 0.3
+      },
+      "main_stats": [
+        "attack_percent",
+        "gold_multi_perm",
+        "multi_hit"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -91.5,
+      "level_diff_percent": -5.813214739517154
+    },
+    {
+      "rank": 3,
+      "pattern_id": "6a561d13",
+      "description": "multi_hit:40% \u002B attack_percent:30% \u002B gold_multi_perm:30%",
+      "average_level": 1479,
+      "median_level": 1465,
+      "min_level": 1390,
+      "max_level": 1560,
+      "standard_deviation": 48.36320915737499,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.4,
+        "attack_percent": 0.3,
+        "gold_multi_perm": 0.3
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -95,
+      "level_diff_percent": -6.035578144853875
+    },
+    {
+      "rank": 4,
+      "pattern_id": "b2bb77ab",
+      "description": "gold_multi_perm:40% \u002B multi_hit:30% \u002B attack_percent:30%",
+      "average_level": 1478,
+      "median_level": 1490,
+      "min_level": 1370,
+      "max_level": 1560,
+      "standard_deviation": 49.05099387372289,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.3,
+        "attack_percent": 0.3,
+        "gold_multi_perm": 0.4
+      },
+      "main_stats": [
+        "gold_multi_perm",
+        "multi_hit",
+        "attack_percent"
+      ],
+      "primary_category": "currency_bonus",
+      "level_diff_from_best": -96,
+      "level_diff_percent": -6.099110546378653
+    },
+    {
+      "rank": 5,
+      "pattern_id": "400c9210",
+      "description": "attack_percent:40% \u002B gold_multi_perm:40% \u002B multi_hit:20%",
+      "average_level": 1474,
+      "median_level": 1470,
+      "min_level": 1370,
+      "max_level": 1560,
+      "standard_deviation": 43.634848458542855,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.2,
+        "attack_percent": 0.4,
+        "gold_multi_perm": 0.4
+      },
+      "main_stats": [
+        "attack_percent",
+        "gold_multi_perm",
+        "multi_hit"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -100,
+      "level_diff_percent": -6.353240152477764
+    },
+    {
+      "rank": 6,
+      "pattern_id": "0ebe63b9",
+      "description": "multi_hit:40% \u002B attack_percent:40% \u002B gold_multi_perm:20%",
+      "average_level": 1470.5,
+      "median_level": 1480,
+      "min_level": 1370,
+      "max_level": 1550,
+      "standard_deviation": 41.16734142496938,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.4,
+        "attack_percent": 0.4,
+        "gold_multi_perm": 0.2
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -103.5,
+      "level_diff_percent": -6.575603557814485
+    },
+    {
+      "rank": 7,
+      "pattern_id": "d392e3c2",
+      "description": "multi_hit:50% \u002B attack_percent:40% \u002B gold_multi_perm:10%",
+      "average_level": 1468,
+      "median_level": 1465,
+      "min_level": 1420,
+      "max_level": 1530,
+      "standard_deviation": 34.583232931581165,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.5,
+        "attack_percent": 0.4,
+        "gold_multi_perm": 0.1
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -106,
+      "level_diff_percent": -6.734434561626429
+    },
+    {
+      "rank": 8,
+      "pattern_id": "e28323df",
+      "description": "attack_percent:60% \u002B multi_hit:20% \u002B gold_multi_perm:20%",
+      "average_level": 1467.5,
+      "median_level": 1475,
+      "min_level": 1370,
+      "max_level": 1520,
+      "standard_deviation": 42.29361653961505,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.2,
+        "attack_percent": 0.6,
+        "gold_multi_perm": 0.2
+      },
+      "main_stats": [
+        "attack_percent",
+        "multi_hit",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -106.5,
+      "level_diff_percent": -6.766200762388818
+    },
+    {
+      "rank": 9,
+      "pattern_id": "6634428e",
+      "description": "multi_hit:40% \u002B attack_percent:30% \u002B gold_multi_perm:20%",
+      "average_level": 1464.5,
+      "median_level": 1470,
+      "min_level": 1380,
+      "max_level": 1540,
+      "standard_deviation": 38.00986713999406,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.4,
+        "attack_percent": 0.3,
+        "gold_multi_perm": 0.2,
+        "crit_damage": 0.1
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm",
+        "crit_damage"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -109.5,
+      "level_diff_percent": -6.956797966963152
+    },
+    {
+      "rank": 10,
+      "pattern_id": "b858ac9f",
+      "description": "multi_hit:30% \u002B attack_percent:30% \u002B gold_multi_perm:30%",
+      "average_level": 1462.5,
+      "median_level": 1460,
+      "min_level": 1370,
+      "max_level": 1520,
+      "standard_deviation": 41.81805830021284,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.3,
+        "attack_percent": 0.3,
+        "gold_multi_perm": 0.3,
+        "crit_damage": 0.1
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm",
+        "crit_damage"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -111.5,
+      "level_diff_percent": -7.083862770012707
+    },
+    {
+      "rank": 11,
+      "pattern_id": "e7c30379",
+      "description": "multi_hit:60% \u002B attack_percent:20% \u002B gold_multi_perm:20%",
+      "average_level": 1460,
+      "median_level": 1465,
+      "min_level": 1360,
+      "max_level": 1540,
+      "standard_deviation": 45.27692569068709,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.6,
+        "attack_percent": 0.2,
+        "gold_multi_perm": 0.2
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -114,
+      "level_diff_percent": -7.242693773824651
+    },
+    {
+      "rank": 12,
+      "pattern_id": "a118b0ce",
+      "description": "multi_hit:60% \u002B attack_percent:30% \u002B gold_multi_perm:10%",
+      "average_level": 1457.5,
+      "median_level": 1455,
+      "min_level": 1320,
+      "max_level": 1580,
+      "standard_deviation": 63.39361166552983,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.6,
+        "attack_percent": 0.3,
+        "gold_multi_perm": 0.1
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -116.5,
+      "level_diff_percent": -7.401524777636595
+    },
+    {
+      "rank": 13,
+      "pattern_id": "5b9eb150",
+      "description": "multi_hit:50% \u002B gold_multi_perm:30% \u002B attack_percent:20%",
+      "average_level": 1457,
+      "median_level": 1470,
+      "min_level": 1280,
+      "max_level": 1540,
+      "standard_deviation": 56.57738063926254,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.5,
+        "attack_percent": 0.2,
+        "gold_multi_perm": 0.3
+      },
+      "main_stats": [
+        "multi_hit",
+        "gold_multi_perm",
+        "attack_percent"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -117,
+      "level_diff_percent": -7.433290978398984
+    },
+    {
+      "rank": 14,
+      "pattern_id": "087649ba",
+      "description": "attack_percent:40% \u002B multi_hit:30% \u002B gold_multi_perm:30%",
+      "average_level": 1454.5,
+      "median_level": 1450,
+      "min_level": 1380,
+      "max_level": 1570,
+      "standard_deviation": 47.37879272417143,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.3,
+        "attack_percent": 0.4,
+        "gold_multi_perm": 0.3
+      },
+      "main_stats": [
+        "attack_percent",
+        "multi_hit",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -119.5,
+      "level_diff_percent": -7.592121982210928
+    },
+    {
+      "rank": 15,
+      "pattern_id": "fe000a40",
+      "description": "attack_percent:40% \u002B multi_hit:30% \u002B gold_multi_perm:20%",
+      "average_level": 1454,
+      "median_level": 1445,
+      "min_level": 1370,
+      "max_level": 1530,
+      "standard_deviation": 42.941821107167776,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.3,
+        "attack_percent": 0.4,
+        "gold_multi_perm": 0.2,
+        "start_level": 0.1
+      },
+      "main_stats": [
+        "attack_percent",
+        "multi_hit",
+        "gold_multi_perm",
+        "start_level"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -120,
+      "level_diff_percent": -7.6238881829733165
+    },
+    {
+      "rank": 16,
+      "pattern_id": "1fe4716c",
+      "description": "attack_percent:50% \u002B multi_hit:30% \u002B gold_multi_perm:10%",
+      "average_level": 1454,
+      "median_level": 1460,
+      "min_level": 1380,
+      "max_level": 1530,
+      "standard_deviation": 47.15930449020638,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.3,
+        "attack_percent": 0.5,
+        "gold_multi_perm": 0.1,
+        "start_keyboard": 0.1
+      },
+      "main_stats": [
+        "attack_percent",
+        "multi_hit",
+        "gold_multi_perm",
+        "start_keyboard"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -120,
+      "level_diff_percent": -7.6238881829733165
+    },
+    {
+      "rank": 17,
+      "pattern_id": "20c151ea",
+      "description": "multi_hit:50% \u002B attack_percent:30% \u002B gold_multi_perm:20%",
+      "average_level": 1454,
+      "median_level": 1450,
+      "min_level": 1360,
+      "max_level": 1560,
+      "standard_deviation": 66.1362230551458,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.5,
+        "attack_percent": 0.3,
+        "gold_multi_perm": 0.2
+      },
+      "main_stats": [
+        "multi_hit",
+        "attack_percent",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -120,
+      "level_diff_percent": -7.6238881829733165
+    },
+    {
+      "rank": 18,
+      "pattern_id": "fe7b625f",
+      "description": "attack_percent:50% \u002B multi_hit:30% \u002B gold_multi_perm:20%",
+      "average_level": 1451.5,
+      "median_level": 1455,
+      "min_level": 1350,
+      "max_level": 1550,
+      "standard_deviation": 53.78429138698399,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.3,
+        "attack_percent": 0.5,
+        "gold_multi_perm": 0.2
+      },
+      "main_stats": [
+        "attack_percent",
+        "multi_hit",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -122.5,
+      "level_diff_percent": -7.78271918678526
+    },
+    {
+      "rank": 19,
+      "pattern_id": "7856d351",
+      "description": "attack_percent:60% \u002B multi_hit:30% \u002B gold_multi_perm:10%",
+      "average_level": 1451.5,
+      "median_level": 1465,
+      "min_level": 1340,
+      "max_level": 1580,
+      "standard_deviation": 55.97097462078001,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.3,
+        "attack_percent": 0.6,
+        "gold_multi_perm": 0.1
+      },
+      "main_stats": [
+        "attack_percent",
+        "multi_hit",
+        "gold_multi_perm"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -122.5,
+      "level_diff_percent": -7.78271918678526
+    },
+    {
+      "rank": 20,
+      "pattern_id": "fbd4247b",
+      "description": "attack_percent:60% \u002B gold_multi_perm:30% \u002B multi_hit:10%",
+      "average_level": 1450,
+      "median_level": 1450,
+      "min_level": 1390,
+      "max_level": 1510,
+      "standard_deviation": 31.622776601683793,
+      "success_rate": 1,
+      "allocation": {
+        "multi_hit": 0.1,
+        "attack_percent": 0.6,
+        "gold_multi_perm": 0.3
+      },
+      "main_stats": [
+        "attack_percent",
+        "gold_multi_perm",
+        "multi_hit"
+      ],
+      "primary_category": "base_stats",
+      "level_diff_from_best": -124,
+      "level_diff_percent": -7.878017789072427
+    }
+  ],
+  "categories": [
+    {
+      "category_id": "base_stats",
+      "category_name": "Base Stats (Attack/Crit)",
+      "stats": [
+        "base_attack",
+        "attack_percent",
+        "crit_chance",
+        "crit_damage",
+        "multi_hit"
+      ],
+      "usage_rate": 1,
+      "usage_status": "Active",
+      "best_pattern_in_category": "53043e4e",
+      "best_level_in_category": 1482.5,
+      "recommendation": "Currently well-balanced"
+    },
+    {
+      "category_id": "currency_bonus",
+      "category_name": "Currency Bonus (Gold/Crystal)",
+      "stats": [
+        "gold_flat_perm",
+        "gold_multi_perm",
+        "crystal_flat",
+        "crystal_multi"
+      ],
+      "usage_rate": 0.9,
+      "usage_status": "Active",
+      "best_pattern_in_category": "53043e4e",
+      "best_level_in_category": 1482.5,
+      "recommendation": "Currently well-balanced"
+    },
+    {
+      "category_id": "utility",
+      "category_name": "Utility (Time/Discount)",
+      "stats": [
+        "time_extend",
+        "upgrade_discount"
+      ],
+      "usage_rate": 0,
+      "usage_status": "Underused",
+      "best_pattern_in_category": "N/A",
+      "best_level_in_category": 0,
+      "recommendation": "Consider buffing stats in this category or reducing costs"
+    },
+    {
+      "category_id": "starting_bonus",
+      "category_name": "Starting Bonus",
+      "stats": [
+        "start_level",
+        "start_gold",
+        "start_keyboard",
+        "start_mouse",
+        "start_gold_flat",
+        "start_gold_multi",
+        "start_combo_flex",
+        "start_combo_damage"
+      ],
+      "usage_rate": 0,
+      "usage_status": "Underused",
+      "best_pattern_in_category": "N/A",
+      "best_level_in_category": 0,
+      "recommendation": "Consider buffing stats in this category or reducing costs"
+    }
+  ],
+  "stats": [
+    {
+      "stat_id": "multi_hit",
+      "stat_name": "Multi Hit",
+      "category": "base_stats",
+      "single_stat_level": 1277.5,
+      "single_stat_rank": 1,
+      "usage_in_top_patterns": 1,
+      "average_allocation_when_used": 0.2521810795635247,
+      "efficiency_score": 1277.5,
+      "efficiency_rating": "S",
+      "status": "Overused"
+    },
+    {
+      "stat_id": "attack_percent",
+      "stat_name": "Attack Percent",
+      "category": "base_stats",
+      "single_stat_level": 1220,
+      "single_stat_rank": 2,
+      "usage_in_top_patterns": 1,
+      "average_allocation_when_used": 0.2522534737229704,
+      "efficiency_score": 1220,
+      "efficiency_rating": "S",
+      "status": "Overused"
+    },
+    {
+      "stat_id": "gold_multi_perm",
+      "stat_name": "Gold Multi Perm",
+      "category": "currency_bonus",
+      "single_stat_level": 1203.5,
+      "single_stat_rank": 3,
+      "usage_in_top_patterns": 1,
+      "average_allocation_when_used": 0.25222862977034155,
+      "efficiency_score": 1203.5,
+      "efficiency_rating": "S",
+      "status": "Overused"
+    },
+    {
+      "stat_id": "crit_chance",
+      "stat_name": "Crit Chance",
+      "category": "base_stats",
+      "single_stat_level": 1201,
+      "single_stat_rank": 4,
+      "usage_in_top_patterns": 0.1,
+      "average_allocation_when_used": 0.6027756714954735,
+      "efficiency_score": 1201,
+      "efficiency_rating": "A",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "base_attack",
+      "stat_name": "Base Attack",
+      "category": "base_stats",
+      "single_stat_level": 1177.5,
+      "single_stat_rank": 5,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1177.5,
+      "efficiency_rating": "A",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "time_extend",
+      "stat_name": "Time Extend",
+      "category": "utility",
+      "single_stat_level": 1135,
+      "single_stat_rank": 6,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1135,
+      "efficiency_rating": "A",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "gold_flat_perm",
+      "stat_name": "Gold Flat Perm",
+      "category": "currency_bonus",
+      "single_stat_level": 1037,
+      "single_stat_rank": 7,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1037,
+      "efficiency_rating": "B",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "crit_damage",
+      "stat_name": "Crit Damage",
+      "category": "base_stats",
+      "single_stat_level": 1026.5,
+      "single_stat_rank": 8,
+      "usage_in_top_patterns": 0.2,
+      "average_allocation_when_used": 0.25222993062438337,
+      "efficiency_score": 1026.5,
+      "efficiency_rating": "B",
+      "status": "Balanced"
+    },
+    {
+      "stat_id": "upgrade_discount",
+      "stat_name": "Upgrade Discount",
+      "category": "utility",
+      "single_stat_level": 1022.5,
+      "single_stat_rank": 9,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1022.5,
+      "efficiency_rating": "B",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "crystal_multi",
+      "stat_name": "Crystal Multi",
+      "category": "currency_bonus",
+      "single_stat_level": 1021.5,
+      "single_stat_rank": 10,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1021.5,
+      "efficiency_rating": "B",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "crystal_flat",
+      "stat_name": "Crystal Flat",
+      "category": "currency_bonus",
+      "single_stat_level": 1016,
+      "single_stat_rank": 11,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1016,
+      "efficiency_rating": "C",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_gold_flat",
+      "stat_name": "Start Gold Flat",
+      "category": "starting_bonus",
+      "single_stat_level": 1016,
+      "single_stat_rank": 12,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1016,
+      "efficiency_rating": "C",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_gold_multi",
+      "stat_name": "Start Gold Multi",
+      "category": "starting_bonus",
+      "single_stat_level": 1016,
+      "single_stat_rank": 13,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1016,
+      "efficiency_rating": "C",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_combo_flex",
+      "stat_name": "Start Combo Flex",
+      "category": "starting_bonus",
+      "single_stat_level": 1016,
+      "single_stat_rank": 14,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1016,
+      "efficiency_rating": "C",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_combo_damage",
+      "stat_name": "Start Combo Damage",
+      "category": "starting_bonus",
+      "single_stat_level": 1016,
+      "single_stat_rank": 15,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1016,
+      "efficiency_rating": "D",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_mouse",
+      "stat_name": "Start Mouse",
+      "category": "starting_bonus",
+      "single_stat_level": 1015,
+      "single_stat_rank": 16,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1015,
+      "efficiency_rating": "D",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_gold",
+      "stat_name": "Start Gold",
+      "category": "starting_bonus",
+      "single_stat_level": 1012.5,
+      "single_stat_rank": 17,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 1,
+      "efficiency_score": 1012.5,
+      "efficiency_rating": "D",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_keyboard",
+      "stat_name": "Start Keyboard",
+      "category": "starting_bonus",
+      "single_stat_level": 1001.5,
+      "single_stat_rank": 18,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 0.25222993062438337,
+      "efficiency_score": 1001.5,
+      "efficiency_rating": "D",
+      "status": "Underused"
+    },
+    {
+      "stat_id": "start_level",
+      "stat_name": "Start Level",
+      "category": "starting_bonus",
+      "single_stat_level": 867.55,
+      "single_stat_rank": 19,
+      "usage_in_top_patterns": 0,
+      "average_allocation_when_used": 0.2522299306243833,
+      "efficiency_score": 867.55,
+      "efficiency_rating": "D",
+      "status": "Underused"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "High",
+      "category": "Design",
+      "target": "Overall balance",
+      "issue": "Low pattern diversity (score: 0.11)",
+      "suggestion": "Review stat cost/effect ratios to create more viable combinations",
+      "expected_impact": "More strategic depth and replay value"
+    },
+    {
+      "priority": "Medium",
+      "category": "Buff",
+      "target": "Utility (Time/Discount)",
+      "issue": "Category underutilized (0% usage)",
+      "suggestion": "Consider buffing stats: time_extend, upgrade_discount",
+      "expected_impact": "Increased build variety"
+    },
+    {
+      "priority": "Medium",
+      "category": "Buff",
+      "target": "Starting Bonus",
+      "issue": "Category underutilized (0% usage)",
+      "suggestion": "Consider buffing stats: start_level, start_gold, start_keyboard",
+      "expected_impact": "Increased build variety"
+    },
+    {
+      "priority": "Medium",
+      "category": "Nerf",
+      "target": "Multi Hit",
+      "issue": "Stat overperforming (rank #1, 100% usage in top builds)",
+      "suggestion": "Slightly increase cost or reduce effect",
+      "expected_impact": "More balanced stat distribution"
+    },
+    {
+      "priority": "Medium",
+      "category": "Nerf",
+      "target": "Attack Percent",
+      "issue": "Stat overperforming (rank #2, 100% usage in top builds)",
+      "suggestion": "Slightly increase cost or reduce effect",
+      "expected_impact": "More balanced stat distribution"
+    },
+    {
+      "priority": "Medium",
+      "category": "Nerf",
+      "target": "Gold Multi Perm",
+      "issue": "Stat overperforming (rank #3, 100% usage in top builds)",
+      "suggestion": "Slightly increase cost or reduce effect",
+      "expected_impact": "More balanced stat distribution"
+    },
+    {
+      "priority": "Low",
+      "category": "Buff",
+      "target": "Start Mouse",
+      "issue": "Stat underperforming (rank #16)",
+      "suggestion": "Reduce cost or increase effect per level",
+      "expected_impact": "Stat becomes viable in some builds"
+    },
+    {
+      "priority": "Low",
+      "category": "Buff",
+      "target": "Start Gold",
+      "issue": "Stat underperforming (rank #17)",
+      "suggestion": "Reduce cost or increase effect per level",
+      "expected_impact": "Stat becomes viable in some builds"
+    },
+    {
+      "priority": "Low",
+      "category": "Buff",
+      "target": "Start Keyboard",
+      "issue": "Stat underperforming (rank #18)",
+      "suggestion": "Reduce cost or increase effect per level",
+      "expected_impact": "Stat becomes viable in some builds"
+    },
+    {
+      "priority": "Low",
+      "category": "Buff",
+      "target": "Start Level",
+      "issue": "Stat underperforming (rank #19)",
+      "suggestion": "Reduce cost or increase effect per level",
+      "expected_impact": "Stat becomes viable in some builds"
+    }
+  ]
+}

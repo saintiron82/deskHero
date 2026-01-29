@@ -6,7 +6,6 @@
 
 import json
 import os
-import re
 from datetime import datetime
 from typing import Dict, Any
 
@@ -15,7 +14,7 @@ from typing import Dict, Any
 # ============================================================
 
 def parse_formula(formula: str) -> Dict[str, str]:
-    """공식을 Python, C#, JavaScript로 변환"""
+    """공식을 Python, C#으로 변환"""
 
     # Python 변환
     py_formula = formula
@@ -29,16 +28,9 @@ def parse_formula(formula: str) -> Dict[str, str]:
     cs_formula = cs_formula.replace('min(', 'Math.Min(')
     cs_formula = cs_formula.replace('max(', 'Math.Max(')
 
-    # JavaScript 변환
-    js_formula = formula
-    js_formula = js_formula.replace('pow(', 'Math.pow(')
-    js_formula = js_formula.replace('min(', 'Math.min(')
-    js_formula = js_formula.replace('max(', 'Math.max(')
-
     return {
         'python': py_formula,
-        'csharp': cs_formula,
-        'javascript': js_formula
+        'csharp': cs_formula
     }
 
 
@@ -208,136 +200,6 @@ def generate_csharp_code(formulas: Dict, constants: Dict) -> str:
 
 
 # ============================================================
-# JavaScript 코드 생성 (대시보드용)
-# ============================================================
-
-def generate_javascript_code(formulas: Dict, constants: Dict) -> str:
-    """JavaScript 코드 생성 (대시보드용)"""
-
-    lines = [
-        '/**',
-        ' * DeskWarrior 스탯 공식 (자동 생성)',
-        f' * 생성일: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}',
-        ' * 경고: 이 파일을 직접 수정하지 마세요!',
-        ' *        config/StatFormulas.json을 수정 후 generate_stat_code.py 실행',
-        ' */',
-        '',
-        'const FormulaEngine = {',
-        '',
-        '    // ============================================================',
-        '    // 상수',
-        '    // ============================================================',
-        '',
-    ]
-
-    # 상수
-    for name, value in constants.items():
-        lines.append(f'    {name}: {value},')
-
-    lines.extend([
-        '',
-        '    // ============================================================',
-        '    // 공식 함수',
-        '    // ============================================================',
-        '',
-    ])
-
-    # 함수
-    for formula_id, formula_data in formulas.items():
-        name = formula_data.get('name', formula_id)
-        params = formula_data.get('params', [])
-        formula = formula_data.get('formula', '')
-        return_type = formula_data.get('return_type', 'double')
-        description = formula_data.get('description', '')
-        steps = formula_data.get('steps', [])
-
-        parsed = parse_formula(formula)
-        js_formula = parsed['javascript']
-
-        # camelCase 변환
-        method_name = ''.join(
-            word if i == 0 else word.capitalize()
-            for i, word in enumerate(formula_id.split('_'))
-        )
-        method_name = 'calc' + method_name[0].upper() + method_name[1:]
-
-        param_str = ', '.join(params)
-
-        lines.append(f'    /**')
-        lines.append(f'     * {name}')
-        if description:
-            lines.append(f'     * {description}')
-        lines.append(f'     * 공식: {formula}')
-        lines.append(f'     */')
-
-        if return_type == 'int':
-            lines.append(f'    {method_name}({param_str}) {{')
-            lines.append(f'        return Math.floor({js_formula});')
-            lines.append(f'    }},')
-        else:
-            lines.append(f'    {method_name}({param_str}) {{')
-            lines.append(f'        return {js_formula};')
-            lines.append(f'    }},')
-
-        lines.append('')
-
-    # 헬퍼 함수들
-    lines.extend([
-        '    // ============================================================',
-        '    // 헬퍼 함수',
-        '    // ============================================================',
-        '',
-        '    /**',
-        '     * 누적 비용 계산 (fromLevel ~ toLevel)',
-        '     */',
-        '    calcTotalCost(baseCost, growthRate, multiplier, softcapInterval, fromLevel, toLevel) {',
-        '        let total = 0;',
-        '        for (let lv = fromLevel; lv < toLevel; lv++) {',
-        '            total += this.calcUpgradeCost(baseCost, growthRate, multiplier, softcapInterval, lv);',
-        '        }',
-        '        return total;',
-        '    },',
-        '',
-        '    /**',
-        '     * 데미지 단계별 분해',
-        '     */',
-        '    calcDamageSteps(basePower, baseAttack, attackPercent, critMultiplier, multiHitMultiplier, comboMultiplier) {',
-        '        const step1 = basePower;',
-        '        const step2 = basePower + baseAttack;',
-        '        const step3 = step2 * (1 + attackPercent);',
-        '        const step4 = step3 * critMultiplier;',
-        '        const step5 = step4 * multiHitMultiplier;',
-        '        const step6 = step5 * comboMultiplier;',
-        '',
-        '        return [',
-        '            { name: "기본", formula: "base_power", value: Math.floor(step1) },',
-        '            { name: "가산", formula: `${Math.floor(step1)} + ${baseAttack}`, value: Math.floor(step2) },',
-        '            { name: "배수", formula: `${Math.floor(step2)} × (1 + ${(attackPercent * 100).toFixed(0)}%)`, value: Math.floor(step3) },',
-        '            { name: "크리티컬", formula: `${Math.floor(step3)} × ${critMultiplier}`, value: Math.floor(step4) },',
-        '            { name: "멀티히트", formula: `${Math.floor(step4)} × ${multiHitMultiplier}`, value: Math.floor(step5) },',
-        '            { name: "콤보", formula: `${Math.floor(step5)} × ${comboMultiplier.toFixed(2)}`, value: Math.floor(step6) }',
-        '        ];',
-        '    },',
-        '',
-        '    /**',
-        '     * 기대 DPS 계산 (확률 가중 평균)',
-        '     */',
-        '    calcExpectedDamage(basePower, baseAttack, attackPercent, critChance, critDamage, multiHitChance) {',
-        '        const baseDamage = (basePower + baseAttack) * (1 + attackPercent);',
-        '        const avgCritMult = 1 + critChance * (critDamage - 1);',
-        '        const avgMultiMult = 1 + multiHitChance;',
-        '        return Math.floor(baseDamage * avgCritMult * avgMultiMult);',
-        '    }',
-        '};',
-        '',
-        '// Export for use in other modules',
-        'window.FormulaEngine = FormulaEngine;',
-    ])
-
-    return '\n'.join(lines)
-
-
-# ============================================================
 # 검증 코드 생성
 # ============================================================
 
@@ -447,7 +309,6 @@ def main():
     project_dir = os.path.dirname(script_dir)
     config_dir = os.path.join(project_dir, 'config')
     helpers_dir = os.path.join(project_dir, 'Helpers')
-    dashboard_dir = os.path.join(project_dir, 'dashboard', 'js')
 
     formulas_path = os.path.join(config_dir, 'StatFormulas.json')
 
@@ -456,7 +317,7 @@ def main():
     print("=" * 60)
 
     # JSON 로드
-    print(f"\n[1/5] 공식 파일 로드: {formulas_path}")
+    print(f"\n[1/4] 공식 파일 로드: {formulas_path}")
     try:
         with open(formulas_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -469,7 +330,7 @@ def main():
         return
 
     # Python 코드 생성
-    print("\n[2/5] Python 코드 생성")
+    print("\n[2/4] Python 코드 생성")
     py_code = generate_python_code(formulas, constants)
     py_path = os.path.join(script_dir, 'stat_formulas_generated.py')
     with open(py_path, 'w', encoding='utf-8') as f:
@@ -477,7 +338,7 @@ def main():
     print(f"      -> {py_path}")
 
     # C# 코드 생성
-    print("\n[3/5] C# 코드 생성")
+    print("\n[3/4] C# 코드 생성")
     cs_code = generate_csharp_code(formulas, constants)
     cs_path = os.path.join(helpers_dir, 'StatFormulas.Generated.cs')
     os.makedirs(helpers_dir, exist_ok=True)
@@ -485,17 +346,8 @@ def main():
         f.write(cs_code)
     print(f"      -> {cs_path}")
 
-    # JavaScript 코드 생성
-    print("\n[4/5] JavaScript 코드 생성 (대시보드용)")
-    js_code = generate_javascript_code(formulas, constants)
-    os.makedirs(dashboard_dir, exist_ok=True)
-    js_path = os.path.join(dashboard_dir, 'formula-engine.js')
-    with open(js_path, 'w', encoding='utf-8') as f:
-        f.write(js_code)
-    print(f"      -> {js_path}")
-
     # 검증 코드 생성
-    print("\n[5/5] 검증 테스트 코드 생성")
+    print("\n[4/4] 검증 테스트 코드 생성")
     test_code = generate_verification_code(formulas, constants)
     test_path = os.path.join(script_dir, 'test_stat_formulas.py')
     with open(test_path, 'w', encoding='utf-8') as f:
@@ -508,7 +360,6 @@ def main():
     print("\n다음 단계:")
     print("  1. python test_stat_formulas.py  # 공식 검증")
     print("  2. dotnet build                  # C# 빌드 확인")
-    print("  3. 대시보드: http://localhost:8080/dashboard/")
     print()
 
 

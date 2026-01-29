@@ -638,8 +638,8 @@ namespace DeskWarrior
 
         private void UpdateTimerUI()
         {
-            int time = GameManager.RemainingTime;
-            TimerText.Text = time.ToString();
+            double time = GameManager.RemainingTime;
+            TimerText.Text = time.ToString("F1");
 
             if (time > 20)
             {
