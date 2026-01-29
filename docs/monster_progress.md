@@ -70,7 +70,7 @@
 | 36 | **리자드맨** | `monster_lizardmanA.png` | **[완료]** | |
 | 37 | **놀** | `monster_gnollA.png` | **[완료]** | |
 | 38 | **코볼트** | `monster_koboldA.png` | **[완료]** | |
-| 39 | **트롤** | `monster_trollA.png` | **[대기]** | 폐기 후 재생성 필요 |
+| 39 | **트롤** | `monster_trollA.png` | **[완료]** | |
 | 40 | **오우거** | `monster_ogreA.png` | **[완료]** | |
 | 41 | **켄타우로스** | `monster_centaurA.png` | **[완료]** | |
 | 42 | **메두사** | `monster_medusaA.png` | **[완료]** | |
