@@ -85,7 +85,7 @@
 | 47 | **머미 로드** | `boss_mummylordA.png` | **[완료]** | |
 | 48 | **오크 로드** | `boss_orclordA.png` | **[완료]** | |
 | 49 | **고블린 킹** | `boss_goblinkingA.png` | **[완료]** | |
-| 50 | **스켈레톤 킹** | `boss_skeletonkingA.png` | **[대기]** | |
+| 50 | **스켈레톤 킹** | `boss_skeletonkingA.png` | **[완료]** | |
 | - | **서큐버스** | `monster_sercubusA.png` | **[완료]** | Special |
 
 ---
