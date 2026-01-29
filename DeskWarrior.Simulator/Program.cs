@@ -345,14 +345,15 @@ Examples:
         var current = Directory.GetParent(configPath);
         while (current != null)
         {
+            // 이미 존재하는 balanceDoc 폴더 우선
             var balanceDoc = Path.Combine(current.FullName, "balanceDoc");
             if (Directory.Exists(balanceDoc))
             {
                 return balanceDoc;
             }
 
-            // .csproj 파일이 있으면 프로젝트 루트로 간주
-            if (Directory.GetFiles(current.FullName, "*.csproj").Length > 0 ||
+            // .slnx 파일이 있으면 솔루션 루트로 간주 (프로젝트 전체 루트)
+            if (Directory.GetFiles(current.FullName, "*.slnx").Length > 0 ||
                 Directory.GetFiles(current.FullName, "*.sln").Length > 0)
             {
                 // 여기에 balanceDoc 생성
@@ -649,6 +650,13 @@ Examples:
         // balanceDoc 경로 결정 (프로젝트 루트 찾기)
         var balanceDocPath = FindBalanceDocPath(configPath);
 
+        // 크리스탈 0 + game-hours 조합이면 전략 비교 모드로 전환
+        if (options.CrystalBudget == 0 && options.GameHours > 0)
+        {
+            RunStrategyComparisonAnalysis(options, configPath, balanceDocPath);
+            return;
+        }
+
         Console.WriteLine("=== Balance Route Diversity Analysis ===\n");
         Console.WriteLine($"  Target Level: {options.TargetLevel}");
         Console.WriteLine($"  CPS: {options.Cps:F1}");
@@ -736,19 +744,17 @@ Examples:
         // 분석 기록 저장
         SaveAnalysisRecord(history, analysisResult, repository, options, balanceDocPath);
 
-        // Export report if output path specified
-        if (!string.IsNullOrEmpty(options.OutputPath))
-        {
-            ExportBalanceReport(
-                repository,
-                analysisResult,
-                options,
-                profile,
-                costCalculator,
-                explorer,
-                durationSeconds
-            );
-        }
+        // 보고서 항상 저장 (날짜 폴더 + 회차 번호)
+        ExportBalanceReport(
+            repository,
+            analysisResult,
+            options,
+            profile,
+            costCalculator,
+            explorer,
+            durationSeconds,
+            balanceDocPath
+        );
     }
 
     static void SaveAnalysisRecord(
@@ -808,7 +814,8 @@ Examples:
         InputProfile profile,
         StatCostCalculator costCalculator,
         HybridPatternExplorer explorer,
-        double durationSeconds)
+        double durationSeconds,
+        string balanceDocPath)
     {
         Console.WriteLine("Generating report...");
 
@@ -837,19 +844,33 @@ Examples:
         // Export
         var exporter = new BalanceReportExporter();
 
-        // Ensure directory exists
-        var outputDir = Path.GetDirectoryName(options.OutputPath);
-        if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+        // 새 규칙: 날짜 폴더 + 회차 번호
+        var today = DateTime.Now.ToString("yyyy-MM-dd");
+        var todayFolder = Path.Combine(balanceDocPath, today);
+        if (!Directory.Exists(todayFolder))
         {
-            Directory.CreateDirectory(outputDir);
+            Directory.CreateDirectory(todayFolder);
         }
 
-        // Generate file paths
-        var basePath = options.OutputPath!;
-        if (basePath.EndsWith(".json") || basePath.EndsWith(".md"))
+        // 회차 번호 결정
+        var existingReports = Directory.GetFiles(todayFolder, "*.md")
+            .Select(f => Path.GetFileName(f))
+            .Where(f => f.Length >= 2 && char.IsDigit(f[0]) && char.IsDigit(f[1]))
+            .OrderByDescending(f => f)
+            .ToList();
+
+        int nextNumber = 1;
+        if (existingReports.Count > 0)
         {
-            basePath = basePath[..^(basePath.EndsWith(".json") ? 5 : 3)];
+            var lastReport = existingReports[0];
+            if (int.TryParse(lastReport[..2], out int lastNum))
+            {
+                nextNumber = lastNum + 1;
+            }
         }
+
+        var reportType = options.QuickAnalysis ? "quick_analysis" : "full_analysis";
+        var basePath = Path.Combine(todayFolder, $"{nextNumber:D2}_{reportType}");
 
         var jsonPath = $"{basePath}.json";
         var mdPath = $"{basePath}.md";
@@ -939,6 +960,227 @@ Examples:
             }
             Console.WriteLine();
         }
+    }
+
+    /// <summary>
+    /// 전략 비교 모드 분석
+    /// 크리스탈 0에서 시작하여 각 전략별로 게임 시간 동안 시뮬레이션
+    /// </summary>
+    static void RunStrategyComparisonAnalysis(SimulationOptions options, string configPath, string balanceDocPath)
+    {
+        Console.WriteLine("=== Strategy Comparison Analysis (Zero-Start) ===\n");
+        Console.WriteLine($"  Mode: Zero-Crystal Start (Real Progression)");
+        Console.WriteLine($"  Game Time: {options.GameHours} hours");
+        Console.WriteLine($"  CPS: {options.Cps:F1}");
+        Console.WriteLine();
+
+        var profile = new InputProfile
+        {
+            AverageCps = options.Cps,
+            CpsVariance = 0.2,
+            ComboSkill = options.ComboSkill,
+            AutoUpgrade = true
+        };
+
+        // 테스트할 전략들
+        var strategies = new[]
+        {
+            UpgradeStrategy.Greedy,
+            UpgradeStrategy.DamageFirst,
+            UpgradeStrategy.SurvivalFirst,
+            UpgradeStrategy.CrystalFarm,
+            UpgradeStrategy.Balanced
+        };
+
+        var progressionSim = SimulatorFactory.CreateProgressionSimulator(configPath);
+        var results = new List<(UpgradeStrategy Strategy, ProgressionResult Result)>();
+
+        var sw = Stopwatch.StartNew();
+
+        Console.WriteLine("Running strategy simulations...\n");
+
+        foreach (var strategy in strategies)
+        {
+            Console.Write($"  {strategy,-15}: ");
+
+            var result = progressionSim.SimulateByGameTime(
+                new SimPermanentStats(),  // 크리스탈 0, 스탯 0에서 시작
+                profile,
+                options.GameHours,
+                strategy,
+                (currentTime, targetTime) =>
+                {
+                    var percent = currentTime / targetTime * 100;
+                    Console.Write($"\r  {strategy,-15}: {percent:F0}%");
+                }
+            );
+
+            results.Add((strategy, result));
+            Console.WriteLine($"\r  {strategy,-15}: Lv.{result.BestLevelEver,5} (Sessions: {result.AttemptsNeeded,4})");
+        }
+
+        sw.Stop();
+        Console.WriteLine($"\nCompleted in {sw.Elapsed.TotalSeconds:F1}s\n");
+
+        // 결과 정렬 및 분석
+        var sortedResults = results.OrderByDescending(r => r.Result.BestLevelEver).ToList();
+        var best = sortedResults[0];
+        var second = sortedResults.Count > 1 ? sortedResults[1] : sortedResults[0];
+
+        // Dominance Ratio 계산
+        double dominanceRatio = second.Result.BestLevelEver > 0
+            ? (double)best.Result.BestLevelEver / second.Result.BestLevelEver
+            : 1.0;
+
+        // 결과 출력
+        Console.WriteLine("=== Results (Ranked by Best Level) ===");
+        int rank = 1;
+        foreach (var (strategy, result) in sortedResults)
+        {
+            var diffFromBest = best.Result.BestLevelEver - result.BestLevelEver;
+            var diffPercent = best.Result.BestLevelEver > 0
+                ? (double)diffFromBest / best.Result.BestLevelEver * 100
+                : 0;
+
+            Console.WriteLine($"  {rank}. {strategy,-15} Lv.{result.BestLevelEver,5}  " +
+                $"Sessions:{result.AttemptsNeeded,4}  " +
+                $"Crystals:{result.TotalCrystalsEarned,6}  " +
+                $"{(rank == 1 ? "" : $"(-{diffPercent:F1}%)")}");
+            rank++;
+        }
+        Console.WriteLine();
+
+        // 밸런스 지표
+        Console.WriteLine("=== Balance Metrics ===");
+        var dominanceStatus = dominanceRatio > 1.5 ? "❌ Dominant" : (dominanceRatio > 1.3 ? "⚠️ Moderate" : "✅ Balanced");
+        Console.WriteLine($"  Dominance Ratio: {dominanceRatio:F2} (1st/2nd)  {dominanceStatus}");
+
+        // 등급 판정
+        var grade = dominanceRatio switch
+        {
+            <= 1.1 => "A",
+            <= 1.3 => "B",
+            <= 1.5 => "C",
+            <= 2.0 => "D",
+            _ => "F"
+        };
+
+        Console.ForegroundColor = grade switch
+        {
+            "A" => ConsoleColor.Green,
+            "B" => ConsoleColor.Cyan,
+            "C" => ConsoleColor.Yellow,
+            "D" => ConsoleColor.DarkYellow,
+            _ => ConsoleColor.Red
+        };
+        Console.WriteLine($"\n=== Balance Grade: {grade} ===");
+        Console.ResetColor();
+        Console.WriteLine();
+
+        // 보고서 저장
+        SaveStrategyComparisonReport(sortedResults, options, dominanceRatio, grade, balanceDocPath);
+    }
+
+    static void SaveStrategyComparisonReport(
+        List<(UpgradeStrategy Strategy, ProgressionResult Result)> results,
+        SimulationOptions options,
+        double dominanceRatio,
+        string grade,
+        string balanceDocPath)
+    {
+        // 오늘 날짜 폴더 생성
+        var today = DateTime.Now.ToString("yyyy-MM-dd");
+        var todayFolder = Path.Combine(balanceDocPath, today);
+        if (!Directory.Exists(todayFolder))
+        {
+            Directory.CreateDirectory(todayFolder);
+        }
+
+        // 회차 번호 결정
+        var existingReports = Directory.GetFiles(todayFolder, "*.md")
+            .Select(f => Path.GetFileName(f))
+            .Where(f => f.Length >= 2 && char.IsDigit(f[0]) && char.IsDigit(f[1]))
+            .OrderByDescending(f => f)
+            .ToList();
+
+        int nextNumber = 1;
+        if (existingReports.Count > 0)
+        {
+            var lastReport = existingReports[0];
+            if (int.TryParse(lastReport[..2], out int lastNum))
+            {
+                nextNumber = lastNum + 1;
+            }
+        }
+
+        var reportFileName = $"{nextNumber:D2}_strategy_comparison.md";
+        var reportPath = Path.Combine(todayFolder, reportFileName);
+
+        // 보고서 내용 생성
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"# 밸런스 테스트 보고서: 전략 비교 (#{nextNumber:D2})");
+        sb.AppendLine();
+        sb.AppendLine($"**테스트 일시:** {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        sb.AppendLine($"**테스트 조건:**");
+        sb.AppendLine($"- 시작 크리스탈: **0** (Zero-Start)");
+        sb.AppendLine($"- 게임 시간: {options.GameHours}시간");
+        sb.AppendLine($"- CPS: {options.Cps:F1}");
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## 테스트 결과");
+        sb.AppendLine();
+        sb.AppendLine("### 핵심 지표");
+        sb.AppendLine();
+        sb.AppendLine("| 지표 | 결과 | 판정 |");
+        sb.AppendLine("|------|------|------|");
+        sb.AppendLine($"| Dominance Ratio | **{dominanceRatio:F2}** | {(dominanceRatio <= 1.3 ? "✅" : "❌")} |");
+        sb.AppendLine($"| Balance Grade | **{grade}** | |");
+        sb.AppendLine();
+        sb.AppendLine("### 전략별 성과");
+        sb.AppendLine();
+        sb.AppendLine("| 순위 | 전략 | 최고 레벨 | 세션 수 | 총 크리스탈 |");
+        sb.AppendLine("|------|------|-----------|---------|-------------|");
+
+        int rank = 1;
+        var best = results[0];
+        foreach (var (strategy, result) in results)
+        {
+            var diffPercent = best.Result.BestLevelEver > 0
+                ? (double)(best.Result.BestLevelEver - result.BestLevelEver) / best.Result.BestLevelEver * 100
+                : 0;
+            var diffStr = rank == 1 ? "" : $" (-{diffPercent:F1}%)";
+            sb.AppendLine($"| {rank} | {strategy} | **{result.BestLevelEver}**{diffStr} | {result.AttemptsNeeded} | {result.TotalCrystalsEarned:N0} |");
+            rank++;
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## 분석");
+        sb.AppendLine();
+
+        if (dominanceRatio > 1.5)
+        {
+            sb.AppendLine($"**{best.Strategy}** 전략이 다른 전략을 압도하고 있습니다.");
+            sb.AppendLine($"- 1위와 2위의 격차: {dominanceRatio:F2}배");
+            sb.AppendLine("- 전략 다양성 부족");
+        }
+        else if (dominanceRatio > 1.3)
+        {
+            sb.AppendLine("전략 간 격차가 존재하지만 심각한 수준은 아닙니다.");
+        }
+        else
+        {
+            sb.AppendLine("전략 간 밸런스가 양호합니다.");
+        }
+
+        // 파일 저장
+        File.WriteAllText(reportPath, sb.ToString());
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Report saved: {reportPath}");
+        Console.ResetColor();
     }
 
     static void PrintLevelDistribution(BatchResult result)

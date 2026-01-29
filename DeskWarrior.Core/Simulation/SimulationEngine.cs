@@ -283,18 +283,11 @@ public class SimulationEngine
 
     private int CalculateDamage(int basePower, SimPermanentStats permStats, int comboStack, out bool isCritical)
     {
-        // ① basePower에는 이미 BaseAttack이 포함되어 있으므로 분리
-        int pureBasePower = basePower - permStats.BaseAttack;
+        // ① basePower에는 이미 BaseAttack이 포함됨
+        double effectivePower = basePower;
 
-        // ② 새 공식: base_attack의 40%는 attack_percent 적용, 60%는 고정 가산
-        double baseAttackForPercent = permStats.BaseAttack * 0.4;
-        double baseAttackFixed = permStats.BaseAttack * 0.6;
-
-        // ③ 공격력 배수 - attack_percent는 pureBasePower + base_attack의 50%에 적용
-        double effectivePower = (pureBasePower + baseAttackForPercent) * (1.0 + permStats.AttackPercentBonus);
-
-        // ④ base_attack의 나머지 50% 가산
-        effectivePower += baseAttackFixed;
+        // ② 공격력 배수 - 기본 공식 원복
+        effectivePower *= (1.0 + permStats.AttackPercentBonus);
 
         // ④ 크리티컬
         double critChance = _gameConfig.Balance.CriticalChance + permStats.CriticalChanceBonus;

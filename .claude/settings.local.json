@@ -67,7 +67,9 @@
       "Bash(start binDebugnet9.0-windowsImageProcessor.exe)",
       "Bash(start \"\" \"C:\\\\Users\\\\saint\\\\Game\\\\ImageProcessor\\\\bin\\\\Debug\\\\net9.0-windows\\\\ImageProcessor.exe\")",
       "Bash(dotnet DeskWarrior.Simulator.dll:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(Get-Content \"C:\\\\Users\\\\saint\\\\.claude\\\\projects\\\\C--Users-saint-Game-DeskWarrior\\\\c39f5f1e-a598-43f3-8242-245e1ad8eb3e\\\\tool-results\\\\toolu_014s61AyCsk1wfyY3vaFfr4v.txt\")",
+      "Bash(Select-Object -Last 60)"
     ]
   }
 }
