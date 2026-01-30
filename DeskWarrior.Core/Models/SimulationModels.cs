@@ -127,6 +127,7 @@ public class SimInGameStats
 
 /// <summary>
 /// 시뮬레이션용 몬스터 데이터
+/// 게임과 동일한 공식 사용 (지수 성장)
 /// </summary>
 public class SimMonster
 {
@@ -137,13 +138,19 @@ public class SimMonster
     public int GoldReward { get; private set; }
     public bool IsAlive => CurrentHp > 0;
 
-    public SimMonster(int level, bool isBoss, int baseHp, int hpGrowth, int baseGold, int goldGrowth)
+    public SimMonster(int level, bool isBoss, int baseHp, double hpGrowth, int baseGold, double goldGrowth)
     {
         Level = level;
         IsBoss = isBoss;
-        MaxHp = baseHp + (level - 1) * hpGrowth;
+
+        // 게임 공식: baseHp + (level - 1) * hpGrowth (선형 성장)
+        MaxHp = baseHp + (level - 1) * (int)hpGrowth;
+
+        // 보스는 HP 배율 적용 (CreateMonster에서 이미 적용됨)
         CurrentHp = MaxHp;
-        GoldReward = baseGold + level * goldGrowth;
+
+        // 골드 보상: stage * BASE_GOLD_MULTI
+        GoldReward = (int)(level * goldGrowth);
     }
 
     public int TakeDamage(int damage)

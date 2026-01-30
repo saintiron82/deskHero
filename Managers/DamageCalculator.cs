@@ -142,7 +142,7 @@ namespace DeskWarrior.Managers
             double utilityBonus = 1.0;
             if (permStats != null)
             {
-                utilityBonus = 1.0 + (permStats.TimeExtendLevel + permStats.UpgradeDiscountLevel) * 0.003;
+                utilityBonus = 1.0 + (permStats.TimeExtendLevel + permStats.UpgradeDiscountLevel) * 0.01;
                 effectivePower *= utilityBonus;
             }
 

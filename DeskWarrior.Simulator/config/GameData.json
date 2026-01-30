@@ -1,5 +1,5 @@
 {
-  "_comment": "게임 밸런스 설정 - CharacterData.json의 평균값 (fallback용)",
+  "_comment": "게임 밸런스 설정 - CharacterData.json의 평균값 사용",
   "balance": {
     "base_hp": 95,
     "hp_growth": 5,

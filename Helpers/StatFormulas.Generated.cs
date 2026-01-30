@@ -1,6 +1,6 @@
 // ============================================================
 // DeskWarrior 스탯 공식 (자동 생성)
-// 생성일: 2026-01-29 11:30:20
+// 생성일: 2026-01-29 20:58:49
 // 경고: 이 파일을 직접 수정하지 마세요!
 //       config/StatFormulas.json을 수정 후 generate_stat_code.py 실행
 // ============================================================
@@ -23,7 +23,7 @@ namespace DeskWarrior.Helpers
         public const int MAX_COMBO_STACK = 3;
         public const int GOLD_TO_CRYSTAL_RATE = 1000;
         public const int BASE_HP = 100;
-        public const double HP_GROWTH = 1.2;
+        public const double HP_GROWTH = 1.12;
         public const int BOSS_INTERVAL = 10;
         public const double BOSS_HP_MULTI = 5.0;
         public const double BASE_GOLD_MULTI = 1.5;
@@ -62,12 +62,12 @@ namespace DeskWarrior.Helpers
 
         /// <summary>
         /// 유틸리티 보너스
-        /// 유틸리티 스탯 투자에 따른 데미지 보너스 (0.1%/레벨)
-        /// 공식: 1 + (time_extend_level + upgrade_discount_level) * 0.001
+        /// 유틸리티 스탯 투자에 따른 데미지 보너스 (0.5%/레벨)
+        /// 공식: 1 + (time_extend_level + upgrade_discount_level) * 0.005
         /// </summary>
         public static double CalcUtilityBonus(int time_extend_level, int upgrade_discount_level)
         {
-            return 1 + (time_extend_level + upgrade_discount_level) * 0.001;
+            return 1 + (time_extend_level + upgrade_discount_level) * 0.005;
         }
 
         /// <summary>

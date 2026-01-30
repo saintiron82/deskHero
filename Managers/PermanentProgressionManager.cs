@@ -92,8 +92,8 @@ namespace DeskWarrior.Managers
         /// </summary>
         public void ProcessStageClear(int clearedStage)
         {
-            // 매 스테이지 클리어 시 1 크리스탈
-            AddCrystals(1, "stage_clear");
+            // 매 스테이지 클리어 시 크리스탈 (config에서 로드, 기본값 1)
+            AddCrystals(_bossDropConfig.StageCompletionCrystal, "stage_clear");
         }
 
         #endregion
@@ -117,7 +117,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         public int ConvertGoldToCrystals(int sessionGold)
         {
-            const int conversionRate = 1000; // 1000 골드 = 1 크리스탈
+            int conversionRate = _bossDropConfig.GoldToCrystalRate; // config에서 로드 (기본값 100)
             int crystals = sessionGold / conversionRate;
 
             if (crystals > 0)

@@ -1,6 +1,6 @@
 """
 DeskWarrior 스탯 공식 검증 테스트
-생성일: 2026-01-29 11:30:20
+생성일: 2026-01-29 20:58:49
 """
 
 from stat_formulas_generated import *

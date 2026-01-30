@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\config\**">
+    <Content Include="config\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>config\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Content>

@@ -210,6 +210,10 @@ public class ProgressionSimulator
                 totalSpent = ApplyBalancedStrategy(stats, ref crystals, afterSession, upgradeHistory);
                 break;
 
+            case UpgradeStrategy.EconomyFirst:
+                totalSpent = ApplyEconomyFirstStrategy(stats, ref crystals, afterSession, upgradeHistory);
+                break;
+
             case UpgradeStrategy.SimulationBased:
                 // TODO: 시뮬레이션 기반 최적화
                 totalSpent = ApplyGreedyStrategy(stats, ref crystals, afterSession, upgradeHistory);
@@ -220,7 +224,9 @@ public class ProgressionSimulator
     }
 
     /// <summary>
-    /// 그리디 전략: 비용 대비 효율 최대화
+    /// 그리디 전략: 비용 대비 효율 최대화 + 공격 스탯 균형
+    /// Phase 1: 효율 기반 투자 (50% 예산)
+    /// Phase 2: 공격 스탯 강제 투자 (50% 예산)
     /// </summary>
     private long ApplyGreedyStrategy(
         SimPermanentStats stats,
@@ -229,17 +235,22 @@ public class ProgressionSimulator
         List<UpgradeRecord> history)
     {
         long totalSpent = 0;
+        long initialCrystals = crystals;
 
-        while (crystals > 0)
+        // Phase 1: 효율 기반 투자 (50% 예산)
+        long phase1Budget = (long)(initialCrystals * 0.5);
+        long phase1Crystals = phase1Budget;
+
+        while (phase1Crystals > 0)
         {
-            var best = _costCalculator.FindBestUpgrade(stats, crystals);
+            var best = _costCalculator.FindBestUpgrade(stats, phase1Crystals);
             if (best == null)
                 break;
 
             var (statId, cost, _) = best.Value;
             int fromLevel = _costCalculator.GetStatLevel(stats, statId);
 
-            crystals -= cost;
+            phase1Crystals -= cost;
             totalSpent += cost;
             _costCalculator.SetStatLevel(stats, statId, fromLevel + 1);
 
@@ -253,11 +264,17 @@ public class ProgressionSimulator
             });
         }
 
+        crystals -= (phase1Budget - phase1Crystals);
+
+        // Phase 2: 공격 스탯 + start_level 투자 (남은 50% 예산)
+        var damageStats = new[] { "crit_damage", "base_attack", "attack_percent", "crit_chance", "start_level" };
+        totalSpent += ApplyPriorityStrategy(stats, ref crystals, afterSession, history, damageStats);
+
         return totalSpent;
     }
 
     /// <summary>
-    /// 공격력 우선 전략
+    /// 공격력 우선 전략 + start_level로 450벽 우회
     /// </summary>
     private long ApplyDamageFirstStrategy(
         SimPermanentStats stats,
@@ -265,12 +282,27 @@ public class ProgressionSimulator
         int afterSession,
         List<UpgradeRecord> history)
     {
+        long totalSpent = 0;
+        long initialCrystals = crystals;
+
+        // Phase 1: 공격 스탯에 70% 예산
         var damageStats = new[] { "base_attack", "attack_percent", "crit_chance", "crit_damage", "multi_hit" };
-        return ApplyPriorityStrategy(stats, ref crystals, afterSession, history, damageStats);
+        long phase1Budget = (long)(initialCrystals * 0.7);
+        long phase1Crystals = phase1Budget;
+        totalSpent += ApplyPriorityStrategy(stats, ref phase1Crystals, afterSession, history, damageStats);
+        crystals -= (phase1Budget - phase1Crystals);
+
+        // Phase 2: start_level + time_extend로 진행력 확보
+        var progressStats = new[] { "start_level", "time_extend" };
+        totalSpent += ApplyPriorityStrategy(stats, ref crystals, afterSession, history, progressStats);
+
+        return totalSpent;
     }
 
     /// <summary>
-    /// 생존 우선 전략
+    /// 생존 우선 전략 - 데미지 기반 + 시간/유틸리티 보조
+    /// Phase 1: 데미지 스탯 (70% 예산)
+    /// Phase 2: 생존/유틸리티 스탯 (30% 예산)
     /// </summary>
     private long ApplySurvivalFirstStrategy(
         SimPermanentStats stats,
@@ -278,12 +310,26 @@ public class ProgressionSimulator
         int afterSession,
         List<UpgradeRecord> history)
     {
+        long totalSpent = 0;
+        long initialCrystals = crystals;
+
+        // Phase 1: 데미지 스탯 (70% 예산) - DamageFirst와 동일
+        var damageStats = new[] { "base_attack", "attack_percent", "crit_chance", "crit_damage", "multi_hit" };
+        long phase1Budget = (long)(initialCrystals * 0.7);
+        long phase1Crystals = phase1Budget;
+        totalSpent += ApplyPriorityStrategy(stats, ref phase1Crystals, afterSession, history, damageStats);
+        crystals -= (phase1Budget - phase1Crystals);
+
+        // Phase 2: 생존/유틸리티 스탯 (남은 예산) - time_extend 우선
         var survivalStats = new[] { "time_extend", "start_level", "upgrade_discount" };
-        return ApplyPriorityStrategy(stats, ref crystals, afterSession, history, survivalStats);
+        totalSpent += ApplyPriorityStrategy(stats, ref crystals, afterSession, history, survivalStats);
+
+        return totalSpent;
     }
 
     /// <summary>
-    /// 크리스털 파밍 전략
+    /// 크리스털 파밍 전략 - DamageFirst와 동일 (크리스탈 보조 제거)
+    /// 데미지 투자가 우선, 크리스탈 수익은 진행에서 자연 획득
     /// </summary>
     private long ApplyCrystalFarmStrategy(
         SimPermanentStats stats,
@@ -291,12 +337,12 @@ public class ProgressionSimulator
         int afterSession,
         List<UpgradeRecord> history)
     {
-        var crystalStats = new[] { "crystal_flat", "crystal_multi", "gold_flat_perm", "gold_multi_perm" };
-        return ApplyPriorityStrategy(stats, ref crystals, afterSession, history, crystalStats);
+        // DamageFirst와 완전히 동일한 로직 사용
+        return ApplyDamageFirstStrategy(stats, ref crystals, afterSession, history);
     }
 
     /// <summary>
-    /// 균형 전략: 카테고리별 순환
+    /// 균형 전략: 카테고리별 순환 + start_level로 450레벨 벽 우회
     /// </summary>
     private long ApplyBalancedStrategy(
         SimPermanentStats stats,
@@ -309,7 +355,7 @@ public class ProgressionSimulator
             new[] { "base_attack", "attack_percent" },
             new[] { "crit_chance", "crit_damage", "multi_hit" },
             new[] { "gold_flat_perm", "gold_multi_perm" },
-            new[] { "time_extend" }
+            new[] { "time_extend", "start_level" }
         };
 
         long totalSpent = 0;
@@ -322,6 +368,20 @@ public class ProgressionSimulator
         totalSpent += ApplyGreedyStrategy(stats, ref crystals, afterSession, history);
 
         return totalSpent;
+    }
+
+    /// <summary>
+    /// 경제력 우선 전략 - DamageFirst와 동일 (골드 보조 제거)
+    /// 데미지 투자가 우선, 골드 수익은 진행에서 자연 획득
+    /// </summary>
+    private long ApplyEconomyFirstStrategy(
+        SimPermanentStats stats,
+        ref long crystals,
+        int afterSession,
+        List<UpgradeRecord> history)
+    {
+        // DamageFirst와 완전히 동일한 로직 사용
+        return ApplyDamageFirstStrategy(stats, ref crystals, afterSession, history);
     }
 
     /// <summary>

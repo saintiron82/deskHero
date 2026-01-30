@@ -107,7 +107,8 @@ public static class SimulatorFactory
                             Multiplier = TryGetDouble(stat.Value, "multiplier", 1.5),
                             SoftcapInterval = TryGetInt(stat.Value, "softcap_interval", 10),
                             EffectPerLevel = TryGetDouble(stat.Value, "effect_per_level", 1),
-                            MaxLevel = TryGetInt(stat.Value, "max_level", 0)
+                            MaxLevel = TryGetInt(stat.Value, "max_level", 0),
+                            Weight = TryGetDouble(stat.Value, "weight", 1.0)
                         };
                     }
                 }

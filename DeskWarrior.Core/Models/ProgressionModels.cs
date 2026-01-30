@@ -82,6 +82,9 @@ public enum UpgradeStrategy
     /// <summary>균형 잡힌 업그레이드</summary>
     Balanced,
 
+    /// <summary>경제력 우선 (골드/크리스털 수입 극대화)</summary>
+    EconomyFirst,
+
     /// <summary>시뮬레이션 기반 최적화</summary>
     SimulationBased,
 

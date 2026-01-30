@@ -69,7 +69,28 @@
       "Bash(dotnet DeskWarrior.Simulator.dll:*)",
       "Bash(tee:*)",
       "Bash(Get-Content \"C:\\\\Users\\\\saint\\\\.claude\\\\projects\\\\C--Users-saint-Game-DeskWarrior\\\\c39f5f1e-a598-43f3-8242-245e1ad8eb3e\\\\tool-results\\\\toolu_014s61AyCsk1wfyY3vaFfr4v.txt\")",
-      "Bash(Select-Object -Last 60)"
+      "Bash(Select-Object -Last 60)",
+      "Bash(python3:*)",
+      "Bash(dotnet:*)",
+      "Bash(brew install:*)",
+      "Bash(curl:*)",
+      "Bash(chmod:*)",
+      "Bash(/tmp/dotnet-install.sh:*)",
+      "Bash(export PATH=\"$HOME/.dotnet:$PATH\")",
+      "Bash(/usr/local/share/dotnet/dotnet run:*)",
+      "Bash(mdfind:*)",
+      "Bash(tree:*)",
+      "Bash(~/.dotnet/dotnet run:*)",
+      "Bash(~/.dotnet/dotnet build:*)",
+      "Bash(done)",
+      "Bash(/Users/saintiron/Public/deskHero/DeskWarrior.Simulator/bin/Release/net9.0/DeskWarrior.Simulator:*)",
+      "Bash(for f in greedy damage survival crystal balanced economy)",
+      "Bash(do echo -n \"$f: \")",
+      "Bash(if grep -q \"Best Level\" /tmp/test_$f.txt)",
+      "Bash(then grep \"Best Level\" /tmp/test_$f.txt)",
+      "Bash(else grep -oE 'Game time: [0-9.]+h / 50h' /tmp/test_$f.txt)",
+      "Bash(fi:*)",
+      "Bash(else echo \"running...\")"
     ]
   }
 }

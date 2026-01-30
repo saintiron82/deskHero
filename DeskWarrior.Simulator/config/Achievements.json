@@ -1,0 +1,944 @@
+{
+  "achievements": [
+    {
+      "id": "first_blood",
+      "icon": "🩸",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "첫 피",
+          "description": "첫 100 데미지를 입히다",
+          "unlock_message": "피가 튀었다! 이제 시작이야!"
+        },
+        "en-US": {
+          "name": "First Blood",
+          "description": "Deal your first 100 damage",
+          "unlock_message": "Blood has been spilled! This is just the beginning!"
+        }
+      }
+    },
+    {
+      "id": "damage_1k",
+      "icon": "💥",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 1000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "천 데미지 클럽",
+          "description": "총 1,000 데미지 달성",
+          "unlock_message": "1,000 데미지! 이 정도면 슬라임 100마리는 거뜬!"
+        },
+        "en-US": {
+          "name": "1K Damage Club",
+          "description": "Deal 1,000 total damage",
+          "unlock_message": "1,000 damage! That's enough to squash 100 slimes!"
+        }
+      }
+    },
+    {
+      "id": "damage_10k",
+      "icon": "🔥",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 10000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "만 데미지 마스터",
+          "description": "총 10,000 데미지 달성",
+          "unlock_message": "만 데미지 돌파! 당신의 키보드가 불쌍해지기 시작했어요."
+        },
+        "en-US": {
+          "name": "10K Damage Master",
+          "description": "Deal 10,000 total damage",
+          "unlock_message": "10,000 damage! Your keyboard is starting to feel sorry for itself."
+        }
+      }
+    },
+    {
+      "id": "damage_100k",
+      "icon": "⚡",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 100000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "십만 데미지 전설",
+          "description": "총 100,000 데미지 달성",
+          "unlock_message": "10만 데미지! 당신은 이제 전설의 타자수입니다."
+        },
+        "en-US": {
+          "name": "100K Damage Legend",
+          "description": "Deal 100,000 total damage",
+          "unlock_message": "100,000 damage! You are now a legendary typist."
+        }
+      }
+    },
+    {
+      "id": "damage_1m",
+      "icon": "🌟",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 1000000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "백만 데미지 신화",
+          "description": "총 1,000,000 데미지 달성",
+          "unlock_message": "백만 데미지?! 당신의 손가락은 대체 무슨 재질이죠?"
+        },
+        "en-US": {
+          "name": "Million Damage Myth",
+          "description": "Deal 1,000,000 total damage",
+          "unlock_message": "A million damage?! What are your fingers made of?!"
+        }
+      }
+    },
+    {
+      "id": "crit_master_10",
+      "icon": "✨",
+      "category": "combat",
+      "metric": "critical_hits",
+      "target": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리티컬 입문",
+          "description": "크리티컬 히트 10회 달성",
+          "unlock_message": "크리티컬! 운이 좋군요... 아니면 실력인가?"
+        },
+        "en-US": {
+          "name": "Critical Beginner",
+          "description": "Land 10 critical hits",
+          "unlock_message": "Critical! Lucky... or is it skill?"
+        }
+      }
+    },
+    {
+      "id": "crit_master_100",
+      "icon": "💎",
+      "category": "combat",
+      "metric": "critical_hits",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리티컬 장인",
+          "description": "크리티컬 히트 100회 달성",
+          "unlock_message": "100번 크리티컬! 이건 운이 아니야, 실력이야!"
+        },
+        "en-US": {
+          "name": "Critical Artisan",
+          "description": "Land 100 critical hits",
+          "unlock_message": "100 crits! This isn't luck, it's skill!"
+        }
+      }
+    },
+    {
+      "id": "crit_master_1000",
+      "icon": "👑",
+      "category": "combat",
+      "metric": "critical_hits",
+      "target": 1000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리티컬 신",
+          "description": "크리티컬 히트 1,000회 달성",
+          "unlock_message": "1,000 크리티컬?! 확률 조작 의심됨... 농담이에요!"
+        },
+        "en-US": {
+          "name": "Critical God",
+          "description": "Land 1,000 critical hits",
+          "unlock_message": "1,000 crits?! Suspecting RNG manipulation... just kidding!"
+        }
+      }
+    },
+    {
+      "id": "level_10",
+      "icon": "🌱",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "초보 모험가",
+          "description": "레벨 10 달성",
+          "unlock_message": "레벨 10! 이제 겨우 튜토리얼 끝났어요."
+        },
+        "en-US": {
+          "name": "Novice Adventurer",
+          "description": "Reach level 10",
+          "unlock_message": "Level 10! The tutorial is finally over."
+        }
+      }
+    },
+    {
+      "id": "level_25",
+      "icon": "🌿",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 25,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "성장하는 전사",
+          "description": "레벨 25 달성",
+          "unlock_message": "레벨 25! 슬슬 몬스터들이 당신을 무서워하기 시작해요."
+        },
+        "en-US": {
+          "name": "Growing Warrior",
+          "description": "Reach level 25",
+          "unlock_message": "Level 25! Monsters are starting to fear you."
+        }
+      }
+    },
+    {
+      "id": "level_50",
+      "icon": "🌳",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 50,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "베테랑 전사",
+          "description": "레벨 50 달성",
+          "unlock_message": "레벨 50! 반을 넘었다! ...어? 반이 어디였더라?"
+        },
+        "en-US": {
+          "name": "Veteran Warrior",
+          "description": "Reach level 50",
+          "unlock_message": "Level 50! Halfway there! ...Wait, where's halfway?"
+        }
+      }
+    },
+    {
+      "id": "level_100",
+      "icon": "🏆",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "백전노장",
+          "description": "레벨 100 달성",
+          "unlock_message": "레벨 100! 전설이 되었습니다! 키보드는 무사한가요?"
+        },
+        "en-US": {
+          "name": "Battle-Hardened",
+          "description": "Reach level 100",
+          "unlock_message": "Level 100! You've become a legend! Is your keyboard okay?"
+        }
+      }
+    },
+    {
+      "id": "level_200",
+      "icon": "⭐",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 200,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "불멸의 영웅",
+          "description": "레벨 200 달성",
+          "unlock_message": "레벨 200?! 당신... 일은 안 하시나요?"
+        },
+        "en-US": {
+          "name": "Immortal Hero",
+          "description": "Reach level 200",
+          "unlock_message": "Level 200?! Don't you have work to do?"
+        }
+      }
+    },
+    {
+      "id": "level_500",
+      "icon": "🌌",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 500,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "신의 경지",
+          "description": "레벨 500 달성",
+          "unlock_message": "레벨 500! 인간의 한계를 초월했습니다. 존경합니다."
+        },
+        "en-US": {
+          "name": "Divine Realm",
+          "description": "Reach level 500",
+          "unlock_message": "Level 500! You've transcended human limits. Respect."
+        }
+      }
+    },
+    {
+      "id": "monster_kill_10",
+      "icon": "🗡️",
+      "category": "combat",
+      "metric": "monster_kills",
+      "target": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "몬스터 사냥꾼",
+          "description": "몬스터 10마리 처치",
+          "unlock_message": "10마리 처치! 몬스터들이 수군거리기 시작했어요."
+        },
+        "en-US": {
+          "name": "Monster Hunter",
+          "description": "Defeat 10 monsters",
+          "unlock_message": "10 kills! The monsters are starting to gossip about you."
+        }
+      }
+    },
+    {
+      "id": "monster_kill_100",
+      "icon": "⚔️",
+      "category": "combat",
+      "metric": "monster_kills",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "몬스터 학살자",
+          "description": "몬스터 100마리 처치",
+          "unlock_message": "100마리 처치! 몬스터 노조에서 항의가 들어왔어요."
+        },
+        "en-US": {
+          "name": "Monster Slayer",
+          "description": "Defeat 100 monsters",
+          "unlock_message": "100 kills! The Monster Union filed a complaint."
+        }
+      }
+    },
+    {
+      "id": "monster_kill_1000",
+      "icon": "☠️",
+      "category": "combat",
+      "metric": "monster_kills",
+      "target": 1000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "대량 학살범",
+          "description": "몬스터 1,000마리 처치",
+          "unlock_message": "1,000마리?! 몬스터 멸종 위기... 농담이에요, 계속 나와요."
+        },
+        "en-US": {
+          "name": "Mass Exterminator",
+          "description": "Defeat 1,000 monsters",
+          "unlock_message": "1,000?! Monsters endangered... kidding, they keep spawning."
+        }
+      }
+    },
+    {
+      "id": "boss_kill_1",
+      "icon": "🐉",
+      "category": "combat",
+      "metric": "bosses_defeated",
+      "target": 1,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "보스 슬레이어",
+          "description": "보스 1마리 처치",
+          "unlock_message": "첫 보스 처치! 보스가 '다음엔 진짜다'라고 했대요."
+        },
+        "en-US": {
+          "name": "Boss Slayer",
+          "description": "Defeat 1 boss",
+          "unlock_message": "First boss down! It said 'I'll be back for real next time.'"
+        }
+      }
+    },
+    {
+      "id": "boss_kill_10",
+      "icon": "🦖",
+      "category": "combat",
+      "metric": "bosses_defeated",
+      "target": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "보스 전문가",
+          "description": "보스 10마리 처치",
+          "unlock_message": "보스 10마리! 이제 보스들이 당신 이름만 들어도 떨어요."
+        },
+        "en-US": {
+          "name": "Boss Expert",
+          "description": "Defeat 10 bosses",
+          "unlock_message": "10 bosses! They tremble at the mention of your name now."
+        }
+      }
+    },
+    {
+      "id": "boss_kill_50",
+      "icon": "👹",
+      "category": "combat",
+      "metric": "bosses_defeated",
+      "target": 50,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "보스 악몽",
+          "description": "보스 50마리 처치",
+          "unlock_message": "50마리 보스 처치! 보스 세계에서 당신은 전설의 악몽입니다."
+        },
+        "en-US": {
+          "name": "Boss Nightmare",
+          "description": "Defeat 50 bosses",
+          "unlock_message": "50 bosses! You're a legendary nightmare in the boss world."
+        }
+      }
+    },
+    {
+      "id": "gold_1k",
+      "icon": "🪙",
+      "category": "wealth",
+      "metric": "total_gold_earned",
+      "target": 1000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "용돈 벌이",
+          "description": "총 1,000 골드 획득",
+          "unlock_message": "1,000 골드! 라면 정도는 살 수 있겠네요."
+        },
+        "en-US": {
+          "name": "Pocket Money",
+          "description": "Earn 1,000 total gold",
+          "unlock_message": "1,000 gold! Enough for some instant noodles."
+        }
+      }
+    },
+    {
+      "id": "gold_10k",
+      "icon": "💰",
+      "category": "wealth",
+      "metric": "total_gold_earned",
+      "target": 10000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "소시민",
+          "description": "총 10,000 골드 획득",
+          "unlock_message": "만 골드! 이제 치킨 정도는 시킬 수 있어요."
+        },
+        "en-US": {
+          "name": "Working Class",
+          "description": "Earn 10,000 total gold",
+          "unlock_message": "10,000 gold! Now you can afford some fried chicken."
+        }
+      }
+    },
+    {
+      "id": "gold_100k",
+      "icon": "💵",
+      "category": "wealth",
+      "metric": "total_gold_earned",
+      "target": 100000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "중산층",
+          "description": "총 100,000 골드 획득",
+          "unlock_message": "10만 골드! 몬스터 세계의 중산층이 되었습니다."
+        },
+        "en-US": {
+          "name": "Middle Class",
+          "description": "Earn 100,000 total gold",
+          "unlock_message": "100,000 gold! You're now middle class in monster world."
+        }
+      }
+    },
+    {
+      "id": "gold_1m",
+      "icon": "💎",
+      "category": "wealth",
+      "metric": "total_gold_earned",
+      "target": 1000000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "백만장자",
+          "description": "총 1,000,000 골드 획득",
+          "unlock_message": "백만장자! 세금 신고 하셨나요? (농담)"
+        },
+        "en-US": {
+          "name": "Millionaire",
+          "description": "Earn 1,000,000 total gold",
+          "unlock_message": "Millionaire! Did you file your taxes? (Just kidding)"
+        }
+      }
+    },
+    {
+      "id": "spend_10k",
+      "icon": "🛒",
+      "category": "wealth",
+      "metric": "total_gold_spent",
+      "target": 10000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "합리적 소비자",
+          "description": "총 10,000 골드 사용",
+          "unlock_message": "만 골드 소비! 투자는 미래를 위한 것이에요."
+        },
+        "en-US": {
+          "name": "Smart Shopper",
+          "description": "Spend 10,000 total gold",
+          "unlock_message": "10,000 gold spent! Investment is for the future."
+        }
+      }
+    },
+    {
+      "id": "spend_100k",
+      "icon": "💸",
+      "category": "wealth",
+      "metric": "total_gold_spent",
+      "target": 100000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "큰손",
+          "description": "총 100,000 골드 사용",
+          "unlock_message": "10만 골드 소비! 업그레이드 중독인가요?"
+        },
+        "en-US": {
+          "name": "Big Spender",
+          "description": "Spend 100,000 total gold",
+          "unlock_message": "100,000 gold spent! Are you addicted to upgrades?"
+        }
+      }
+    },
+    {
+      "id": "keyboard_100",
+      "icon": "⌨️",
+      "category": "engagement",
+      "metric": "keyboard_inputs",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "타자 연습생",
+          "description": "키보드 입력 100회",
+          "unlock_message": "키보드 100번! 손가락 스트레칭 잊지 마세요."
+        },
+        "en-US": {
+          "name": "Typing Trainee",
+          "description": "100 keyboard inputs",
+          "unlock_message": "100 keystrokes! Don't forget to stretch your fingers."
+        }
+      }
+    },
+    {
+      "id": "keyboard_1000",
+      "icon": "🎹",
+      "category": "engagement",
+      "metric": "keyboard_inputs",
+      "target": 1000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "키보드 워리어",
+          "description": "키보드 입력 1,000회",
+          "unlock_message": "1,000번 타격! 키보드가 비명을 지르고 있어요."
+        },
+        "en-US": {
+          "name": "Keyboard Warrior",
+          "description": "1,000 keyboard inputs",
+          "unlock_message": "1,000 keystrokes! Your keyboard is screaming."
+        }
+      }
+    },
+    {
+      "id": "keyboard_10000",
+      "icon": "🖥️",
+      "category": "engagement",
+      "metric": "keyboard_inputs",
+      "target": 10000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "타자기의 후예",
+          "description": "키보드 입력 10,000회",
+          "unlock_message": "만 번! 키보드 교체 주기를 확인하세요... 진심으로."
+        },
+        "en-US": {
+          "name": "Typewriter Descendant",
+          "description": "10,000 keyboard inputs",
+          "unlock_message": "10,000! Check your keyboard warranty... seriously."
+        }
+      }
+    },
+    {
+      "id": "mouse_100",
+      "icon": "🖱️",
+      "category": "engagement",
+      "metric": "mouse_inputs",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "클릭 입문",
+          "description": "마우스 입력 100회",
+          "unlock_message": "마우스 100번! 손목 보호대 챙기세요."
+        },
+        "en-US": {
+          "name": "Click Beginner",
+          "description": "100 mouse inputs",
+          "unlock_message": "100 clicks! Get a wrist guard."
+        }
+      }
+    },
+    {
+      "id": "mouse_1000",
+      "icon": "🐭",
+      "category": "engagement",
+      "metric": "mouse_inputs",
+      "target": 1000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "클릭 마스터",
+          "description": "마우스 입력 1,000회",
+          "unlock_message": "1,000 클릭! 마우스가 '살려줘'라고 하는 것 같아요."
+        },
+        "en-US": {
+          "name": "Click Master",
+          "description": "1,000 mouse inputs",
+          "unlock_message": "1,000 clicks! Your mouse is crying for help."
+        }
+      }
+    },
+    {
+      "id": "mouse_10000",
+      "icon": "🎯",
+      "category": "engagement",
+      "metric": "mouse_inputs",
+      "target": 10000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "클릭의 신",
+          "description": "마우스 입력 10,000회",
+          "unlock_message": "만 클릭! 손목은 괜찮으신가요? 진심으로 걱정돼요."
+        },
+        "en-US": {
+          "name": "Click God",
+          "description": "10,000 mouse inputs",
+          "unlock_message": "10,000 clicks! Is your wrist okay? Genuinely worried."
+        }
+      }
+    },
+    {
+      "id": "playtime_60",
+      "icon": "⏰",
+      "category": "engagement",
+      "metric": "total_playtime_minutes",
+      "target": 60,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "한 시간의 전쟁",
+          "description": "총 플레이 시간 1시간",
+          "unlock_message": "1시간 플레이! 시간 순삭이네요."
+        },
+        "en-US": {
+          "name": "Hour of Battle",
+          "description": "1 hour total playtime",
+          "unlock_message": "1 hour played! Time flies."
+        }
+      }
+    },
+    {
+      "id": "playtime_300",
+      "icon": "🕐",
+      "category": "engagement",
+      "metric": "total_playtime_minutes",
+      "target": 300,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "5시간의 여정",
+          "description": "총 플레이 시간 5시간",
+          "unlock_message": "5시간! 잠깐, 밥은 드셨어요?"
+        },
+        "en-US": {
+          "name": "5 Hour Journey",
+          "description": "5 hours total playtime",
+          "unlock_message": "5 hours! Wait, did you eat?"
+        }
+      }
+    },
+    {
+      "id": "playtime_600",
+      "icon": "🏃",
+      "category": "engagement",
+      "metric": "total_playtime_minutes",
+      "target": 600,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "10시간 마라토너",
+          "description": "총 플레이 시간 10시간",
+          "unlock_message": "10시간! 당신의 헌신에 경의를 표합니다."
+        },
+        "en-US": {
+          "name": "10 Hour Marathon",
+          "description": "10 hours total playtime",
+          "unlock_message": "10 hours! Salute to your dedication."
+        }
+      }
+    },
+    {
+      "id": "playtime_3000",
+      "icon": "🌙",
+      "category": "engagement",
+      "metric": "total_playtime_minutes",
+      "target": 3000,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "50시간 전설",
+          "description": "총 플레이 시간 50시간",
+          "unlock_message": "50시간?! 당신은... 진정한 데스크워리어입니다."
+        },
+        "en-US": {
+          "name": "50 Hour Legend",
+          "description": "50 hours total playtime",
+          "unlock_message": "50 hours?! You are... a true DeskWarrior."
+        }
+      }
+    },
+    {
+      "id": "session_10",
+      "icon": "🔄",
+      "category": "engagement",
+      "metric": "total_sessions",
+      "target": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "꾸준한 플레이어",
+          "description": "총 10회 세션 플레이",
+          "unlock_message": "10번째 세션! 꾸준함이 실력이에요."
+        },
+        "en-US": {
+          "name": "Consistent Player",
+          "description": "Play 10 sessions",
+          "unlock_message": "10th session! Consistency is key."
+        }
+      }
+    },
+    {
+      "id": "session_50",
+      "icon": "🏠",
+      "category": "engagement",
+      "metric": "total_sessions",
+      "target": 50,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "단골 손님",
+          "description": "총 50회 세션 플레이",
+          "unlock_message": "50회 세션! 이제 여긴 당신의 집이나 다름없어요."
+        },
+        "en-US": {
+          "name": "Regular Customer",
+          "description": "Play 50 sessions",
+          "unlock_message": "50 sessions! This is basically your home now."
+        }
+      }
+    },
+    {
+      "id": "session_100",
+      "icon": "🏰",
+      "category": "engagement",
+      "metric": "total_sessions",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "영주민",
+          "description": "총 100회 세션 플레이",
+          "unlock_message": "100회 세션! 여기 영주권 발급해 드릴게요."
+        },
+        "en-US": {
+          "name": "Permanent Resident",
+          "description": "Play 100 sessions",
+          "unlock_message": "100 sessions! Here's your permanent residency."
+        }
+      }
+    },
+    {
+      "id": "streak_3",
+      "icon": "🔥",
+      "category": "engagement",
+      "metric": "consecutive_days",
+      "target": 3,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "3일 연속",
+          "description": "3일 연속 플레이",
+          "unlock_message": "3일 연속! 습관이 만들어지고 있어요."
+        },
+        "en-US": {
+          "name": "3 Day Streak",
+          "description": "Play 3 consecutive days",
+          "unlock_message": "3 days in a row! A habit is forming."
+        }
+      }
+    },
+    {
+      "id": "streak_7",
+      "icon": "📅",
+      "category": "engagement",
+      "metric": "consecutive_days",
+      "target": 7,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "일주일 정복",
+          "description": "7일 연속 플레이",
+          "unlock_message": "7일 연속! 일주일 내내 함께했네요. 고마워요!"
+        },
+        "en-US": {
+          "name": "Week Conquered",
+          "description": "Play 7 consecutive days",
+          "unlock_message": "7 days! You've been with us all week. Thanks!"
+        }
+      }
+    },
+    {
+      "id": "streak_30",
+      "icon": "🌟",
+      "category": "engagement",
+      "metric": "consecutive_days",
+      "target": 30,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "한 달의 헌신",
+          "description": "30일 연속 플레이",
+          "unlock_message": "30일 연속?! 진정한 데스크워리어의 정신입니다!"
+        },
+        "en-US": {
+          "name": "Month of Dedication",
+          "description": "Play 30 consecutive days",
+          "unlock_message": "30 days straight?! True DeskWarrior spirit!"
+        }
+      }
+    },
+    {
+      "id": "night_owl",
+      "icon": "🦉",
+      "category": "secret",
+      "metric": "special_night_owl",
+      "target": 1,
+      "is_hidden": true,
+      "localization": {
+        "ko-KR": {
+          "name": "올빼미족",
+          "description": "새벽 3시에 플레이",
+          "unlock_message": "새벽 3시?! 자야 해요... 하지만 환영합니다."
+        },
+        "en-US": {
+          "name": "Night Owl",
+          "description": "Play at 3 AM",
+          "unlock_message": "3 AM?! You should sleep... but welcome."
+        }
+      }
+    },
+    {
+      "id": "early_bird",
+      "icon": "🐦",
+      "category": "secret",
+      "metric": "special_early_bird",
+      "target": 1,
+      "is_hidden": true,
+      "localization": {
+        "ko-KR": {
+          "name": "아침형 인간",
+          "description": "오전 5시에 플레이",
+          "unlock_message": "새벽 5시? 일찍 일어나셨네요... 아니면 아직 안 잔 건가요?"
+        },
+        "en-US": {
+          "name": "Early Bird",
+          "description": "Play at 5 AM",
+          "unlock_message": "5 AM? Early riser... or haven't slept yet?"
+        }
+      }
+    },
+    {
+      "id": "balanced",
+      "icon": "⚖️",
+      "category": "secret",
+      "metric": "special_balanced",
+      "target": 1,
+      "is_hidden": true,
+      "localization": {
+        "ko-KR": {
+          "name": "균형의 달인",
+          "description": "키보드와 마우스 사용 비율 50:50 달성 (각 1000회 이상)",
+          "unlock_message": "완벽한 균형! 타노스도 부러워할 거예요."
+        },
+        "en-US": {
+          "name": "Master of Balance",
+          "description": "50:50 keyboard/mouse ratio (1000+ each)",
+          "unlock_message": "Perfect balance! Even Thanos would be jealous."
+        }
+      }
+    },
+    {
+      "id": "one_hit_wonder",
+      "icon": "👊",
+      "category": "combat",
+      "metric": "max_damage",
+      "target": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "원 펀치 맨",
+          "description": "한 방에 100 데미지 달성",
+          "unlock_message": "100 데미지 한 방! '원펀맨' 테마곡이 들리시나요?"
+        },
+        "en-US": {
+          "name": "One Punch Man",
+          "description": "Deal 100 damage in one hit",
+          "unlock_message": "100 damage in one hit! Can you hear the theme song?"
+        }
+      }
+    },
+    {
+      "id": "one_hit_legend",
+      "icon": "💪",
+      "category": "combat",
+      "metric": "max_damage",
+      "target": 500,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "한 방의 전설",
+          "description": "한 방에 500 데미지 달성",
+          "unlock_message": "500 데미지?! 그 힘으로 이사 좀 도와주세요."
+        },
+        "en-US": {
+          "name": "One-Hit Legend",
+          "description": "Deal 500 damage in one hit",
+          "unlock_message": "500 damage?! Help me move with that strength."
+        }
+      }
+    }
+  ]
+}

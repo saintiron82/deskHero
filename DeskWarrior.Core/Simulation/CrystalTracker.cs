@@ -11,12 +11,14 @@ public class CrystalTracker
     private readonly BossDropConfig _config;
     private readonly Random _random;
     private int _bossKillCounter;
+    private int _stageCompletionCrystals;  // 매 몬스터 처치 시 누적
 
     public CrystalTracker(BossDropConfig config, Random random)
     {
         _config = config;
         _random = random;
         _bossKillCounter = 0;
+        _stageCompletionCrystals = 0;
     }
 
     /// <summary>
@@ -61,11 +63,20 @@ public class CrystalTracker
     }
 
     /// <summary>
-    /// 스테이지 클리어 시 크리스털 보너스 (게임오버 시 1회)
+    /// 몬스터(스테이지) 클리어 시 크리스털 처리
+    /// 게임과 동일: 매 몬스터 처치 시 StageCompletionCrystal 지급
+    /// </summary>
+    public void ProcessStageClear()
+    {
+        _stageCompletionCrystals += _config.StageCompletionCrystal;
+    }
+
+    /// <summary>
+    /// 누적된 스테이지 클리어 크리스털 반환
     /// </summary>
     public int GetStageCompletionCrystals()
     {
-        return _config.StageCompletionCrystal;
+        return _stageCompletionCrystals;
     }
 
     /// <summary>
@@ -82,5 +93,6 @@ public class CrystalTracker
     public void Reset()
     {
         _bossKillCounter = 0;
+        _stageCompletionCrystals = 0;
     }
 }

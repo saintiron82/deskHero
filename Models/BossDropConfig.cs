@@ -27,6 +27,12 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("guaranteed_drop_every_n_bosses")]
         public int GuaranteedDropInterval { get; set; } = 10; // Pity system
+
+        [JsonPropertyName("stage_completion_crystal")]
+        public int StageCompletionCrystal { get; set; } = 1; // 스테이지 클리어당 크리스탈
+
+        [JsonPropertyName("gold_to_crystal_rate")]
+        public int GoldToCrystalRate { get; set; } = 100; // 골드→크리스탈 변환 비율
     }
 
     /// <summary>
