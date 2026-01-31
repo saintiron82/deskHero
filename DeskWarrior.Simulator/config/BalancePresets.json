@@ -1,0 +1,83 @@
+{
+  "_comment": "밸런스 비교용 프리셋 목록",
+  "_schema_version": "1.0",
+
+  "presets": {
+    "live": {
+      "name": "라이브 (현재)",
+      "description": "현재 실제 게임에 적용된 레벨",
+      "is_locked": true,
+      "color": "#4a90d9",
+      "levels": {
+        "base_attack": 0,
+        "attack_percent": 0,
+        "crit_chance": 0,
+        "crit_damage": 0,
+        "multi_hit": 0,
+        "gold_flat_perm": 0,
+        "gold_multi_perm": 0,
+        "crystal_flat": 0,
+        "crystal_multi": 0,
+        "time_extend": 0,
+        "upgrade_discount": 0,
+        "start_level": 0,
+        "start_gold": 0,
+        "start_keyboard": 0,
+        "start_mouse": 0
+      }
+    },
+    "aggressive": {
+      "name": "공격형 빌드",
+      "description": "공격력/크리티컬 집중 투자 예시",
+      "is_locked": false,
+      "color": "#dc3545",
+      "levels": {
+        "base_attack": 20,
+        "attack_percent": 15,
+        "crit_chance": 10,
+        "crit_damage": 8,
+        "multi_hit": 5,
+        "gold_flat_perm": 0,
+        "gold_multi_perm": 0,
+        "crystal_flat": 0,
+        "crystal_multi": 0,
+        "time_extend": 0,
+        "upgrade_discount": 0,
+        "start_level": 0,
+        "start_gold": 0,
+        "start_keyboard": 0,
+        "start_mouse": 0
+      }
+    },
+    "balanced": {
+      "name": "밸런스형 빌드",
+      "description": "공격/골드 균형 투자 예시",
+      "is_locked": false,
+      "color": "#28a745",
+      "levels": {
+        "base_attack": 12,
+        "attack_percent": 8,
+        "crit_chance": 5,
+        "crit_damage": 4,
+        "multi_hit": 3,
+        "gold_flat_perm": 10,
+        "gold_multi_perm": 6,
+        "crystal_flat": 2,
+        "crystal_multi": 2,
+        "time_extend": 2,
+        "upgrade_discount": 1,
+        "start_level": 0,
+        "start_gold": 5,
+        "start_keyboard": 3,
+        "start_mouse": 3
+      }
+    }
+  },
+
+  "default_colors": ["#4a90d9", "#28a745", "#dc3545", "#ffc107", "#17a2b8", "#6f42c1", "#fd7e14", "#20c997"],
+
+  "settings": {
+    "max_presets": 10,
+    "auto_save": true
+  }
+}

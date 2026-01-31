@@ -12,7 +12,6 @@ public class SimulationEngine
     private readonly GameConfig _gameConfig;
     private readonly Dictionary<string, StatGrowthConfig> _inGameStatConfigs;
     private readonly Dictionary<string, StatGrowthConfig> _permanentStatConfigs;
-    private readonly MonsterConfig _monsterConfig;
     private readonly BossDropConfig _bossDropConfig;
     private readonly Random _random;
 
@@ -20,14 +19,13 @@ public class SimulationEngine
         GameConfig gameConfig,
         Dictionary<string, StatGrowthConfig> inGameStats,
         Dictionary<string, StatGrowthConfig> permanentStats,
-        MonsterConfig? monsterConfig = null,
+        MonsterConfig? monsterConfig = null,  // 하위 호환성 유지 (무시됨)
         BossDropConfig? bossDropConfig = null,
         int? seed = null)
     {
         _gameConfig = gameConfig;
         _inGameStatConfigs = inGameStats;
         _permanentStatConfigs = permanentStats;
-        _monsterConfig = monsterConfig ?? new MonsterConfig();
         _bossDropConfig = bossDropConfig ?? new BossDropConfig();
         _random = seed.HasValue ? new Random(seed.Value) : new Random();
     }
@@ -143,6 +141,9 @@ public class SimulationEngine
             // 몬스터 처치
             result.MonstersKilled++;
 
+            // 스테이지 클리어 크리스털 (게임과 동일: 매 몬스터 처치 시 1 크리스털)
+            crystalTracker.ProcessStageClear();
+
             // 보스 처치 시 크리스털 드롭
             if (isBoss)
             {
@@ -174,23 +175,29 @@ public class SimulationEngine
 
     private SimMonster CreateMonster(int level, bool isBoss)
     {
-        // 보스는 HP와 HP 성장률 모두 배율 적용
-        int baseHp = _monsterConfig.BaseHp;
-        int hpGrowth = _monsterConfig.HpGrowth;
+        // 게임 공식 (Monster.cs 동일):
+        // HP = baseHp + (level - 1) * hpGrowth (선형 성장)
+        // 보스: HP × BOSS_HP_MULTIPLIER
 
+        int baseHp = _gameConfig.Balance.BaseHp;
+        int hpGrowth = (int)_gameConfig.Balance.HpGrowth;
+
+        // 보스는 배율 적용
         if (isBoss)
         {
             baseHp = (int)(baseHp * _gameConfig.Balance.BossHpMultiplier);
-            hpGrowth = (int)(hpGrowth * _gameConfig.Balance.BossHpMultiplier);
         }
+
+        // 골드: stage * BASE_GOLD_MULTI
+        double goldGrowth = _gameConfig.Balance.BaseGoldMultiplier;
 
         return new SimMonster(
             level,
             isBoss,
             baseHp,
             hpGrowth,
-            _monsterConfig.BaseGold,
-            _monsterConfig.GoldGrowth
+            0,  // baseGold (사용 안 함)
+            goldGrowth
         );
     }
 
@@ -339,7 +346,7 @@ public class SimulationEngine
         }
 
         // ⑦ 유틸리티 보너스 (time_extend + upgrade_discount 투자에 따른 데미지 보너스)
-        double utilityBonus = 1.0 + (permStats.TimeExtendLevel + permStats.UpgradeDiscountLevel) * 0.003;
+        double utilityBonus = 1.0 + (permStats.TimeExtendLevel + permStats.UpgradeDiscountLevel) * 0.01;
         effectivePower *= utilityBonus;
 
         return (int)effectivePower;

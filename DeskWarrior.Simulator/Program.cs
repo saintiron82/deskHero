@@ -90,7 +90,7 @@ Options:
   --parallel <count>   Parallel threads (-1 = all cores, default: -1)
 
 Progression Options (--progress mode):
-  --strategy <name>    Upgrade strategy: greedy/damage/survival/crystal/balanced/none (default: greedy)
+  --strategy <name>    Upgrade strategy: greedy/damage/survival/crystal/balanced/economy/none (default: greedy)
   --max-attempts <n>   Maximum session attempts (default: 1000)
   --game-hours <n>     Game time to simulate in hours (default: 0 = use target level instead)
                        When set, simulates until game time reached instead of target level
@@ -241,6 +241,7 @@ Examples:
             "survival" => UpgradeStrategy.SurvivalFirst,
             "crystal" => UpgradeStrategy.CrystalFarm,
             "balanced" => UpgradeStrategy.Balanced,
+            "economy" => UpgradeStrategy.EconomyFirst,
             "none" => UpgradeStrategy.None,
             _ => UpgradeStrategy.Greedy
         };
@@ -998,7 +999,8 @@ Examples:
             UpgradeStrategy.DamageFirst,
             UpgradeStrategy.SurvivalFirst,
             UpgradeStrategy.CrystalFarm,
-            UpgradeStrategy.Balanced
+            UpgradeStrategy.Balanced,
+            UpgradeStrategy.EconomyFirst
         };
 
         var progressionSim = SimulatorFactory.CreateProgressionSimulator(configPath);
@@ -1006,6 +1008,9 @@ Examples:
 
         // 시간별 추이 데이터: [전략][시간] = 평균 레벨
         var hourlyData = new Dictionary<UpgradeStrategy, Dictionary<int, double>>();
+
+        // 사망 레벨 분포: [전략] = 레벨 리스트
+        var deathLevelsByStrategy = new Dictionary<UpgradeStrategy, List<long>>();
 
         var sw = Stopwatch.StartNew();
 
@@ -1015,6 +1020,7 @@ Examples:
         {
             hourlyData[strategy] = new Dictionary<int, double>();
             var runResults = new List<ProgressionResult>();
+            deathLevelsByStrategy[strategy] = new List<long>();
 
             // 시간별 레벨 수집: [시간][실행번호] = 레벨
             var hourlyLevels = new Dictionary<int, List<long>>();
@@ -1065,6 +1071,9 @@ Examples:
                     TotalCrystalsEarned = totalCrystalsEarned,
                     FinalStats = currentStats
                 });
+
+                // 사망 레벨 기록
+                deathLevelsByStrategy[strategy].Add(bestLevelEver);
             }
 
             // 시간별 평균 계산
@@ -1096,6 +1105,9 @@ Examples:
 
         sw.Stop();
         Console.WriteLine($"\nCompleted in {sw.Elapsed.TotalSeconds:F1}s\n");
+
+        // 사망 레벨 분포 출력
+        PrintDeathLevelDistribution(deathLevelsByStrategy, strategies);
 
         // 시간별 추이 출력
         Console.WriteLine("=== Hourly Progression ===");
@@ -1189,8 +1201,8 @@ Examples:
         }
         Console.WriteLine();
 
-        // 보고서 저장 (시간별 추이 포함)
-        SaveStrategyComparisonReportWithHourly(sortedResults, hourlyData, strategies, totalHours, options, runsPerStrategy, dominanceRatio, grade, balanceDocPath, configPath);
+        // 보고서 저장 (시간별 추이 + 사망 레벨 분포 포함)
+        SaveStrategyComparisonReportWithHourly(sortedResults, hourlyData, deathLevelsByStrategy, strategies, totalHours, options, runsPerStrategy, dominanceRatio, grade, balanceDocPath, configPath);
     }
 
     static double CalculateStdDev(List<long> values)
@@ -1422,6 +1434,7 @@ Examples:
     static void SaveStrategyComparisonReportWithHourly(
         List<StrategyAggregatedResult> results,
         Dictionary<UpgradeStrategy, Dictionary<int, double>> hourlyData,
+        Dictionary<UpgradeStrategy, List<long>> deathLevelsByStrategy,
         UpgradeStrategy[] strategies,
         int totalHours,
         SimulationOptions options,
@@ -1586,6 +1599,55 @@ Examples:
         }
         sb.AppendLine();
 
+        // 사망 레벨 분포
+        sb.AppendLine("## 사망 레벨 분포");
+        sb.AppendLine();
+        foreach (var strategy in strategies)
+        {
+            var levels = deathLevelsByStrategy[strategy];
+            if (levels.Count == 0) continue;
+
+            var sorted = levels.OrderBy(x => x).ToList();
+            var min = sorted.First();
+            var max = sorted.Last();
+            var avg = sorted.Average();
+            var median = sorted.Count % 2 == 0
+                ? (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2.0
+                : sorted[sorted.Count / 2];
+
+            sb.AppendLine($"### {strategy} ({levels.Count} sessions)");
+            sb.AppendLine();
+
+            // 레벨 구간별 집계
+            var maxLevel = (int)max;
+            var bucketSize = DetermineBucketSize(maxLevel);
+            var buckets = new Dictionary<int, int>();
+
+            foreach (var level in levels)
+            {
+                int bucketKey = ((int)level / bucketSize) * bucketSize;
+                if (!buckets.ContainsKey(bucketKey))
+                    buckets[bucketKey] = 0;
+                buckets[bucketKey]++;
+            }
+
+            // ASCII 히스토그램
+            var sortedBuckets = buckets.OrderBy(kvp => kvp.Key).ToList();
+            foreach (var (bucketKey, count) in sortedBuckets)
+            {
+                var percent = (double)count / levels.Count;
+                var barLength = (int)(percent * 50);
+                var bar = new string('█', barLength);
+
+                var rangeEnd = bucketKey + bucketSize - 1;
+                sb.AppendLine($"Lv {bucketKey,4}-{rangeEnd,4}: {bar,-50} {percent:P0} ({count})");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"**통계:** Min: {min}, Max: {max}, Avg: {avg:F0}, Median: {median:F0}");
+            sb.AppendLine();
+        }
+
         // 분석
         sb.AppendLine("---");
         sb.AppendLine();
@@ -1661,6 +1723,70 @@ Examples:
         }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
 
         Console.WriteLine(json);
+    }
+
+    static void PrintDeathLevelDistribution(Dictionary<UpgradeStrategy, List<long>> deathLevelsByStrategy, UpgradeStrategy[] strategies)
+    {
+        Console.WriteLine("=== Death Level Distribution ===");
+        Console.WriteLine();
+
+        foreach (var strategy in strategies)
+        {
+            var levels = deathLevelsByStrategy[strategy];
+            if (levels.Count == 0) continue;
+
+            // 통계 계산
+            var sorted = levels.OrderBy(x => x).ToList();
+            var min = sorted.First();
+            var max = sorted.Last();
+            var avg = sorted.Average();
+            var median = sorted.Count % 2 == 0
+                ? (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2.0
+                : sorted[sorted.Count / 2];
+
+            Console.WriteLine($"{strategy} ({levels.Count} sessions):");
+
+            // 레벨 구간별 집계
+            var maxLevel = (int)max;
+            var bucketSize = DetermineBucketSize(maxLevel);
+            var buckets = new Dictionary<int, int>();
+
+            foreach (var level in levels)
+            {
+                int bucketKey = ((int)level / bucketSize) * bucketSize;
+                if (!buckets.ContainsKey(bucketKey))
+                    buckets[bucketKey] = 0;
+                buckets[bucketKey]++;
+            }
+
+            // ASCII 히스토그램 출력
+            var maxCount = buckets.Values.Max();
+            var sortedBuckets = buckets.OrderBy(kvp => kvp.Key).ToList();
+
+            foreach (var (bucketKey, count) in sortedBuckets)
+            {
+                var percent = (double)count / levels.Count;
+                var barLength = (int)(percent * 50);  // 최대 50칸
+                var bar = new string('█', barLength);
+
+                var rangeEnd = bucketKey + bucketSize - 1;
+                Console.WriteLine($"  Lv {bucketKey,4}-{rangeEnd,4}: {bar,-50} {percent:P0} ({count})");
+            }
+
+            // 통계 요약
+            Console.WriteLine($"  Min: {min}, Max: {max}, Avg: {avg:F0}, Median: {median:F0}");
+            Console.WriteLine();
+        }
+    }
+
+    static int DetermineBucketSize(int maxLevel)
+    {
+        // 레벨 범위에 따라 적절한 구간 크기 결정
+        if (maxLevel <= 100) return 10;
+        if (maxLevel <= 500) return 50;
+        if (maxLevel <= 1000) return 100;
+        if (maxLevel <= 5000) return 500;
+        return 1000;
     }
 }
 

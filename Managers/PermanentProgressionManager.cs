@@ -42,19 +42,27 @@ namespace DeskWarrior.Managers
         #region Boss Drop
 
         /// <summary>
-        /// 보스 처치 시 드롭 계산
+        /// 보스 처치 시 드롭 계산 (시뮬레이터 동기화)
         /// </summary>
         public BossDropResult ProcessBossKill(int bossLevel)
         {
             var save = _saveManager.CurrentSave;
+            var permStats = save.PermanentStats;
             save.BossKillCounter++;
 
             // 피티 시스템 체크
             bool isGuaranteed = save.BossKillCounter >= _bossDropConfig.GuaranteedDropInterval;
 
-            // 드롭 확률 계산
+            // 드롭 확률 계산 (crystal_chance 스탯 적용)
             double dropChance = _bossDropConfig.BaseDropChance +
                                (bossLevel * _bossDropConfig.DropChancePerLevel);
+
+            // crystal_chance(crystal_multi) 스탯 적용 - 시뮬레이터 동기화
+            if (permStats != null)
+            {
+                dropChance += permStats.CrystalDropChanceBonus;
+            }
+
             dropChance = Math.Min(dropChance, _bossDropConfig.MaxDropChance);
 
             bool dropped = isGuaranteed || _random.NextDouble() < dropChance;
@@ -67,9 +75,15 @@ namespace DeskWarrior.Managers
             // 카운터 리셋
             save.BossKillCounter = 0;
 
-            // 크리스탈 양 계산
+            // 크리스탈 양 계산 (crystal_flat 스탯 적용)
             int baseCrystals = _bossDropConfig.BaseCrystalAmount +
                               (bossLevel * _bossDropConfig.CrystalPerLevel);
+
+            // crystal_flat 스탯 적용 - 시뮬레이터 동기화
+            if (permStats != null)
+            {
+                baseCrystals += permStats.CrystalFlatBonus;
+            }
 
             // 분산 적용 (±20%)
             double variance = 1.0 + ((_random.NextDouble() * 2 - 1) * _bossDropConfig.CrystalVariance);
@@ -92,8 +106,8 @@ namespace DeskWarrior.Managers
         /// </summary>
         public void ProcessStageClear(int clearedStage)
         {
-            // 매 스테이지 클리어 시 1 크리스탈
-            AddCrystals(1, "stage_clear");
+            // 매 스테이지 클리어 시 크리스탈 (config에서 로드, 기본값 1)
+            AddCrystals(_bossDropConfig.StageCompletionCrystal, "stage_clear");
         }
 
         #endregion
@@ -117,7 +131,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         public int ConvertGoldToCrystals(int sessionGold)
         {
-            const int conversionRate = 1000; // 1000 골드 = 1 크리스탈
+            int conversionRate = _bossDropConfig.GoldToCrystalRate; // config에서 로드 (기본값 100)
             int crystals = sessionGold / conversionRate;
 
             if (crystals > 0)

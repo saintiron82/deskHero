@@ -1,0 +1,30 @@
+{
+  "_comment": "플레이어 현재 영구 스탯 레벨 (밸런스 분석용)",
+
+  "permanent_levels": {
+    "base_attack": 0,
+    "attack_percent": 0,
+    "crit_chance": 0,
+    "crit_damage": 0,
+    "multi_hit": 0,
+    "gold_flat_perm": 0,
+    "gold_multi_perm": 0,
+    "crystal_flat": 0,
+    "crystal_multi": 0,
+    "time_extend": 0,
+    "upgrade_discount": 0,
+    "start_level": 0,
+    "start_gold": 0,
+    "start_keyboard": 0,
+    "start_mouse": 0,
+    "start_gold_flat": 0,
+    "start_gold_multi": 0,
+    "start_combo_flex": 0,
+    "start_combo_damage": 0
+  },
+
+  "ingame_levels": {
+    "keyboard_power": 0,
+    "mouse_power": 0
+  }
+}

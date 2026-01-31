@@ -15,7 +15,7 @@ public static class StatFormulas
     public const int MAX_COMBO_STACK = 3;
     public const int GOLD_TO_CRYSTAL_RATE = 1000;
     public const int BASE_HP = 100;
-    public const double HP_GROWTH = 1.2;
+    public const double HP_GROWTH = 1.12;
     public const int BOSS_INTERVAL = 10;
     public const double BOSS_HP_MULTI = 5.0;
     public const double BASE_GOLD_MULTI = 1.5;

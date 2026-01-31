@@ -218,4 +218,5 @@ public class StatConfig
     public int SoftcapInterval { get; set; }
     public double EffectPerLevel { get; set; }
     public int MaxLevel { get; set; }
+    public double Weight { get; set; } = 1.0;
 }
