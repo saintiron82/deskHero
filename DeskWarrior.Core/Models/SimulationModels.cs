@@ -181,6 +181,11 @@ public class SessionResult
     public long CrystalsFromStages { get; set; }     // 스테이지 클리어 보너스
     public long CrystalsFromGoldConvert { get; set; } // 골드 변환
     public long TotalCrystals => CrystalsFromBosses + CrystalsFromStages + CrystalsFromGoldConvert;
+
+    // 황금 고블린 통계
+    public int GoldenGoblinsKilled { get; set; }     // 처치한 황금 고블린 수
+    public int GoldenGoblinsEscaped { get; set; }    // 도주한 황금 고블린 수
+    public long GoldenGoblinGoldEarned { get; set; } // 황금 고블린에서 획득한 골드
 }
 
 /// <summary>
@@ -206,4 +211,9 @@ public class BatchResult
     public double AverageCrystalsFromBosses { get; set; }
     public double AverageCrystalsFromStages { get; set; }
     public double AverageCrystalsFromGoldConvert { get; set; }
+
+    // 황금 고블린 통계
+    public double AverageGoldenGoblinsKilled { get; set; }
+    public double AverageGoldenGoblinsEscaped { get; set; }
+    public double AverageGoldenGoblinGold { get; set; }
 }

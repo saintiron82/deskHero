@@ -33,7 +33,10 @@ public static class SimulatorFactory
         // BossDrops.json 로드
         var bossDropConfig = LoadBossDropConfig(Path.Combine(configPath, "BossDrops.json"));
 
-        return new BatchSimulator(gameConfig, inGameStats, permanentStats, monsterConfig, bossDropConfig);
+        // SpecialMonsters.json 로드 (황금 고블린)
+        var goldenGoblinConfig = LoadGoldenGoblinConfig(Path.Combine(configPath, "SpecialMonsters.json"));
+
+        return new BatchSimulator(gameConfig, inGameStats, permanentStats, monsterConfig, bossDropConfig, goldenGoblinConfig);
     }
 
     /// <summary>
@@ -54,7 +57,9 @@ public static class SimulatorFactory
 
         var bossDropConfig = LoadBossDropConfig(Path.Combine(configPath, "BossDrops.json"));
 
-        return new SimulationEngine(gameConfig, inGameStats, permanentStats, monsterConfig, bossDropConfig, seed);
+        var goldenGoblinConfig = LoadGoldenGoblinConfig(Path.Combine(configPath, "SpecialMonsters.json"));
+
+        return new SimulationEngine(gameConfig, inGameStats, permanentStats, monsterConfig, bossDropConfig, goldenGoblinConfig, seed);
     }
 
     /// <summary>
@@ -238,5 +243,23 @@ public static class SimulatorFactory
         if (element.TryGetProperty(name, out var prop))
             return prop.GetDouble();
         return defaultValue;
+    }
+
+    private static SimGoldenGoblinConfig LoadGoldenGoblinConfig(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                var config = SpecialMonstersConfig.LoadFromFile(path);
+                return config.GoldenGoblin;
+            }
+        }
+        catch
+        {
+            // 기본값 사용
+        }
+
+        return new SimGoldenGoblinConfig();
     }
 }

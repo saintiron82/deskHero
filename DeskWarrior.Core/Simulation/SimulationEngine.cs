@@ -13,7 +13,12 @@ public class SimulationEngine
     private readonly Dictionary<string, StatGrowthConfig> _inGameStatConfigs;
     private readonly Dictionary<string, StatGrowthConfig> _permanentStatConfigs;
     private readonly BossDropConfig _bossDropConfig;
+    private readonly SimGoldenGoblinConfig _goldenGoblinConfig;
     private readonly Random _random;
+
+    // 황금 고블린 상태
+    private bool _isGoldenGoblinActive = false;
+    private int _killsSinceLastGoblin = 0;
 
     public SimulationEngine(
         GameConfig gameConfig,
@@ -21,12 +26,14 @@ public class SimulationEngine
         Dictionary<string, StatGrowthConfig> permanentStats,
         MonsterConfig? monsterConfig = null,  // 하위 호환성 유지 (무시됨)
         BossDropConfig? bossDropConfig = null,
+        SimGoldenGoblinConfig? goldenGoblinConfig = null,
         int? seed = null)
     {
         _gameConfig = gameConfig;
         _inGameStatConfigs = inGameStats;
         _permanentStatConfigs = permanentStats;
         _bossDropConfig = bossDropConfig ?? new BossDropConfig();
+        _goldenGoblinConfig = goldenGoblinConfig ?? new SimGoldenGoblinConfig();
         _random = seed.HasValue ? new Random(seed.Value) : new Random();
     }
 
@@ -34,6 +41,15 @@ public class SimulationEngine
     /// 영구 스탯 Config 참조 반환 (외부에서 SimPermanentStats 생성 시 사용)
     /// </summary>
     public Dictionary<string, StatGrowthConfig> PermanentStatConfigs => _permanentStatConfigs;
+
+    /// <summary>
+    /// 황금 고블린 쿨다운 리셋 (새 시뮬레이션 시작 시 호출)
+    /// </summary>
+    public void ResetGoldenGoblinState()
+    {
+        _killsSinceLastGoblin = 0;
+        _isGoldenGoblinActive = false;
+    }
 
     /// <summary>
     /// 단일 세션 시뮬레이션
@@ -75,7 +91,47 @@ public class SimulationEngine
 
             // 몬스터 스폰
             bool isBoss = currentLevel > 0 && currentLevel % _gameConfig.Balance.BossInterval == 0;
+
+            // 황금 고블린 스폰 체크 (보스가 아닐 때만)
+            _isGoldenGoblinActive = false;
+            if (!isBoss && CanSpawnGoldenGoblin())
+            {
+                // 황금 고블린: 확률 기반 즉시 판정 (30% 처치 확률)
+                const double GOLDEN_GOBLIN_KILL_CHANCE = 0.30;
+
+                // 10초 시간 소모
+                double goblinTime = Math.Min(_goldenGoblinConfig.TimeLimit, baseTimeLimit - sessionTime);
+                sessionTime += goblinTime;
+
+                if (_random.NextDouble() < GOLDEN_GOBLIN_KILL_CHANCE)
+                {
+                    // 처치 성공
+                    int multiplier = _random.Next(
+                        _goldenGoblinConfig.RewardMultiplierMin,
+                        _goldenGoblinConfig.RewardMultiplierMax + 1);
+                    int expectedGold = (int)(currentLevel * _gameConfig.Balance.BaseGoldMultiplier);
+                    int goldenGoblinReward = expectedGold * multiplier;
+
+                    gold += goldenGoblinReward;
+                    result.TotalGold += goldenGoblinReward;
+                    result.GoldenGoblinsKilled++;
+                    result.GoldenGoblinGoldEarned += goldenGoblinReward;
+                    result.MonstersKilled++;
+                }
+                else
+                {
+                    // 도주
+                    result.GoldenGoblinsEscaped++;
+                }
+
+                _killsSinceLastGoblin = 0; // 쿨다운 리셋
+                currentLevel++;
+                continue; // 다음 스테이지로
+            }
+
             var monster = CreateMonster(currentLevel, isBoss);
+
+            // 시간 제한
             double timeRemaining = Math.Min(baseTimeLimit, baseTimeLimit - sessionTime);
 
             // 전투 시뮬레이션
@@ -117,14 +173,15 @@ public class SimulationEngine
 
                 basePower += permStats.BaseAttack;
 
-                var damage = CalculateDamage(basePower, permStats, comboStack, out bool isCrit);
+                int damage = CalculateDamage(basePower, permStats, comboStack, out bool isCrit);
+
                 if (isCrit) result.CriticalHits++;
 
                 monster.TakeDamage(damage);
                 result.TotalDamage += damage;
             }
 
-            // 타임아웃 = 게임오버
+            // 타임아웃 처리 = 게임오버
             if (monster.IsAlive)
             {
                 result.MaxLevel = currentLevel;
@@ -140,6 +197,9 @@ public class SimulationEngine
 
             // 몬스터 처치
             result.MonstersKilled++;
+
+            // 쿨다운 카운터 증가 (황금 고블린 스폰용)
+            _killsSinceLastGoblin++;
 
             // 스테이지 클리어 크리스털 (게임과 동일: 매 몬스터 처치 시 1 크리스털)
             crystalTracker.ProcessStageClear();
@@ -198,6 +258,37 @@ public class SimulationEngine
             hpGrowth,
             0,  // baseGold (사용 안 함)
             goldGrowth
+        );
+    }
+
+    /// <summary>
+    /// 황금 고블린 스폰 가능 여부 판정
+    /// </summary>
+    private bool CanSpawnGoldenGoblin()
+    {
+        // 쿨다운 체크
+        if (_killsSinceLastGoblin < _goldenGoblinConfig.CooldownKills)
+        {
+            return false;
+        }
+
+        // 확률 체크
+        return _random.NextDouble() < _goldenGoblinConfig.SpawnChance;
+    }
+
+    /// <summary>
+    /// 황금 고블린 생성
+    /// </summary>
+    private SimMonster CreateGoldenGoblin(int level)
+    {
+        // 황금 고블린은 고정 HP, 골드 보상은 별도 처리
+        return new SimMonster(
+            level,
+            isBoss: false,
+            baseHp: _goldenGoblinConfig.Hp,
+            hpGrowth: 0,  // 레벨과 무관하게 고정 HP
+            baseGold: 0,
+            goldGrowth: 0
         );
     }
 

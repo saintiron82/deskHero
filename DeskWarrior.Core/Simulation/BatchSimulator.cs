@@ -13,19 +13,22 @@ public class BatchSimulator
     private readonly Dictionary<string, StatGrowthConfig> _permanentStats;
     private readonly MonsterConfig _monsterConfig;
     private readonly BossDropConfig _bossDropConfig;
+    private readonly SimGoldenGoblinConfig _goldenGoblinConfig;
 
     public BatchSimulator(
         GameConfig gameConfig,
         Dictionary<string, StatGrowthConfig> inGameStats,
         Dictionary<string, StatGrowthConfig> permanentStats,
         MonsterConfig? monsterConfig = null,
-        BossDropConfig? bossDropConfig = null)
+        BossDropConfig? bossDropConfig = null,
+        SimGoldenGoblinConfig? goldenGoblinConfig = null)
     {
         _gameConfig = gameConfig;
         _inGameStats = inGameStats;
         _permanentStats = permanentStats;
         _monsterConfig = monsterConfig ?? new MonsterConfig();
         _bossDropConfig = bossDropConfig ?? new BossDropConfig();
+        _goldenGoblinConfig = goldenGoblinConfig ?? new SimGoldenGoblinConfig();
     }
 
     /// <summary>
@@ -62,6 +65,7 @@ public class BatchSimulator
                 _permanentStats,
                 _monsterConfig,
                 _bossDropConfig,
+                _goldenGoblinConfig,
                 seed: i  // 재현 가능한 시드
             );
 
@@ -98,6 +102,7 @@ public class BatchSimulator
                 _permanentStats,
                 _monsterConfig,
                 _bossDropConfig,
+                _goldenGoblinConfig,
                 seed: i
             );
 
@@ -133,7 +138,12 @@ public class BatchSimulator
             AverageCrystals = results.Average(r => r.TotalCrystals),
             AverageCrystalsFromBosses = results.Average(r => r.CrystalsFromBosses),
             AverageCrystalsFromStages = results.Average(r => r.CrystalsFromStages),
-            AverageCrystalsFromGoldConvert = results.Average(r => r.CrystalsFromGoldConvert)
+            AverageCrystalsFromGoldConvert = results.Average(r => r.CrystalsFromGoldConvert),
+
+            // 황금 고블린 통계
+            AverageGoldenGoblinsKilled = results.Average(r => r.GoldenGoblinsKilled),
+            AverageGoldenGoblinsEscaped = results.Average(r => r.GoldenGoblinsEscaped),
+            AverageGoldenGoblinGold = results.Average(r => r.GoldenGoblinGoldEarned)
         };
 
         // 레벨 분포 (1~max)

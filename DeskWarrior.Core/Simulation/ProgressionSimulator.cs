@@ -24,6 +24,15 @@ public class ProgressionSimulator
     }
 
     /// <summary>
+    /// 엔진 상태 리셋 (황금 고블린 쿨다운 등)
+    /// 새 시뮬레이션 시작 전에 호출
+    /// </summary>
+    public void ResetEngineState()
+    {
+        _engine.ResetGoldenGoblinState();
+    }
+
+    /// <summary>
     /// 게임 시간 기준 다중 세션 시뮬레이션
     /// 지정된 게임 시간 동안 반복 플레이하여 최고 도달 레벨 측정
     /// </summary>
@@ -49,6 +58,11 @@ public class ProgressionSimulator
         double totalGameTime = 0;
         int sessionNumber = 0;
 
+        // 황금 고블린 통계
+        int totalGoldenGoblinsKilled = 0;
+        int totalGoldenGoblinsEscaped = 0;
+        long totalGoldenGoblinGold = 0;
+
         while (totalGameTime < targetTimeSeconds)
         {
             sessionNumber++;
@@ -66,6 +80,11 @@ public class ProgressionSimulator
             long crystalsEarned = session.TotalCrystals;
             totalCrystalsEarned += crystalsEarned;
 
+            // 황금 고블린 통계 누적
+            totalGoldenGoblinsKilled += session.GoldenGoblinsKilled;
+            totalGoldenGoblinsEscaped += session.GoldenGoblinsEscaped;
+            totalGoldenGoblinGold += session.GoldenGoblinGoldEarned;
+
             result.SessionHistory.Add(new SessionProgressRecord
             {
                 SessionNumber = sessionNumber,
@@ -74,7 +93,10 @@ public class ProgressionSimulator
                 CrystalsBeforeSession = crystals,
                 CrystalsAfterSession = crystals + crystalsEarned,
                 SessionDurationSeconds = session.SessionDuration,
-                CumulativeGameTimeSeconds = totalGameTime
+                CumulativeGameTimeSeconds = totalGameTime,
+                GoldenGoblinsKilled = session.GoldenGoblinsKilled,
+                GoldenGoblinsEscaped = session.GoldenGoblinsEscaped,
+                GoldenGoblinGoldEarned = session.GoldenGoblinGoldEarned
             });
 
             crystals += crystalsEarned;
@@ -94,6 +116,11 @@ public class ProgressionSimulator
         result.FinalMaxLevel = result.SessionHistory.LastOrDefault()?.MaxLevel ?? 0;
         result.BestLevelEver = bestLevelEver;
         result.TotalGameTimeSeconds = totalGameTime;
+
+        // 황금 고블린 통계
+        result.TotalGoldenGoblinsKilled = totalGoldenGoblinsKilled;
+        result.TotalGoldenGoblinsEscaped = totalGoldenGoblinsEscaped;
+        result.TotalGoldenGoblinGold = totalGoldenGoblinGold;
 
         return result;
     }
@@ -122,6 +149,11 @@ public class ProgressionSimulator
         long totalCrystalsSpent = 0;
         long bestLevel = 0;
 
+        // 황금 고블린 통계
+        int totalGoldenGoblinsKilled = 0;
+        int totalGoldenGoblinsEscaped = 0;
+        long totalGoldenGoblinGold = 0;
+
         for (int attempt = 1; attempt <= maxAttempts; attempt++)
         {
             // 진행률 콜백
@@ -129,6 +161,11 @@ public class ProgressionSimulator
 
             // 세션 시뮬레이션
             var session = _engine.SimulateSession(currentStats, profile);
+
+            // 황금 고블린 통계 누적
+            totalGoldenGoblinsKilled += session.GoldenGoblinsKilled;
+            totalGoldenGoblinsEscaped += session.GoldenGoblinsEscaped;
+            totalGoldenGoblinGold += session.GoldenGoblinGoldEarned;
 
             // 세션 기록
             long crystalsEarned = session.TotalCrystals;
@@ -140,7 +177,10 @@ public class ProgressionSimulator
                 MaxLevel = session.MaxLevel,
                 CrystalsEarned = crystalsEarned,
                 CrystalsBeforeSession = crystals,
-                CrystalsAfterSession = crystals + crystalsEarned
+                CrystalsAfterSession = crystals + crystalsEarned,
+                GoldenGoblinsKilled = session.GoldenGoblinsKilled,
+                GoldenGoblinsEscaped = session.GoldenGoblinsEscaped,
+                GoldenGoblinGoldEarned = session.GoldenGoblinGoldEarned
             });
 
             crystals += crystalsEarned;
@@ -155,6 +195,9 @@ public class ProgressionSimulator
                 result.TotalCrystalsEarned = totalCrystalsEarned;
                 result.TotalCrystalsSpent = totalCrystalsSpent;
                 result.FinalMaxLevel = session.MaxLevel;
+                result.TotalGoldenGoblinsKilled = totalGoldenGoblinsKilled;
+                result.TotalGoldenGoblinsEscaped = totalGoldenGoblinsEscaped;
+                result.TotalGoldenGoblinGold = totalGoldenGoblinGold;
                 return result;
             }
 
@@ -170,6 +213,9 @@ public class ProgressionSimulator
         result.TotalCrystalsEarned = totalCrystalsEarned;
         result.TotalCrystalsSpent = totalCrystalsSpent;
         result.FinalMaxLevel = bestLevel;
+        result.TotalGoldenGoblinsKilled = totalGoldenGoblinsKilled;
+        result.TotalGoldenGoblinsEscaped = totalGoldenGoblinsEscaped;
+        result.TotalGoldenGoblinGold = totalGoldenGoblinGold;
         return result;
     }
 

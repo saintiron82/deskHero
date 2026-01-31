@@ -34,6 +34,16 @@ public class ProgressionResult
 
     /// <summary>역대 최고 도달 레벨</summary>
     public long BestLevelEver { get; set; }
+
+    // 황금 고블린 통계
+    /// <summary>총 처치한 황금 고블린 수</summary>
+    public int TotalGoldenGoblinsKilled { get; set; }
+
+    /// <summary>총 도주한 황금 고블린 수</summary>
+    public int TotalGoldenGoblinsEscaped { get; set; }
+
+    /// <summary>황금 고블린에서 획득한 총 골드</summary>
+    public long TotalGoldenGoblinGold { get; set; }
 }
 
 /// <summary>
@@ -48,6 +58,11 @@ public class SessionProgressRecord
     public long CrystalsAfterSession { get; set; }
     public double SessionDurationSeconds { get; set; }
     public double CumulativeGameTimeSeconds { get; set; }
+
+    // 황금 고블린 통계
+    public int GoldenGoblinsKilled { get; set; }
+    public int GoldenGoblinsEscaped { get; set; }
+    public long GoldenGoblinGoldEarned { get; set; }
 }
 
 /// <summary>

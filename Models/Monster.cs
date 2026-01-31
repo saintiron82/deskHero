@@ -51,6 +51,16 @@ namespace DeskWarrior.Models
         public bool IsBoss { get; private set; }
 
         /// <summary>
+        /// 몬스터 유형
+        /// </summary>
+        public MonsterType Type { get; private set; }
+
+        /// <summary>
+        /// 황금 고블린 여부
+        /// </summary>
+        public bool IsGoldenGoblin => Type == MonsterType.GoldenGoblin;
+
+        /// <summary>
         /// 처치 시 획득 골드
         /// </summary>
         public int GoldReward { get; private set; }
@@ -74,6 +84,11 @@ namespace DeskWarrior.Models
         /// 몬스터 스킨 타입 (파일명, 예: monster_slimeA)
         /// </summary>
         public string SkinType { get; private set; }
+
+        /// <summary>
+        /// 몬스터 ID (도감용)
+        /// </summary>
+        public string Id { get; private set; }
 
         /// <summary>
         /// 몬스터 이름
@@ -101,6 +116,7 @@ namespace DeskWarrior.Models
         {
             Level = level;
             IsBoss = isBoss;
+            Type = isBoss ? MonsterType.Boss : MonsterType.Normal;
 
             // 스케일링 공식: MaxHp = BaseHp + (level - 1) * HpGrowth
             MaxHp = CalculateMaxHp(data.BaseHp, data.HpGrowth, level);
@@ -109,10 +125,43 @@ namespace DeskWarrior.Models
             // 골드 보상: BaseGold + level * GoldGrowth
             GoldReward = CalculateGoldReward(data.BaseGold, data.GoldGrowth, level);
 
-            // 스킨 및 이모지는 데이터에서 가져옴
+            // ID, 스킨 및 이모지는 데이터에서 가져옴
+            Id = data.Id;
             Name = data.Name;
             SkinType = GetSkinType(data);
             Emoji = data.Emoji;
+            TotalDamageTaken = 0;
+        }
+
+        /// <summary>
+        /// 황금 고블린 생성 (특수 몬스터)
+        /// </summary>
+        public Monster(GoldenGoblinConfig config, int level, string localizedName)
+        {
+            Level = level;
+            IsBoss = false;
+            Type = MonsterType.GoldenGoblin;
+
+            // 황금 고블린 HP: 100~200 랜덤 (레벨 무관)
+            // HpMin/HpMax가 설정되어 있으면 랜덤, 아니면 고정 Hp 사용
+            if (config.HpMin > 0 && config.HpMax > config.HpMin)
+            {
+                var random = new System.Random();
+                MaxHp = random.Next(config.HpMin, config.HpMax + 1);
+            }
+            else
+            {
+                MaxHp = config.Hp;
+            }
+            CurrentHp = MaxHp;
+
+            // 골드 보상은 나중에 별도 계산 (스테이지 골드 × 배수)
+            GoldReward = 0;
+
+            Id = config.Id;
+            Name = localizedName;
+            SkinType = config.Sprite;
+            Emoji = config.Emoji;
             TotalDamageTaken = 0;
         }
 

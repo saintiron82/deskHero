@@ -425,6 +425,16 @@ Examples:
         Console.WriteLine($"    From Gold Convert: {result.AverageCrystalsFromGoldConvert:F1}");
         Console.WriteLine();
 
+        // 황금 고블린 통계
+        if (result.AverageGoldenGoblinsKilled > 0 || result.AverageGoldenGoblinsEscaped > 0)
+        {
+            Console.WriteLine("=== Golden Goblin Statistics ===");
+            Console.WriteLine($"  Avg Killed: {result.AverageGoldenGoblinsKilled:F2}");
+            Console.WriteLine($"  Avg Escaped: {result.AverageGoldenGoblinsEscaped:F2}");
+            Console.WriteLine($"  Avg Gold from GG: {result.AverageGoldenGoblinGold:F0}");
+            Console.WriteLine();
+        }
+
         if (result.TargetLevel > 0)
         {
             Console.WriteLine($"=== Target Level {result.TargetLevel} Analysis ===");
@@ -567,6 +577,14 @@ Examples:
         Console.WriteLine($"  Total Earned: {result.TotalCrystalsEarned:N0}");
         Console.WriteLine($"  Total Spent: {result.TotalCrystalsSpent:N0}");
         Console.WriteLine($"  Remaining: {result.TotalCrystalsEarned - result.TotalCrystalsSpent:N0}");
+        Console.WriteLine();
+
+        // 황금 고블린 통계
+        Console.WriteLine("=== Golden Goblin Statistics ===");
+        Console.WriteLine($"  Total Killed: {result.TotalGoldenGoblinsKilled}");
+        Console.WriteLine($"  Total Escaped: {result.TotalGoldenGoblinsEscaped}");
+        Console.WriteLine($"  Total Gold from GG: {result.TotalGoldenGoblinGold:N0}");
+        Console.WriteLine($"  Encounter Rate: {(double)(result.TotalGoldenGoblinsKilled + result.TotalGoldenGoblinsEscaped) / result.AttemptsNeeded:F2} per session");
         Console.WriteLine();
 
         if (options.Verbose)
@@ -1018,6 +1036,9 @@ Examples:
 
         foreach (var strategy in strategies)
         {
+            // 각 전략 시작 전 엔진 상태 리셋
+            progressionSim.ResetEngineState();
+
             hourlyData[strategy] = new Dictionary<int, double>();
             var runResults = new List<ProgressionResult>();
             deathLevelsByStrategy[strategy] = new List<long>();
@@ -1041,6 +1062,11 @@ Examples:
                 int totalSessions = 0;
                 long totalCrystalsEarned = 0;
 
+                // 황금 고블린 통계 누적
+                int totalGoldenGoblinsKilled = 0;
+                int totalGoldenGoblinsEscaped = 0;
+                long totalGoldenGoblinGold = 0;
+
                 for (int hour = 1; hour <= totalHours; hour++)
                 {
                     // 1시간 시뮬레이션
@@ -1059,6 +1085,11 @@ Examples:
                     totalSessions += hourResult.AttemptsNeeded;
                     totalCrystalsEarned += hourResult.TotalCrystalsEarned;
 
+                    // 황금 고블린 통계 누적
+                    totalGoldenGoblinsKilled += hourResult.TotalGoldenGoblinsKilled;
+                    totalGoldenGoblinsEscaped += hourResult.TotalGoldenGoblinsEscaped;
+                    totalGoldenGoblinGold += hourResult.TotalGoldenGoblinGold;
+
                     // 시간별 레벨 기록
                     hourlyLevels[hour].Add(bestLevelEver);
                 }
@@ -1069,7 +1100,10 @@ Examples:
                     BestLevelEver = bestLevelEver,
                     AttemptsNeeded = totalSessions,
                     TotalCrystalsEarned = totalCrystalsEarned,
-                    FinalStats = currentStats
+                    FinalStats = currentStats,
+                    TotalGoldenGoblinsKilled = totalGoldenGoblinsKilled,
+                    TotalGoldenGoblinsEscaped = totalGoldenGoblinsEscaped,
+                    TotalGoldenGoblinGold = totalGoldenGoblinGold
                 });
 
                 // 사망 레벨 기록
@@ -1087,6 +1121,11 @@ Examples:
             var sessions = runResults.Select(r => r.AttemptsNeeded).ToList();
             var crystalsEarned = runResults.Select(r => r.TotalCrystalsEarned).ToList();
 
+            // 황금 고블린 통계 계산
+            var ggKilled = runResults.Select(r => (double)r.TotalGoldenGoblinsKilled).ToList();
+            var ggEscaped = runResults.Select(r => (double)r.TotalGoldenGoblinsEscaped).ToList();
+            var ggGold = runResults.Select(r => (double)r.TotalGoldenGoblinGold).ToList();
+
             var aggregated = new StrategyAggregatedResult
             {
                 Strategy = strategy,
@@ -1096,7 +1135,10 @@ Examples:
                 StdDevLevel = CalculateStdDev(levels),
                 AvgSessions = sessions.Average(),
                 AvgCrystals = crystalsEarned.Average(),
-                RepresentativeFinalStats = runResults.LastOrDefault()?.FinalStats
+                RepresentativeFinalStats = runResults.LastOrDefault()?.FinalStats,
+                AvgGoldenGoblinsKilled = ggKilled.Average(),
+                AvgGoldenGoblinsEscaped = ggEscaped.Average(),
+                AvgGoldenGoblinGold = ggGold.Average()
             };
 
             aggregatedResults.Add(aggregated);
@@ -1156,6 +1198,22 @@ Examples:
             rank++;
         }
         Console.WriteLine();
+
+        // 황금 고블린 통계 출력
+        var totalGGKilled = sortedResults.Sum(r => r.AvgGoldenGoblinsKilled);
+        var totalGGEscaped = sortedResults.Sum(r => r.AvgGoldenGoblinsEscaped);
+        if (totalGGKilled > 0 || totalGGEscaped > 0)
+        {
+            Console.WriteLine("=== Golden Goblin Statistics (per strategy) ===");
+            foreach (var result in sortedResults)
+            {
+                var totalEncounters = result.AvgGoldenGoblinsKilled + result.AvgGoldenGoblinsEscaped;
+                var killRate = totalEncounters > 0 ? result.AvgGoldenGoblinsKilled / totalEncounters * 100 : 0;
+                Console.WriteLine($"  {result.Strategy,-15} Killed:{result.AvgGoldenGoblinsKilled,5:F1}  Escaped:{result.AvgGoldenGoblinsEscaped,5:F1}  " +
+                    $"Gold:{result.AvgGoldenGoblinGold,10:N0}  Kill%:{killRate:F0}%");
+            }
+            Console.WriteLine();
+        }
 
         // 밸런스 지표
         Console.WriteLine("=== Balance Metrics ===");
@@ -1223,6 +1281,11 @@ Examples:
         public double AvgSessions { get; set; }
         public double AvgCrystals { get; set; }
         public SimPermanentStats? RepresentativeFinalStats { get; set; }
+
+        // 황금 고블린 통계
+        public double AvgGoldenGoblinsKilled { get; set; }
+        public double AvgGoldenGoblinsEscaped { get; set; }
+        public double AvgGoldenGoblinGold { get; set; }
     }
 
     static void SaveStrategyComparisonReport(
@@ -1541,6 +1604,31 @@ Examples:
             rank++;
         }
         sb.AppendLine();
+
+        // 황금 고블린 통계
+        var hasGoldenGoblinData = results.Any(r => r.AvgGoldenGoblinsKilled > 0 || r.AvgGoldenGoblinsEscaped > 0);
+        if (hasGoldenGoblinData)
+        {
+            sb.AppendLine("## 황금 고블린 통계");
+            sb.AppendLine();
+            sb.AppendLine("| 전략 | 처치 | 도주 | 처치율 | 획득 골드 |");
+            sb.AppendLine("|------|------|------|--------|-----------|");
+
+            foreach (var result in results)
+            {
+                var totalEncounters = result.AvgGoldenGoblinsKilled + result.AvgGoldenGoblinsEscaped;
+                var killRate = totalEncounters > 0 ? result.AvgGoldenGoblinsKilled / totalEncounters * 100 : 0;
+                sb.AppendLine($"| {result.Strategy} | {result.AvgGoldenGoblinsKilled:F1} | {result.AvgGoldenGoblinsEscaped:F1} | {killRate:F0}% | **{result.AvgGoldenGoblinGold:N0}** |");
+            }
+            sb.AppendLine();
+
+            // 총계
+            var totalKilled = results.Sum(r => r.AvgGoldenGoblinsKilled);
+            var totalEscaped = results.Sum(r => r.AvgGoldenGoblinsEscaped);
+            var totalGold = results.Sum(r => r.AvgGoldenGoblinGold);
+            sb.AppendLine($"> **전체 평균**: 처치 {totalKilled / results.Count:F1}, 도주 {totalEscaped / results.Count:F1}, 골드 {totalGold / results.Count:N0}");
+            sb.AppendLine();
+        }
 
         // 시간별 추이
         sb.AppendLine("## 시간별 추이");
