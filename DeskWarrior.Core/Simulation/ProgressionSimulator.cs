@@ -105,6 +105,14 @@ public class ProgressionSimulator
             // 업그레이드 전략 적용
             long crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, sessionNumber, result.UpgradeHistory);
             totalCrystalsSpent += crystalsSpent;
+
+            // ✅ 상세 세션 데이터 저장 (영구 스탯 정보 포함)
+            session.SessionNumber = sessionNumber;
+            session.TotalPlaytime = totalGameTime;
+            session.SpentCrystals = (int)crystalsSpent;
+            session.RemainingCrystals = (int)crystals;
+            session.PermanentStatLevels = GetStatLevels(currentStats);
+            result.DetailedSessions.Add(session);
         }
 
         // 결과 설정
@@ -473,5 +481,34 @@ public class ProgressionSimulator
         }
 
         return totalSpent;
+    }
+
+    /// <summary>
+    /// 현재 영구 스탯 레벨들을 Dictionary로 추출
+    /// </summary>
+    private Dictionary<string, int> GetStatLevels(SimPermanentStats stats)
+    {
+        return new Dictionary<string, int>
+        {
+            { "base_attack", stats.BaseAttackLevel },
+            { "attack_percent", stats.AttackPercentLevel },
+            { "crit_chance", stats.CritChanceLevel },
+            { "crit_damage", stats.CritDamageLevel },
+            { "multi_hit", stats.MultiHitLevel },
+            { "gold_flat_perm", stats.GoldFlatPermLevel },
+            { "gold_multi_perm", stats.GoldMultiPermLevel },
+            { "crystal_flat", stats.CrystalFlatLevel },
+            { "crystal_multi", stats.CrystalMultiLevel },
+            { "time_extend", stats.TimeExtendLevel },
+            { "upgrade_discount", stats.UpgradeDiscountLevel },
+            { "start_level", stats.StartLevelLevel },
+            { "start_gold", stats.StartGoldLevel },
+            { "start_keyboard", stats.StartKeyboardLevel },
+            { "start_mouse", stats.StartMouseLevel },
+            { "start_gold_flat", stats.StartGoldFlatLevel },
+            { "start_gold_multi", stats.StartGoldMultiLevel },
+            { "start_combo_flex", stats.StartComboFlexLevel },
+            { "start_combo_damage", stats.StartComboDamageLevel }
+        };
     }
 }

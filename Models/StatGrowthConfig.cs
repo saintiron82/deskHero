@@ -45,7 +45,7 @@ namespace DeskWarrior.Models
         public string Description { get; set; } = "";
 
         [JsonPropertyName("localization")]
-        public Dictionary<string, LocalizedText>? Localization { get; set; }
+        public Dictionary<string, StatLocalizedText>? Localization { get; set; }
 
         /// <summary>
         /// 비용 계산
@@ -113,7 +113,7 @@ namespace DeskWarrior.Models
     /// <summary>
     /// 다국어 텍스트
     /// </summary>
-    public class LocalizedText
+    public class StatLocalizedText
     {
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";

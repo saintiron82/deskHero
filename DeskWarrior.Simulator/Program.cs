@@ -503,6 +503,15 @@ Examples:
             Console.WriteLine($"\rCompleted in {sw.Elapsed.TotalSeconds:F2}s                              \n");
 
             PrintGameTimeResult(result, options);
+
+            // ✅ CSV 출력 (DetailedSessions가 있으면)
+            if (result.DetailedSessions.Count > 0 && !string.IsNullOrEmpty(options.OutputPath))
+            {
+                var csvPath = options.OutputPath.EndsWith(".csv")
+                    ? options.OutputPath
+                    : $"{options.OutputPath}_sessions.csv";
+                CsvExporter.ExportSessions(result.DetailedSessions, csvPath);
+            }
         }
         else
         {

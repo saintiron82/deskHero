@@ -20,8 +20,11 @@ public class ProgressionResult
     /// <summary>총 소비 크리스털</summary>
     public long TotalCrystalsSpent { get; set; }
 
-    /// <summary>세션별 기록</summary>
+    /// <summary>세션별 기록 (요약)</summary>
     public List<SessionProgressRecord> SessionHistory { get; set; } = new();
+
+    /// <summary>세션별 상세 기록 (CSV 출력용)</summary>
+    public List<SessionResult> DetailedSessions { get; set; } = new();
 
     /// <summary>업그레이드 기록</summary>
     public List<UpgradeRecord> UpgradeHistory { get; set; } = new();

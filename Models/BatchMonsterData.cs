@@ -183,6 +183,15 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("enabled")]
         public bool Enabled { get; set; } = true;
+
+        [JsonPropertyName("min_level")]
+        public int MinLevel { get; set; } = 1;
+
+        [JsonPropertyName("max_level")]
+        public int? MaxLevel { get; set; } = null;
+
+        [JsonPropertyName("activation_weight")]
+        public double ActivationWeight { get; set; } = 1.0;
     }
 
     /// <summary>
@@ -220,6 +229,7 @@ namespace DeskWarrior.Models
         public bool IsBoss { get; set; }
         public int BatchId { get; set; }
         public int SpawnWeight { get; set; } = 100;
+        public int FinalWeight { get; set; } = 100;
 
         /// <summary>
         /// MonsterData로 변환 (하위 호환용)

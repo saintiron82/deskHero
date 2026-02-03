@@ -519,15 +519,24 @@ namespace DeskWarrior.Managers
                 CheckCollectionRewards(_currentMonster.Species, _currentMonster.Element);
             }
 
-            // 보스 처치 시 크리스탈 드롭 처리
+            // 보스 처치 시 크리스탈 지급 (100% 확정, 속성별 배율 적용)
             if (_currentMonster.IsBoss && _permanentProgression != null)
             {
-                var dropResult = _permanentProgression.ProcessBossKill(CurrentLevel);
-                if (dropResult.Dropped)
-                {
-                    // UI에 드롭 알림 표시 (이벤트 발생)
-                    CrystalDropped?.Invoke(this, dropResult);
-                }
+                // ✅ 속성별 크리스탈 배율 추출
+                var crystalMultipliers = _gameData.ElementProperties.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.CrystalMultiplier
+                );
+
+                // ✅ 보스 속성 전달
+                var dropResult = _permanentProgression.ProcessBossKill(
+                    CurrentLevel,
+                    _currentMonster.Element,
+                    crystalMultipliers
+                );
+
+                // ✅ 100% 지급이므로 조건 불필요
+                CrystalDropped?.Invoke(this, dropResult);
             }
 
             // 타이머 정지
@@ -539,8 +548,11 @@ namespace DeskWarrior.Managers
             // 다음 레벨
             CurrentLevel++;
 
-            // 스테이지 클리어 크리스탈 보상 (초반 부스터)
-            _permanentProgression?.ProcessStageClear(CurrentLevel - 1);
+            // 스테이지 클리어 크리스탈 보상 (10레벨 단위, 보스 처치 시에만)
+            if (_currentMonster.IsBoss)
+            {
+                _permanentProgression?.ProcessStageClear(CurrentLevel - 1);
+            }
 
             // 즉시 리스폰
             SpawnMonster();

@@ -22,6 +22,9 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("mouse_resistance")]
         public double MouseResistance { get; set; } = 1.0;
+
+        [JsonPropertyName("crystal_multiplier")]
+        public double CrystalMultiplier { get; set; } = 1.0;
     }
 
     /// <summary>

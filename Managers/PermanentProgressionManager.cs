@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using DeskWarrior.Models;
+using DeskWarrior.Helpers;
 
 namespace DeskWarrior.Managers
 {
@@ -42,62 +43,44 @@ namespace DeskWarrior.Managers
         #region Boss Drop
 
         /// <summary>
-        /// 보스 처치 시 드롭 계산 (시뮬레이터 동기화)
+        /// 보스 처치 시 크리스탈 지급 (100% 확정, 속성별 배율 적용)
         /// </summary>
-        public BossDropResult ProcessBossKill(int bossLevel)
+        public BossDropResult ProcessBossKill(int bossLevel, string bossElement, Dictionary<string, double> crystalMultipliers)
         {
             var save = _saveManager.CurrentSave;
             var permStats = save.PermanentStats;
-            save.BossKillCounter++;
 
-            // 피티 시스템 체크
-            bool isGuaranteed = save.BossKillCounter >= _bossDropConfig.GuaranteedDropInterval;
-
-            // 드롭 확률 계산 (crystal_chance 스탯 적용)
-            double dropChance = _bossDropConfig.BaseDropChance +
-                               (bossLevel * _bossDropConfig.DropChancePerLevel);
-
-            // crystal_chance(crystal_multi) 스탯 적용 - 시뮬레이터 동기화
-            if (permStats != null)
-            {
-                dropChance += permStats.CrystalDropChanceBonus;
-            }
-
-            dropChance = Math.Min(dropChance, _bossDropConfig.MaxDropChance);
-
-            bool dropped = isGuaranteed || _random.NextDouble() < dropChance;
-
-            if (!dropped)
-            {
-                return new BossDropResult { Dropped = false };
-            }
-
-            // 카운터 리셋
-            save.BossKillCounter = 0;
-
-            // 크리스탈 양 계산 (crystal_flat 스탯 적용)
+            // ✅ 기본 크리스탈 계산 (100% 지급)
             int baseCrystals = _bossDropConfig.BaseCrystalAmount +
                               (bossLevel * _bossDropConfig.CrystalPerLevel);
 
-            // crystal_flat 스탯 적용 - 시뮬레이터 동기화
+            // ✅ 영구 스탯 보너스 적용
             if (permStats != null)
             {
-                baseCrystals += permStats.CrystalFlatBonus;
+                baseCrystals += permStats.GetCrystalFlatBonus();
             }
 
-            // 분산 적용 (±20%)
-            double variance = 1.0 + ((_random.NextDouble() * 2 - 1) * _bossDropConfig.CrystalVariance);
-            int crystals = (int)(baseCrystals * variance);
-            crystals = Math.Max(1, crystals);
+            // ✅ 속성별 배율 적용
+            double elementMultiplier = crystalMultipliers.GetValueOrDefault(bossElement, 1.0);
+            int crystalsBeforeVariance = (int)(baseCrystals * elementMultiplier);
 
-            // 크리스탈 지급
-            AddCrystals(crystals, "boss_drop");
+            // ✅ 분산 적용 (±20%)
+            double variance = 1.0 + ((_random.NextDouble() * 2 - 1) * _bossDropConfig.CrystalVariance);
+            int finalCrystals = (int)(crystalsBeforeVariance * variance);
+            finalCrystals = Math.Max(1, finalCrystals);
+
+            // ✅ 크리스탈 지급
+            AddCrystals(finalCrystals, "boss_kill");
+
+            // ✅ 속성 보너스 계산 (UI 표시용)
+            int elementBonus = (int)((elementMultiplier - 1.0) * baseCrystals);
 
             return new BossDropResult
             {
-                Dropped = true,
-                CrystalsDropped = crystals,
-                WasGuaranteed = isGuaranteed
+                Dropped = true,  // 항상 true
+                CrystalsDropped = finalCrystals,
+                ElementBonus = elementBonus,
+                WasGuaranteed = false  // 더 이상 의미 없음
             };
         }
 

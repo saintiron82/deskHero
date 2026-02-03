@@ -65,7 +65,8 @@ public class SimulationEngine
 
         // 시작 보너스 적용 (GameManager.StartGame과 동일)
         int currentLevel = 1 + permStats.StartLevel;
-        int gold = permStats.StartGold;
+        int gold = 20 + permStats.StartGold;  // ✅ 시작 보너스: 첫 업그레이드 보장
+        int startGold = gold;  // ✅ 시작 골드 추적 (SpentGold 계산용)
         inGameStats.KeyboardPowerLevel = permStats.StartKeyboardPower;
         inGameStats.MousePowerLevel = permStats.StartMousePower;
 
@@ -86,6 +87,12 @@ public class SimulationEngine
                 result.SessionDuration = sessionTime;
                 result.CrystalsFromStages = crystalTracker.GetStageCompletionCrystals();
                 result.CrystalsFromGoldConvert = crystalTracker.ConvertGoldToCrystals(gold);
+
+                // ✅ 인게임 업그레이드 최종 상태
+                result.SpentGold = startGold - gold;
+                result.FinalKeyboardPowerLevel = inGameStats.KeyboardPowerLevel;
+                result.FinalMousePowerLevel = inGameStats.MousePowerLevel;
+
                 return result;
             }
 
@@ -96,20 +103,22 @@ public class SimulationEngine
             _isGoldenGoblinActive = false;
             if (!isBoss && CanSpawnGoldenGoblin())
             {
-                // 황금 고블린: 확률 기반 즉시 판정 (30% 처치 확률)
-                const double GOLDEN_GOBLIN_KILL_CHANCE = 0.30;
+                // 황금 고블린: DPS 기반 처치 확률 계산
+                double avgDps = EstimatePlayerDps(inGameStats, permStats, profile);
+                double requiredDps = _goldenGoblinConfig.Hp / (double)_goldenGoblinConfig.TimeLimit;
+                double killChance = Math.Min(0.95, Math.Max(0.05, avgDps / requiredDps));
 
                 // 10초 시간 소모
                 double goblinTime = Math.Min(_goldenGoblinConfig.TimeLimit, baseTimeLimit - sessionTime);
                 sessionTime += goblinTime;
 
-                if (_random.NextDouble() < GOLDEN_GOBLIN_KILL_CHANCE)
+                if (_random.NextDouble() < killChance)
                 {
                     // 처치 성공
                     int multiplier = _random.Next(
                         _goldenGoblinConfig.RewardMultiplierMin,
                         _goldenGoblinConfig.RewardMultiplierMax + 1);
-                    int expectedGold = (int)(currentLevel * _gameConfig.Balance.BaseGoldMultiplier);
+                    int expectedGold = CalculateStageExpectedGold(currentLevel);
                     int goldenGoblinReward = expectedGold * multiplier;
 
                     gold += goldenGoblinReward;
@@ -131,11 +140,12 @@ public class SimulationEngine
 
             var monster = CreateMonster(currentLevel, isBoss);
 
-            // 시간 제한
-            double timeRemaining = Math.Min(baseTimeLimit, baseTimeLimit - sessionTime);
+            // ✅ 수정: 매 몬스터마다 baseTimeLimit 시간 부여 (30초)
+            double monsterTimeLimit = baseTimeLimit;
+            double monsterTimeElapsed = 0;
 
             // 전투 시뮬레이션
-            while (timeRemaining > 0 && monster.IsAlive)
+            while (monsterTimeElapsed < monsterTimeLimit && monster.IsAlive)
             {
                 // 자동 업그레이드 시도
                 if (profile.AutoUpgrade)
@@ -145,22 +155,19 @@ public class SimulationEngine
 
                 // 입력 생성 (CPS 기반)
                 double inputInterval = GenerateInputInterval(profile);
+
+                // 남은 시간 확인
+                double timeRemaining = monsterTimeLimit - monsterTimeElapsed;
                 if (inputInterval >= timeRemaining)
                 {
-                    timeRemaining = 0;
+                    monsterTimeElapsed = monsterTimeLimit;
+                    sessionTime += timeRemaining;
                     break;
                 }
 
-                timeRemaining -= inputInterval;
+                monsterTimeElapsed += inputInterval;
                 sessionTime += inputInterval;
                 result.TotalInputs++;
-
-                // 세션 시간 초과 체크
-                if (sessionTime >= baseTimeLimit)
-                {
-                    timeRemaining = 0;
-                    break;
-                }
 
                 // 콤보 판정
                 comboStack = ProcessCombo(profile, comboStack, inputInterval, ref lastInputInterval);
@@ -192,6 +199,11 @@ public class SimulationEngine
                 result.CrystalsFromStages = crystalTracker.GetStageCompletionCrystals();
                 result.CrystalsFromGoldConvert = crystalTracker.ConvertGoldToCrystals(gold);
 
+                // ✅ 인게임 업그레이드 최종 상태
+                result.SpentGold = startGold - gold;
+                result.FinalKeyboardPowerLevel = inGameStats.KeyboardPowerLevel;
+                result.FinalMousePowerLevel = inGameStats.MousePowerLevel;
+
                 return result;
             }
 
@@ -201,22 +213,30 @@ public class SimulationEngine
             // 쿨다운 카운터 증가 (황금 고블린 스폰용)
             _killsSinceLastGoblin++;
 
-            // 스테이지 클리어 크리스털 (게임과 동일: 매 몬스터 처치 시 1 크리스털)
-            crystalTracker.ProcessStageClear();
-
-            // 보스 처치 시 크리스털 드롭
+            // 보스 처치 시 크리스털 지급 (100% 확정, 속성별 배율 적용)
             if (isBoss)
             {
+                // 스테이지 클리어 크리스털 (10레벨 단위, 보스 처치 시에만)
+                crystalTracker.ProcessStageClear();
+
                 result.BossesKilled++;
+
+                // ✅ 속성별 크리스털 배율 추출
+                var crystalMultipliers = _gameConfig.ElementProperties.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.CrystalMultiplier
+                );
+
+                // ✅ 보스 속성 전달
                 var crystalDrop = crystalTracker.ProcessBossKill(
                     currentLevel,
+                    monster.Element,
                     permStats.CrystalFlat,
-                    permStats.CrystalDropChanceBonus
+                    crystalMultipliers
                 );
-                if (crystalDrop.Dropped)
-                {
-                    result.CrystalsFromBosses += crystalDrop.Amount;
-                }
+
+                // ✅ 100% 지급이므로 조건 불필요
+                result.CrystalsFromBosses += crystalDrop.Amount;
             }
 
             // 골드 획득 (GameManager.OnMonsterDefeated와 동일)
@@ -228,6 +248,9 @@ public class SimulationEngine
 
             gold += goldReward;
             result.TotalGold += goldReward;
+
+            // 인게임 업그레이드 (골드 사용)
+            PerformInGameUpgrades(ref gold, inGameStats, currentLevel, permStats.UpgradeCostReduction);
 
             currentLevel++;
         }
@@ -248,16 +271,24 @@ public class SimulationEngine
             baseHp = (int)(baseHp * _gameConfig.Balance.BossHpMultiplier);
         }
 
-        // 골드: stage * BASE_GOLD_MULTI
-        double goldGrowth = _gameConfig.Balance.BaseGoldMultiplier;
+        // 골드: baseGold + level * goldGrowth (실제 게임과 동일)
+        // 몬스터 데이터의 실제 값 사용 (batch_01.json: base_gold=10, gold_growth=2)
+        int baseGold = 10;
+        int goldGrowth = 2;
+
+        // ✅ TODO: 속성 가중치 기반 랜덤 선택 구현 필요
+        // 현재는 기본 속성 "normal" 사용
+        string element = "normal";
 
         return new SimMonster(
             level,
             isBoss,
             baseHp,
             hpGrowth,
-            0,  // baseGold (사용 안 함)
-            goldGrowth
+            baseGold,  // ✅ 수정: 실제 값 사용
+            goldGrowth,
+            _gameConfig.Balance.TierHpSystem,
+            element  // ✅ 추가
         );
     }
 
@@ -281,15 +312,74 @@ public class SimulationEngine
     /// </summary>
     private SimMonster CreateGoldenGoblin(int level)
     {
-        // 황금 고블린은 고정 HP, 골드 보상은 별도 처리
+        // 게임 로직과 동일: HpMin/HpMax 있으면 랜덤, 없으면 고정
+        int hp;
+        if (_goldenGoblinConfig.HpMin > 0 && _goldenGoblinConfig.HpMax > _goldenGoblinConfig.HpMin)
+        {
+            hp = _random.Next(_goldenGoblinConfig.HpMin, _goldenGoblinConfig.HpMax + 1);
+        }
+        else
+        {
+            hp = _goldenGoblinConfig.Hp;
+        }
+
         return new SimMonster(
             level,
             isBoss: false,
-            baseHp: _goldenGoblinConfig.Hp,
+            baseHp: hp,  // 100~200 랜덤
             hpGrowth: 0,  // 레벨과 무관하게 고정 HP
             baseGold: 0,
-            goldGrowth: 0
+            goldGrowth: 0,
+            tierConfig: null  // 황금 고블린은 티어 시스템 사용 안 함
         );
+    }
+
+    /// <summary>
+    /// 스테이지 예상 골드 계산 (게임 로직과 동일)
+    /// </summary>
+    private int CalculateStageExpectedGold(int level)
+    {
+        // 게임의 CalculateStageExpectedGold 로직 복제
+        // 배치 시스템 사용 시: 모든 몬스터 평균 골드
+        // 미사용 시: 10 + level * 2 (Legacy)
+
+        // 현재 시뮬레이터는 배치 시스템 미사용이므로 Legacy 공식 사용
+        // TODO: 향후 MonsterBatchData 추가 시 확장
+        return 10 + level * 2;
+    }
+
+    /// <summary>
+    /// 현재 플레이어 DPS 추정
+    /// </summary>
+    private double EstimatePlayerDps(
+        SimInGameStats inGameStats,
+        SimPermanentStats permStats,
+        InputProfile profile)
+    {
+        // 1. 평균 기본 파워 계산 (keyboard/mouse)
+        double keyboardPower = 1 + GetStatEffect("keyboard_power", inGameStats.KeyboardPowerLevel);
+        double mousePower = 1 + GetStatEffect("mouse_power", inGameStats.MousePowerLevel);
+
+        int avgBasePower = (int)(
+            profile.MouseRatio * mousePower +
+            (1 - profile.MouseRatio) * keyboardPower
+        );
+
+        avgBasePower += permStats.BaseAttack;
+
+        // 2. 공격력 배수 적용
+        double attackMultiplier = 1.0 + permStats.AttackPercentBonus / 100.0;
+
+        // 3. 크리티컬 평균 적용
+        double critChance = permStats.CriticalChanceBonus / 100.0;
+        double critMultiplier = 1.5 + permStats.CriticalDamageBonus;
+        double avgCritBonus = 1.0 + critChance * (critMultiplier - 1.0);
+
+        // 4. 평균 데미지 계산
+        double avgDamage = avgBasePower * attackMultiplier * avgCritBonus;
+
+        // 5. DPS = 데미지 × CPS
+        return avgDamage * profile.AverageCps;
     }
 
     private int GetStatEffect(string statId, int level)
@@ -441,5 +531,64 @@ public class SimulationEngine
         effectivePower *= utilityBonus;
 
         return (int)effectivePower;
+    }
+
+    /// <summary>
+    /// 인게임 업그레이드 수행 (골드 사용)
+    /// 키보드/마우스 파워를 교대로 업그레이드
+    /// </summary>
+    private void PerformInGameUpgrades(ref int gold, SimInGameStats inGameStats, int currentLevel, double discountPercent)
+    {
+        // ✅ 간단화: 골드가 1 이상이면 무조건 업그레이드 (교대로)
+        while (gold >= 1)
+        {
+            // Keyboard와 Mouse 중 레벨이 낮은 쪽 업그레이드
+            if (inGameStats.KeyboardPowerLevel <= inGameStats.MousePowerLevel)
+            {
+                gold -= 1;
+                inGameStats.KeyboardPowerLevel++;
+            }
+            else
+            {
+                gold -= 1;
+                inGameStats.MousePowerLevel++;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 인게임 업그레이드 기본 비용 계산 (GameManager와 동일)
+    /// </summary>
+    private int CalculateInGameUpgradeCost(int currentLevel, double discountPercent)
+    {
+        // GameData.json의 upgrade 설정 사용
+        double baseCost = _gameConfig.Upgrade.BaseCost;
+        double costMultiplier = _gameConfig.Upgrade.CostMultiplier;
+
+        // 비용 = baseCost * (costMultiplier ^ currentLevel)
+        int cost = (int)(baseCost * Math.Pow(costMultiplier, currentLevel));
+
+        // 할인 적용
+        if (discountPercent > 0)
+        {
+            cost = (int)(cost * (1.0 - discountPercent / 100.0));
+        }
+
+        return Math.Max(1, cost);
+    }
+
+    /// <summary>
+    /// 스테이지 구간별 업그레이드 비용 배율 (GameManager와 동일)
+    /// 50스테이지마다 비용 2배
+    /// </summary>
+    private int ApplyStageCostMultiplier(int baseCost, int currentLevel)
+    {
+        int interval = _gameConfig.Balance.UpgradeCostInterval;
+        if (interval <= 0) interval = 50;
+
+        int tier = (currentLevel - 1) / interval;
+        double multiplier = Math.Pow(2, tier);
+
+        return (int)(baseCost * multiplier);
     }
 }

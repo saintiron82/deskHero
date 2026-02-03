@@ -38,7 +38,8 @@ public class BossDropConfig
 /// </summary>
 public class CrystalDropResult
 {
-    public bool Dropped { get; set; }
+    public bool Dropped { get; set; }  // 항상 true (100% 지급)
     public int Amount { get; set; }
-    public bool WasGuaranteed { get; set; }
+    public int ElementBonus { get; set; }  // 속성 보너스량
+    public bool WasGuaranteed { get; set; }  // 더 이상 의미 없음
 }

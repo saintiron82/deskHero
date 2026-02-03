@@ -40,8 +40,9 @@ namespace DeskWarrior.Models
     /// </summary>
     public class BossDropResult
     {
-        public bool Dropped { get; set; }
+        public bool Dropped { get; set; }  // 항상 true (100% 지급)
         public int CrystalsDropped { get; set; }
-        public bool WasGuaranteed { get; set; }
+        public int ElementBonus { get; set; }  // 속성 보너스량 (UI 표시용)
+        public bool WasGuaranteed { get; set; }  // 더 이상 의미 없음 (확률 제거됨)
     }
 }

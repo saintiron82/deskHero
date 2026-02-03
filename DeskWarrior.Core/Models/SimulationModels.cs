@@ -132,30 +132,54 @@ public class SimInGameStats
 public class SimMonster
 {
     public int Level { get; private set; }
-    public int MaxHp { get; private set; }
-    public int CurrentHp { get; private set; }
+    public long MaxHp { get; private set; }
+    public long CurrentHp { get; private set; }
     public bool IsBoss { get; private set; }
     public int GoldReward { get; private set; }
+    public string Element { get; private set; }  // ✅ 추가: 몬스터 속성
     public bool IsAlive => CurrentHp > 0;
 
-    public SimMonster(int level, bool isBoss, int baseHp, double hpGrowth, int baseGold, double goldGrowth)
+    public SimMonster(int level, bool isBoss, int baseHp, double hpGrowth, int baseGold, double goldGrowth, TierHpSystemConfig? tierConfig = null, string element = "normal")
     {
         Level = level;
         IsBoss = isBoss;
+        Element = element;  // ✅ 추가
 
-        // 게임 공식: baseHp + (level - 1) * hpGrowth (선형 성장)
-        MaxHp = baseHp + (level - 1) * (int)hpGrowth;
+        // 게임 공식: baseHp + (level - 1) * hpGrowth (선형 성장) 또는 티어 기반
+        MaxHp = CalculateHp(baseHp, hpGrowth, level, tierConfig);
 
         // 보스는 HP 배율 적용 (CreateMonster에서 이미 적용됨)
         CurrentHp = MaxHp;
 
-        // 골드 보상: stage * BASE_GOLD_MULTI
-        GoldReward = (int)(level * goldGrowth);
+        // 골드 보상: baseGold + level * goldGrowth (게임과 동일)
+        GoldReward = baseGold + level * (int)goldGrowth;
+    }
+
+    /// <summary>
+    /// HP 계산 (티어 시스템 지원)
+    /// </summary>
+    private static long CalculateHp(int baseHp, double hpGrowth, int level, TierHpSystemConfig? tierConfig)
+    {
+        // Feature Flag: 티어 시스템 활성화 시
+        if (tierConfig?.Enabled == true)
+        {
+            int tier = (level - 1) / tierConfig.TierInterval;
+            double tierMultiplier = Math.Pow(tierConfig.TierMultiplier, tier);
+            long tierBaseHp = (long)(baseHp * tierMultiplier);
+
+            int levelInTier = (level - 1) % tierConfig.TierInterval;
+            long linearIncrease = levelInTier * tierConfig.LinearGrowthPerLevel;
+
+            return tierBaseHp + linearIncrease;
+        }
+
+        // Legacy: 선형 공식
+        return baseHp + (level - 1) * (int)hpGrowth;
     }
 
     public int TakeDamage(int damage)
     {
-        int actualDamage = Math.Min(damage, CurrentHp);
+        int actualDamage = (int)Math.Min(damage, CurrentHp);
         CurrentHp -= actualDamage;
         return actualDamage;
     }
@@ -176,7 +200,7 @@ public class SessionResult
     public double SessionDuration { get; set; }  // seconds
     public string EndReason { get; set; } = "timeout";
 
-    // 크리스털 획득 (Phase 2)
+    // 크리스털 획득
     public long CrystalsFromBosses { get; set; }     // 보스 드롭
     public long CrystalsFromStages { get; set; }     // 스테이지 클리어 보너스
     public long CrystalsFromGoldConvert { get; set; } // 골드 변환
@@ -186,6 +210,20 @@ public class SessionResult
     public int GoldenGoblinsKilled { get; set; }     // 처치한 황금 고블린 수
     public int GoldenGoblinsEscaped { get; set; }    // 도주한 황금 고블린 수
     public long GoldenGoblinGoldEarned { get; set; } // 황금 고블린에서 획득한 골드
+
+    // ✅ 인게임 업그레이드 (세션 종료 시 최종값)
+    public int SpentGold { get; set; }                // 소비한 골드
+    public int FinalKeyboardPowerLevel { get; set; }  // 최종 키보드 파워 레벨
+    public int FinalMousePowerLevel { get; set; }     // 최종 마우스 파워 레벨
+
+    // ✅ 영구 스탯 투자 (세션 후 처리)
+    public int SpentCrystals { get; set; }            // 이번 세션 후 소비한 크리스탈
+    public Dictionary<string, int> PermanentStatLevels { get; set; } = new(); // 세션 종료 시 영구 스탯 레벨
+
+    // ✅ 메타데이터
+    public int SessionNumber { get; set; }            // 세션 번호 (1, 2, 3...)
+    public double TotalPlaytime { get; set; }         // 누적 플레이 시간 (초)
+    public int RemainingCrystals { get; set; }        // 남은 크리스탈 (누적)
 }
 
 /// <summary>
