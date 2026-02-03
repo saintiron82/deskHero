@@ -22,7 +22,7 @@
 ### 2. Managers/
 - **StatGrowthManager.cs** - 스탯 성장 시스템 관리자
   - InGameStatGrowth.json 로드
-  - PermanentStatGrowth.json 로드
+  - PermanentStats.json 로드
   - 비용/효과 계산 API 제공
 
 - **ComboTracker.cs** - 콤보 시스템 (리듬 기반)
@@ -157,7 +157,7 @@ UpgradeInGameStat(statId)
 
 ### 필수 파일
 - `config/InGameStatGrowth.json` - 인게임 스탯 7종 설정
-- `config/PermanentStatGrowth.json` - 영구 스탯 19종 설정
+- `config/PermanentStats.json` - 영구 스탯 19종 설정
 
 ### 로딩 실패 시
 - StatGrowthManager는 빈 Dictionary로 초기화
@@ -293,4 +293,4 @@ int CalculateUpgradeCost(int currentLevel) // 기존 공식 유지
 
 - `docs/STAT_SYSTEM.md` - 스탯 시스템 설계서
 - `config/InGameStatGrowth.json` - 인게임 스탯 설정
-- `config/PermanentStatGrowth.json` - 영구 스탯 설정
+- `config/PermanentStats.json` - 영구 스탯 설정

@@ -241,7 +241,7 @@ Too grindy
 
 - **Full Documentation**: `docs/BALANCE_TEST_TOOL.md`
 - **Stat System**: `docs/STAT_SYSTEM.md`
-- **JSON Configs**: `config/InGameStatGrowth.json`, `config/PermanentStatGrowth.json`
+- **JSON Configs**: `config/InGameStatGrowth.json`, `config/PermanentStats.json`
 - **Implementation**: `BALANCE_TEST_IMPLEMENTATION.md`
 
 ---
