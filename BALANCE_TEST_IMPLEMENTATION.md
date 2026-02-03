@@ -163,7 +163,7 @@ Main Window
 Balance Test Window
     ↓ reads from
 StatGrowthManager → InGameStatGrowth.json
-                  → PermanentStatGrowth.json
+                  → PermanentStats.json
     ↓ reads from
 GameManager.InGameStats (current session)
 SaveManager.CurrentSave.PermanentStats (persistent)

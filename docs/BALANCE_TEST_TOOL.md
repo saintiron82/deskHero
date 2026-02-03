@@ -144,7 +144,7 @@ SaveManager                - Permanent state
 
 ### Key Dependencies
 
-- **StatGrowthManager**: Reads from `InGameStatGrowth.json` and `PermanentStatGrowth.json`
+- **StatGrowthManager**: Reads from `InGameStatGrowth.json` and `PermanentStats.json`
 - **GameManager**: Provides current in-game stats via `InGameStats` property
 - **SaveManager**: Provides permanent stats via `CurrentSave.PermanentStats`
 - **PermanentProgressionManager**: Handles crystal economy
@@ -304,7 +304,7 @@ If implementing anti-cheat:
 
 ### "Cost Calculator shows NaN"
 **Cause**: Invalid stat ID or missing config
-**Fix**: Check `InGameStatGrowth.json` and `PermanentStatGrowth.json`
+**Fix**: Check `InGameStatGrowth.json` and `PermanentStats.json`
 
 ### "Cheat mode doesn't update display"
 **Cause**: Stats display not refreshing
@@ -372,7 +372,7 @@ Before deploying balance changes:
 
 ### When Adding New Stats
 
-1. Add to `InGameStatGrowth.json` or `PermanentStatGrowth.json`
+1. Add to `InGameStatGrowth.json` or `PermanentStats.json`
 2. Update `InGameStats.cs` or `PermanentStats.cs` model
 3. Add to dropdown in `PopulateStatCombo()`
 4. Add to cheat combo in `PopulateCheatStatCombo()`
