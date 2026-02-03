@@ -844,9 +844,13 @@
       "id": "night_owl",
       "icon": "🦉",
       "category": "secret",
-      "metric": "special_night_owl",
+      "metric": "special",
       "target": 1,
       "is_hidden": true,
+      "special_condition": {
+        "type": "time_hour",
+        "params": { "hour": 3 }
+      },
       "localization": {
         "ko-KR": {
           "name": "올빼미족",
@@ -864,9 +868,13 @@
       "id": "early_bird",
       "icon": "🐦",
       "category": "secret",
-      "metric": "special_early_bird",
+      "metric": "special",
       "target": 1,
       "is_hidden": true,
+      "special_condition": {
+        "type": "time_hour",
+        "params": { "hour": 5 }
+      },
       "localization": {
         "ko-KR": {
           "name": "아침형 인간",
@@ -884,9 +892,19 @@
       "id": "balanced",
       "icon": "⚖️",
       "category": "secret",
-      "metric": "special_balanced",
+      "metric": "special",
       "target": 1,
       "is_hidden": true,
+      "special_condition": {
+        "type": "ratio_between",
+        "params": {
+          "metric_a": "keyboard_inputs",
+          "metric_b": "mouse_inputs",
+          "min_ratio": 0.45,
+          "max_ratio": 0.55,
+          "min_total": 2000
+        }
+      },
       "localization": {
         "ko-KR": {
           "name": "균형의 달인",
@@ -937,6 +955,1633 @@
           "name": "One-Hit Legend",
           "description": "Deal 500 damage in one hit",
           "unlock_message": "500 damage?! Help me move with that strength."
+        }
+      }
+    },
+
+    {
+      "id": "damage_500",
+      "icon": "🔨",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 500,
+      "crystal_reward": 3,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "500 데미지 클럽",
+          "description": "총 500 데미지 달성",
+          "unlock_message": "500 데미지! 아직 워밍업 중이에요."
+        },
+        "en-US": {
+          "name": "500 Damage Club",
+          "description": "Deal 500 total damage",
+          "unlock_message": "500 damage! Still warming up."
+        }
+      }
+    },
+    {
+      "id": "damage_5k",
+      "icon": "⚔️",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 5000,
+      "crystal_reward": 8,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "오천 데미지 전사",
+          "description": "총 5,000 데미지 달성",
+          "unlock_message": "5천 데미지! 슬슬 손가락에 힘이 들어가네요."
+        },
+        "en-US": {
+          "name": "5K Damage Warrior",
+          "description": "Deal 5,000 total damage",
+          "unlock_message": "5,000 damage! Your fingers are getting into it."
+        }
+      }
+    },
+    {
+      "id": "damage_50k",
+      "icon": "🗡️",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 50000,
+      "crystal_reward": 25,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "오만 데미지 영웅",
+          "description": "총 50,000 데미지 달성",
+          "unlock_message": "5만 데미지! 당신은 진정한 영웅입니다."
+        },
+        "en-US": {
+          "name": "50K Damage Hero",
+          "description": "Deal 50,000 total damage",
+          "unlock_message": "50,000 damage! You are a true hero."
+        }
+      }
+    },
+    {
+      "id": "damage_500k",
+      "icon": "🏹",
+      "category": "combat",
+      "metric": "total_damage",
+      "target": 500000,
+      "crystal_reward": 80,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "오십만 데미지 왕",
+          "description": "총 500,000 데미지 달성",
+          "unlock_message": "50만 데미지! 키보드가 왕의 무기가 되었습니다."
+        },
+        "en-US": {
+          "name": "500K Damage King",
+          "description": "Deal 500,000 total damage",
+          "unlock_message": "500,000 damage! Your keyboard became a royal weapon."
+        }
+      }
+    },
+    {
+      "id": "crit_50",
+      "icon": "💫",
+      "category": "combat",
+      "metric": "critical_hits",
+      "target": 50,
+      "crystal_reward": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리티컬 중급자",
+          "description": "크리티컬 히트 50회 달성",
+          "unlock_message": "50번 크리티컬! 운빨이 아니라 센스예요."
+        },
+        "en-US": {
+          "name": "Critical Intermediate",
+          "description": "Land 50 critical hits",
+          "unlock_message": "50 crits! Not luck, it's skill."
+        }
+      }
+    },
+    {
+      "id": "crit_500",
+      "icon": "🔮",
+      "category": "combat",
+      "metric": "critical_hits",
+      "target": 500,
+      "crystal_reward": 35,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리티컬 달인",
+          "description": "크리티컬 히트 500회 달성",
+          "unlock_message": "500번 크리티컬! 당신의 손가락은 행운의 상징."
+        },
+        "en-US": {
+          "name": "Critical Expert",
+          "description": "Land 500 critical hits",
+          "unlock_message": "500 crits! Your fingers are lucky charms."
+        }
+      }
+    },
+    {
+      "id": "monster_kill_50",
+      "icon": "🐾",
+      "category": "combat",
+      "metric": "monster_kills",
+      "target": 50,
+      "crystal_reward": 8,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "몬스터 전문가",
+          "description": "몬스터 50마리 처치",
+          "unlock_message": "50마리 처치! 몬스터 사냥에 익숙해지고 있어요."
+        },
+        "en-US": {
+          "name": "Monster Expert",
+          "description": "Defeat 50 monsters",
+          "unlock_message": "50 kills! Getting used to monster hunting."
+        }
+      }
+    },
+    {
+      "id": "monster_kill_500",
+      "icon": "💀",
+      "category": "combat",
+      "metric": "monster_kills",
+      "target": 500,
+      "crystal_reward": 30,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "대량 사냥꾼",
+          "description": "몬스터 500마리 처치",
+          "unlock_message": "500마리! 몬스터들이 당신을 피하기 시작했어요."
+        },
+        "en-US": {
+          "name": "Mass Hunter",
+          "description": "Defeat 500 monsters",
+          "unlock_message": "500 kills! Monsters are starting to avoid you."
+        }
+      }
+    },
+    {
+      "id": "boss_kill_25",
+      "icon": "🐲",
+      "category": "combat",
+      "metric": "bosses_defeated",
+      "target": 25,
+      "crystal_reward": 40,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "보스 베테랑",
+          "description": "보스 25마리 처치",
+          "unlock_message": "25마리 보스! 이제 보스가 당신을 '그분'이라 부릅니다."
+        },
+        "en-US": {
+          "name": "Boss Veteran",
+          "description": "Defeat 25 bosses",
+          "unlock_message": "25 bosses! They now call you 'The One'."
+        }
+      }
+    },
+    {
+      "id": "one_hit_250",
+      "icon": "🥊",
+      "category": "combat",
+      "metric": "max_damage",
+      "target": 250,
+      "crystal_reward": 15,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "한 방 마스터",
+          "description": "한 방에 250 데미지 달성",
+          "unlock_message": "250 데미지 한 방! 꽤 강력하군요."
+        },
+        "en-US": {
+          "name": "One Hit Master",
+          "description": "Deal 250 damage in one hit",
+          "unlock_message": "250 damage in one hit! Quite powerful."
+        }
+      }
+    },
+
+    {
+      "id": "gold_5k",
+      "icon": "💵",
+      "category": "wealth",
+      "metric": "total_gold_earned",
+      "target": 5000,
+      "crystal_reward": 5,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "저축 입문자",
+          "description": "총 5,000 골드 획득",
+          "unlock_message": "5천 골드! 알뜰한 시작이에요."
+        },
+        "en-US": {
+          "name": "Savings Beginner",
+          "description": "Earn 5,000 total gold",
+          "unlock_message": "5,000 gold! A frugal start."
+        }
+      }
+    },
+    {
+      "id": "gold_50k",
+      "icon": "💳",
+      "category": "wealth",
+      "metric": "total_gold_earned",
+      "target": 50000,
+      "crystal_reward": 20,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "중견 상인",
+          "description": "총 50,000 골드 획득",
+          "unlock_message": "5만 골드! 상업적 감각이 생겼네요."
+        },
+        "en-US": {
+          "name": "Seasoned Merchant",
+          "description": "Earn 50,000 total gold",
+          "unlock_message": "50,000 gold! Developing business sense."
+        }
+      }
+    },
+    {
+      "id": "gold_500k",
+      "icon": "🏦",
+      "category": "wealth",
+      "metric": "total_gold_earned",
+      "target": 500000,
+      "crystal_reward": 60,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "재벌 후보",
+          "description": "총 500,000 골드 획득",
+          "unlock_message": "50만 골드! 곧 포브스 몬스터 부자 명단에 오를 거예요."
+        },
+        "en-US": {
+          "name": "Tycoon Candidate",
+          "description": "Earn 500,000 total gold",
+          "unlock_message": "500,000 gold! Forbes Monster Rich List awaits."
+        }
+      }
+    },
+    {
+      "id": "spend_50k",
+      "icon": "🏪",
+      "category": "wealth",
+      "metric": "total_gold_spent",
+      "target": 50000,
+      "crystal_reward": 18,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "투자자",
+          "description": "총 50,000 골드 사용",
+          "unlock_message": "5만 골드 투자! 현명한 소비입니다."
+        },
+        "en-US": {
+          "name": "Investor",
+          "description": "Spend 50,000 total gold",
+          "unlock_message": "50,000 gold invested! Wise spending."
+        }
+      }
+    },
+    {
+      "id": "spend_500k",
+      "icon": "💎",
+      "category": "wealth",
+      "metric": "total_gold_spent",
+      "target": 500000,
+      "crystal_reward": 55,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "큰손 투자가",
+          "description": "총 500,000 골드 사용",
+          "unlock_message": "50만 골드 소비! VIP 고객이시군요."
+        },
+        "en-US": {
+          "name": "Big Investor",
+          "description": "Spend 500,000 total gold",
+          "unlock_message": "500,000 gold spent! A VIP customer."
+        }
+      }
+    },
+    {
+      "id": "spend_1m",
+      "icon": "👑",
+      "category": "wealth",
+      "metric": "total_gold_spent",
+      "target": 1000000,
+      "crystal_reward": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "억만장자 소비자",
+          "description": "총 1,000,000 골드 사용",
+          "unlock_message": "백만 골드 소비! 경제를 살리는 영웅이시네요."
+        },
+        "en-US": {
+          "name": "Millionaire Spender",
+          "description": "Spend 1,000,000 total gold",
+          "unlock_message": "1 million gold spent! An economic hero."
+        }
+      }
+    },
+
+    {
+      "id": "level_75",
+      "icon": "🌲",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 75,
+      "crystal_reward": 20,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "숙련된 전사",
+          "description": "레벨 75 달성",
+          "unlock_message": "레벨 75! 이제 제법 숙련되셨네요."
+        },
+        "en-US": {
+          "name": "Skilled Warrior",
+          "description": "Reach level 75",
+          "unlock_message": "Level 75! You've become quite skilled."
+        }
+      }
+    },
+    {
+      "id": "level_150",
+      "icon": "🏔️",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 150,
+      "crystal_reward": 45,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "전설의 시작",
+          "description": "레벨 150 달성",
+          "unlock_message": "레벨 150! 전설이 시작됩니다."
+        },
+        "en-US": {
+          "name": "Legend Begins",
+          "description": "Reach level 150",
+          "unlock_message": "Level 150! The legend begins."
+        }
+      }
+    },
+    {
+      "id": "level_300",
+      "icon": "🌠",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 300,
+      "crystal_reward": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "영웅의 귀환",
+          "description": "레벨 300 달성",
+          "unlock_message": "레벨 300! 영웅이 돌아왔습니다."
+        },
+        "en-US": {
+          "name": "Hero Returns",
+          "description": "Reach level 300",
+          "unlock_message": "Level 300! The hero has returned."
+        }
+      }
+    },
+    {
+      "id": "level_750",
+      "icon": "🌌",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 750,
+      "crystal_reward": 250,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "우주 정복자",
+          "description": "레벨 750 달성",
+          "unlock_message": "레벨 750! 우주도 당신 앞에선 고개를 숙입니다."
+        },
+        "en-US": {
+          "name": "Cosmic Conqueror",
+          "description": "Reach level 750",
+          "unlock_message": "Level 750! Even the cosmos bows to you."
+        }
+      }
+    },
+    {
+      "id": "level_1000",
+      "icon": "🏅",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 1000,
+      "crystal_reward": 500,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "천레벨 달성",
+          "description": "레벨 1,000 달성",
+          "unlock_message": "레벨 1000! 당신은 진정한 신입니다."
+        },
+        "en-US": {
+          "name": "Level 1000",
+          "description": "Reach level 1,000",
+          "unlock_message": "Level 1000! You are truly divine."
+        }
+      }
+    },
+    {
+      "id": "level_400",
+      "icon": "🗼",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 400,
+      "crystal_reward": 120,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "천상계 진입",
+          "description": "레벨 400 달성",
+          "unlock_message": "레벨 400! 천상계에 발을 들였습니다."
+        },
+        "en-US": {
+          "name": "Celestial Entry",
+          "description": "Reach level 400",
+          "unlock_message": "Level 400! You've entered the celestial realm."
+        }
+      }
+    },
+    {
+      "id": "level_600",
+      "icon": "🌅",
+      "category": "progression",
+      "metric": "max_level",
+      "target": 600,
+      "crystal_reward": 180,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "여명의 전사",
+          "description": "레벨 600 달성",
+          "unlock_message": "레벨 600! 여명이 밝아옵니다."
+        },
+        "en-US": {
+          "name": "Dawn Warrior",
+          "description": "Reach level 600",
+          "unlock_message": "Level 600! Dawn is breaking."
+        }
+      }
+    },
+    {
+      "id": "total_damage_5m",
+      "icon": "💫",
+      "category": "progression",
+      "metric": "total_damage",
+      "target": 5000000,
+      "crystal_reward": 150,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "오백만 데미지 신화",
+          "description": "총 5,000,000 데미지 달성",
+          "unlock_message": "500만 데미지! 신화 속의 영웅이 되었습니다."
+        },
+        "en-US": {
+          "name": "5 Million Damage Myth",
+          "description": "Deal 5,000,000 total damage",
+          "unlock_message": "5 million damage! You've become a mythical hero."
+        }
+      }
+    },
+
+    {
+      "id": "keyboard_100000",
+      "icon": "🎼",
+      "category": "engagement",
+      "metric": "keyboard_inputs",
+      "target": 100000,
+      "crystal_reward": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "키보드 마스터",
+          "description": "키보드 입력 100,000회",
+          "unlock_message": "10만 타! 피아니스트도 울고 갈 실력이에요."
+        },
+        "en-US": {
+          "name": "Keyboard Master",
+          "description": "100,000 keyboard inputs",
+          "unlock_message": "100,000 keystrokes! Even pianists would be jealous."
+        }
+      }
+    },
+    {
+      "id": "mouse_100000",
+      "icon": "🎮",
+      "category": "engagement",
+      "metric": "mouse_inputs",
+      "target": 100000,
+      "crystal_reward": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "클릭 마스터",
+          "description": "마우스 입력 100,000회",
+          "unlock_message": "10만 클릭! 손목이 무사하길 빕니다."
+        },
+        "en-US": {
+          "name": "Click Master",
+          "description": "100,000 mouse inputs",
+          "unlock_message": "100,000 clicks! Hope your wrist is okay."
+        }
+      }
+    },
+    {
+      "id": "playtime_1200",
+      "icon": "⏱️",
+      "category": "engagement",
+      "metric": "total_playtime_minutes",
+      "target": 1200,
+      "crystal_reward": 60,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "20시간 헌신",
+          "description": "총 플레이 시간 20시간",
+          "unlock_message": "20시간! 진정한 헌신의 증거입니다."
+        },
+        "en-US": {
+          "name": "20 Hour Dedication",
+          "description": "20 hours total playtime",
+          "unlock_message": "20 hours! True dedication."
+        }
+      }
+    },
+    {
+      "id": "session_200",
+      "icon": "🔑",
+      "category": "engagement",
+      "metric": "total_sessions",
+      "target": 200,
+      "crystal_reward": 80,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "충성 고객",
+          "description": "총 200회 세션 플레이",
+          "unlock_message": "200회 세션! 평생 무료 VIP 회원권 드립니다."
+        },
+        "en-US": {
+          "name": "Loyal Customer",
+          "description": "Play 200 sessions",
+          "unlock_message": "200 sessions! Lifetime VIP membership granted."
+        }
+      }
+    },
+
+    {
+      "id": "session_level_50",
+      "icon": "🏃",
+      "category": "engagement",
+      "metric": "best_session_level",
+      "target": 50,
+      "crystal_reward": 15,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "세션 스프린터",
+          "description": "한 세션에서 레벨 50 달성",
+          "unlock_message": "세션 최고 레벨 50! 빠른 시작이에요."
+        },
+        "en-US": {
+          "name": "Session Sprinter",
+          "description": "Reach level 50 in a single session",
+          "unlock_message": "Session best level 50! A quick start."
+        }
+      }
+    },
+    {
+      "id": "session_level_100",
+      "icon": "🏃‍♂️",
+      "category": "engagement",
+      "metric": "best_session_level",
+      "target": 100,
+      "crystal_reward": 40,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "세션 마라토너",
+          "description": "한 세션에서 레벨 100 달성",
+          "unlock_message": "세션 최고 레벨 100! 마라톤 완주!"
+        },
+        "en-US": {
+          "name": "Session Marathoner",
+          "description": "Reach level 100 in a single session",
+          "unlock_message": "Session best level 100! Marathon complete!"
+        }
+      }
+    },
+    {
+      "id": "session_level_200",
+      "icon": "🏅",
+      "category": "engagement",
+      "metric": "best_session_level",
+      "target": 200,
+      "crystal_reward": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "세션 울트라러너",
+          "description": "한 세션에서 레벨 200 달성",
+          "unlock_message": "세션 최고 레벨 200! 초인적인 집중력!"
+        },
+        "en-US": {
+          "name": "Session Ultra Runner",
+          "description": "Reach level 200 in a single session",
+          "unlock_message": "Session best level 200! Superhuman focus!"
+        }
+      }
+    },
+    {
+      "id": "session_damage_10k",
+      "icon": "💣",
+      "category": "engagement",
+      "metric": "best_session_damage",
+      "target": 10000,
+      "crystal_reward": 20,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "폭발적 세션",
+          "description": "한 세션에서 10,000 데미지 달성",
+          "unlock_message": "세션 최고 데미지 1만! 폭발적이에요."
+        },
+        "en-US": {
+          "name": "Explosive Session",
+          "description": "Deal 10,000 damage in a single session",
+          "unlock_message": "Session best damage 10K! Explosive!"
+        }
+      }
+    },
+    {
+      "id": "session_damage_100k",
+      "icon": "🧨",
+      "category": "engagement",
+      "metric": "best_session_damage",
+      "target": 100000,
+      "crystal_reward": 60,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "파괴적 세션",
+          "description": "한 세션에서 100,000 데미지 달성",
+          "unlock_message": "세션 최고 데미지 10만! 파괴신!"
+        },
+        "en-US": {
+          "name": "Destructive Session",
+          "description": "Deal 100,000 damage in a single session",
+          "unlock_message": "Session best damage 100K! God of destruction!"
+        }
+      }
+    },
+    {
+      "id": "session_kills_50",
+      "icon": "🎯",
+      "category": "engagement",
+      "metric": "best_session_kills",
+      "target": 50,
+      "crystal_reward": 15,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "세션 사냥꾼",
+          "description": "한 세션에서 몬스터 50마리 처치",
+          "unlock_message": "세션 최고 처치 50마리! 능숙한 사냥꾼."
+        },
+        "en-US": {
+          "name": "Session Hunter",
+          "description": "Defeat 50 monsters in a single session",
+          "unlock_message": "Session best kills 50! Skilled hunter."
+        }
+      }
+    },
+    {
+      "id": "session_kills_100",
+      "icon": "🏹",
+      "category": "engagement",
+      "metric": "best_session_kills",
+      "target": 100,
+      "crystal_reward": 35,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "세션 학살자",
+          "description": "한 세션에서 몬스터 100마리 처치",
+          "unlock_message": "세션 최고 처치 100마리! 무자비한 학살자."
+        },
+        "en-US": {
+          "name": "Session Slayer",
+          "description": "Defeat 100 monsters in a single session",
+          "unlock_message": "Session best kills 100! Merciless slayer."
+        }
+      }
+    },
+    {
+      "id": "session_gold_10k",
+      "icon": "🏆",
+      "category": "engagement",
+      "metric": "best_session_gold",
+      "target": 10000,
+      "crystal_reward": 25,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "황금 세션",
+          "description": "한 세션에서 10,000 골드 획득",
+          "unlock_message": "세션 최고 골드 1만! 황금빛 세션!"
+        },
+        "en-US": {
+          "name": "Golden Session",
+          "description": "Earn 10,000 gold in a single session",
+          "unlock_message": "Session best gold 10K! A golden session!"
+        }
+      }
+    },
+
+    {
+      "id": "crystal_earned_100",
+      "icon": "💠",
+      "category": "wealth",
+      "metric": "lifetime_crystals_earned",
+      "target": 100,
+      "crystal_reward": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈 수집가",
+          "description": "총 100 크리스탈 획득",
+          "unlock_message": "100 크리스탈! 수집가의 첫걸음."
+        },
+        "en-US": {
+          "name": "Crystal Collector",
+          "description": "Earn 100 total crystals",
+          "unlock_message": "100 crystals! First steps as a collector."
+        }
+      }
+    },
+    {
+      "id": "crystal_earned_1000",
+      "icon": "🔷",
+      "category": "wealth",
+      "metric": "lifetime_crystals_earned",
+      "target": 1000,
+      "crystal_reward": 50,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈 부자",
+          "description": "총 1,000 크리스탈 획득",
+          "unlock_message": "1,000 크리스탈! 반짝반짝 부자!"
+        },
+        "en-US": {
+          "name": "Crystal Rich",
+          "description": "Earn 1,000 total crystals",
+          "unlock_message": "1,000 crystals! Sparkly rich!"
+        }
+      }
+    },
+    {
+      "id": "crystal_earned_10000",
+      "icon": "💎",
+      "category": "wealth",
+      "metric": "lifetime_crystals_earned",
+      "target": 10000,
+      "crystal_reward": 200,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈 재벌",
+          "description": "총 10,000 크리스탈 획득",
+          "unlock_message": "1만 크리스탈! 크리스탈계의 재벌!"
+        },
+        "en-US": {
+          "name": "Crystal Tycoon",
+          "description": "Earn 10,000 total crystals",
+          "unlock_message": "10,000 crystals! Crystal world tycoon!"
+        }
+      }
+    },
+    {
+      "id": "crystal_spent_100",
+      "icon": "🔹",
+      "category": "wealth",
+      "metric": "lifetime_crystals_spent",
+      "target": 100,
+      "crystal_reward": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈 투자자",
+          "description": "총 100 크리스탈 사용",
+          "unlock_message": "100 크리스탈 투자! 현명한 선택."
+        },
+        "en-US": {
+          "name": "Crystal Investor",
+          "description": "Spend 100 total crystals",
+          "unlock_message": "100 crystals invested! Wise choice."
+        }
+      }
+    },
+    {
+      "id": "crystal_spent_1000",
+      "icon": "🔶",
+      "category": "wealth",
+      "metric": "lifetime_crystals_spent",
+      "target": 1000,
+      "crystal_reward": 50,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈 소비왕",
+          "description": "총 1,000 크리스탈 사용",
+          "unlock_message": "1,000 크리스탈 소비! 큰손이시네요."
+        },
+        "en-US": {
+          "name": "Crystal Big Spender",
+          "description": "Spend 1,000 total crystals",
+          "unlock_message": "1,000 crystals spent! Big spender!"
+        }
+      }
+    },
+    {
+      "id": "crystal_spent_10000",
+      "icon": "👑",
+      "category": "wealth",
+      "metric": "lifetime_crystals_spent",
+      "target": 10000,
+      "crystal_reward": 200,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "크리스탈 귀족",
+          "description": "총 10,000 크리스탈 사용",
+          "unlock_message": "1만 크리스탈 소비! 진정한 귀족!"
+        },
+        "en-US": {
+          "name": "Crystal Noble",
+          "description": "Spend 10,000 total crystals",
+          "unlock_message": "10,000 crystals spent! True nobility!"
+        }
+      }
+    },
+
+    {
+      "id": "combo_first",
+      "icon": "🎵",
+      "category": "combat",
+      "metric": "combo_triggers",
+      "target": 1,
+      "crystal_reward": 3,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "첫 콤보",
+          "description": "콤보를 처음으로 발동",
+          "unlock_message": "첫 콤보! 리듬을 타기 시작했어요."
+        },
+        "en-US": {
+          "name": "First Combo",
+          "description": "Trigger your first combo",
+          "unlock_message": "First combo! Getting into the rhythm."
+        }
+      }
+    },
+    {
+      "id": "combo_100",
+      "icon": "🎶",
+      "category": "combat",
+      "metric": "combo_triggers",
+      "target": 100,
+      "crystal_reward": 15,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "리듬 마스터",
+          "description": "콤보 100회 발동",
+          "unlock_message": "100 콤보! 리듬 감각이 뛰어나시네요."
+        },
+        "en-US": {
+          "name": "Rhythm Master",
+          "description": "Trigger 100 combos",
+          "unlock_message": "100 combos! Great rhythm sense."
+        }
+      }
+    },
+    {
+      "id": "combo_1000",
+      "icon": "🎸",
+      "category": "combat",
+      "metric": "combo_triggers",
+      "target": 1000,
+      "crystal_reward": 50,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "리듬 신",
+          "description": "콤보 1,000회 발동",
+          "unlock_message": "1,000 콤보! 리듬의 신이 강림했습니다."
+        },
+        "en-US": {
+          "name": "Rhythm God",
+          "description": "Trigger 1,000 combos",
+          "unlock_message": "1,000 combos! The rhythm god has descended."
+        }
+      }
+    },
+    {
+      "id": "combo_max_first",
+      "icon": "🌟",
+      "category": "combat",
+      "metric": "max_combo_stack_count",
+      "target": 1,
+      "crystal_reward": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "풀 콤보",
+          "description": "3스택 콤보를 처음으로 달성",
+          "unlock_message": "첫 풀 콤보! 완벽한 타이밍!"
+        },
+        "en-US": {
+          "name": "Full Combo",
+          "description": "Achieve your first 3-stack combo",
+          "unlock_message": "First full combo! Perfect timing!"
+        }
+      }
+    },
+    {
+      "id": "combo_max_10",
+      "icon": "⭐",
+      "category": "combat",
+      "metric": "max_combo_stack_count",
+      "target": 10,
+      "crystal_reward": 25,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "풀 콤보 마스터",
+          "description": "3스택 콤보 10회 달성",
+          "unlock_message": "풀 콤보 10회! 콤보의 달인."
+        },
+        "en-US": {
+          "name": "Full Combo Master",
+          "description": "Achieve 10 full combos",
+          "unlock_message": "10 full combos! Combo expert."
+        }
+      }
+    },
+    {
+      "id": "combo_max_100",
+      "icon": "💫",
+      "category": "combat",
+      "metric": "max_combo_stack_count",
+      "target": 100,
+      "crystal_reward": 80,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "풀 콤보 신",
+          "description": "3스택 콤보 100회 달성",
+          "unlock_message": "풀 콤보 100회! 콤보의 신!"
+        },
+        "en-US": {
+          "name": "Full Combo God",
+          "description": "Achieve 100 full combos",
+          "unlock_message": "100 full combos! Combo god!"
+        }
+      }
+    },
+
+    {
+      "id": "multi_hit_first",
+      "icon": "✌️",
+      "category": "combat",
+      "metric": "multi_hits",
+      "target": 1,
+      "crystal_reward": 5,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "첫 멀티히트",
+          "description": "멀티히트를 처음으로 발동",
+          "unlock_message": "첫 멀티히트! 두 배의 위력!"
+        },
+        "en-US": {
+          "name": "First Multi-Hit",
+          "description": "Trigger your first multi-hit",
+          "unlock_message": "First multi-hit! Double the power!"
+        }
+      }
+    },
+    {
+      "id": "multi_hit_100",
+      "icon": "✊",
+      "category": "combat",
+      "metric": "multi_hits",
+      "target": 100,
+      "crystal_reward": 20,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "더블 타격 마스터",
+          "description": "멀티히트 100회 발동",
+          "unlock_message": "100 멀티히트! 더블 타격의 달인."
+        },
+        "en-US": {
+          "name": "Double Strike Master",
+          "description": "Trigger 100 multi-hits",
+          "unlock_message": "100 multi-hits! Double strike expert."
+        }
+      }
+    },
+    {
+      "id": "multi_hit_1000",
+      "icon": "👊",
+      "category": "combat",
+      "metric": "multi_hits",
+      "target": 1000,
+      "crystal_reward": 70,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "더블 타격 신",
+          "description": "멀티히트 1,000회 발동",
+          "unlock_message": "1,000 멀티히트! 두 배 공격의 신!"
+        },
+        "en-US": {
+          "name": "Double Strike God",
+          "description": "Trigger 1,000 multi-hits",
+          "unlock_message": "1,000 multi-hits! God of double strikes!"
+        }
+      }
+    },
+    {
+      "id": "multi_hit_10000",
+      "icon": "🤜",
+      "category": "combat",
+      "metric": "multi_hits",
+      "target": 10000,
+      "crystal_reward": 200,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "멀티히트 전설",
+          "description": "멀티히트 10,000회 발동",
+          "unlock_message": "1만 멀티히트! 전설적인 연타!"
+        },
+        "en-US": {
+          "name": "Multi-Hit Legend",
+          "description": "Trigger 10,000 multi-hits",
+          "unlock_message": "10,000 multi-hits! Legendary combo!"
+        }
+      }
+    },
+
+    {
+      "id": "perm_total_10",
+      "icon": "📈",
+      "category": "meta",
+      "metric": "total_perm_levels",
+      "target": 10,
+      "crystal_reward": 10,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "영구 스탯 입문",
+          "description": "영구 스탯 총 10레벨 달성",
+          "unlock_message": "영구 스탯 10레벨! 성장의 시작."
+        },
+        "en-US": {
+          "name": "Permanent Stats Beginner",
+          "description": "Reach 10 total permanent stat levels",
+          "unlock_message": "10 permanent stat levels! Growth begins."
+        }
+      }
+    },
+    {
+      "id": "perm_total_50",
+      "icon": "📊",
+      "category": "meta",
+      "metric": "total_perm_levels",
+      "target": 50,
+      "crystal_reward": 40,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "영구 스탯 중급",
+          "description": "영구 스탯 총 50레벨 달성",
+          "unlock_message": "영구 스탯 50레벨! 상당한 투자."
+        },
+        "en-US": {
+          "name": "Permanent Stats Intermediate",
+          "description": "Reach 50 total permanent stat levels",
+          "unlock_message": "50 permanent stat levels! Significant investment."
+        }
+      }
+    },
+    {
+      "id": "perm_total_100",
+      "icon": "📉",
+      "category": "meta",
+      "metric": "total_perm_levels",
+      "target": 100,
+      "crystal_reward": 100,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "영구 스탯 고급",
+          "description": "영구 스탯 총 100레벨 달성",
+          "unlock_message": "영구 스탯 100레벨! 진정한 강화."
+        },
+        "en-US": {
+          "name": "Permanent Stats Advanced",
+          "description": "Reach 100 total permanent stat levels",
+          "unlock_message": "100 permanent stat levels! True enhancement."
+        }
+      }
+    },
+    {
+      "id": "perm_stat_max_10",
+      "icon": "🎯",
+      "category": "meta",
+      "metric": "max_single_perm_level",
+      "target": 10,
+      "crystal_reward": 20,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "스탯 특화 입문",
+          "description": "단일 영구 스탯 10레벨 달성",
+          "unlock_message": "단일 스탯 10레벨! 특화의 시작."
+        },
+        "en-US": {
+          "name": "Stat Specialization Beginner",
+          "description": "Reach level 10 in a single permanent stat",
+          "unlock_message": "Single stat level 10! Specialization begins."
+        }
+      }
+    },
+    {
+      "id": "perm_stat_max_25",
+      "icon": "🔥",
+      "category": "meta",
+      "metric": "max_single_perm_level",
+      "target": 25,
+      "crystal_reward": 60,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "스탯 특화 중급",
+          "description": "단일 영구 스탯 25레벨 달성",
+          "unlock_message": "단일 스탯 25레벨! 전문가의 길."
+        },
+        "en-US": {
+          "name": "Stat Specialization Intermediate",
+          "description": "Reach level 25 in a single permanent stat",
+          "unlock_message": "Single stat level 25! Expert's path."
+        }
+      }
+    },
+    {
+      "id": "perm_stat_max_50",
+      "icon": "⚡",
+      "category": "meta",
+      "metric": "max_single_perm_level",
+      "target": 50,
+      "crystal_reward": 150,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "스탯 특화 마스터",
+          "description": "단일 영구 스탯 50레벨 달성",
+          "unlock_message": "단일 스탯 50레벨! 마스터의 경지."
+        },
+        "en-US": {
+          "name": "Stat Specialization Master",
+          "description": "Reach level 50 in a single permanent stat",
+          "unlock_message": "Single stat level 50! Master level."
+        }
+      }
+    },
+    {
+      "id": "perm_total_200",
+      "icon": "🏛️",
+      "category": "meta",
+      "metric": "total_perm_levels",
+      "target": 200,
+      "crystal_reward": 200,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "영구 스탯 마스터",
+          "description": "영구 스탯 총 200레벨 달성",
+          "unlock_message": "영구 스탯 200레벨! 최강의 기반."
+        },
+        "en-US": {
+          "name": "Permanent Stats Master",
+          "description": "Reach 200 total permanent stat levels",
+          "unlock_message": "200 permanent stat levels! Ultimate foundation."
+        }
+      }
+    },
+    {
+      "id": "rebirth_5",
+      "icon": "🔄",
+      "category": "meta",
+      "metric": "total_sessions",
+      "target": 5,
+      "crystal_reward": 5,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "환생 입문",
+          "description": "5회 세션 완료 (환생)",
+          "unlock_message": "5번의 환생! 이제 시스템을 이해했어요."
+        },
+        "en-US": {
+          "name": "Rebirth Beginner",
+          "description": "Complete 5 sessions (rebirths)",
+          "unlock_message": "5 rebirths! Now you understand the system."
+        }
+      }
+    },
+    {
+      "id": "meta_investor",
+      "icon": "💹",
+      "category": "meta",
+      "metric": "lifetime_crystals_spent",
+      "target": 500,
+      "crystal_reward": 30,
+      "is_hidden": false,
+      "localization": {
+        "ko-KR": {
+          "name": "메타 투자자",
+          "description": "영구 업그레이드에 500 크리스탈 투자",
+          "unlock_message": "500 크리스탈 투자! 장기적인 안목이 있네요."
+        },
+        "en-US": {
+          "name": "Meta Investor",
+          "description": "Invest 500 crystals in permanent upgrades",
+          "unlock_message": "500 crystals invested! Long-term vision."
+        }
+      }
+    },
+
+    {
+      "id": "lucky_777",
+      "icon": "🎰",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 77,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "combat_event",
+        "params": {
+          "event": "exact_damage_at_level",
+          "level": 77,
+          "damage": 777
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "럭키 세븐",
+          "description": "레벨 77에서 777 데미지",
+          "unlock_message": "777! 행운의 숫자! 대박이에요!"
+        },
+        "en-US": {
+          "name": "Lucky Seven",
+          "description": "Deal 777 damage at level 77",
+          "unlock_message": "777! Lucky numbers! Jackpot!"
+        }
+      }
+    },
+    {
+      "id": "perfect_run",
+      "icon": "✨",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 100,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "session_stat",
+        "params": {
+          "stat": "perfect_run",
+          "min_level": 50
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "완벽한 런",
+          "description": "타임아웃 0회로 레벨 50 달성",
+          "unlock_message": "완벽한 런! 한 번도 쉬지 않았어요!"
+        },
+        "en-US": {
+          "name": "Perfect Run",
+          "description": "Reach level 50 with zero timeouts",
+          "unlock_message": "Perfect run! Not a single break!"
+        }
+      }
+    },
+    {
+      "id": "speedrunner",
+      "icon": "⚡",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 150,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "session_stat",
+        "params": {
+          "stat": "speedrun",
+          "max_minutes": 10,
+          "min_level": 100
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "스피드러너",
+          "description": "10분 내에 레벨 100 달성",
+          "unlock_message": "스피드러너! 손가락이 번개처럼 빨라요!"
+        },
+        "en-US": {
+          "name": "Speedrunner",
+          "description": "Reach level 100 within 10 minutes",
+          "unlock_message": "Speedrunner! Your fingers are like lightning!"
+        }
+      }
+    },
+    {
+      "id": "keyboard_only",
+      "icon": "⌨️",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 50,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "session_stat",
+        "params": {
+          "stat": "input_only",
+          "input_type": "keyboard",
+          "min_level": 50
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "키보드 전사",
+          "description": "키보드만으로 레벨 50 달성",
+          "unlock_message": "키보드 전사! 마우스가 외로워해요."
+        },
+        "en-US": {
+          "name": "Keyboard Warrior",
+          "description": "Reach level 50 using only keyboard",
+          "unlock_message": "Keyboard warrior! Your mouse feels lonely."
+        }
+      }
+    },
+    {
+      "id": "mouse_only",
+      "icon": "🖱️",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 50,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "session_stat",
+        "params": {
+          "stat": "input_only",
+          "input_type": "mouse",
+          "min_level": 50
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "마우스 전사",
+          "description": "마우스만으로 레벨 50 달성",
+          "unlock_message": "마우스 전사! 키보드가 쉬고 있어요."
+        },
+        "en-US": {
+          "name": "Mouse Warrior",
+          "description": "Reach level 50 using only mouse",
+          "unlock_message": "Mouse warrior! Your keyboard is resting."
+        }
+      }
+    },
+    {
+      "id": "crit_chain_10",
+      "icon": "🔗",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 40,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "combat_event",
+        "params": {
+          "event": "consecutive_crits",
+          "count": 10
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "크리티컬 연쇄",
+          "description": "연속 10회 크리티컬",
+          "unlock_message": "10연속 크리티컬! 확률 조작 의심..."
+        },
+        "en-US": {
+          "name": "Critical Chain",
+          "description": "Land 10 consecutive critical hits",
+          "unlock_message": "10 consecutive crits! Suspecting RNG hack..."
+        }
+      }
+    },
+    {
+      "id": "overkill_master",
+      "icon": "💀",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 30,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "combat_event",
+        "params": {
+          "event": "overkill",
+          "multiplier": 10
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "오버킬 마스터",
+          "description": "몬스터 HP의 10배 데미지",
+          "unlock_message": "오버킬! 그 정도면 충분해요... 아니 과해요!"
+        },
+        "en-US": {
+          "name": "Overkill Master",
+          "description": "Deal 10x the monster's HP in damage",
+          "unlock_message": "Overkill! That's enough... no, too much!"
+        }
+      }
+    },
+    {
+      "id": "boss_one_shot",
+      "icon": "👊",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 80,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "combat_event",
+        "params": {
+          "event": "boss_one_shot"
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "보스 원샷",
+          "description": "보스를 한 방에 처치",
+          "unlock_message": "보스 원샷! 보스가 '뭐?' 하는 사이에 끝났어요."
+        },
+        "en-US": {
+          "name": "Boss One Shot",
+          "description": "Defeat a boss in one hit",
+          "unlock_message": "Boss one shot! It was over before 'huh?'"
+        }
+      }
+    },
+    {
+      "id": "midnight_warrior",
+      "icon": "🌙",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 25,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "time_hour",
+        "params": { "hour": 0 }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "자정의 전사",
+          "description": "자정(00:00)에 플레이",
+          "unlock_message": "자정의 전사! 새벽을 여는 첫 번째 타격!"
+        },
+        "en-US": {
+          "name": "Midnight Warrior",
+          "description": "Play at midnight (00:00)",
+          "unlock_message": "Midnight warrior! First strike of the new day!"
+        }
+      }
+    },
+    {
+      "id": "weekend_warrior",
+      "icon": "🎉",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 60,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "day_of_week",
+        "params": {
+          "days": [0, 6],
+          "min_playtime_minutes": 300
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "주말의 전사",
+          "description": "주말에 5시간 이상 플레이",
+          "unlock_message": "주말의 전사! 주말을 알차게 보내셨네요!"
+        },
+        "en-US": {
+          "name": "Weekend Warrior",
+          "description": "Play 5+ hours on weekend",
+          "unlock_message": "Weekend warrior! Well-spent weekend!"
+        }
+      }
+    },
+    {
+      "id": "comeback_king",
+      "icon": "👑",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 50,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "days_since_last_play",
+        "params": {
+          "min_days": 7,
+          "min_level": 100
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "컴백 킹",
+          "description": "7일 미접속 후 레벨 100 달성",
+          "unlock_message": "컴백 킹! 오랜만에 왔는데 실력은 여전하네요!"
+        },
+        "en-US": {
+          "name": "Comeback King",
+          "description": "Reach level 100 after 7 days away",
+          "unlock_message": "Comeback king! Still got it after a break!"
+        }
+      }
+    },
+    {
+      "id": "first_steps",
+      "icon": "👶",
+      "category": "secret",
+      "metric": "special",
+      "target": 1,
+      "crystal_reward": 5,
+      "is_hidden": true,
+      "special_condition": {
+        "type": "metric_threshold",
+        "params": {
+          "metric": "total_sessions",
+          "min_value": 1
+        }
+      },
+      "localization": {
+        "ko-KR": {
+          "name": "첫걸음",
+          "description": "첫 게임 시작",
+          "unlock_message": "첫걸음! 모험의 시작을 축하해요!"
+        },
+        "en-US": {
+          "name": "First Steps",
+          "description": "Start your first game",
+          "unlock_message": "First steps! Welcome to the adventure!"
         }
       }
     }

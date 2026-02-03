@@ -74,6 +74,31 @@ namespace DeskWarrior.Managers
         public int SessionAchievementCrystals { get; private set; }
 
         /// <summary>
+        /// 세션 중 콤보 발동 횟수
+        /// </summary>
+        public int ComboTriggers { get; private set; }
+
+        /// <summary>
+        /// 세션 중 풀 콤보(3스택) 달성 횟수
+        /// </summary>
+        public int MaxComboStackCount { get; private set; }
+
+        /// <summary>
+        /// 세션 중 멀티히트 횟수
+        /// </summary>
+        public int MultiHits { get; private set; }
+
+        /// <summary>
+        /// 세션 중 처치한 황금 고블린 수
+        /// </summary>
+        public int GoldenGoblinsKilled { get; private set; }
+
+        /// <summary>
+        /// 세션 중 황금 고블린에서 획득한 골드
+        /// </summary>
+        public long GoldenGoblinGoldEarned { get; private set; }
+
+        /// <summary>
         /// 세션 경과 시간 (분)
         /// </summary>
         public double DurationMinutes => (DateTime.Now - StartTime).TotalMinutes;
@@ -130,6 +155,22 @@ namespace DeskWarrior.Managers
                 KeyboardInputs++;
             }
 
+            // 콤보 추적
+            if (record.IsCombo)
+            {
+                ComboTriggers++;
+                if (record.ComboStack >= 3)
+                {
+                    MaxComboStackCount++;
+                }
+            }
+
+            // 멀티히트 추적
+            if (record.IsMultiHit)
+            {
+                MultiHits++;
+            }
+
             // 최근 100개만 유지
             _damageRecords.Enqueue(record);
             while (_damageRecords.Count > MaxDamageRecords)
@@ -169,6 +210,15 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
+        /// 황금 고블린 처치 기록
+        /// </summary>
+        public void RecordGoldenGoblinKill(int goldReward)
+        {
+            GoldenGoblinsKilled++;
+            GoldenGoblinGoldEarned += goldReward;
+        }
+
+        /// <summary>
         /// 세션 초기화
         /// </summary>
         public void Reset()
@@ -183,6 +233,11 @@ namespace DeskWarrior.Managers
             CriticalHits = 0;
             SessionBossDropCrystals = 0;
             SessionAchievementCrystals = 0;
+            ComboTriggers = 0;
+            MaxComboStackCount = 0;
+            MultiHits = 0;
+            GoldenGoblinsKilled = 0;
+            GoldenGoblinGoldEarned = 0;
             _damageRecords.Clear();
         }
 
@@ -202,7 +257,10 @@ namespace DeskWarrior.Managers
                 BossesKilled = BossesKilled,
                 KeyboardInputs = KeyboardInputs,
                 MouseInputs = MouseInputs,
-                EndReason = endReason
+                EndReason = endReason,
+                ComboTriggers = ComboTriggers,
+                MaxComboStackCount = MaxComboStackCount,
+                MultiHits = MultiHits
             };
         }
 

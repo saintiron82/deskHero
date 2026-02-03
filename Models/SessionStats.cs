@@ -41,6 +41,15 @@ namespace DeskWarrior.Models
         [JsonPropertyName("end_reason")]
         public string EndReason { get; set; } = "timeout"; // "timeout", "boss", "quit"
 
+        [JsonPropertyName("combo_triggers")]
+        public int ComboTriggers { get; set; }
+
+        [JsonPropertyName("max_combo_stack_count")]
+        public int MaxComboStackCount { get; set; }
+
+        [JsonPropertyName("multi_hits")]
+        public int MultiHits { get; set; }
+
         /// <summary>
         /// 세션 플레이 시간 (분)
         /// </summary>

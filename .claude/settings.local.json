@@ -90,7 +90,9 @@
       "Bash(then grep \"Best Level\" /tmp/test_$f.txt)",
       "Bash(else grep -oE 'Game time: [0-9.]+h / 50h' /tmp/test_$f.txt)",
       "Bash(fi:*)",
-      "Bash(else echo \"running...\")"
+      "Bash(else echo \"running...\")",
+      "Bash(grep:*)",
+      "Bash(/Users/saintiron/.dotnet/dotnet run:*)"
     ]
   }
 }

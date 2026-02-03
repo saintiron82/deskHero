@@ -31,11 +31,40 @@
     <Resource Include="Assets\**" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- DEBUG: config 파일을 출력 디렉토리에 복사 -->
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <Content Include="config\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <!-- RELEASE: 암호화된 config를 임베딩 리소스로 포함 -->
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <EmbeddedResource Include="Resources\EncryptedConfig\**\*.enc" />
+  </ItemGroup>
+
+  <!-- RELEASE 빌드 전: Config 파일 암호화 -->
+  <Target Name="EncryptConfigs" BeforeTargets="Build" Condition="'$(Configuration)'=='Release'">
+    <Message Text="[Security] Encrypting config files..." Importance="high" />
+    <Exec Command="dotnet run --project Tools/ConfigEncryptor -- $(MSBuildProjectDirectory)"
+          WorkingDirectory="$(MSBuildProjectDirectory)"
+          ContinueOnError="false" />
+  </Target>
+
+  <!--
+    RELEASE Publish 후: ConfuserEx 난독화 (선택적)
+    사용법: dotnet publish -c Release && confuserex crx.proj
+    또는 아래 타겟을 활성화하여 자동 실행
+
+    주의: ConfuserEx가 PATH에 설치되어 있어야 함
+    설치: https://github.com/mkaring/ConfuserEx/releases
+  -->
+  <Target Name="Obfuscate" AfterTargets="Publish" Condition="'$(Configuration)'=='Release' And '$(EnableObfuscation)'=='true'">
+    <Message Text="[Security] Running ConfuserEx obfuscation..." Importance="high" />
+    <Exec Command="confuserex crx.proj"
+          WorkingDirectory="$(MSBuildProjectDirectory)"
+          ContinueOnError="true" />
+  </Target>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

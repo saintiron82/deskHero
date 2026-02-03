@@ -17,6 +17,7 @@ namespace DeskWarrior.ViewModels
         private int _maxHp;
         private double _hpRatio = 1.0;
         private bool _isBoss;
+        private bool _isGoldenGoblin;
 
         public MonsterViewModel(GameManager gameManager)
         {
@@ -69,6 +70,12 @@ namespace DeskWarrior.ViewModels
             private set => SetProperty(ref _isBoss, value);
         }
 
+        public bool IsGoldenGoblin
+        {
+            get => _isGoldenGoblin;
+            private set => SetProperty(ref _isGoldenGoblin, value);
+        }
+
         public string HpText => $"{CurrentHp:N0}/{MaxHp:N0}";
 
         #endregion
@@ -90,6 +97,7 @@ namespace DeskWarrior.ViewModels
             MaxHp = monster.MaxHp;
             HpRatio = monster.HpRatio;
             IsBoss = monster.IsBoss;
+            IsGoldenGoblin = monster.IsGoldenGoblin;
 
             OnPropertyChanged(nameof(HpText));
         }

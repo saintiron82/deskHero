@@ -48,6 +48,11 @@ namespace DeskWarrior.Managers.Services
             lifetime.TotalPlaytimeMinutes += session.DurationMinutes;
             lifetime.TotalSessions++;
 
+            // 콤보/멀티히트 누적
+            lifetime.ComboTriggers += session.ComboTriggers;
+            lifetime.MaxComboStackCount += session.MaxComboStackCount;
+            lifetime.MultiHits += session.MultiHits;
+
             // 최고 기록 갱신
             if (session.MaxLevel > lifetime.BestSessionLevel)
             {

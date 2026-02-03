@@ -1,10 +1,109 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using DeskWarrior.Interfaces;
 
 namespace DeskWarrior.Models
 {
+    /// <summary>
+    /// 비밀 업적 특수 조건 (데이터 드리븐)
+    /// </summary>
+    public class SpecialCondition
+    {
+        /// <summary>
+        /// 조건 타입
+        /// - time_hour: 특정 시간에 플레이
+        /// - day_of_week: 특정 요일 (0=일, 6=토)
+        /// - ratio_between: 두 메트릭의 비율
+        /// - multi_metric: 여러 메트릭 조건 (AND)
+        /// - session_stat: 세션 내 특수 조건
+        /// - combat_event: 전투 중 특수 이벤트
+        /// - days_since_last_play: 미접속 일수
+        /// </summary>
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "";
+
+        /// <summary>
+        /// 조건 파라미터 (타입별로 다름)
+        /// </summary>
+        [JsonPropertyName("params")]
+        public Dictionary<string, JsonElement> Params { get; set; } = new();
+
+        /// <summary>
+        /// 파라미터 값 가져오기 (int)
+        /// </summary>
+        public int GetInt(string key, int defaultValue = 0)
+        {
+            if (Params.TryGetValue(key, out var element))
+            {
+                if (element.ValueKind == JsonValueKind.Number)
+                    return element.GetInt32();
+            }
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// 파라미터 값 가져오기 (double)
+        /// </summary>
+        public double GetDouble(string key, double defaultValue = 0)
+        {
+            if (Params.TryGetValue(key, out var element))
+            {
+                if (element.ValueKind == JsonValueKind.Number)
+                    return element.GetDouble();
+            }
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// 파라미터 값 가져오기 (string)
+        /// </summary>
+        public string GetString(string key, string defaultValue = "")
+        {
+            if (Params.TryGetValue(key, out var element))
+            {
+                if (element.ValueKind == JsonValueKind.String)
+                    return element.GetString() ?? defaultValue;
+            }
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// 파라미터 값 가져오기 (bool)
+        /// </summary>
+        public bool GetBool(string key, bool defaultValue = false)
+        {
+            if (Params.TryGetValue(key, out var element))
+            {
+                if (element.ValueKind == JsonValueKind.True) return true;
+                if (element.ValueKind == JsonValueKind.False) return false;
+            }
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// 파라미터 배열 가져오기 (int[])
+        /// </summary>
+        public int[] GetIntArray(string key)
+        {
+            if (Params.TryGetValue(key, out var element))
+            {
+                if (element.ValueKind == JsonValueKind.Array)
+                {
+                    var list = new List<int>();
+                    foreach (var item in element.EnumerateArray())
+                    {
+                        if (item.ValueKind == JsonValueKind.Number)
+                            list.Add(item.GetInt32());
+                    }
+                    return list.ToArray();
+                }
+            }
+            return Array.Empty<int>();
+        }
+    }
+
     /// <summary>
     /// 업적 로컬라이즈 텍스트
     /// </summary>
@@ -45,6 +144,12 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("crystal_reward")]
         public int CrystalReward { get; set; } = 0;
+
+        /// <summary>
+        /// 비밀 업적 특수 조건 (null이면 일반 메트릭 기반)
+        /// </summary>
+        [JsonPropertyName("special_condition")]
+        public SpecialCondition? SpecialCondition { get; set; }
 
         [JsonPropertyName("localization")]
         public Dictionary<string, AchievementLocalization> Localization { get; set; } = new();

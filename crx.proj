@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ConfuserEx 난독화 설정 파일
+  사용법: confuserex crx.proj
+
+  설치: https://github.com/mkaring/ConfuserEx/releases
+  Windows: choco install confuserex
+  또는 직접 다운로드 후 PATH에 추가
+-->
+<project outputDir="./bin/Release/net9.0-windows/obfuscated"
+         baseDir="./bin/Release/net9.0-windows/publish"
+         xmlns="http://confuser.codeplex.com">
+
+  <!--
+    난독화 규칙 정의
+    preset: minimum, normal, aggressive, maximum
+  -->
+  <rule pattern="true" preset="aggressive" inherit="false">
+    <!-- 안티 탬퍼: 바이너리 변조 감지 -->
+    <protection id="anti tamper" />
+
+    <!-- 안티 디버그: 디버거 연결 방지 -->
+    <protection id="anti debug" />
+
+    <!-- 상수 암호화: 문자열, 숫자 등 암호화 -->
+    <protection id="constants">
+      <argument name="mode" value="dynamic" />
+      <argument name="decoderCount" value="5" />
+    </protection>
+
+    <!-- 제어 흐름 난독화: if/else, switch 등 변환 -->
+    <protection id="ctrl flow">
+      <argument name="type" value="switch" />
+    </protection>
+
+    <!-- 잘못된 메타데이터: 디컴파일러 혼란 유발 -->
+    <protection id="invalid metadata" />
+
+    <!-- 참조 프록시: 메서드 호출 숨김 -->
+    <protection id="ref proxy">
+      <argument name="mode" value="mild" />
+    </protection>
+
+    <!-- 이름 변경: 클래스, 메서드, 필드명 난독화 -->
+    <protection id="rename">
+      <argument name="renameArgs" value="true" />
+      <argument name="renPublic" value="false" />
+      <argument name="mode" value="unicode" />
+    </protection>
+
+    <!-- 리소스 암호화 -->
+    <protection id="resources" />
+  </rule>
+
+  <!-- 보호할 모듈들 -->
+  <module path="DeskWarrior.exe" />
+  <module path="DeskWarrior.Core.dll" />
+
+  <!--
+    제외 패턴 (필요시 주석 해제)
+    예: 리플렉션으로 접근하는 타입
+  -->
+  <!--
+  <rule pattern="DeskWarrior.Models.*" preset="none" inherit="false" />
+  -->
+
+</project>

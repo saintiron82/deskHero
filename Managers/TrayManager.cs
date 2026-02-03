@@ -68,9 +68,10 @@ namespace DeskWarrior.Managers
         private void CreateContextMenu()
         {
             _contextMenu = new ContextMenuStrip();
+            var loc = LocalizationManager.Instance;
 
             // 설정
-            var settingsItem = new ToolStripMenuItem("⚙️ 설정...");
+            var settingsItem = new ToolStripMenuItem(loc["ui.tray.settings"]);
             settingsItem.Click += (s, e) => SettingsRequested?.Invoke(this, EventArgs.Empty);
             _contextMenu.Items.Add(settingsItem);
 
@@ -78,16 +79,17 @@ namespace DeskWarrior.Managers
             _contextMenu.Items.Add(new ToolStripSeparator());
 
             // 종료
-            var exitItem = new ToolStripMenuItem("❌ 종료");
+            var exitItem = new ToolStripMenuItem(loc["ui.tray.exit"]);
             exitItem.Click += (s, e) => ExitRequested?.Invoke(this, EventArgs.Empty);
             _contextMenu.Items.Add(exitItem);
         }
 
         private void CreateNotifyIcon()
         {
+            var loc = LocalizationManager.Instance;
             _notifyIcon = new NotifyIcon
             {
-                Text = "DeskWarrior",
+                Text = loc["ui.tray.title"],
                 Visible = true,
                 ContextMenuStrip = _contextMenu,
                 Icon = CreateDefaultIcon()

@@ -4,6 +4,7 @@ using System.Windows.Threading;
 using DeskWarrior.Helpers;
 using DeskWarrior.Managers;
 using DeskWarrior.Models;
+using DeskWarrior.Security;
 
 namespace DeskWarrior
 {
@@ -23,7 +24,23 @@ namespace DeskWarrior
             Logger.Log($"Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
             Logger.Log($"OS: {System.Environment.OSVersion}");
             Logger.Log($".NET: {System.Environment.Version}");
+            Logger.Log($"Security: {(SecurityConfig.SecurityEnabled ? "Enabled" : "Disabled")}");
             Logger.Log("========================================");
+
+            // 안티-치트 초기화 (RELEASE 빌드에서만 활성화)
+            AntiCheat.Initialize(onViolationDetected: () =>
+            {
+                Logger.Log("[Security] Violation detected - shutting down");
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show(
+                        "비정상적인 실행 환경이 감지되었습니다.\n게임을 종료합니다.",
+                        "보안 경고",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    Application.Current.Shutdown(-1);
+                });
+            });
 
             // 의존성 주입: AchievementDefinition에 LocalizationProvider 설정
             AchievementDefinition.LocalizationProvider = LocalizationManager.Instance;
@@ -51,6 +68,9 @@ namespace DeskWarrior
             Logger.Log("DeskWarrior Application Exiting...");
             Logger.Log($"Exit Code: {e.ApplicationExitCode}");
             Logger.Log("========================================");
+
+            // 안티-치트 종료
+            AntiCheat.Shutdown();
 
             base.OnExit(e);
         }

@@ -83,6 +83,7 @@ namespace DeskWarrior.ViewModels
         public int MonsterMaxHp => _monster.MaxHp;
         public double HpRatio => _monster.HpRatio;
         public bool IsBoss => _monster.IsBoss;
+        public bool IsGoldenGoblin => _monster.IsGoldenGoblin;
         public string HpText => _monster.HpText;
 
         #endregion
@@ -117,6 +118,9 @@ namespace DeskWarrior.ViewModels
         public event EventHandler<GameInputEventArgs>? InputReceived;
         public event Action? SettingsRequested;
         public event Action? StatsRequested;
+        public event EventHandler? GoldenGoblinSpawned;
+        public event EventHandler? GoldenGoblinEscaped;
+        public event EventHandler<GoldenGoblinRewardEventArgs>? GoldenGoblinDefeated;
 
         #endregion
 
@@ -256,6 +260,9 @@ namespace DeskWarrior.ViewModels
             _gameManager.TimerTick += OnTimerTick;
             _gameManager.StatsChanged += OnStatsChanged;
             _gameManager.GameOver += OnGameOver;
+            _gameManager.GoldenGoblinSpawned += OnGoldenGoblinSpawned;
+            _gameManager.GoldenGoblinEscaped += OnGoldenGoblinEscaped;
+            _gameManager.GoldenGoblinDefeated += OnGoldenGoblinDefeated;
 
             // Tray Manager
             _trayManager.SettingsRequested += (s, e) => SettingsRequested?.Invoke();
@@ -288,7 +295,7 @@ namespace DeskWarrior.ViewModels
 
         private void OnDamageDealt(object? sender, DamageEventArgs e)
         {
-            _soundManager.Play(SoundType.Hit);
+            // 사운드는 MainWindow.OnInputReceived에서 입력 타입별로 재생됨
             _monster.Update();
             NotifyUIPropertiesChanged();
             DamageDealt?.Invoke(this, e);
@@ -336,6 +343,26 @@ namespace DeskWarrior.ViewModels
             GameOver?.Invoke(this, e);
         }
 
+        private void OnGoldenGoblinSpawned(object? sender, EventArgs e)
+        {
+            _monster.Update();
+            NotifyUIPropertiesChanged();
+            GoldenGoblinSpawned?.Invoke(this, e);
+        }
+
+        private void OnGoldenGoblinEscaped(object? sender, EventArgs e)
+        {
+            GoldenGoblinEscaped?.Invoke(this, e);
+        }
+
+        private void OnGoldenGoblinDefeated(object? sender, GoldenGoblinRewardEventArgs e)
+        {
+            _soundManager.Play(SoundType.Defeat);
+            _gameState.Update();
+            NotifyUIPropertiesChanged();
+            GoldenGoblinDefeated?.Invoke(this, e);
+        }
+
         private void OnUpgradePerformed(object? sender, EventArgs e)
         {
             _gameState.Update();
@@ -364,6 +391,7 @@ namespace DeskWarrior.ViewModels
             OnPropertyChanged(nameof(MonsterMaxHp));
             OnPropertyChanged(nameof(HpRatio));
             OnPropertyChanged(nameof(IsBoss));
+            OnPropertyChanged(nameof(IsGoldenGoblin));
             OnPropertyChanged(nameof(HpText));
             OnPropertyChanged(nameof(KeyboardPowerText));
             OnPropertyChanged(nameof(MousePowerText));

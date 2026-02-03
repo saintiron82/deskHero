@@ -6,8 +6,9 @@ namespace DeskWarrior.Managers.Repositories
 {
     /// <summary>
     /// Achievements.json 저장소
+    /// RELEASE: 암호화된 저장
     /// </summary>
-    public class AchievementRepository : JsonFileRepository<UserAchievements>
+    public class AchievementRepository : SecureJsonFileRepository<UserAchievements>
     {
         public AchievementRepository(string filePath) : base(filePath)
         {

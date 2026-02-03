@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "total_batches": 9,
+  "batches": [
+    {
+      "batch_id": 1,
+      "file": "batch_01.json",
+      "name": {
+        "ko-KR": "시작의 장",
+        "en-US": "The Beginning"
+      },
+      "enabled": true
+    },
+    {
+      "batch_id": 2,
+      "file": "batch_02.json",
+      "name": {
+        "ko-KR": "고전 던전",
+        "en-US": "Classic Dungeon"
+      },
+      "enabled": false
+    },
+    {
+      "batch_id": 3,
+      "file": "batch_03.json",
+      "name": {
+        "ko-KR": "대자연",
+        "en-US": "Forces of Nature"
+      },
+      "enabled": false
+    },
+    {
+      "batch_id": 4,
+      "file": "batch_04.json",
+      "name": {
+        "ko-KR": "지하 세계",
+        "en-US": "Underworld"
+      },
+      "enabled": false
+    },
+    {
+      "batch_id": 5,
+      "file": "batch_05.json",
+      "name": {
+        "ko-KR": "기계 제국",
+        "en-US": "Machine Empire"
+      },
+      "enabled": false
+    },
+    {
+      "batch_id": 6,
+      "file": "batch_06.json",
+      "name": {
+        "ko-KR": "천상계",
+        "en-US": "Celestial Realm"
+      },
+      "enabled": false
+    },
+    {
+      "batch_id": 7,
+      "file": "batch_07.json",
+      "name": {
+        "ko-KR": "심연",
+        "en-US": "The Abyss"
+      },
+      "enabled": false
+    },
+    {
+      "batch_id": 8,
+      "file": "batch_08.json",
+      "name": {
+        "ko-KR": "원소의 혼돈",
+        "en-US": "Elemental Chaos"
+      },
+      "enabled": false
+    },
+    {
+      "batch_id": 9,
+      "file": "batch_09.json",
+      "name": {
+        "ko-KR": "최후의 신화",
+        "en-US": "Final Myths"
+      },
+      "enabled": false
+    }
+  ]
+}

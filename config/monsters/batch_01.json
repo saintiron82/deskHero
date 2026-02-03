@@ -1,0 +1,949 @@
+{
+  "batch_id": 1,
+  "name": {
+    "ko-KR": "시작의 장",
+    "en-US": "The Beginning"
+  },
+  "theme": "Basic Monsters",
+  "unlock_condition": null,
+  "monsters": [
+    {
+      "id": "monster_slime",
+      "species": "slime",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 20,
+        "hp_growth": 5,
+        "base_gold": 10,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "숲 슬라임", "description": "숲에서 가장 흔히 볼 수 있는 슬라임. 무해해 보이지만 방심은 금물." },
+            "en-US": { "name": "Forest Slime", "description": "The most common slime found in forests. Looks harmless but don't let your guard down." }
+          },
+          "sprite": "Production/monster_slime_normal.png",
+          "emoji": "🟢",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "마그마 슬라임", "description": "용암에서 태어난 뜨거운 슬라임. 만지면 화상을 입는다." },
+            "en-US": { "name": "Magma Slime", "description": "A hot slime born from lava. Touching it will burn you." }
+          },
+          "sprite": "Production/monster_slime_fire.png",
+          "emoji": "🟢",
+          "hp_modifier": 1.6,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "아이스 슬라임", "description": "얼음으로 이루어진 차가운 슬라임. 주변을 얼어붙게 한다." },
+            "en-US": { "name": "Ice Slime", "description": "A cold slime made of ice. Freezes its surroundings." }
+          },
+          "sprite": "Production/monster_slime_ice.png",
+          "emoji": "🟢",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.1
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "윈드 슬라임", "description": "바람을 품은 가벼운 슬라임. 공중을 떠다닌다." },
+            "en-US": { "name": "Wind Slime", "description": "A light slime containing wind. Floats in the air." }
+          },
+          "sprite": "Production/monster_slime_wind.png",
+          "emoji": "🟢",
+          "hp_modifier": 1.3,
+          "gold_modifier": 1.1
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "엔젤 슬라임", "description": "신성한 빛을 내뿜는 희귀한 슬라임. 행운을 가져다준다." },
+            "en-US": { "name": "Angel Slime", "description": "A rare slime emitting holy light. Brings good fortune." }
+          },
+          "sprite": "Production/monster_slime_holy.png",
+          "emoji": "🟢",
+          "hp_modifier": 1.4,
+          "gold_modifier": 3.2
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "맹독 슬라임", "description": "치명적인 독을 품은 위험한 슬라임. 접촉만으로도 중독된다." },
+            "en-US": { "name": "Venom Slime", "description": "A dangerous slime with deadly poison. Even contact causes poisoning." }
+          },
+          "sprite": "Production/monster_slime_dark.png",
+          "emoji": "🟢",
+          "hp_modifier": 2.25,
+          "gold_modifier": 1.2
+        }
+      }
+    },
+    {
+      "id": "monster_bat",
+      "species": "bat",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 32,
+        "hp_growth": 5,
+        "base_gold": 13,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "동굴 박쥐", "description": "어두운 동굴에 서식하는 박쥐. 초음파로 사냥한다." },
+            "en-US": { "name": "Cave Bat", "description": "A bat dwelling in dark caves. Hunts using ultrasonic waves." }
+          },
+          "sprite": "Production/monster_bat_normal.png",
+          "emoji": "🦇",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "파이어 뱃", "description": "불꽃을 내뿜는 화염 박쥐. 화산 근처에서 자주 목격된다." },
+            "en-US": { "name": "Fire Bat", "description": "A flaming bat that breathes fire. Often spotted near volcanoes." }
+          },
+          "sprite": "Production/monster_bat_fire.png",
+          "emoji": "🦇",
+          "hp_modifier": 1.375,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "서리 박쥐", "description": "얼음 날개를 가진 박쥐. 차가운 바람을 일으킨다." },
+            "en-US": { "name": "Frost Bat", "description": "A bat with icy wings. Creates cold winds." }
+          },
+          "sprite": "Production/monster_bat_ice.png",
+          "emoji": "🦇",
+          "hp_modifier": 1.125,
+          "gold_modifier": 1.077
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "소닉 배트", "description": "음속을 돌파하는 빠른 박쥐. 눈으로 쫓기 힘들다." },
+            "en-US": { "name": "Sonic Bat", "description": "A fast bat that breaks the sound barrier. Hard to track with eyes." }
+          },
+          "sprite": "Production/monster_bat_wind.png",
+          "emoji": "🦇",
+          "hp_modifier": 1.1875,
+          "gold_modifier": 1.077
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "황금 박쥐", "description": "금빛 날개를 가진 신비로운 박쥐. 부와 행운의 상징." },
+            "en-US": { "name": "Golden Bat", "description": "A mystical bat with golden wings. Symbol of wealth and luck." }
+          },
+          "sprite": "Production/monster_bat_holy.png",
+          "emoji": "🦇",
+          "hp_modifier": 1.25,
+          "gold_modifier": 2.692
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "뱀파이어 배트", "description": "피를 빨아먹는 공포의 박쥐. 밤에 더욱 강해진다." },
+            "en-US": { "name": "Vampire Bat", "description": "A terrifying blood-sucking bat. Grows stronger at night." }
+          },
+          "sprite": "Production/monster_bat_dark.png",
+          "emoji": "🦇",
+          "hp_modifier": 1.78,
+          "gold_modifier": 1.154
+        }
+      }
+    },
+    {
+      "id": "monster_skeleton",
+      "species": "skeleton",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 44,
+        "hp_growth": 5,
+        "base_gold": 16,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "해골 병사", "description": "죽어서도 싸우는 언데드 병사. 기본적인 전투 기술을 보유." },
+            "en-US": { "name": "Skeleton Soldier", "description": "An undead soldier that fights even in death. Has basic combat skills." }
+          },
+          "sprite": "Production/monster_skeleton_normal.png",
+          "emoji": "💀",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "타오르는 해골", "description": "불타는 뼈로 이루어진 해골. 접근하면 화염 피해를 입는다." },
+            "en-US": { "name": "Burning Skeleton", "description": "A skeleton made of burning bones. Getting close causes fire damage." }
+          },
+          "sprite": "Production/monster_skeleton_fire.png",
+          "emoji": "💀",
+          "hp_modifier": 1.273,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "프로즌 나이트", "description": "얼어붙은 갑옷을 입은 해골 기사. 냉기를 방출한다." },
+            "en-US": { "name": "Frozen Knight", "description": "A skeleton knight in frozen armor. Emits cold aura." }
+          },
+          "sprite": "Production/monster_skeleton_ice.png",
+          "emoji": "💀",
+          "hp_modifier": 1.091,
+          "gold_modifier": 1.0625
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "윈드 워리어", "description": "바람처럼 빠르게 움직이는 해골 전사. 회피가 뛰어나다." },
+            "en-US": { "name": "Wind Warrior", "description": "A skeleton warrior that moves fast like wind. Excellent at evasion." }
+          },
+          "sprite": "Production/monster_skeleton_wind.png",
+          "emoji": "💀",
+          "hp_modifier": 1.136,
+          "gold_modifier": 1.0625
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "호구와트 가드", "description": "고대 성지를 지키던 신성한 수호자. 아직도 임무를 수행 중." },
+            "en-US": { "name": "Hogwart Guard", "description": "A holy guardian that protected an ancient sanctuary. Still fulfilling its duty." }
+          },
+          "sprite": "Production/monster_skeleton_holy.png",
+          "emoji": "💀",
+          "hp_modifier": 1.182,
+          "gold_modifier": 2.375
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "커스드 스켈레톤", "description": "강력한 저주에 걸린 해골. 닿는 것만으로도 저주가 전염된다." },
+            "en-US": { "name": "Cursed Skeleton", "description": "A skeleton under a powerful curse. The curse spreads just by touch." }
+          },
+          "sprite": "Production/monster_skeleton_dark.png",
+          "emoji": "💀",
+          "hp_modifier": 1.568,
+          "gold_modifier": 1.125
+        }
+      }
+    },
+    {
+      "id": "monster_goblin",
+      "species": "goblin",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 56,
+        "hp_growth": 5,
+        "base_gold": 19,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "숲 고블린", "description": "숲에서 무리를 지어 사는 고블린. 약탈을 일삼는다." },
+            "en-US": { "name": "Forest Goblin", "description": "A goblin living in forest packs. Engages in pillaging." }
+          },
+          "sprite": "Production/monster_goblin_normal.png",
+          "emoji": "👺",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "고블린 방화광", "description": "불을 좋아하는 미친 고블린. 모든 것을 태우려 한다." },
+            "en-US": { "name": "Goblin Arsonist", "description": "A crazy goblin who loves fire. Tries to burn everything." }
+          },
+          "sprite": "Production/monster_goblin_fire.png",
+          "emoji": "👺",
+          "hp_modifier": 1.214,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "설원 고블린", "description": "눈 덮인 산에 적응한 고블린. 추위에 강하다." },
+            "en-US": { "name": "Snow Goblin", "description": "A goblin adapted to snowy mountains. Resistant to cold." }
+          },
+          "sprite": "Production/monster_goblin_ice.png",
+          "emoji": "👺",
+          "hp_modifier": 1.071,
+          "gold_modifier": 1.053
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "고블린 정찰병", "description": "빠른 발로 정찰을 담당하는 고블린. 민첩하다." },
+            "en-US": { "name": "Goblin Scout", "description": "A goblin scout with fast feet. Very agile." }
+          },
+          "sprite": "Production/monster_goblin_wind.png",
+          "emoji": "👺",
+          "hp_modifier": 1.107,
+          "gold_modifier": 1.053
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "고블린 성기사", "description": "신을 섬기게 된 특이한 고블린. 빛의 힘을 다룬다." },
+            "en-US": { "name": "Goblin Paladin", "description": "An unusual goblin serving the gods. Wields the power of light." }
+          },
+          "sprite": "Production/monster_goblin_holy.png",
+          "emoji": "👺",
+          "hp_modifier": 1.143,
+          "gold_modifier": 2.158
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "다크 고블린", "description": "어둠에 물든 사악한 고블린. 잔인하고 교활하다." },
+            "en-US": { "name": "Dark Goblin", "description": "An evil goblin tainted by darkness. Cruel and cunning." }
+          },
+          "sprite": "Production/monster_goblin_dark.png",
+          "emoji": "👺",
+          "hp_modifier": 1.446,
+          "gold_modifier": 1.105
+        }
+      }
+    },
+    {
+      "id": "monster_orc",
+      "species": "orc",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 68,
+        "hp_growth": 5,
+        "base_gold": 22,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "오크 전사", "description": "강인한 체력을 자랑하는 오크 전사. 힘으로 밀어붙인다." },
+            "en-US": { "name": "Orc Warrior", "description": "An orc warrior with great stamina. Overwhelms with brute force." }
+          },
+          "sprite": "Production/monster_orc_normal.png",
+          "emoji": "👹",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "화산 오크", "description": "화산 근처에 사는 뜨거운 피의 오크. 분노 시 더욱 강해진다." },
+            "en-US": { "name": "Volcanic Orc", "description": "A hot-blooded orc living near volcanoes. Gets stronger when enraged." }
+          },
+          "sprite": "Production/monster_orc_fire.png",
+          "emoji": "👹",
+          "hp_modifier": 1.176,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "빙하 오크", "description": "얼음 땅에 적응한 오크. 추위를 두려워하지 않는다." },
+            "en-US": { "name": "Glacier Orc", "description": "An orc adapted to icy lands. Fears no cold." }
+          },
+          "sprite": "Production/monster_orc_ice.png",
+          "emoji": "👹",
+          "hp_modifier": 1.059,
+          "gold_modifier": 1.045
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "태풍의 오크", "description": "폭풍처럼 싸우는 오크. 강력한 일격이 특기." },
+            "en-US": { "name": "Storm Orc", "description": "An orc that fights like a storm. Specializes in powerful strikes." }
+          },
+          "sprite": "Production/monster_orc_wind.png",
+          "emoji": "👹",
+          "hp_modifier": 1.088,
+          "gold_modifier": 1.045
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "오크 대장군", "description": "오크 부족을 이끄는 위대한 지도자. 명예를 중시한다." },
+            "en-US": { "name": "Orc Warlord", "description": "A great leader commanding orc tribes. Values honor greatly." }
+          },
+          "sprite": "Production/monster_orc_holy.png",
+          "emoji": "👹",
+          "hp_modifier": 1.118,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "타락한 오크", "description": "어둠에 타락한 오크. 이성을 잃고 폭주한다." },
+            "en-US": { "name": "Corrupted Orc", "description": "An orc corrupted by darkness. Lost its sanity and rampages." }
+          },
+          "sprite": "Production/monster_orc_dark.png",
+          "emoji": "👹",
+          "hp_modifier": 1.368,
+          "gold_modifier": 1.091
+        }
+      }
+    },
+    {
+      "id": "monster_ghost",
+      "species": "ghost",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 80,
+        "hp_growth": 5,
+        "base_gold": 25,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "떠도는 영혼", "description": "이승에 미련이 남은 영혼. 물리 공격이 잘 통하지 않는다." },
+            "en-US": { "name": "Wandering Spirit", "description": "A spirit with regrets in the mortal world. Physical attacks are less effective." }
+          },
+          "sprite": "Production/monster_ghost_normal.png",
+          "emoji": "👻",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "불타는 원혼", "description": "억울하게 불에 타 죽은 영혼. 복수심에 불타고 있다." },
+            "en-US": { "name": "Burning Wraith", "description": "A spirit that died unjustly by fire. Burns with vengeance." }
+          },
+          "sprite": "Production/monster_ghost_fire.png",
+          "emoji": "👻",
+          "hp_modifier": 1.15,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "냉혹한 망령", "description": "얼어붙은 감정을 가진 망령. 주변을 얼어붙게 한다." },
+            "en-US": { "name": "Frigid Specter", "description": "A specter with frozen emotions. Freezes everything around." }
+          },
+          "sprite": "Production/monster_ghost_ice.png",
+          "emoji": "👻",
+          "hp_modifier": 1.05,
+          "gold_modifier": 1.04
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "폭풍의 영혼", "description": "바람을 일으키는 영혼. 나타났다 사라지기를 반복한다." },
+            "en-US": { "name": "Storm Spirit", "description": "A spirit that creates wind. Appears and disappears repeatedly." }
+          },
+          "sprite": "Production/monster_ghost_wind.png",
+          "emoji": "👻",
+          "hp_modifier": 1.075,
+          "gold_modifier": 1.04
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "성령", "description": "신성한 힘으로 정화된 영혼. 선한 자를 보호한다." },
+            "en-US": { "name": "Holy Spirit", "description": "A spirit purified by holy power. Protects the righteous." }
+          },
+          "sprite": "Production/monster_ghost_holy.png",
+          "emoji": "👻",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.88
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "악령", "description": "악의에 물든 사악한 영혼. 산 자의 생명력을 탐한다." },
+            "en-US": { "name": "Evil Spirit", "description": "A wicked spirit tainted by malice. Craves the life force of the living." }
+          },
+          "sprite": "Production/monster_ghost_dark.png",
+          "emoji": "👻",
+          "hp_modifier": 1.3125,
+          "gold_modifier": 1.08
+        }
+      }
+    },
+    {
+      "id": "monster_golem",
+      "species": "golem",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 92,
+        "hp_growth": 5,
+        "base_gold": 28,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "바위 골렘", "description": "바위로 만들어진 인공 생명체. 느리지만 강하다." },
+            "en-US": { "name": "Rock Golem", "description": "An artificial being made of rock. Slow but strong." }
+          },
+          "sprite": "Production/monster_golem_normal.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "용암 골렘", "description": "용암으로 이루어진 골렘. 몸에서 뜨거운 열기가 뿜어져 나온다." },
+            "en-US": { "name": "Lava Golem", "description": "A golem made of lava. Hot heat emanates from its body." }
+          },
+          "sprite": "Production/monster_golem_fire.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.13,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "빙벽 골렘", "description": "얼음으로 만들어진 골렘. 녹지 않는 영구 빙하로 구성." },
+            "en-US": { "name": "Ice Wall Golem", "description": "A golem made of ice. Composed of permanent glacier ice." }
+          },
+          "sprite": "Production/monster_golem_ice.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.043,
+          "gold_modifier": 1.036
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "샌드 골렘", "description": "모래로 이루어진 골렘. 모래폭풍을 일으킨다." },
+            "en-US": { "name": "Sand Golem", "description": "A golem made of sand. Creates sandstorms." }
+          },
+          "sprite": "Production/monster_golem_wind.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.065,
+          "gold_modifier": 1.036
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "고대 수호자", "description": "고대 문명이 만든 성스러운 수호 골렘. 침입자를 막는다." },
+            "en-US": { "name": "Ancient Guardian", "description": "A sacred guardian golem created by ancient civilization. Blocks intruders." }
+          },
+          "sprite": "Production/monster_golem_holy.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.087,
+          "gold_modifier": 1.786
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "흑요석 골렘", "description": "검은 흑요석으로 만들어진 골렘. 어둠의 힘이 깃들어 있다." },
+            "en-US": { "name": "Obsidian Golem", "description": "A golem made of black obsidian. Infused with dark power." }
+          },
+          "sprite": "Production/monster_golem_dark.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.272,
+          "gold_modifier": 1.071
+        }
+      }
+    },
+    {
+      "id": "monster_mushroom",
+      "species": "mushroom",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 104,
+        "hp_growth": 5,
+        "base_gold": 31,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "독 버섯", "description": "독포자를 뿜는 버섯 몬스터. 접근 시 주의 필요." },
+            "en-US": { "name": "Poison Mushroom", "description": "A mushroom monster that releases poison spores. Approach with caution." }
+          },
+          "sprite": "Production/monster_mushroom_normal.png",
+          "emoji": "🍄",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "폭발 버섯", "description": "터지면 화염이 분출되는 버섯. 가까이 가면 위험하다." },
+            "en-US": { "name": "Explosive Mushroom", "description": "A mushroom that bursts into flames. Dangerous to approach." }
+          },
+          "sprite": "Production/monster_mushroom_fire.png",
+          "emoji": "🍄",
+          "hp_modifier": 1.115,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "아이스 펑거스", "description": "얼음 포자를 뿜는 차가운 버섯. 동결 효과가 있다." },
+            "en-US": { "name": "Ice Fungus", "description": "A cold mushroom releasing ice spores. Has freezing effect." }
+          },
+          "sprite": "Production/monster_mushroom_ice.png",
+          "emoji": "🍄",
+          "hp_modifier": 1.038,
+          "gold_modifier": 1.032
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "포자 버섯", "description": "바람에 포자를 날리는 버섯. 넓은 범위에 영향을 준다." },
+            "en-US": { "name": "Spore Mushroom", "description": "A mushroom that spreads spores with wind. Affects a wide area." }
+          },
+          "sprite": "Production/monster_mushroom_wind.png",
+          "emoji": "🍄",
+          "hp_modifier": 1.058,
+          "gold_modifier": 1.032
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "빛나는 버섯", "description": "신비로운 빛을 내는 희귀 버섯. 치유 효과가 있다고 전해진다." },
+            "en-US": { "name": "Luminous Mushroom", "description": "A rare mushroom emitting mystical light. Said to have healing properties." }
+          },
+          "sprite": "Production/monster_mushroom_holy.png",
+          "emoji": "🍄",
+          "hp_modifier": 1.077,
+          "gold_modifier": 1.71
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "지옥 버섯", "description": "지하 깊은 곳에서 자라는 맹독 버섯. 치명적인 독을 품고 있다." },
+            "en-US": { "name": "Hell Mushroom", "description": "A deadly mushroom grown deep underground. Contains lethal poison." }
+          },
+          "sprite": "Production/monster_mushroom_dark.png",
+          "emoji": "🍄",
+          "hp_modifier": 1.24,
+          "gold_modifier": 1.065
+        }
+      }
+    },
+    {
+      "id": "monster_spider",
+      "species": "spider",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 116,
+        "hp_growth": 5,
+        "base_gold": 34,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "숲 거미", "description": "숲에서 거미줄을 치고 사냥하는 거미. 독이 있다." },
+            "en-US": { "name": "Forest Spider", "description": "A spider that hunts with webs in forests. Has venom." }
+          },
+          "sprite": "Production/monster_spider_normal.png",
+          "emoji": "🕷️",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "화염 독거미", "description": "불타는 거미줄을 뿜는 거미. 불과 독의 이중 위협." },
+            "en-US": { "name": "Fire Tarantula", "description": "A spider that spits burning webs. Double threat of fire and poison." }
+          },
+          "sprite": "Production/monster_spider_fire.png",
+          "emoji": "🕷️",
+          "hp_modifier": 1.103,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "크리스탈 거미", "description": "얼음 결정으로 된 거미. 아름답지만 위험하다." },
+            "en-US": { "name": "Crystal Spider", "description": "A spider made of ice crystals. Beautiful but dangerous." }
+          },
+          "sprite": "Production/monster_spider_ice.png",
+          "emoji": "🕷️",
+          "hp_modifier": 1.034,
+          "gold_modifier": 1.029
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "날개 거미", "description": "바람을 타고 날아다니는 거미. 하늘에서 습격한다." },
+            "en-US": { "name": "Winged Spider", "description": "A spider that flies with the wind. Attacks from the sky." }
+          },
+          "sprite": "Production/monster_spider_wind.png",
+          "emoji": "🕷️",
+          "hp_modifier": 1.052,
+          "gold_modifier": 1.029
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "빛의 거미", "description": "신성한 빛으로 빛나는 희귀한 거미. 악을 정화한다." },
+            "en-US": { "name": "Light Spider", "description": "A rare spider glowing with holy light. Purifies evil." }
+          },
+          "sprite": "Production/monster_spider_holy.png",
+          "emoji": "🕷️",
+          "hp_modifier": 1.069,
+          "gold_modifier": 1.647
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "그림자 거미", "description": "어둠 속에 숨어 사냥하는 거미. 보이지 않게 접근한다." },
+            "en-US": { "name": "Shadow Spider", "description": "A spider that hunts hidden in darkness. Approaches invisibly." }
+          },
+          "sprite": "Production/monster_spider_dark.png",
+          "emoji": "🕷️",
+          "hp_modifier": 1.216,
+          "gold_modifier": 1.059
+        }
+      }
+    },
+    {
+      "id": "monster_wolf",
+      "species": "wolf",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 128,
+        "hp_growth": 5,
+        "base_gold": 37,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "회색 늑대", "description": "무리를 지어 사냥하는 늑대. 뛰어난 팀워크를 보여준다." },
+            "en-US": { "name": "Gray Wolf", "description": "A wolf that hunts in packs. Shows excellent teamwork." }
+          },
+          "sprite": "Production/monster_wolf_normal.png",
+          "emoji": "🐺",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "헬하운드", "description": "지옥에서 온 화염 늑대. 불꽃을 내뿜는다." },
+            "en-US": { "name": "Hellhound", "description": "A flame wolf from hell. Breathes fire." }
+          },
+          "sprite": "Production/monster_wolf_fire.png",
+          "emoji": "🐺",
+          "hp_modifier": 1.094,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "윈터 울프", "description": "눈 덮인 산에 사는 늑대. 냉기를 내뿜는다." },
+            "en-US": { "name": "Winter Wolf", "description": "A wolf living in snowy mountains. Breathes cold air." }
+          },
+          "sprite": "Production/monster_wolf_ice.png",
+          "emoji": "🐺",
+          "hp_modifier": 1.031,
+          "gold_modifier": 1.027
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "스톰 울프", "description": "폭풍처럼 빠른 늑대. 눈 깜짝할 새에 접근한다." },
+            "en-US": { "name": "Storm Wolf", "description": "A wolf fast as a storm. Approaches in the blink of an eye." }
+          },
+          "sprite": "Production/monster_wolf_wind.png",
+          "emoji": "🐺",
+          "hp_modifier": 1.047,
+          "gold_modifier": 1.027
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "실버 울프", "description": "은빛 털을 가진 신성한 늑대. 신의 사자로 여겨진다." },
+            "en-US": { "name": "Silver Wolf", "description": "A holy wolf with silver fur. Considered a messenger of gods." }
+          },
+          "sprite": "Production/monster_wolf_holy.png",
+          "emoji": "🐺",
+          "hp_modifier": 1.063,
+          "gold_modifier": 1.595
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "나이트 울프", "description": "밤에만 나타나는 검은 늑대. 공포의 대상." },
+            "en-US": { "name": "Night Wolf", "description": "A black wolf that appears only at night. An object of fear." }
+          },
+          "sprite": "Production/monster_wolf_dark.png",
+          "emoji": "🐺",
+          "hp_modifier": 1.195,
+          "gold_modifier": 1.054
+        }
+      }
+    },
+    {
+      "id": "monster_snake",
+      "species": "snake",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 140,
+        "hp_growth": 5,
+        "base_gold": 40,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "숲 뱀", "description": "숲에서 흔히 볼 수 있는 뱀. 독이 있으니 주의." },
+            "en-US": { "name": "Forest Snake", "description": "A common snake in forests. Watch out for its venom." }
+          },
+          "sprite": "Production/monster_snake_normal.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "살무사", "description": "뜨거운 독을 품은 뱀. 물리면 화상과 중독을 동시에 입는다." },
+            "en-US": { "name": "Viper", "description": "A snake with hot venom. Bites cause both burns and poisoning." }
+          },
+          "sprite": "Production/monster_snake_fire.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.086,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "바다 뱀", "description": "차가운 바다에 사는 뱀. 냉기 독이 있다." },
+            "en-US": { "name": "Sea Snake", "description": "A snake living in cold seas. Has freezing venom." }
+          },
+          "sprite": "Production/monster_snake_ice.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.029,
+          "gold_modifier": 1.025
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "비전 뱀", "description": "날아다니는 신비로운 뱀. 공중에서 공격한다." },
+            "en-US": { "name": "Mystic Snake", "description": "A mystical flying snake. Attacks from the air." }
+          },
+          "sprite": "Production/monster_snake_wind.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.043,
+          "gold_modifier": 1.025
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "황금 뱀", "description": "금빛 비늘을 가진 신성한 뱀. 행운의 상징." },
+            "en-US": { "name": "Golden Snake", "description": "A holy snake with golden scales. Symbol of good fortune." }
+          },
+          "sprite": "Production/monster_snake_holy.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.057,
+          "gold_modifier": 1.55
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "맹독 코브라", "description": "치명적인 독을 가진 검은 뱀. 한 방울로도 죽음에 이른다." },
+            "en-US": { "name": "Deadly Cobra", "description": "A black snake with lethal venom. A single drop means death." }
+          },
+          "sprite": "Production/monster_snake_dark.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.179,
+          "gold_modifier": 1.05
+        }
+      }
+    },
+    {
+      "id": "monster_boar",
+      "species": "boar",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 152,
+        "hp_growth": 5,
+        "base_gold": 43,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": { "name": "야생 멧돼지", "description": "돌진하는 야생 멧돼지. 힘이 세고 거칠다." },
+            "en-US": { "name": "Wild Boar", "description": "A charging wild boar. Strong and fierce." }
+          },
+          "sprite": "Production/monster_boar_normal.png",
+          "emoji": "🐗",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "레이지 보어", "description": "분노로 불타는 멧돼지. 돌진 시 화염을 남긴다." },
+            "en-US": { "name": "Rage Boar", "description": "A boar burning with rage. Leaves flames when charging." }
+          },
+          "sprite": "Production/monster_boar_fire.png",
+          "emoji": "🐗",
+          "hp_modifier": 1.079,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": { "name": "툰드라 보어", "description": "얼음 땅에 사는 멧돼지. 추위에 강하다." },
+            "en-US": { "name": "Tundra Boar", "description": "A boar living in icy lands. Resistant to cold." }
+          },
+          "sprite": "Production/monster_boar_ice.png",
+          "emoji": "🐗",
+          "hp_modifier": 1.026,
+          "gold_modifier": 1.023
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": { "name": "돌진 멧돼지", "description": "바람처럼 빠르게 돌진하는 멧돼지. 피하기 어렵다." },
+            "en-US": { "name": "Charging Boar", "description": "A boar that charges fast like wind. Hard to dodge." }
+          },
+          "sprite": "Production/monster_boar_wind.png",
+          "emoji": "🐗",
+          "hp_modifier": 1.039,
+          "gold_modifier": 1.023
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": { "name": "강철 멧돼지", "description": "강철처럼 단단한 가죽을 가진 멧돼지. 방어력이 높다." },
+            "en-US": { "name": "Steel Boar", "description": "A boar with hide as hard as steel. High defense." }
+          },
+          "sprite": "Production/monster_boar_holy.png",
+          "emoji": "🐗",
+          "hp_modifier": 1.053,
+          "gold_modifier": 1.512
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "스컬 보어", "description": "죽음의 기운을 품은 멧돼지. 접근하면 생명력이 빠져나간다." },
+            "en-US": { "name": "Skull Boar", "description": "A boar with death's aura. Life force drains when approaching." }
+          },
+          "sprite": "Production/monster_boar_dark.png",
+          "emoji": "🐗",
+          "hp_modifier": 1.164,
+          "gold_modifier": 1.047
+        }
+      }
+    }
+  ],
+  "bosses": [
+    {
+      "id": "boss_dragon",
+      "species": "dragon",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 200,
+        "hp_growth": 50,
+        "base_gold": 100,
+        "gold_growth": 20
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "fire": {
+          "localization": {
+            "ko-KR": { "name": "레드 드래곤", "description": "고대의 화염 드래곤. 모든 것을 태워버리는 무시무시한 존재." },
+            "en-US": { "name": "Red Dragon", "description": "An ancient flame dragon. A terrifying being that burns everything." }
+          },
+          "sprite": "Production/boss_dragon_fire.png",
+          "emoji": "🐉",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        }
+      }
+    },
+    {
+      "id": "boss_knight",
+      "species": "knight",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 250,
+        "hp_growth": 60,
+        "base_gold": 120,
+        "gold_growth": 25
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "dark": {
+          "localization": {
+            "ko-KR": { "name": "암흑 기사", "description": "어둠에 타락한 전설의 기사. 그의 검은 모든 것을 베어낸다." },
+            "en-US": { "name": "Dark Knight", "description": "A legendary knight corrupted by darkness. His sword cuts through everything." }
+          },
+          "sprite": "Production/boss_knight_dark.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        }
+      }
+    }
+  ]
+}

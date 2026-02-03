@@ -8,6 +8,7 @@ using System.Windows.Media.Animation;
 using DeskWarrior.Helpers;
 using DeskWarrior.Interfaces;
 using DeskWarrior.Managers;
+using DeskWarrior.Managers.Services;
 using DeskWarrior.Models;
 using DeskWarrior.ViewModels;
 using DeskWarrior.ViewControllers;
@@ -32,6 +33,10 @@ namespace DeskWarrior
         private VisualEffectController _visualEffect;
         private HeroAvatarController _heroAvatar;
         private GameOverController _gameOver;
+
+        // Services
+        private OfflineRewardService _offlineRewardService;
+        private System.Windows.Threading.DispatcherTimer _onlineTimeTimer;
 
         // ViewModel Property Shortcuts
         private GameManager GameManager => ViewModel.GameManager;
@@ -114,6 +119,12 @@ namespace DeskWarrior
             // 저장 데이터 로드
             SaveManager.Load();
 
+            // 오프라인 보상 체크
+            CheckOfflineRewards();
+
+            // 온라인 시간 업데이트 타이머 시작 (5분마다)
+            StartOnlineTimeTimer();
+
             // 다국어 초기화
             LocalizationManager.Instance.Initialize(SaveManager.CurrentSave.Settings.Language);
             LocalizationManager.Instance.PropertyChanged += (s, args) =>
@@ -162,6 +173,12 @@ namespace DeskWarrior
         {
             Logger.Log("=== EXIT START ===");
 
+            // 온라인 타이머 중지
+            _onlineTimeTimer?.Stop();
+
+            // 마지막 온라인 시간 업데이트
+            SaveManager.CurrentSave.LastOnlineTime = DateTime.Now;
+
             SaveManager.UpdateWindowPosition(Left, Top);
             ViewModel.SaveCurrentState();
             Logger.Log("SaveManager.Save() Completed");
@@ -171,7 +188,7 @@ namespace DeskWarrior
             _gameOver.Dispose();
 
             ViewModel.Dispose();
-            Logger.Log("ViewModel Disposed"); // _viewModel renamed to ViewModel, property access works
+            Logger.Log("ViewModel Disposed");
 
             Logger.Log("=== EXIT END ===");
         }
@@ -202,13 +219,13 @@ namespace DeskWarrior
                 if (e.Type == GameInputType.Keyboard)
                 {
                     SaveManager.AddKeyboardInput();
+                    SoundManager.Play(SoundType.KeyboardHit);
                 }
                 else
                 {
                     SaveManager.AddMouseInput();
+                    SoundManager.Play(SoundType.MouseClick);
                 }
-
-                SoundManager.Play(SoundType.Hit);
                 _heroAvatar.ShowHeroAttackSprite();
                 _visualEffect.ShakeMonster(GameManager.Config.Visual.ShakePower);
 
@@ -380,7 +397,8 @@ namespace DeskWarrior
                 (volume) => SoundManager.Volume = volume,
                 () => TrayManager.UpdateLanguage(),
                 GameManager,
-                SaveManager
+                SaveManager,
+                SoundManager
             );
             settingsWindow.Owner = this;
             settingsWindow.Closed += (s, args) =>
@@ -811,6 +829,12 @@ namespace DeskWarrior
             ApplyWindowOpacity(settings.WindowOpacity);
             ApplyBackgroundOpacity(settings.BackgroundOpacity);
             SoundManager.Volume = settings.Volume;
+
+            // 저장된 사운드팩 적용
+            if (!string.IsNullOrEmpty(settings.SoundPack))
+            {
+                SoundManager.ChangeSoundPack(settings.SoundPack);
+            }
         }
 
         public void ApplyWindowOpacity(double opacity)
@@ -835,6 +859,95 @@ namespace DeskWarrior
             if (UtilityPanel != null)
                 UtilityPanel.Background = new SolidColorBrush(Colors.Black) { Opacity = upgradeOpacity };
             // GameOverOverlay는 UserControl 내부에서 배경색 관리
+        }
+
+        #endregion
+
+        #region Offline Rewards
+
+        private void StartOnlineTimeTimer()
+        {
+            _onlineTimeTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMinutes(5)
+            };
+            _onlineTimeTimer.Tick += (s, e) =>
+            {
+                SaveManager.CurrentSave.LastOnlineTime = DateTime.Now;
+                // 자동 저장은 하지 않음 (앱 종료 시 저장)
+            };
+            _onlineTimeTimer.Start();
+        }
+
+        private void CheckOfflineRewards()
+        {
+            try
+            {
+                _offlineRewardService = new OfflineRewardService();
+
+                if (!_offlineRewardService.IsEnabled)
+                    return;
+
+                var lastOnlineTime = SaveManager.CurrentSave.LastOnlineTime;
+                var result = _offlineRewardService.CalculateReward(lastOnlineTime);
+
+                if (result.HasReward)
+                {
+                    ShowOfflineRewardPopup(result);
+                }
+
+                // 마지막 온라인 시간 업데이트
+                SaveManager.CurrentSave.LastOnlineTime = DateTime.Now;
+                SaveManager.Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("[MainWindow] Failed to check offline rewards", ex);
+            }
+        }
+
+        private void ShowOfflineRewardPopup(OfflineRewardResult result)
+        {
+            var popup = new Controls.OfflineRewardPopup();
+            var loc = LocalizationManager.Instance;
+
+            // 현재 언어로 메시지 생성
+            string langCode = loc.CurrentLanguage;
+            string headerText = langCode.StartsWith("ko") ? "돌아오셨군요!" : "WELCOME BACK!";
+            string message = _offlineRewardService.GetPopupMessage(result, langCode);
+
+            popup.SetReward(result, message, headerText);
+            popup.HorizontalAlignment = HorizontalAlignment.Center;
+            popup.VerticalAlignment = VerticalAlignment.Center;
+
+            var mainGrid = this.Content as Grid;
+            if (mainGrid != null)
+            {
+                Panel.SetZIndex(popup, 1000);
+                mainGrid.Children.Add(popup);
+
+                popup.ClaimClicked += (s, args) =>
+                {
+                    // 보상 지급
+                    SaveManager.CurrentSave.LifetimeStats.TotalGoldEarned += result.Gold;
+                    SaveManager.CurrentSave.PermanentCurrency.Crystals += result.Crystals;
+                    SaveManager.CurrentSave.TotalOfflineRewardsClaimed += result.Gold + result.Crystals;
+                    SaveManager.Save();
+
+                    // 사운드 재생
+                    SoundManager.Play(SoundType.OfflineReward);
+
+                    // UI 업데이트
+                    UpdateCrystalDisplay();
+
+                    // 팝업 제거
+                    mainGrid.Children.Remove(popup);
+
+                    Logger.Log($"[OfflineReward] Claimed: {result.Gold} gold, {result.Crystals} crystals");
+                };
+
+                popup.Show();
+            }
         }
 
         #endregion
