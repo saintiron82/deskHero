@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Windows.Threading;
 using DeskWarrior.Interfaces;
@@ -29,6 +30,8 @@ namespace DeskWarrior.Managers
         private SaveManager? _saveManager;
         private PermanentProgressionManager? _permanentProgression;
         private CompendiumManager? _compendiumManager;
+        private MonsterCollection _monsterCollection = new(); // 도감 시스템
+        private CollectionRewards? _collectionRewards; // 도감 보상 설정
         private bool _useBatchSystem = true; // 배치 시스템 사용 여부
         private bool _isGoldenGoblinActive = false; // 황금 고블린 활성화 상태
 
@@ -124,6 +127,7 @@ namespace DeskWarrior.Managers
 
             // 배치 기반 몬스터 데이터 로드 시도
             _monsterDataManager = new MonsterDataManager();
+            _monsterDataManager.SetGameData(_gameData);
             try
             {
                 _monsterDataManager.LoadBatchIndex();
@@ -157,6 +161,10 @@ namespace DeskWarrior.Managers
 
             // 황금 고블린 매니저 초기화
             _goldenGoblinManager = new GoldenGoblinManager();
+
+            // 도감 보상 설정 로드
+            var collectionRewardsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "CollectionRewards.json");
+            _collectionRewards = CollectionRewards.LoadFromFile(collectionRewardsPath);
 
             // 타이머 설정 (0.1초마다)
             _timer = new DispatcherTimer
@@ -249,7 +257,7 @@ namespace DeskWarrior.Managers
             // 콤보 처리
             int comboStack = _comboTracker.ProcessInput();
 
-            var result = CalculateDamage(KeyboardPower, comboStack);
+            var result = CalculateDamage(KeyboardPower, comboStack, AttackType.Keyboard);
             ApplyDamage(result, isMouse: false);
         }
 
@@ -263,7 +271,7 @@ namespace DeskWarrior.Managers
             // 콤보 처리
             int comboStack = _comboTracker.ProcessInput();
 
-            var result = CalculateDamage(MousePower, comboStack);
+            var result = CalculateDamage(MousePower, comboStack, AttackType.Mouse);
             ApplyDamage(result, isMouse: true);
         }
 
@@ -420,10 +428,10 @@ namespace DeskWarrior.Managers
 
         #region Private Methods
 
-        private DamageResult CalculateDamage(int basePower, int comboStack = 0)
+        private DamageResult CalculateDamage(int basePower, int comboStack = 0, AttackType attackType = AttackType.Keyboard)
         {
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            return _damageCalculator.Calculate(basePower, permStats, 0, comboStack);
+            return _damageCalculator.Calculate(basePower, permStats, 0, comboStack, attackType, _currentMonster);
         }
 
         private void ApplyDamage(DamageResult result, bool isMouse)
@@ -499,8 +507,17 @@ namespace DeskWarrior.Managers
                 _goldenGoblinManager.SaveToSave(_saveManager.CurrentSave);
             }
 
-            // 도감 처치 기록
+            // 도감 처치 기록 (레거시)
             _compendiumManager?.RecordKill(_currentMonster.Id, _currentMonster.TotalDamageTaken);
+
+            // 몬스터 도감 처치 기록 (신규 속성 시스템)
+            if (!string.IsNullOrEmpty(_currentMonster.Species) && !string.IsNullOrEmpty(_currentMonster.Element))
+            {
+                _monsterCollection.RecordKill(_currentMonster.Species, _currentMonster.Element);
+
+                // 종족 도감 완성 체크 및 보상
+                CheckCollectionRewards(_currentMonster.Species, _currentMonster.Element);
+            }
 
             // 보스 처치 시 크리스탈 드롭 처리
             if (_currentMonster.IsBoss && _permanentProgression != null)
@@ -602,12 +619,17 @@ namespace DeskWarrior.Managers
                 return;
             }
 
+            string species = "";
+            string element = "normal";
             MonsterData selectedData;
 
             if (_useBatchSystem)
             {
-                // 배치 시스템 사용
-                selectedData = _monsterDataManager.GetRandomMonster(CurrentLevel, isBoss);
+                // 배치 시스템 사용 (FlattenedMonsterData로 가져와서 species/element 추출)
+                var flattenedData = _monsterDataManager.GetRandomMonsterData(CurrentLevel, isBoss);
+                selectedData = flattenedData.ToMonsterData();
+                species = flattenedData.Species;
+                element = flattenedData.Element;
             }
             else
             {
@@ -631,8 +653,22 @@ namespace DeskWarrior.Managers
                 }
             }
 
-            _currentMonster = new Monster(selectedData, CurrentLevel, isBoss);
+            // 몬스터 생성 (species/element 전달)
+            _currentMonster = new Monster(selectedData, CurrentLevel, isBoss, _gameData.Balance.TierHpSystem, species, element);
             _isGoldenGoblinActive = false;
+
+            // 속성별 특성 적용 (HP, 시간 배속, 저항)
+            if (_gameData.ElementProperties.TryGetValue(element, out var elementProps))
+            {
+                // HP 수정 적용
+                _currentMonster.MaxHp = (long)(_currentMonster.MaxHp * elementProps.HpModifier);
+                _currentMonster.CurrentHp = _currentMonster.MaxHp;
+
+                // 시간 배속, 저항 설정
+                _currentMonster.TimeScale = elementProps.TimeScale;
+                _currentMonster.KeyboardResistance = elementProps.KeyboardResistance;
+                _currentMonster.MouseResistance = elementProps.MouseResistance;
+            }
 
             // 도감 조우 기록
             _compendiumManager?.RecordEncounter(selectedData.Id);
@@ -668,7 +704,9 @@ namespace DeskWarrior.Managers
 
         private void OnTimerTick(object? sender, EventArgs e)
         {
-            RemainingTime -= 0.1;
+            // 시간 배속 적용 (Wind 속성 몬스터 등)
+            double timeScale = _currentMonster?.TimeScale ?? 1.0;
+            RemainingTime -= 0.1 * timeScale;
             TimerTick?.Invoke(this, EventArgs.Empty);
 
             if (RemainingTime <= 0)
@@ -715,6 +753,55 @@ namespace DeskWarrior.Managers
             _timer.Stop();
             // UI에서 애니메이션 재생 후 RestartGame()을 호출하도록 유도
             GameOver?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// 도감 완성 체크 및 보상 지급
+        /// </summary>
+        private void CheckCollectionRewards(string species, string element)
+        {
+            if (_collectionRewards == null || _permanentProgression == null) return;
+
+            // 첫 Holy/Dark 조우 마일스톤
+            if ((element == "holy" || element == "dark") &&
+                _monsterCollection.KillCounts.TryGetValue(species, out var kills) &&
+                kills.TryGetValue(element, out var count) && count == 1)
+            {
+                string milestoneId = $"first_{element}";
+                if (!_monsterCollection.HasClaimedReward(milestoneId) &&
+                    _collectionRewards.MilestoneRewards.TryGetValue(milestoneId, out var milestone))
+                {
+                    _permanentProgression.AddCrystals(milestone.Crystals, $"collection_{milestoneId}");
+                    _monsterCollection.ClaimReward(milestoneId);
+                    _sessionTracker.RecordAchievementCrystals(milestone.Crystals);
+                }
+            }
+
+            // 종족 도감 완성 보상
+            if (_monsterCollection.IsSpeciesComplete(species) &&
+                !_monsterCollection.HasClaimedReward($"species_{species}") &&
+                _collectionRewards.SpeciesCompletion.TryGetValue(species, out var speciesReward))
+            {
+                _permanentProgression.AddCrystals(speciesReward.Rewards.Crystals, $"collection_species_{species}");
+                _monsterCollection.ClaimReward($"species_{species}");
+                _sessionTracker.RecordAchievementCrystals(speciesReward.Rewards.Crystals);
+
+                // TODO: 칭호 및 영구 보너스 적용 (향후 구현)
+            }
+
+            // 모든 속성 최소 1마리 처치 마일스톤
+            var allElements = new[] { "normal", "fire", "ice", "wind", "holy", "dark" };
+            bool hasAllElements = allElements.All(elem =>
+                _monsterCollection.EncounteredVariations.Values.Any(set => set.Contains(elem)));
+
+            if (hasAllElements &&
+                !_monsterCollection.HasClaimedReward("all_elements_unlocked") &&
+                _collectionRewards.MilestoneRewards.TryGetValue("all_elements_unlocked", out var allElementsMilestone))
+            {
+                _permanentProgression.AddCrystals(allElementsMilestone.Crystals, "collection_all_elements");
+                _monsterCollection.ClaimReward("all_elements_unlocked");
+                _sessionTracker.RecordAchievementCrystals(allElementsMilestone.Crystals);
+            }
         }
 
         #endregion

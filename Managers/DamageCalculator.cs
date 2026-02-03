@@ -1,8 +1,18 @@
 using System;
 using DeskWarrior.Models;
+using DeskWarrior.Helpers;
 
 namespace DeskWarrior.Managers
 {
+    /// <summary>
+    /// 공격 타입 (저항 시스템용)
+    /// </summary>
+    public enum AttackType
+    {
+        Keyboard,
+        Mouse
+    }
+
     /// <summary>
     /// 데미지 계산 결과
     /// </summary>
@@ -13,6 +23,7 @@ namespace DeskWarrior.Managers
         public bool IsMultiHit { get; init; }
         public bool IsCombo { get; init; }
         public int ComboStack { get; init; } // 0, 1, 2, 3
+        public bool IsResisted { get; init; } // NEW: 저항 적용 여부
 
         // 계산 과정 상세 (Damage Meter용)
         public int BasePower { get; init; }
@@ -20,6 +31,7 @@ namespace DeskWarrior.Managers
         public double AttackMultiplier { get; init; }
         public double CritMultiplier { get; init; }
         public double UtilityBonus { get; init; } // NEW: 유틸리티 스탯 보너스
+        public double ResistanceModifier { get; init; } // NEW: 저항 배율
     }
 
     /// <summary>
@@ -79,15 +91,18 @@ namespace DeskWarrior.Managers
         /// <param name="permStats">영구 스탯 (null 가능)</param>
         /// <param name="comboDamageBonus">콤보 데미지 보너스 (0.0 ~ 1.0)</param>
         /// <param name="comboStack">콤보 스택 (0 = 없음, 1-3 = 스택)</param>
+        /// <param name="attackType">공격 타입 (키보드/마우스)</param>
+        /// <param name="targetMonster">대상 몬스터 (저항 적용용)</param>
         /// <returns>계산된 데미지와 크리티컬 여부</returns>
-        public DamageResult Calculate(int basePower, PermanentStats? permStats, double comboDamageBonus = 0, int comboStack = 0)
+        public DamageResult Calculate(int basePower, PermanentStats? permStats, double comboDamageBonus = 0, int comboStack = 0,
+            AttackType attackType = AttackType.Keyboard, Monster? targetMonster = null)
         {
             // ① 기본 = BasePower (keyboard/mouse_power) - BaseAttack 분리
             // basePower에는 이미 BaseAttack이 포함되어 있으므로 분리
             int baseAttackBonus = 0;
             if (permStats != null)
             {
-                baseAttackBonus = (int)permStats.BaseAttack;
+                baseAttackBonus = permStats.GetBaseAttack();
             }
             int pureBasePower = basePower - baseAttackBonus;
             double effectivePower = pureBasePower;
@@ -96,7 +111,7 @@ namespace DeskWarrior.Managers
             double attackMultiplier = 0;
             if (permStats != null)
             {
-                attackMultiplier = permStats.AttackPercentBonus;
+                attackMultiplier = permStats.GetAttackPercentBonus() / 100.0;
                 effectivePower *= (1.0 + attackMultiplier);
             }
 
@@ -109,8 +124,8 @@ namespace DeskWarrior.Managers
 
             if (permStats != null)
             {
-                critChance += permStats.CriticalChanceBonus;
-                critMultiplier += permStats.CriticalDamageBonus;
+                critChance += permStats.GetCriticalChanceBonus() / 100.0;
+                critMultiplier += permStats.GetCriticalDamageBonus();
             }
 
             bool isCritical = _random.NextDouble() < critChance;
@@ -120,7 +135,7 @@ namespace DeskWarrior.Managers
             }
 
             // ⑤ ×멀티히트 = ④ × 2 (확률: multi_hit)
-            bool multiHit = permStats != null && _random.NextDouble() < permStats.MultiHitChance;
+            bool multiHit = permStats != null && _random.NextDouble() < permStats.GetMultiHitChance();
             if (multiHit)
             {
                 effectivePower *= 2;
@@ -146,7 +161,27 @@ namespace DeskWarrior.Managers
                 effectivePower *= utilityBonus;
             }
 
-            // 최종 데미지 = (int)⑦
+            // ⑧ ×저항 = ⑦ × resistance_modifier (속성별 저항)
+            double resistanceModifier = 1.0;
+            bool isResisted = false;
+            if (targetMonster != null)
+            {
+                resistanceModifier = attackType switch
+                {
+                    AttackType.Keyboard => targetMonster.KeyboardResistance,
+                    AttackType.Mouse => targetMonster.MouseResistance,
+                    _ => 1.0
+                };
+
+                if (resistanceModifier < 1.0)
+                {
+                    isResisted = true;
+                }
+
+                effectivePower *= resistanceModifier;
+            }
+
+            // 최종 데미지 = (int)⑧
             return new DamageResult
             {
                 Damage = (int)effectivePower,
@@ -154,11 +189,13 @@ namespace DeskWarrior.Managers
                 IsMultiHit = multiHit,
                 IsCombo = isCombo,
                 ComboStack = comboStack,
+                IsResisted = isResisted,
                 BasePower = pureBasePower,
                 BaseAttackBonus = baseAttackBonus,
                 AttackMultiplier = attackMultiplier,
                 CritMultiplier = critMultiplier,
-                UtilityBonus = utilityBonus
+                UtilityBonus = utilityBonus,
+                ResistanceModifier = resistanceModifier
             };
         }
 

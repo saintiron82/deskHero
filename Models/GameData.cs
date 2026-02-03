@@ -7,6 +7,39 @@ using System.Collections.Generic;
 namespace DeskWarrior.Models
 {
     /// <summary>
+    /// 속성별 특성 데이터 (JSON에서 로드)
+    /// </summary>
+    public class ElementProperties
+    {
+        [JsonPropertyName("hp_modifier")]
+        public double HpModifier { get; set; } = 1.0;
+
+        [JsonPropertyName("time_scale")]
+        public double TimeScale { get; set; } = 1.0;
+
+        [JsonPropertyName("keyboard_resistance")]
+        public double KeyboardResistance { get; set; } = 1.0;
+
+        [JsonPropertyName("mouse_resistance")]
+        public double MouseResistance { get; set; } = 1.0;
+    }
+
+    /// <summary>
+    /// 몬스터 스폰 설정 데이터 (완전한 테이블 기반 - 모든 값은 JSON에서 로드)
+    /// </summary>
+    public class MonsterSpawningConfig
+    {
+        [JsonPropertyName("element_weights")]
+        public Dictionary<string, int> ElementWeights { get; set; } = new();
+
+        [JsonPropertyName("use_weighted_selection")]
+        public bool UseWeightedSelection { get; set; } = true;
+
+        [JsonPropertyName("use_batch_progression")]
+        public bool UseBatchProgression { get; set; } = true;
+    }
+
+    /// <summary>
     /// 게임 밸런스 설정 데이터 (GameData.json)
     /// </summary>
     public class GameData
@@ -19,6 +52,12 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("visual")]
         public VisualConfig Visual { get; set; } = new();
+
+        [JsonPropertyName("monster_spawning")]
+        public MonsterSpawningConfig MonsterSpawning { get; set; } = new();
+
+        [JsonPropertyName("element_properties")]
+        public Dictionary<string, ElementProperties> ElementProperties { get; set; } = new();
 
         /// <summary>
         /// JSON 파일에서 로드
@@ -70,8 +109,29 @@ namespace DeskWarrior.Models
         [JsonPropertyName("upgrade_cost_interval")]
         public int UpgradeCostInterval { get; set; } = 50;  // 50스테이지마다 비용 2배
 
+        [JsonPropertyName("tier_hp_system")]
+        public TierHpSystemConfig TierHpSystem { get; set; } = new();
+
         [JsonPropertyName("game_over_messages")]
         public List<string> GameOverMessages { get; set; } = new();
+    }
+
+    /// <summary>
+    /// 티어 기반 HP 시스템 설정
+    /// </summary>
+    public class TierHpSystemConfig
+    {
+        [JsonPropertyName("enabled")]
+        public bool Enabled { get; set; } = false;
+
+        [JsonPropertyName("tier_interval")]
+        public int TierInterval { get; set; } = 100;
+
+        [JsonPropertyName("tier_multiplier")]
+        public double TierMultiplier { get; set; } = 5.0;
+
+        [JsonPropertyName("linear_growth_per_level")]
+        public int LinearGrowthPerLevel { get; set; } = 5;
     }
 
     public class UpgradeConfig

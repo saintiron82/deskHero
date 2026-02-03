@@ -16,6 +16,7 @@ namespace DeskWarrior.Managers
 
         private readonly string _configPath;
         private readonly Random _random = new();
+        private GameData? _gameData;
         private BatchIndex? _batchIndex;
         private readonly Dictionary<int, BatchData> _loadedBatches = new();
         private List<FlattenedMonsterData>? _allMonsters;
@@ -69,6 +70,17 @@ namespace DeskWarrior.Managers
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// GameData 설정 (가중치 계산에 사용)
+        /// </summary>
+        public void SetGameData(GameData gameData)
+        {
+            _gameData = gameData;
+            // GameData 변경 시 캐시 무효화
+            _allMonsters = null;
+            _allBosses = null;
+        }
 
         /// <summary>
         /// 배치 인덱스 로드
@@ -190,20 +202,22 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 레벨 기반 랜덤 몬스터 가져오기
+        /// 레벨 기반 랜덤 몬스터 가져오기 (FlattenedMonsterData 반환)
         /// </summary>
         /// <param name="level">현재 레벨</param>
         /// <param name="isBoss">보스 여부</param>
-        /// <returns>MonsterData (하위 호환용)</returns>
-        public MonsterData GetRandomMonster(int level, bool isBoss)
+        /// <returns>FlattenedMonsterData (Species, Element 포함)</returns>
+        public FlattenedMonsterData GetRandomMonsterData(int level, bool isBoss)
         {
             var list = isBoss ? GetAllBosses() : GetAllMonsters();
             if (list.Count == 0)
             {
                 // 폴백 기본 몬스터
-                return new MonsterData
+                return new FlattenedMonsterData
                 {
                     Id = "monster_unknown",
+                    Species = "unknown",
+                    Element = "normal",
                     Name = "???",
                     BaseHp = 10,
                     HpGrowth = 5,
@@ -213,17 +227,28 @@ namespace DeskWarrior.Managers
                 };
             }
 
-            if (isBoss)
+            // 가중치 기반 선택 (feature flag로 제어)
+            if (_gameData?.MonsterSpawning.UseWeightedSelection ?? false)
             {
-                // 보스는 가중치 기반 랜덤 선택
-                return SelectByWeight(list).ToMonsterData();
+                return SelectByWeight(list);
             }
             else
             {
-                // 일반 몬스터는 레벨 기반 순환
+                // 레거시 순환 방식
                 int index = (level - 1) % list.Count;
-                return list[index].ToMonsterData();
+                return list[index];
             }
+        }
+
+        /// <summary>
+        /// 레벨 기반 랜덤 몬스터 가져오기 (하위 호환용)
+        /// </summary>
+        /// <param name="level">현재 레벨</param>
+        /// <param name="isBoss">보스 여부</param>
+        /// <returns>MonsterData (하위 호환용)</returns>
+        public MonsterData GetRandomMonster(int level, bool isBoss)
+        {
+            return GetRandomMonsterData(level, isBoss).ToMonsterData();
         }
 
         /// <summary>
@@ -279,6 +304,16 @@ namespace DeskWarrior.Managers
             int baseHp = (int)(entry.BaseStats.BaseHp * variation.HpModifier);
             int baseGold = (int)(entry.BaseStats.BaseGold * variation.GoldModifier);
 
+            // 최종 가중치 계산
+            int speciesWeight = entry.SpawnWeight;
+            int elementWeight = _gameData?.MonsterSpawning.ElementWeights
+                .GetValueOrDefault(element, 100) ?? 100;
+
+            var batchEntry = _batchIndex?.Batches.FirstOrDefault(b => b.BatchId == batchId);
+            double batchWeight = batchEntry?.ActivationWeight ?? 1.0;
+
+            int finalWeight = (int)(speciesWeight * elementWeight * batchWeight);
+
             return new FlattenedMonsterData
             {
                 Id = $"{entry.Id}_{element}",
@@ -294,7 +329,8 @@ namespace DeskWarrior.Managers
                 GoldGrowth = entry.BaseStats.GoldGrowth,
                 IsBoss = entry.IsBoss,
                 BatchId = batchId,
-                SpawnWeight = entry.SpawnWeight
+                SpawnWeight = entry.SpawnWeight,
+                FinalWeight = finalWeight
             };
         }
 
@@ -303,7 +339,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         private FlattenedMonsterData SelectByWeight(List<FlattenedMonsterData> list)
         {
-            int totalWeight = list.Sum(m => m.SpawnWeight);
+            int totalWeight = list.Sum(m => m.FinalWeight);
             if (totalWeight == 0)
             {
                 return list[_random.Next(list.Count)];
@@ -314,7 +350,7 @@ namespace DeskWarrior.Managers
 
             foreach (var monster in list)
             {
-                cumulative += monster.SpawnWeight;
+                cumulative += monster.FinalWeight;
                 if (roll < cumulative)
                 {
                     return monster;

@@ -38,12 +38,12 @@ namespace DeskWarrior.Models
         /// <summary>
         /// 최대 HP
         /// </summary>
-        public int MaxHp { get; private set; }
+        public long MaxHp { get; set; }
 
         /// <summary>
         /// 현재 HP
         /// </summary>
-        public int CurrentHp { get; private set; }
+        public long CurrentHp { get; set; }
 
         /// <summary>
         /// 보스 여부
@@ -105,6 +105,31 @@ namespace DeskWarrior.Models
         /// </summary>
         public long TotalDamageTaken { get; private set; }
 
+        /// <summary>
+        /// 몬스터 종족 (슬라임, 박쥐 등)
+        /// </summary>
+        public string Species { get; private set; }
+
+        /// <summary>
+        /// 몬스터 속성 (normal, fire, ice, wind, holy, dark)
+        /// </summary>
+        public string Element { get; private set; }
+
+        /// <summary>
+        /// 시간 배속 (Wind 속성용)
+        /// </summary>
+        public double TimeScale { get; set; } = 1.0;
+
+        /// <summary>
+        /// 키보드 공격 저항 (Fire 속성용)
+        /// </summary>
+        public double KeyboardResistance { get; set; } = 1.0;
+
+        /// <summary>
+        /// 마우스 공격 저항 (Ice 속성용)
+        /// </summary>
+        public double MouseResistance { get; set; } = 1.0;
+
         #endregion
 
         #region Constructor
@@ -112,14 +137,14 @@ namespace DeskWarrior.Models
         /// <summary>
         /// 몬스터 생성 (데이터 기반)
         /// </summary>
-        public Monster(MonsterData data, int level, bool isBoss)
+        public Monster(MonsterData data, int level, bool isBoss, TierHpSystemConfig? tierConfig = null, string species = "", string element = "normal")
         {
             Level = level;
             IsBoss = isBoss;
             Type = isBoss ? MonsterType.Boss : MonsterType.Normal;
 
-            // 스케일링 공식: MaxHp = BaseHp + (level - 1) * HpGrowth
-            MaxHp = CalculateMaxHp(data.BaseHp, data.HpGrowth, level);
+            // 스케일링 공식: MaxHp = BaseHp + (level - 1) * HpGrowth (또는 티어 기반)
+            MaxHp = CalculateMaxHp(data.BaseHp, data.HpGrowth, level, tierConfig);
             CurrentHp = MaxHp;
 
             // 골드 보상: BaseGold + level * GoldGrowth
@@ -131,6 +156,10 @@ namespace DeskWarrior.Models
             SkinType = GetSkinType(data);
             Emoji = data.Emoji;
             TotalDamageTaken = 0;
+
+            // 종족 및 속성 초기화
+            Species = species;
+            Element = element;
         }
 
         /// <summary>
@@ -163,6 +192,10 @@ namespace DeskWarrior.Models
             SkinType = config.Sprite;
             Emoji = config.Emoji;
             TotalDamageTaken = 0;
+
+            // 황금 고블린은 특수 몬스터이므로 속성 없음
+            Species = "golden_goblin";
+            Element = "special";
         }
 
         #endregion
@@ -189,8 +222,8 @@ namespace DeskWarrior.Models
                 throw new ArgumentException("Damage cannot be negative", nameof(damage));
             }
 
-            int previousHp = CurrentHp;
-            int actualDamage = Math.Min(damage, CurrentHp);
+            long previousHp = CurrentHp;
+            int actualDamage = (int)Math.Min(damage, CurrentHp);
             int overkill = damage - actualDamage;
 
             CurrentHp -= actualDamage;
@@ -214,9 +247,9 @@ namespace DeskWarrior.Models
                 throw new ArgumentException("Heal amount cannot be negative", nameof(amount));
             }
 
-            int previousHp = CurrentHp;
+            long previousHp = CurrentHp;
             CurrentHp = Math.Min(CurrentHp + amount, MaxHp);
-            return CurrentHp - previousHp;
+            return (int)(CurrentHp - previousHp);
         }
 
         /// <summary>
@@ -249,9 +282,31 @@ namespace DeskWarrior.Models
 
         #region Private Static Methods
 
-        private static int CalculateMaxHp(int baseHp, int hpGrowth, int level)
+        private static long CalculateMaxHp(int baseHp, int hpGrowth, int level, TierHpSystemConfig? tierConfig = null)
         {
+            // Feature Flag: 티어 시스템 활성화 시
+            if (tierConfig?.Enabled == true)
+            {
+                return CalculateTierBasedHp(baseHp, level, tierConfig);
+            }
+
+            // Legacy: 선형 공식
             return baseHp + (level - 1) * hpGrowth;
+        }
+
+        /// <summary>
+        /// 티어 기반 HP 계산
+        /// </summary>
+        private static long CalculateTierBasedHp(int baseHp, int level, TierHpSystemConfig config)
+        {
+            int tier = (level - 1) / config.TierInterval;
+            double tierMultiplier = Math.Pow(config.TierMultiplier, tier);
+            long tierBaseHp = (long)(baseHp * tierMultiplier);
+
+            int levelInTier = (level - 1) % config.TierInterval;
+            long linearIncrease = levelInTier * config.LinearGrowthPerLevel;
+
+            return tierBaseHp + linearIncrease;
         }
 
         private static int CalculateGoldReward(int baseGold, int goldGrowth, int level)

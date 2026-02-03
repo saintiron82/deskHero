@@ -1,0 +1,235 @@
+{
+  "_comment": "도감 보상 설정 - 종족 완성, 배치 완성, 마일스톤 보상",
+  "species_completion": {
+    "slime": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "슬라임 헌터",
+          "en-US": "Slime Hunter"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "slime",
+          "value": 1.0
+        }
+      }
+    },
+    "bat": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "박쥐 사냥꾼",
+          "en-US": "Bat Hunter"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "bat",
+          "value": 1.0
+        }
+      }
+    },
+    "skeleton": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "언데드 처치자",
+          "en-US": "Undead Slayer"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "skeleton",
+          "value": 1.0
+        }
+      }
+    },
+    "goblin": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "고블린 정복자",
+          "en-US": "Goblin Conqueror"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "goblin",
+          "value": 1.0
+        }
+      }
+    },
+    "orc": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "오크 파괴자",
+          "en-US": "Orc Destroyer"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "orc",
+          "value": 1.0
+        }
+      }
+    },
+    "ghost": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "영혼 구원자",
+          "en-US": "Soul Redeemer"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "ghost",
+          "value": 1.0
+        }
+      }
+    },
+    "golem": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "골렘 파괴자",
+          "en-US": "Golem Breaker"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "golem",
+          "value": 1.0
+        }
+      }
+    },
+    "mushroom": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "버섯 수확자",
+          "en-US": "Mushroom Harvester"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "mushroom",
+          "value": 1.0
+        }
+      }
+    },
+    "spider": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "거미 사냥꾼",
+          "en-US": "Spider Hunter"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "spider",
+          "value": 1.0
+        }
+      }
+    },
+    "wolf": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "늑대 길들이기",
+          "en-US": "Wolf Tamer"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "wolf",
+          "value": 1.0
+        }
+      }
+    },
+    "snake": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "뱀 조련사",
+          "en-US": "Snake Charmer"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "snake",
+          "value": 1.0
+        }
+      }
+    },
+    "boar": {
+      "required_variations": 6,
+      "rewards": {
+        "crystals": 50,
+        "title": {
+          "ko-KR": "맹수 사냥꾼",
+          "en-US": "Beast Hunter"
+        },
+        "permanent_bonus": {
+          "type": "species_gold",
+          "target": "boar",
+          "value": 1.0
+        }
+      }
+    }
+  },
+  "batch_completion": {
+    "batch_1": {
+      "required_total": 78,
+      "rewards": {
+        "crystals": 500,
+        "title": {
+          "ko-KR": "시작의 장 마스터",
+          "en-US": "The Beginning Master"
+        },
+        "permanent_bonus": {
+          "type": "global_gold",
+          "value": 5.0
+        }
+      }
+    }
+  },
+  "milestone_rewards": {
+    "first_holy": {
+      "description": {
+        "ko-KR": "첫 Holy 속성 처치",
+        "en-US": "First Holy attribute kill"
+      },
+      "crystals": 10
+    },
+    "first_dark": {
+      "description": {
+        "ko-KR": "첫 Dark 속성 처치",
+        "en-US": "First Dark attribute kill"
+      },
+      "crystals": 15
+    },
+    "all_elements_unlocked": {
+      "description": {
+        "ko-KR": "모든 속성 최소 1마리 처치",
+        "en-US": "At least 1 kill of all attributes"
+      },
+      "crystals": 100
+    },
+    "complete_all": {
+      "description": {
+        "ko-KR": "전체 도감 완성",
+        "en-US": "Complete all collections"
+      },
+      "crystals": 5000,
+      "title": {
+        "ko-KR": "몬스터 마스터",
+        "en-US": "Monster Master"
+      }
+    }
+  }
+}
