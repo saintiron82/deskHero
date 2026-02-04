@@ -20,8 +20,8 @@ public class BossDropConfig
     /// <summary>레벨당 크리스털 증가량</summary>
     public int CrystalPerLevel { get; set; } = 1;
 
-    /// <summary>크리스털 변동폭 (0.2 = ±20%)</summary>
-    public double CrystalVariance { get; set; } = 0.2;
+    /// <summary>크리스털 변동폭 (0.0 = 고정값, 랜덤 없음)</summary>
+    public double CrystalVariance { get; set; } = 0.0;
 
     /// <summary>확정 드롭 보장 간격 (Pity 시스템)</summary>
     public int GuaranteedDropEveryNBosses { get; set; } = 10;
