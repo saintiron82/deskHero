@@ -6,7 +6,7 @@
       "stat_name": "BaseAttackLevel",
       "category": "base_stats",
       "icon": "⚔️",
-      "base_cost": 10,
+      "base_cost": 20,
       "growth_rate": 0.8,
       "multiplier": 1.6,
       "softcap_interval": 12,
@@ -16,7 +16,7 @@
       "tier_config": {
         "tier_interval": 100,
         "base_multiplier": 1.6,
-        "multiplier_decrease_per_tier": 0.05,
+        "multiplier_decrease_per_tier": 0.10,
         "base_softcap": 12,
         "softcap_increase_per_tier": 2
       },
@@ -29,7 +29,7 @@
       "stat_name": "AttackPercentLevel",
       "category": "base_stats",
       "icon": "💪",
-      "base_cost": 5,
+      "base_cost": 10,
       "growth_rate": 0.7,
       "multiplier": 1.5,
       "softcap_interval": 12,
@@ -39,7 +39,7 @@
       "tier_config": {
         "tier_interval": 100,
         "base_multiplier": 1.6,
-        "multiplier_decrease_per_tier": 0.05,
+        "multiplier_decrease_per_tier": 0.10,
         "base_softcap": 12,
         "softcap_increase_per_tier": 2
       },
@@ -193,7 +193,7 @@
       "stat_name": "TimeExtendLevel",
       "category": "utility",
       "icon": "⏰",
-      "base_cost": 1,
+      "base_cost": 2,
       "growth_rate": 0.35,
       "multiplier": 1.25,
       "softcap_interval": 15,
@@ -206,7 +206,7 @@
       "tier_config": {
         "tier_interval": 100,
         "base_multiplier": 1.4,
-        "multiplier_decrease_per_tier": 0.04,
+        "multiplier_decrease_per_tier": 0.06,
         "base_softcap": 15,
         "softcap_increase_per_tier": 3
       },

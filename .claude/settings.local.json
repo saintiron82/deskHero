@@ -75,7 +75,12 @@
       "Bash(Select-Object -First 10)",
       "Bash(./DeskWarrior.Simulator.exe --progression --hours 0.5 --cps 5 --strategy balanced)",
       "Bash(./DeskWarrior.Simulator.exe:*)",
-      "Bash(chcp:*)"
+      "Bash(chcp:*)",
+      "Bash(Get-Process)",
+      "Bash(Where-Object {$_ProcessName -like \"*dotnet*\" -or $_ProcessName -like \"*DeskWarrior*\"})",
+      "Bash(Select-Object ProcessName, Id, StartTime)",
+      "Bash(xargs:*)",
+      "Bash(python3:*)"
     ]
   }
 }
