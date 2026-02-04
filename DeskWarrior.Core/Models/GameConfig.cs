@@ -109,13 +109,16 @@ public class TierHpSystemConfig
     public bool Enabled { get; set; } = false;
 
     [JsonPropertyName("tier_interval")]
-    public int TierInterval { get; set; } = 100;
+    public int TierInterval { get; set; } = 1000;
 
     [JsonPropertyName("tier_multiplier")]
-    public double TierMultiplier { get; set; } = 5.0;
+    public double TierMultiplier { get; set; } = 1.0;
 
     [JsonPropertyName("linear_growth_per_level")]
     public int LinearGrowthPerLevel { get; set; } = 5;
+
+    [JsonPropertyName("growth_decrease_per_tier")]
+    public double GrowthDecreasePerTier { get; set; } = 0.85;
 }
 
 public class UpgradeConfig

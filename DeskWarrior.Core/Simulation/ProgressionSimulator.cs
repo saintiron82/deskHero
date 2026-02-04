@@ -102,8 +102,8 @@ public class ProgressionSimulator
             crystals += crystalsEarned;
             bestLevelEver = Math.Max(bestLevelEver, session.MaxLevel);
 
-            // 업그레이드 전략 적용
-            long crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, sessionNumber, result.UpgradeHistory);
+            // 업그레이드 전략 적용 (세션 결과 전달)
+            long crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, sessionNumber, result.UpgradeHistory, session);
             totalCrystalsSpent += crystalsSpent;
 
             // ✅ 상세 세션 데이터 저장 (영구 스탯 정보 포함)
@@ -209,8 +209,8 @@ public class ProgressionSimulator
                 return result;
             }
 
-            // 업그레이드 전략 적용
-            long crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, attempt, result.UpgradeHistory);
+            // 업그레이드 전략 적용 (세션 결과 전달)
+            long crystalsSpent = ApplyUpgradeStrategy(currentStats, strategy, ref crystals, attempt, result.UpgradeHistory, session);
             totalCrystalsSpent += crystalsSpent;
         }
 
@@ -235,7 +235,8 @@ public class ProgressionSimulator
         UpgradeStrategy strategy,
         ref long crystals,
         int afterSession,
-        List<UpgradeRecord> upgradeHistory)
+        List<UpgradeRecord> upgradeHistory,
+        SessionResult? lastSession = null)
     {
         if (strategy == UpgradeStrategy.None)
             return 0;
@@ -261,7 +262,7 @@ public class ProgressionSimulator
                 break;
 
             case UpgradeStrategy.Balanced:
-                totalSpent = ApplyBalancedStrategy(stats, ref crystals, afterSession, upgradeHistory);
+                totalSpent = ApplyBalancedStrategy(stats, ref crystals, afterSession, upgradeHistory, lastSession);
                 break;
 
             case UpgradeStrategy.EconomyFirst:
@@ -397,13 +398,53 @@ public class ProgressionSimulator
 
     /// <summary>
     /// 균형 전략: 카테고리별 순환 + start_level로 450레벨 벽 우회
+    /// ✅ 시간 초과 시 time_extend 우선 투자
     /// </summary>
     private long ApplyBalancedStrategy(
         SimPermanentStats stats,
         ref long crystals,
         int afterSession,
-        List<UpgradeRecord> history)
+        List<UpgradeRecord> history,
+        SessionResult? lastSession = null)
     {
+        long totalSpent = 0;
+
+        // ✅ 시간 초과로 실패했으면 time_extend 우선 투자
+        if (lastSession?.EndReason == "timeout" && crystals > 0)
+        {
+            long timeExtendBudget = (long)(crystals * 0.3);  // 30% 예산을 time_extend에
+            long timeExtendCrystals = timeExtendBudget;
+
+            while (timeExtendCrystals > 0)
+            {
+                int currentLevel = _costCalculator.GetStatLevel(stats, "time_extend");
+                int cost = _costCalculator.GetUpgradeCost("time_extend", currentLevel);
+
+                if (cost > timeExtendCrystals)
+                    break;
+
+                timeExtendCrystals -= cost;
+                totalSpent += cost;
+                _costCalculator.SetStatLevel(stats, "time_extend", currentLevel + 1);
+
+                history.Add(new UpgradeRecord
+                {
+                    AfterSessionNumber = afterSession,
+                    StatId = "time_extend",
+                    FromLevel = currentLevel,
+                    ToLevel = currentLevel + 1,
+                    CrystalsCost = cost
+                });
+
+                // 최대 5레벨까지만 (한 번에 너무 많이 투자하지 않음)
+                if (_costCalculator.GetStatLevel(stats, "time_extend") - currentLevel >= 5)
+                    break;
+            }
+
+            crystals -= (timeExtendBudget - timeExtendCrystals);
+        }
+
+        // 기존 균형 전략
         var categories = new[]
         {
             new[] { "base_attack", "attack_percent" },
@@ -412,11 +453,19 @@ public class ProgressionSimulator
             new[] { "time_extend", "start_level" }
         };
 
-        long totalSpent = 0;
-        int categoryIndex = afterSession % categories.Length;
+        int startCategoryIndex = afterSession % categories.Length;
 
-        // 해당 카테고리에서 업그레이드
-        totalSpent += ApplyPriorityStrategy(stats, ref crystals, afterSession, history, categories[categoryIndex]);
+        // 모든 카테고리를 순환하면서 투자 시도
+        for (int i = 0; i < categories.Length; i++)
+        {
+            int categoryIndex = (startCategoryIndex + i) % categories.Length;
+            long spent = ApplyPriorityStrategy(stats, ref crystals, afterSession, history, categories[categoryIndex]);
+            totalSpent += spent;
+
+            // 크리스탈이 충분히 적으면 중단 (최소 업그레이드 비용 이하)
+            if (crystals < 1000)
+                break;
+        }
 
         // 남은 크리스털은 그리디로
         totalSpent += ApplyGreedyStrategy(stats, ref crystals, afterSession, history);

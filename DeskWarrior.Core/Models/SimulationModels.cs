@@ -172,7 +172,10 @@ public class SimMonster
             long tierBaseHp = (long)(baseHp * tierMultiplier);
 
             int levelInTier = (level - 1) % tierConfig.TierInterval;
-            long linearIncrease = levelInTier * tierConfig.LinearGrowthPerLevel;
+
+            // 티어마다 성장률 감소 적용
+            double tierGrowthRate = tierConfig.LinearGrowthPerLevel * Math.Pow(tierConfig.GrowthDecreasePerTier, tier);
+            long linearIncrease = (long)(levelInTier * tierGrowthRate);
 
             return tierBaseHp + linearIncrease;
         }

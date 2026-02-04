@@ -11,10 +11,11 @@
     "critical_multiplier": 2.0,
     "upgrade_cost_interval": 50,
     "tier_hp_system": {
-      "enabled": false,
-      "tier_interval": 100,
-      "tier_multiplier": 5.0,
-      "linear_growth_per_level": 5
+      "enabled": true,
+      "tier_interval": 300,
+      "tier_multiplier": 1.5,
+      "linear_growth_per_level": 8,
+      "growth_decrease_per_tier": 0.85
     },
     "game_over_messages": [
       "Your finger needs a gym membership.",
