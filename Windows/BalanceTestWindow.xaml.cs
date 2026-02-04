@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using DeskWarrior.Helpers;
 using DeskWarrior.Interfaces;
 using DeskWarrior.Managers;
 using DeskWarrior.Models;
@@ -365,7 +366,7 @@ namespace DeskWarrior.Windows
 
                 if (type == "ingame")
                 {
-                    var discountPercent = _saveManager.CurrentSave.PermanentStats.UpgradeCostReduction;
+                    var discountPercent = _saveManager.CurrentSave.PermanentStats.GetUpgradeCostReduction();
                     cost = _statGrowth.GetInGameUpgradeCost(statId, targetLevel - 1, discountPercent);
                     effect = _statGrowth.GetInGameStatEffect(statId, targetLevel);
                     CostResult.Text = $"💰 Cost: {cost:N0} Gold";

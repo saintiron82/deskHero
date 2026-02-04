@@ -80,10 +80,10 @@ namespace DeskWarrior.ViewModels
 
                 // 현재 언어에 맞는 로컬라이제이션 사용
                 string currentLang = LocalizationManager.Instance.CurrentLanguage;
-                string fullName = GetLocalizedText(config.Localization, currentLang, l => l.Name, config.Name);
+                string fullName = GetStatLocalizedText(config.Localization, currentLang, l => l.Name, config.Name);
 
                 // 설명문에서 {n}을 실제 값으로 치환
-                string description = GetLocalizedText(config.Localization, currentLang, l => l.Description, config.Description);
+                string description = GetStatLocalizedText(config.Localization, currentLang, l => l.Description, config.Description);
                 string formattedDescription = FormatDescription(id, config, currentLevel, description);
 
                 var card = new UpgradeCardViewModel
@@ -197,10 +197,10 @@ namespace DeskWarrior.ViewModels
         /// <summary>
         /// 현재 언어에 맞는 로컬라이즈된 텍스트 가져오기
         /// </summary>
-        private string GetLocalizedText(
-            Dictionary<string, LocalizedText>? localizations,
+        private string GetStatLocalizedText(
+            Dictionary<string, StatLocalizedText>? localizations,
             string currentLang,
-            Func<LocalizedText, string> selector,
+            Func<StatLocalizedText, string> selector,
             string fallback)
         {
             if (localizations == null) return fallback;

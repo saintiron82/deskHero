@@ -45,6 +45,11 @@ namespace DeskWarrior
             // 의존성 주입: AchievementDefinition에 LocalizationProvider 설정
             AchievementDefinition.LocalizationProvider = LocalizationManager.Instance;
 
+            // PermanentStatsExtensions 초기화 (Config 기반 효과 계산)
+            var statGrowthManager = new StatGrowthManager();
+            PermanentStatsExtensions.Initialize(statGrowthManager);
+            Logger.Log("PermanentStatsExtensions initialized with config-based calculations");
+
             base.OnStartup(e);
 
             Logger.Log("Application startup completed");

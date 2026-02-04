@@ -136,52 +136,5 @@ namespace DeskWarrior.Models
         public int StartComboDamageLevel { get; set; } = 0;
 
         #endregion
-
-        #region Legacy Properties (Backward Compatibility)
-
-        // 시뮬레이터와 동기화된 효과 계산 (PermanentStats.json 기준)
-        [JsonIgnore]
-        public int BaseAttack => BaseAttackLevel * 3; // 3 per level
-
-        [JsonIgnore]
-        public double AttackPercentBonus => AttackPercentLevel * 0.02; // 2% per level (Config 동기화)
-
-        [JsonIgnore]
-        public double GoldPercentBonus => GoldMultiPermLevel * 0.15; // 15% per level (Config 동기화)
-
-        [JsonIgnore]
-        public double CriticalChanceBonus => CritChanceLevel * 0.005; // 0.5% per level (Config 동기화)
-
-        [JsonIgnore]
-        public double CriticalDamageBonus => CritDamageLevel * 0.2; // 0.2x per level (Config 동기화)
-
-        [JsonIgnore]
-        public double MultiHitChance => MultiHitLevel * 0.01; // 1% per level
-
-        [JsonIgnore]
-        public int StartingLevelBonus => StartLevelLevel * 5; // 5 per level (Config 동기화)
-
-        [JsonIgnore]
-        public int StartingGoldBonus => StartGoldLevel * 150; // 150 per level (Config 동기화)
-
-        [JsonIgnore]
-        public int StartingKeyboardPower => StartKeyboardLevel * 2; // 2 per level (Config 동기화)
-
-        [JsonIgnore]
-        public int StartingMousePower => StartMouseLevel * 2; // 2 per level (Config 동기화)
-
-        [JsonIgnore]
-        public double GameOverTimeExtension => TimeExtendLevel * 0.4; // 0.4초 per level (Config 동기화)
-
-        [JsonIgnore]
-        public double UpgradeCostReduction => UpgradeDiscountLevel * 0.03; // 3% per level (Config 동기화)
-
-        [JsonIgnore]
-        public int CrystalFlatBonus => CrystalFlatLevel * 10; // 10 per level (Config 동기화)
-
-        [JsonIgnore]
-        public double CrystalDropChanceBonus => CrystalMultiLevel * 0.02; // 2% per level (Config 동기화)
-
-        #endregion
     }
 }

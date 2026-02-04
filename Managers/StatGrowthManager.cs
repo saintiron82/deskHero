@@ -87,6 +87,14 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
+        /// 영구 스탯 Config 존재 여부 확인
+        /// </summary>
+        public bool HasStat(string statId)
+        {
+            return _permanentStats.ContainsKey(statId);
+        }
+
+        /// <summary>
         /// 영구 스탯 효과 계산
         /// </summary>
         public double GetPermanentStatEffect(string statId, int level)

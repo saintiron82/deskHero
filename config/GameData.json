@@ -38,12 +38,12 @@
   },
   "monster_spawning": {
     "element_weights": {
-      "normal": 100,
+      "normal": 50,
       "fire": 50,
       "ice": 50,
       "wind": 50,
-      "holy": 10,
-      "dark": 30
+      "holy": 2,
+      "dark": 6
     },
     "use_weighted_selection": true,
     "use_batch_progression": true

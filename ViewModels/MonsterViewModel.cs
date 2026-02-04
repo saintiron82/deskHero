@@ -13,8 +13,8 @@ namespace DeskWarrior.ViewModels
         private string _emoji = "";
         private string _name = "";
         private string _skinType = "";
-        private int _currentHp;
-        private int _maxHp;
+        private long _currentHp;
+        private long _maxHp;
         private double _hpRatio = 1.0;
         private bool _isBoss;
         private bool _isGoldenGoblin;
@@ -46,13 +46,13 @@ namespace DeskWarrior.ViewModels
             private set => SetProperty(ref _skinType, value);
         }
 
-        public int CurrentHp
+        public long CurrentHp
         {
             get => _currentHp;
             private set => SetProperty(ref _currentHp, value);
         }
 
-        public int MaxHp
+        public long MaxHp
         {
             get => _maxHp;
             private set => SetProperty(ref _maxHp, value);

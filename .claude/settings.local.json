@@ -69,7 +69,13 @@
       "Bash(tee:*)",
       "Bash(Get-Content \"C:\\\\Users\\\\saint\\\\.claude\\\\projects\\\\C--Users-saint-Game-DeskWarrior\\\\c39f5f1e-a598-43f3-8242-245e1ad8eb3e\\\\tool-results\\\\toolu_014s61AyCsk1wfyY3vaFfr4v.txt\")",
       "Bash(Select-Object -Last 60)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git merge:*)",
+      "Bash(Select-String -Pattern \"error CS\")",
+      "Bash(Select-Object -First 10)",
+      "Bash(./DeskWarrior.Simulator.exe --progression --hours 0.5 --cps 5 --strategy balanced)",
+      "Bash(./DeskWarrior.Simulator.exe:*)",
+      "Bash(chcp:*)"
     ]
   }
 }

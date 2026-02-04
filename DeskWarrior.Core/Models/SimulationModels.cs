@@ -137,13 +137,17 @@ public class SimMonster
     public bool IsBoss { get; private set; }
     public int GoldReward { get; private set; }
     public string Element { get; private set; }  // ✅ 추가: 몬스터 속성
+    public double KeyboardResistance { get; private set; }  // ✅ 추가: 키보드 저항
+    public double MouseResistance { get; private set; }  // ✅ 추가: 마우스 저항
     public bool IsAlive => CurrentHp > 0;
 
-    public SimMonster(int level, bool isBoss, int baseHp, double hpGrowth, int baseGold, double goldGrowth, TierHpSystemConfig? tierConfig = null, string element = "normal")
+    public SimMonster(int level, bool isBoss, int baseHp, double hpGrowth, int baseGold, double goldGrowth, TierHpSystemConfig? tierConfig = null, string element = "normal", double keyboardResistance = 1.0, double mouseResistance = 1.0)
     {
         Level = level;
         IsBoss = isBoss;
         Element = element;  // ✅ 추가
+        KeyboardResistance = keyboardResistance;  // ✅ 추가
+        MouseResistance = mouseResistance;  // ✅ 추가
 
         // 게임 공식: baseHp + (level - 1) * hpGrowth (선형 성장) 또는 티어 기반
         MaxHp = CalculateHp(baseHp, hpGrowth, level, tierConfig);

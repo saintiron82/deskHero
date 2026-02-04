@@ -79,8 +79,8 @@ namespace DeskWarrior.ViewModels
         public string MonsterEmoji => _monster.Emoji;
         public string MonsterName => _monster.Name;
         public string MonsterSkinType => _monster.SkinType;
-        public int MonsterCurrentHp => _monster.CurrentHp;
-        public int MonsterMaxHp => _monster.MaxHp;
+        public long MonsterCurrentHp => _monster.CurrentHp;
+        public long MonsterMaxHp => _monster.MaxHp;
         public double HpRatio => _monster.HpRatio;
         public bool IsBoss => _monster.IsBoss;
         public bool IsGoldenGoblin => _monster.IsGoldenGoblin;

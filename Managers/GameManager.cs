@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows.Threading;
+using DeskWarrior.Helpers;
 using DeskWarrior.Interfaces;
 using DeskWarrior.Models;
 
@@ -281,7 +282,7 @@ namespace DeskWarrior.Managers
         public bool UpgradeInGameStat(string statId)
         {
             int currentLevel = GetInGameStatLevel(statId);
-            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
+            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.GetUpgradeCostReduction();
             int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
             int cost = ApplyStageCostMultiplier(baseCost);
 
@@ -331,7 +332,7 @@ namespace DeskWarrior.Managers
         public int GetInGameStatUpgradeCost(string statId)
         {
             int currentLevel = GetInGameStatLevel(statId);
-            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
+            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.GetUpgradeCostReduction();
             int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
             return ApplyStageCostMultiplier(baseCost);
         }

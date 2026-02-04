@@ -4,6 +4,42 @@ using System.Text.Json.Serialization;
 namespace DeskWarrior.Models
 {
     /// <summary>
+    /// 티어 설정 (공식 기반, 무한 확장)
+    /// </summary>
+    public class TierConfig
+    {
+        /// <summary>
+        /// 티어 구간 (예: 1000 = 1000레벨마다 티어 1 증가)
+        /// </summary>
+        [JsonPropertyName("tier_interval")]
+        public int TierInterval { get; set; } = 1000;
+
+        /// <summary>
+        /// 기본 multiplier (Tier 0 기준)
+        /// </summary>
+        [JsonPropertyName("base_multiplier")]
+        public double BaseMultiplier { get; set; } = 1.6;
+
+        /// <summary>
+        /// 티어당 multiplier 감소량 (예: 0.1 = 티어마다 0.1씩 감소)
+        /// </summary>
+        [JsonPropertyName("multiplier_decrease_per_tier")]
+        public double MultiplierDecreasePerTier { get; set; } = 0.1;
+
+        /// <summary>
+        /// 기본 softcap_interval (Tier 0 기준)
+        /// </summary>
+        [JsonPropertyName("base_softcap")]
+        public int BaseSoftcap { get; set; } = 12;
+
+        /// <summary>
+        /// 티어당 softcap 증가량 (예: 3 = 티어마다 3씩 증가)
+        /// </summary>
+        [JsonPropertyName("softcap_increase_per_tier")]
+        public int SoftcapIncreasePerTier { get; set; } = 3;
+    }
+
+    /// <summary>
     /// 스탯 성장 곡선 설정 (JSON에서 로드)
     /// </summary>
     public class StatGrowthConfig
@@ -51,8 +87,15 @@ namespace DeskWarrior.Models
         public double? DamageBonusPerLevel { get; set; }
 
         /// <summary>
+        /// 티어 기반 비용 시스템 (선택적, 무한 레벨 대응)
+        /// </summary>
+        [JsonPropertyName("tier_config")]
+        public TierConfig? TierConfig { get; set; }
+
+        /// <summary>
         /// 비용 계산
         /// cost = base × (1 + level × growth_rate) × multiplier^(level / softcap_interval)
+        /// 티어 시스템이 활성화되면 레벨에 따라 multiplier와 softcap이 자동 조정됩니다.
         /// </summary>
         public int CalculateCost(int currentLevel, double? discountPercent = null)
         {
@@ -64,8 +107,28 @@ namespace DeskWarrior.Models
             if (MaxLevel > 0 && currentLevel >= MaxLevel)
                 return int.MaxValue;
 
+            // 티어 기반 파라미터 계산
+            int softcap = SoftcapInterval;
+            double multiplier = Multiplier;
+
+            if (TierConfig != null)
+            {
+                // 공식으로 티어 계산
+                int tier = currentLevel / TierConfig.TierInterval;
+
+                // 티어에 따라 파라미터 조정
+                multiplier = TierConfig.BaseMultiplier - (tier * TierConfig.MultiplierDecreasePerTier);
+                softcap = TierConfig.BaseSoftcap + (tier * TierConfig.SoftcapIncreasePerTier);
+
+                // 안전장치: multiplier 최소값 1.0
+                if (multiplier < 1.0)
+                {
+                    multiplier = 1.0;
+                }
+            }
+
             double linearFactor = 1.0 + currentLevel * GrowthRate;
-            double exponentialFactor = System.Math.Pow(Multiplier, (double)currentLevel / SoftcapInterval);
+            double exponentialFactor = System.Math.Pow(multiplier, (double)currentLevel / softcap);
             double cost = BaseCost * linearFactor * exponentialFactor;
 
             // 할인 적용 (영구 스탯)

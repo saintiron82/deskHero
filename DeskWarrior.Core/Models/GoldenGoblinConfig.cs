@@ -20,6 +20,12 @@ public class SimGoldenGoblinConfig
     [JsonPropertyName("hp")]
     public int Hp { get; set; } = 150;
 
+    [JsonPropertyName("hp_min")]
+    public int HpMin { get; set; } = 100;
+
+    [JsonPropertyName("hp_max")]
+    public int HpMax { get; set; } = 200;
+
     [JsonPropertyName("time_limit")]
     public int TimeLimit { get; set; } = 10;
 

@@ -17,6 +17,7 @@ public class StatCostCalculator
 
     /// <summary>
     /// 특정 스탯의 다음 레벨 업그레이드 비용 계산
+    /// 티어 시스템이 활성화되면 레벨에 따라 multiplier와 softcap이 자동 조정됩니다.
     /// </summary>
     public int GetUpgradeCost(string statId, int currentLevel)
     {
@@ -28,8 +29,29 @@ public class StatCostCalculator
             return int.MaxValue;
 
         int targetLevel = currentLevel + 1;
+
+        // 티어 기반 파라미터 계산 (게임 로직과 동일)
+        int softcap = config.SoftcapInterval;
+        double multiplier = config.Multiplier;
+
+        if (config.TierConfig != null)
+        {
+            // 공식으로 티어 계산
+            int tier = targetLevel / config.TierConfig.TierInterval;
+
+            // 티어에 따라 파라미터 조정
+            multiplier = config.TierConfig.BaseMultiplier - (tier * config.TierConfig.MultiplierDecreasePerTier);
+            softcap = config.TierConfig.BaseSoftcap + (tier * config.TierConfig.SoftcapIncreasePerTier);
+
+            // 안전장치: multiplier 최소값 1.0
+            if (multiplier < 1.0)
+            {
+                multiplier = 1.0;
+            }
+        }
+
         double linearFactor = 1.0 + targetLevel * config.GrowthRate;
-        double exponentialFactor = Math.Pow(config.Multiplier, (double)targetLevel / config.SoftcapInterval);
+        double exponentialFactor = Math.Pow(multiplier, (double)targetLevel / softcap);
         return (int)Math.Ceiling(config.BaseCost * linearFactor * exponentialFactor);
     }
 
@@ -206,6 +228,18 @@ public class StatCostCalculator
 }
 
 /// <summary>
+/// 티어 설정 (공식 기반, 무한 확장)
+/// </summary>
+public class TierConfigSim
+{
+    public int TierInterval { get; set; } = 1000;
+    public double BaseMultiplier { get; set; } = 1.6;
+    public double MultiplierDecreasePerTier { get; set; } = 0.1;
+    public int BaseSoftcap { get; set; } = 12;
+    public int SoftcapIncreasePerTier { get; set; } = 3;
+}
+
+/// <summary>
 /// 스탯 설정 (PermanentStats.json에서 로드)
 /// </summary>
 public class StatConfig
@@ -219,4 +253,5 @@ public class StatConfig
     public double EffectPerLevel { get; set; }
     public int MaxLevel { get; set; }
     public double Weight { get; set; } = 1.0;
+    public TierConfigSim? TierConfig { get; set; }
 }

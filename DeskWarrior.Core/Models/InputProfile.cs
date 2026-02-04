@@ -21,9 +21,9 @@ public class InputProfile
     public ComboSkillLevel ComboSkill { get; set; } = ComboSkillLevel.None;
 
     /// <summary>
-    /// 키보드/마우스 비율 (0.0 = 키보드만, 1.0 = 마우스만)
+    /// 키보드/마우스 비율 (0.0 = 키보드만, 0.5 = 5:5, 1.0 = 마우스만)
     /// </summary>
-    public double MouseRatio { get; set; } = 0.0;
+    public double MouseRatio { get; set; } = 0.5;
 
     /// <summary>
     /// 자동 업그레이드 활성화

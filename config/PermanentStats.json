@@ -13,6 +13,13 @@
       "effect_per_level": 3,
       "max_level": 0,
       "weight": 2.0,
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.6,
+        "multiplier_decrease_per_tier": 0.05,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2
+      },
       "localization": {
         "ko-KR": { "name": "기본 공격력", "description": "모든 공격에 +{n} 데미지" },
         "en-US": { "name": "Base Attack", "description": "+{n} damage to all attacks" }
@@ -29,6 +36,13 @@
       "effect_per_level": 2.0,
       "max_level": 0,
       "weight": 2.0,
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.6,
+        "multiplier_decrease_per_tier": 0.05,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2
+      },
       "localization": {
         "ko-KR": { "name": "공격력 배수", "description": "데미지 +{n}%" },
         "en-US": { "name": "Attack Multiplier", "description": "+{n}% damage" }
@@ -47,6 +61,13 @@
       "max_effect": 90,
       "weight": 1.8,
       "_comment": "기본 10% + 최대 90% = 100%",
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.6,
+        "multiplier_decrease_per_tier": 0.05,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2
+      },
       "localization": {
         "ko-KR": { "name": "크리티컬 확률", "description": "크리티컬 확률 +{n}%" },
         "en-US": { "name": "Critical Chance", "description": "+{n}% critical chance" }
@@ -65,6 +86,13 @@
       "max_effect": 0,
       "weight": 1.8,
       "_comment": "배율 무제한 (밸런스 개선: 0.15→0.2)",
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.5,
+        "multiplier_decrease_per_tier": 0.05,
+        "base_softcap": 18,
+        "softcap_increase_per_tier": 3
+      },
       "localization": {
         "ko-KR": { "name": "크리티컬 배율", "description": "크리티컬 시 x{n} 배율" },
         "en-US": { "name": "Critical Damage", "description": "x{n} critical multiplier" }
@@ -83,6 +111,13 @@
       "max_effect": 100,
       "weight": 1.5,
       "_comment": "100% 확률이 한계",
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.45,
+        "multiplier_decrease_per_tier": 0.04,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2
+      },
       "localization": {
         "ko-KR": { "name": "멀티히트 확률", "description": "{n}% 확률로 2배 타격" },
         "en-US": { "name": "Multi-Hit Chance", "description": "{n}% chance for double hit" }
@@ -168,6 +203,13 @@
       "weight": 1.2,
       "damage_bonus_per_level": 1.0,
       "_comment": "기본 30초에서 최대 +60초 = 90초 (150레벨 필요), 비용 곡선 완화. 추가로 레벨당 1% 데미지 증가",
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.4,
+        "multiplier_decrease_per_tier": 0.04,
+        "base_softcap": 15,
+        "softcap_increase_per_tier": 3
+      },
       "localization": {
         "ko-KR": { "name": "기본 시간 연장", "description": "제한시간 +{n}초 (데미지 +{damage}% 추가)" },
         "en-US": { "name": "Time Extension", "description": "+{n}s time limit (+{damage}% damage bonus)" }
