@@ -60,13 +60,12 @@ namespace DeskWarrior.Managers
                 baseCrystals += permStats.GetCrystalFlatBonus();
             }
 
-            // ✅ 속성별 배율 적용
+            // ✅ 속성별 배율 적용 (Holy/Dark: 2.0배 고정)
             double elementMultiplier = crystalMultipliers.GetValueOrDefault(bossElement, 1.0);
-            int crystalsBeforeVariance = (int)(baseCrystals * elementMultiplier);
+            int finalCrystals = (int)(baseCrystals * elementMultiplier);
 
-            // ✅ 분산 적용 (±20%)
-            double variance = 1.0 + ((_random.NextDouble() * 2 - 1) * _bossDropConfig.CrystalVariance);
-            int finalCrystals = (int)(crystalsBeforeVariance * variance);
+            // ✅ 분산 제거 - 모든 보상은 고정값 (황금 고블린 제외)
+            // 이전: variance ±20% 적용 (제거됨)
             finalCrystals = Math.Max(1, finalCrystals);
 
             // ✅ 크리스탈 지급
@@ -89,8 +88,9 @@ namespace DeskWarrior.Managers
         /// </summary>
         public void ProcessStageClear(int clearedStage)
         {
-            // 매 스테이지 클리어 시 크리스탈 (config에서 로드, 기본값 1)
-            AddCrystals(_bossDropConfig.StageCompletionCrystal, "stage_clear");
+            // 매 스테이지 클리어 시 크리스탈 (100레벨마다 +1)
+            int crystalAmount = _bossDropConfig.StageCompletionCrystal + (clearedStage / 100);
+            AddCrystals(crystalAmount, "stage_clear");
         }
 
         #endregion

@@ -114,10 +114,15 @@ public class SimulationEngine
 
                 if (_random.NextDouble() < killChance)
                 {
-                    // 처치 성공
-                    int multiplier = _random.Next(
-                        _goldenGoblinConfig.RewardMultiplierMin,
-                        _goldenGoblinConfig.RewardMultiplierMax + 1);
+                    // 처치 성공 - 삼각분포로 보상 배수 계산
+                    // 중앙(50배)이 가장 높은 확률
+                    double u1 = _random.NextDouble();
+                    double u2 = _random.NextDouble();
+                    double triangular = (u1 + u2) / 2.0;  // 0~1, 중앙에 집중
+
+                    int multiplier = _goldenGoblinConfig.RewardMultiplierMin +
+                        (int)(triangular * (_goldenGoblinConfig.RewardMultiplierMax - _goldenGoblinConfig.RewardMultiplierMin));
+
                     int expectedGold = CalculateStageExpectedGold(currentLevel);
                     int goldenGoblinReward = expectedGold * multiplier;
 
@@ -180,7 +185,7 @@ public class SimulationEngine
 
                 basePower += permStats.BaseAttack;
 
-                int damage = CalculateDamage(basePower, permStats, comboStack, out bool isCrit);
+                int damage = CalculateDamage(basePower, permStats, comboStack, monster, useMouse, out bool isCrit);
 
                 if (isCrit) result.CriticalHits++;
 
@@ -213,12 +218,12 @@ public class SimulationEngine
             // 쿨다운 카운터 증가 (황금 고블린 스폰용)
             _killsSinceLastGoblin++;
 
-            // 보스 처치 시 크리스털 지급 (100% 확정, 속성별 배율 적용)
+            // ✅ 모든 몬스터 처치 시 크리스탈 지급 (100레벨마다 +1)
+            crystalTracker.ProcessStageClear(currentLevel);
+
+            // 보스 처치 시 추가 보너스 크리스털 지급 (100% 확정, 속성별 배율 적용)
             if (isBoss)
             {
-                // 스테이지 클리어 크리스털 (10레벨 단위, 보스 처치 시에만)
-                crystalTracker.ProcessStageClear();
-
                 result.BossesKilled++;
 
                 // ✅ 속성별 크리스털 배율 추출
@@ -280,6 +285,15 @@ public class SimulationEngine
         // 현재는 기본 속성 "normal" 사용
         string element = "normal";
 
+        // 저항값 가져오기 (element_properties에서)
+        double keyboardResistance = 1.0;
+        double mouseResistance = 1.0;
+        if (_gameConfig.ElementProperties != null && _gameConfig.ElementProperties.TryGetValue(element, out var elementProps))
+        {
+            keyboardResistance = elementProps.KeyboardResistance;
+            mouseResistance = elementProps.MouseResistance;
+        }
+
         return new SimMonster(
             level,
             isBoss,
@@ -288,7 +302,9 @@ public class SimulationEngine
             baseGold,  // ✅ 수정: 실제 값 사용
             goldGrowth,
             _gameConfig.Balance.TierHpSystem,
-            element  // ✅ 추가
+            element,  // ✅ 추가
+            keyboardResistance,  // ✅ 추가: 저항 시스템
+            mouseResistance  // ✅ 추가: 저항 시스템
         );
     }
 
@@ -495,7 +511,7 @@ public class SimulationEngine
         return currentStack;
     }
 
-    private int CalculateDamage(int basePower, SimPermanentStats permStats, int comboStack, out bool isCritical)
+    private int CalculateDamage(int basePower, SimPermanentStats permStats, int comboStack, SimMonster monster, bool useMouse, out bool isCritical)
     {
         // ① basePower에는 이미 BaseAttack이 포함됨
         double effectivePower = basePower;
@@ -529,6 +545,12 @@ public class SimulationEngine
         // ⑦ 유틸리티 보너스 (time_extend + upgrade_discount 투자에 따른 데미지 보너스)
         double utilityBonus = 1.0 + (permStats.TimeExtendLevel + permStats.UpgradeDiscountLevel) * 0.01;
         effectivePower *= utilityBonus;
+
+        // ⑧ 저항 시스템 (속성별 키보드/마우스 저항)
+        double resistanceModifier = useMouse
+            ? monster.MouseResistance
+            : monster.KeyboardResistance;
+        effectivePower *= resistanceModifier;
 
         return (int)effectivePower;
     }

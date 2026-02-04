@@ -32,13 +32,12 @@ public class CrystalTracker
         int baseCrystals = _config.BaseCrystalAmount + bossLevel * _config.CrystalPerLevel;
         baseCrystals += crystalFlat;  // 영구 스탯 보너스
 
-        // ✅ 속성별 배율 적용
+        // ✅ 속성별 배율 적용 (Holy/Dark: 2.0배 고정)
         double elementMultiplier = crystalMultipliers.GetValueOrDefault(bossElement, 1.0);
-        int crystalsBeforeVariance = (int)(baseCrystals * elementMultiplier);
+        int finalCrystals = Math.Max(1, (int)(baseCrystals * elementMultiplier));
 
-        // ✅ 분산 적용 (±20%)
-        double variance = 1.0 + (_random.NextDouble() * 2 - 1) * _config.CrystalVariance;
-        int finalCrystals = Math.Max(1, (int)(crystalsBeforeVariance * variance));
+        // ✅ 분산 제거 - 모든 보상은 고정값 (황금 고블린 제외)
+        // 이전: variance ±20% 적용 (제거됨)
 
         // ✅ 속성 보너스 계산
         int elementBonus = (int)((elementMultiplier - 1.0) * baseCrystals);
@@ -53,12 +52,13 @@ public class CrystalTracker
     }
 
     /// <summary>
-    /// 몬스터(스테이지) 클리어 시 크리스털 처리
-    /// 게임과 동일: 매 몬스터 처치 시 StageCompletionCrystal 지급
+    /// 몬스터 처치 크리스탈 (100레벨마다 +1)
+    /// 게임과 동일: 매 몬스터 처치 시 레벨 기반 크리스탈 지급
     /// </summary>
-    public void ProcessStageClear()
+    public void ProcessStageClear(int currentLevel)
     {
-        _stageCompletionCrystals += _config.StageCompletionCrystal;
+        int crystalAmount = _config.StageCompletionCrystal + (currentLevel / 100);
+        _stageCompletionCrystals += crystalAmount;
     }
 
     /// <summary>

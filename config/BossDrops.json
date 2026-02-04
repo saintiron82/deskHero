@@ -4,8 +4,9 @@
   "max_drop_chance": 0.95,
   "base_crystal_amount": 10,
   "crystal_per_level": 2,
-  "crystal_variance": 0.2,
+  "crystal_variance": 0.0,
   "guaranteed_drop_every_n_bosses": 10,
   "stage_completion_crystal": 1,
-  "gold_to_crystal_rate": 100
+  "gold_to_crystal_rate": 100,
+  "_comment": "crystal_variance는 0.0 (고정값). 랜덤 보상은 황금 고블린만 해당."
 }

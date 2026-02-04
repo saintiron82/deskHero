@@ -104,11 +104,22 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 보상 배수 계산 (2~100배)
+        /// 보상 배수 계산 (2~100배, 삼각분포)
+        /// 중앙값(50배 부근)이 가장 높은 확률로 나옴
         /// </summary>
         public int GetRewardMultiplier()
         {
-            return _random.Next(_config.RewardMultiplierMin, _config.RewardMultiplierMax + 1);
+            // 삼각분포(Triangular Distribution): 두 개의 균등 분포 평균
+            // 중앙(50배)에서 가장 높은 확률, 양 끝(2배, 100배)으로 갈수록 낮아짐
+            double u1 = _random.NextDouble();  // 0~1
+            double u2 = _random.NextDouble();  // 0~1
+            double triangular = (u1 + u2) / 2.0;  // 0~1, 중앙(0.5)에 집중
+
+            // 2~100 범위로 매핑
+            int multiplier = _config.RewardMultiplierMin +
+                            (int)(triangular * (_config.RewardMultiplierMax - _config.RewardMultiplierMin));
+
+            return multiplier;
         }
 
         /// <summary>

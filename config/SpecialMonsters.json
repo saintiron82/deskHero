@@ -9,6 +9,7 @@
     "time_limit": 10,
     "reward_min": 2,
     "reward_max": 100,
+    "_reward_distribution": "삼각분포: 50배 부근이 가장 높은 확률",
     "sprite": "Production/monster_goblin.png",
     "emoji": "💰",
     "name": {

@@ -218,7 +218,7 @@ public static class SimulatorFactory
                     MaxDropChance = TryGetDouble(root, "max_drop_chance", 0.95),
                     BaseCrystalAmount = TryGetInt(root, "base_crystal_amount", 5),
                     CrystalPerLevel = TryGetInt(root, "crystal_per_level", 1),
-                    CrystalVariance = TryGetDouble(root, "crystal_variance", 0.2),
+                    CrystalVariance = TryGetDouble(root, "crystal_variance", 0.0),  // 고정값 (랜덤 없음)
                     GuaranteedDropEveryNBosses = TryGetInt(root, "guaranteed_drop_every_n_bosses", 10)
                 };
             }
