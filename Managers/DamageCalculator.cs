@@ -44,6 +44,7 @@ namespace DeskWarrior.Managers
         private readonly Random _random;
         private readonly double _criticalChance;
         private readonly double _criticalMultiplier;
+        private readonly StatGrowthManager? _statGrowth;
 
         #endregion
 
@@ -55,18 +56,20 @@ namespace DeskWarrior.Managers
         /// <param name="criticalChance">크리티컬 확률 (0.0 ~ 1.0)</param>
         /// <param name="criticalMultiplier">크리티컬 데미지 배율</param>
         /// <param name="random">랜덤 인스턴스 (선택적, 테스트용)</param>
-        public DamageCalculator(double criticalChance, double criticalMultiplier, Random? random = null)
+        /// <param name="statGrowth">스탯 성장 매니저 (영구 스탯 데미지 보너스용)</param>
+        public DamageCalculator(double criticalChance, double criticalMultiplier, Random? random = null, StatGrowthManager? statGrowth = null)
         {
             _criticalChance = criticalChance;
             _criticalMultiplier = criticalMultiplier;
             _random = random ?? new Random();
+            _statGrowth = statGrowth;
         }
 
         /// <summary>
         /// GameData에서 설정을 로드하여 생성
         /// </summary>
-        public DamageCalculator(GameData gameData, Random? random = null)
-            : this(gameData.Balance.CriticalChance, gameData.Balance.CriticalMultiplier, random)
+        public DamageCalculator(GameData gameData, Random? random = null, StatGrowthManager? statGrowth = null)
+            : this(gameData.Balance.CriticalChance, gameData.Balance.CriticalMultiplier, random, statGrowth)
         {
         }
 
@@ -155,9 +158,21 @@ namespace DeskWarrior.Managers
 
             // ⑦ ×유틸리티 = ⑥ × utility_bonus
             double utilityBonus = 1.0;
-            if (permStats != null)
+            if (permStats != null && _statGrowth != null)
             {
-                utilityBonus = 1.0 + (permStats.TimeExtendLevel + permStats.UpgradeDiscountLevel) * 0.01;
+                double totalDamageBonus = 0;
+
+                // time_extend 데미지 보너스
+                var timeExtendBonus = _statGrowth.GetDamageBonusEffect("time_extend", permStats.TimeExtendLevel);
+                if (timeExtendBonus.HasValue)
+                    totalDamageBonus += timeExtendBonus.Value;
+
+                // upgrade_discount 데미지 보너스
+                var upgradeDiscountBonus = _statGrowth.GetDamageBonusEffect("upgrade_discount", permStats.UpgradeDiscountLevel);
+                if (upgradeDiscountBonus.HasValue)
+                    totalDamageBonus += upgradeDiscountBonus.Value;
+
+                utilityBonus = 1.0 + totalDamageBonus / 100.0;  // 퍼센트를 배율로 변환
                 effectivePower *= utilityBonus;
             }
 

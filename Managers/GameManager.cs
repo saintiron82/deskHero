@@ -150,11 +150,11 @@ namespace DeskWarrior.Managers
             // 세션 트래커 초기화
             _sessionTracker = new SessionTracker();
 
-            // 데미지 계산기 초기화
-            _damageCalculator = new DamageCalculator(_gameData, _random);
-
-            // 스탯 성장 매니저 초기화
+            // 스탯 성장 매니저 초기화 (데미지 계산기보다 먼저 초기화)
             _statGrowth = new StatGrowthManager();
+
+            // 데미지 계산기 초기화
+            _damageCalculator = new DamageCalculator(_gameData, _random, _statGrowth);
 
             // 콤보 트래커 초기화
             _comboTracker = new ComboTracker();
@@ -500,6 +500,9 @@ namespace DeskWarrior.Managers
             // 세션 트래커에 킬 기록
             _sessionTracker.RecordKill(_currentMonster.IsBoss, goldReward);
 
+            // ✅ 모든 몬스터 처치 시 1크리스탈 지급
+            _permanentProgression?.ProcessStageClear(CurrentLevel);
+
             // 황금 고블린 쿨다운 카운터 업데이트
             _goldenGoblinManager.RecordKill(false);
             if (_saveManager?.CurrentSave != null)
@@ -548,11 +551,8 @@ namespace DeskWarrior.Managers
             // 다음 레벨
             CurrentLevel++;
 
-            // 스테이지 클리어 크리스탈 보상 (10레벨 단위, 보스 처치 시에만)
-            if (_currentMonster.IsBoss)
-            {
-                _permanentProgression?.ProcessStageClear(CurrentLevel - 1);
-            }
+            // ❌ 제거: 모든 몬스터 처치 시 1크리스탈은 이미 위(Line 503)에서 지급됨
+            // 보스 처치 시 추가 보너스만 Line 523-540에서 지급
 
             // 즉시 리스폰
             SpawnMonster();

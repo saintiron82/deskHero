@@ -47,6 +47,9 @@ namespace DeskWarrior.Models
         [JsonPropertyName("localization")]
         public Dictionary<string, StatLocalizedText>? Localization { get; set; }
 
+        [JsonPropertyName("damage_bonus_per_level")]
+        public double? DamageBonusPerLevel { get; set; }
+
         /// <summary>
         /// 비용 계산
         /// cost = base × (1 + level × growth_rate) × multiplier^(level / softcap_interval)

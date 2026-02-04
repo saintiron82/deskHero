@@ -142,6 +142,22 @@ namespace DeskWarrior.Managers
             return sorted;
         }
 
+        /// <summary>
+        /// 영구 스탯의 데미지 보너스 효과 계산
+        /// time_extend, upgrade_discount 같은 유틸리티 스탯이 추가 데미지 보너스를 제공
+        /// </summary>
+        public double? GetDamageBonusEffect(string statId, int level)
+        {
+            if (!_permanentStats.TryGetValue(statId, out var config))
+                return null;
+
+            // damage_bonus_per_level 필드가 있으면 사용, 없으면 null 반환
+            if (!config.DamageBonusPerLevel.HasValue)
+                return null;
+
+            return level * config.DamageBonusPerLevel.Value;
+        }
+
         #endregion
 
         #region Private Methods

@@ -166,10 +166,11 @@
       "max_level": 0,
       "max_effect": 60,
       "weight": 1.2,
-      "_comment": "기본 30초에서 최대 +60초 = 90초 (150레벨 필요), 비용 곡선 완화",
+      "damage_bonus_per_level": 1.0,
+      "_comment": "기본 30초에서 최대 +60초 = 90초 (150레벨 필요), 비용 곡선 완화. 추가로 레벨당 1% 데미지 증가",
       "localization": {
-        "ko-KR": { "name": "기본 시간 연장", "description": "제한시간 +{n}초" },
-        "en-US": { "name": "Time Extension", "description": "+{n}s time limit" }
+        "ko-KR": { "name": "기본 시간 연장", "description": "제한시간 +{n}초 (데미지 +{damage}% 추가)" },
+        "en-US": { "name": "Time Extension", "description": "+{n}s time limit (+{damage}% damage bonus)" }
       }
     },
     "upgrade_discount": {
@@ -184,10 +185,11 @@
       "max_level": 0,
       "max_effect": 60,
       "weight": 0.5,
-      "_comment": "최대 60% 할인, 비용 곡선 완화",
+      "damage_bonus_per_level": 1.0,
+      "_comment": "최대 60% 할인, 비용 곡선 완화. 추가로 레벨당 1% 데미지 증가",
       "localization": {
-        "ko-KR": { "name": "업그레이드 할인", "description": "골드 업그레이드 비용 -{n}%" },
-        "en-US": { "name": "Upgrade Discount", "description": "-{n}% gold upgrade cost" }
+        "ko-KR": { "name": "업그레이드 할인", "description": "골드 업그레이드 비용 -{n}% (데미지 +{damage}% 추가)" },
+        "en-US": { "name": "Upgrade Discount", "description": "-{n}% gold upgrade cost (+{damage}% damage bonus)" }
       }
     },
     "start_level": {
