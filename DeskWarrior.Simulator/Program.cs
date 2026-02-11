@@ -88,9 +88,10 @@ Options:
   --runs <count>       Number of simulations (default: 1000)
   --combo <level>      Combo skill: none/beginner/intermediate/expert/perfect (default: none)
   --parallel <count>   Parallel threads (-1 = all cores, default: -1)
+  --seed <n>           Random seed for deterministic runs
 
 Progression Options (--progress mode):
-  --strategy <name>    Upgrade strategy: greedy/damage/survival/crystal/balanced/economy/none (default: greedy)
+  --strategy <name>    Upgrade strategy: greedy/damage/survival/crystal/balanced/economy/damage-only/damage-time/economy-only/utility-only/none (default: greedy)
   --max-attempts <n>   Maximum session attempts (default: 1000)
   --game-hours <n>     Game time to simulate in hours (default: 0 = use target level instead)
                        When set, simulates until game time reached instead of target level
@@ -156,6 +157,10 @@ Examples:
                     break;
                 case "--parallel":
                     options.Parallelism = int.Parse(next!);
+                    i++;
+                    break;
+                case "--seed":
+                    options.Seed = int.Parse(next!);
                     i++;
                     break;
                 case "--base-attack":
@@ -242,6 +247,15 @@ Examples:
             "crystal" => UpgradeStrategy.CrystalFarm,
             "balanced" => UpgradeStrategy.Balanced,
             "economy" => UpgradeStrategy.EconomyFirst,
+            "damage-only" => UpgradeStrategy.DamageOnly,
+            "damageonly" => UpgradeStrategy.DamageOnly,
+            "damage-time" => UpgradeStrategy.DamageTime,
+            "damagetime" => UpgradeStrategy.DamageTime,
+            "damage+time" => UpgradeStrategy.DamageTime,
+            "economy-only" => UpgradeStrategy.EconomyOnly,
+            "economyonly" => UpgradeStrategy.EconomyOnly,
+            "utility-only" => UpgradeStrategy.UtilityOnly,
+            "utilityonly" => UpgradeStrategy.UtilityOnly,
             "none" => UpgradeStrategy.None,
             _ => UpgradeStrategy.Greedy
         };
@@ -316,25 +330,35 @@ Examples:
 
     static string FindConfigPath()
     {
-        // 현재 디렉토리에서 config 폴더 찾기
-        var current = AppDomain.CurrentDomain.BaseDirectory;
-        var configPath = Path.Combine(current, "config");
+        var current = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
 
-        if (Directory.Exists(configPath))
+        // 1) 솔루션 루트의 config를 우선 사용 (bin/ 아래 stale config 방지)
+        var probe = current;
+        while (probe != null)
         {
-            return configPath;
+            var hasSolution = Directory.GetFiles(probe.FullName, "*.slnx").Length > 0 ||
+                              Directory.GetFiles(probe.FullName, "*.sln").Length > 0;
+            if (hasSolution)
+            {
+                var rootConfig = Path.Combine(probe.FullName, "config");
+                if (Directory.Exists(rootConfig))
+                {
+                    return rootConfig;
+                }
+            }
+            probe = probe.Parent;
         }
 
-        // 상위 디렉토리 탐색
-        var parent = Directory.GetParent(current);
-        while (parent != null)
+        // 2) fallback: 현재 디렉토리 기준 상위에서 config 찾기
+        probe = current;
+        while (probe != null)
         {
-            configPath = Path.Combine(parent.FullName, "config");
+            var configPath = Path.Combine(probe.FullName, "config");
             if (Directory.Exists(configPath))
             {
                 return configPath;
             }
-            parent = parent.Parent;
+            probe = probe.Parent;
         }
 
         throw new DirectoryNotFoundException("Could not find 'config' folder");
@@ -464,7 +488,7 @@ Examples:
         var configPath = FindConfigPath();
         Console.WriteLine($"Config path: {configPath}\n");
 
-        var progressionSim = SimulatorFactory.CreateProgressionSimulator(configPath);
+        var progressionSim = SimulatorFactory.CreateProgressionSimulator(configPath, options.Seed);
 
         var profile = new InputProfile
         {
@@ -493,6 +517,10 @@ Examples:
                 options.Strategy,
                 (currentTime, targetTime) =>
                 {
+                    if (!options.Verbose)
+                    {
+                        return;
+                    }
                     var percent = currentTime / targetTime * 100;
                     var hoursPlayed = currentTime / 3600;
                     Console.Write($"\rGame time: {hoursPlayed:F2}h / {options.GameHours}h ({percent:F1}%)");
@@ -500,7 +528,15 @@ Examples:
             );
 
             sw.Stop();
-            Console.WriteLine($"\rCompleted in {sw.Elapsed.TotalSeconds:F2}s                              \n");
+            if (options.Verbose)
+            {
+                Console.WriteLine($"\rCompleted in {sw.Elapsed.TotalSeconds:F2}s                              \n");
+            }
+            else
+            {
+                Console.WriteLine($"Completed in {sw.Elapsed.TotalSeconds:F2}s");
+                Console.WriteLine();
+            }
 
             PrintGameTimeResult(result, options);
 
@@ -510,6 +546,14 @@ Examples:
                 var csvPath = options.OutputPath.EndsWith(".csv")
                     ? options.OutputPath
                     : $"{options.OutputPath}_sessions.csv";
+
+                // Ensure output directory exists before writing CSV
+                var outputDir = Path.GetDirectoryName(csvPath);
+                if (!string.IsNullOrEmpty(outputDir))
+                {
+                    Directory.CreateDirectory(outputDir);
+                }
+
                 CsvExporter.ExportSessions(result.DetailedSessions, csvPath);
             }
         }
@@ -550,8 +594,11 @@ Examples:
     {
         Console.WriteLine("=== Game Time Simulation Result ===");
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"  Best Level Ever Reached: {result.BestLevelEver}");
+        Console.WriteLine($"  Recorded Death Level (first death after {options.GameHours}h): {result.TargetReachedDeathLevel}");
         Console.ResetColor();
+        Console.WriteLine($"  Recorded Session: {result.TargetReachedSessionNumber}");
+        Console.WriteLine($"  Recorded At: {result.TargetReachedGameTimeSeconds / 3600:F2} hours");
+        Console.WriteLine($"  Best Level Ever Reached: {result.BestLevelEver}");
         Console.WriteLine($"  Final Session Level: {result.FinalMaxLevel}");
         Console.WriteLine($"  Total Sessions: {result.AttemptsNeeded}");
         Console.WriteLine($"  Total Game Time: {result.TotalGameTimeSeconds / 3600:F2} hours");
@@ -1894,6 +1941,7 @@ class SimulationOptions
     public int NumRuns { get; set; } = 1000;
     public ComboSkillLevel ComboSkill { get; set; } = ComboSkillLevel.None;
     public int Parallelism { get; set; } = -1;
+    public int? Seed { get; set; } = null;
     public bool Verbose { get; set; } = false;
     public bool OutputJson { get; set; } = false;
     public SimPermanentStats PermanentStats { get; set; } = new();

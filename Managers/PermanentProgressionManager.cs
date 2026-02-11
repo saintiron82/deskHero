@@ -51,8 +51,20 @@ namespace DeskWarrior.Managers
             var permStats = save.PermanentStats;
 
             // ✅ 기본 크리스탈 계산 (100% 지급)
-            int baseCrystals = _bossDropConfig.BaseCrystalAmount +
-                              (bossLevel * _bossDropConfig.CrystalPerLevel);
+            double growth;
+            if (_bossDropConfig.CrystalGrowthBreakpoint > 0 && bossLevel > _bossDropConfig.CrystalGrowthBreakpoint)
+            {
+                double tail = Math.Pow(bossLevel - _bossDropConfig.CrystalGrowthBreakpoint, _bossDropConfig.CrystalGrowthExponent);
+                growth = _bossDropConfig.CrystalGrowthBreakpoint + tail;
+            }
+            else
+            {
+                growth = bossLevel;
+            }
+            int baseCrystals = (int)Math.Round(
+                _bossDropConfig.BaseCrystalAmount +
+                (_bossDropConfig.CrystalPerLevel * growth)
+            );
 
             // ✅ 영구 스탯 보너스 적용
             if (permStats != null)

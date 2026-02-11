@@ -38,6 +38,15 @@ public class ProgressionResult
     /// <summary>역대 최고 도달 레벨</summary>
     public long BestLevelEver { get; set; }
 
+    /// <summary>목표 시간 이후 처음 도래한 사망 레벨</summary>
+    public long TargetReachedDeathLevel { get; set; }
+
+    /// <summary>목표 시간 이후 처음 도래한 사망 세션 번호</summary>
+    public int TargetReachedSessionNumber { get; set; }
+
+    /// <summary>목표 시간 이후 처음 도래한 사망 시점의 누적 게임 시간(초)</summary>
+    public double TargetReachedGameTimeSeconds { get; set; }
+
     // 황금 고블린 통계
     /// <summary>총 처치한 황금 고블린 수</summary>
     public int TotalGoldenGoblinsKilled { get; set; }
@@ -102,6 +111,18 @@ public enum UpgradeStrategy
 
     /// <summary>경제력 우선 (골드/크리스털 수입 극대화)</summary>
     EconomyFirst,
+
+    /// <summary>공격 스탯만 투자</summary>
+    DamageOnly,
+
+    /// <summary>공격 + 시간 연장 투자</summary>
+    DamageTime,
+
+    /// <summary>경제 스탯만 투자</summary>
+    EconomyOnly,
+
+    /// <summary>유틸리티/시작 보너스만 투자</summary>
+    UtilityOnly,
 
     /// <summary>시뮬레이션 기반 최적화</summary>
     SimulationBased,

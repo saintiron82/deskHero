@@ -300,13 +300,45 @@ namespace DeskWarrior.Models
         private static long CalculateTierBasedHp(int baseHp, int level, TierHpSystemConfig config)
         {
             int tier = (level - 1) / config.TierInterval;
-            double tierMultiplier = Math.Pow(config.TierMultiplier, tier);
+            double tierIndex = tier;
+            if (config.TierCurveExponent > 0.0 && config.TierCurveExponent != 1.0 && tierIndex > 0.0)
+            {
+                tierIndex = Math.Pow(tierIndex, config.TierCurveExponent);
+            }
+            double tierMultiplier = Math.Pow(config.TierMultiplier, tierIndex);
+            if (config.TierMultiplierDecayPerTier != 1.0)
+            {
+                double decay = Math.Pow(config.TierMultiplierDecayPerTier, tierIndex * (tierIndex - 1) / 2.0);
+                tierMultiplier *= decay;
+            }
+            if (config.MinTierMultiplier > 0.0 && tierMultiplier < config.MinTierMultiplier)
+            {
+                tierMultiplier = config.MinTierMultiplier;
+            }
             long tierBaseHp = (long)(baseHp * tierMultiplier);
 
             int levelInTier = (level - 1) % config.TierInterval;
-            long linearIncrease = levelInTier * config.LinearGrowthPerLevel;
+            double tierGrowthRate = config.LinearGrowthPerLevel * Math.Pow(config.GrowthDecreasePerTier, tierIndex);
+            if (config.MinLinearGrowthPerLevel > 0.0 && tierGrowthRate < config.MinLinearGrowthPerLevel)
+            {
+                tierGrowthRate = config.MinLinearGrowthPerLevel;
+            }
+            long linearIncrease = (long)(levelInTier * tierGrowthRate);
+            long hp = tierBaseHp + linearIncrease;
 
-            return tierBaseHp + linearIncrease;
+            if (config.LateStartLevel > 0 && level >= config.LateStartLevel)
+            {
+                int lateInterval = config.LateTierInterval > 0 ? config.LateTierInterval : config.TierInterval;
+                int lateTier = (level - config.LateStartLevel) / Math.Max(1, lateInterval);
+                if (config.MaxLateTiers > 0 && lateTier > config.MaxLateTiers)
+                    lateTier = config.MaxLateTiers;
+                double lateMultiplier = config.LateTierMultiplier != 1.0
+                    ? Math.Pow(config.LateTierMultiplier, lateTier)
+                    : 1.0;
+                hp = (long)(hp * lateMultiplier);
+            }
+
+            return hp;
         }
 
         private static int CalculateGoldReward(int baseGold, int goldGrowth, int level)

@@ -96,6 +96,9 @@ public class BalanceConfig
     [JsonPropertyName("upgrade_cost_interval")]
     public int UpgradeCostInterval { get; set; } = 50;  // 50스테이지마다 비용 2배
 
+    [JsonPropertyName("upgrade_cost_tier_multiplier")]
+    public double UpgradeCostTierMultiplier { get; set; } = 2.0;
+
     [JsonPropertyName("tier_hp_system")]
     public TierHpSystemConfig TierHpSystem { get; set; } = new();
 }
@@ -114,11 +117,35 @@ public class TierHpSystemConfig
     [JsonPropertyName("tier_multiplier")]
     public double TierMultiplier { get; set; } = 1.0;
 
+    [JsonPropertyName("tier_multiplier_decay_per_tier")]
+    public double TierMultiplierDecayPerTier { get; set; } = 1.0;
+
+    [JsonPropertyName("min_tier_multiplier")]
+    public double MinTierMultiplier { get; set; } = 0.0;
+
+    [JsonPropertyName("tier_curve_exponent")]
+    public double TierCurveExponent { get; set; } = 1.0;
+
     [JsonPropertyName("linear_growth_per_level")]
     public int LinearGrowthPerLevel { get; set; } = 5;
 
+    [JsonPropertyName("min_linear_growth_per_level")]
+    public double MinLinearGrowthPerLevel { get; set; } = 0.0;
+
     [JsonPropertyName("growth_decrease_per_tier")]
     public double GrowthDecreasePerTier { get; set; } = 0.85;
+
+    [JsonPropertyName("late_start_level")]
+    public int LateStartLevel { get; set; } = 0;
+
+    [JsonPropertyName("late_tier_interval")]
+    public int LateTierInterval { get; set; } = 0;
+
+    [JsonPropertyName("late_tier_multiplier")]
+    public double LateTierMultiplier { get; set; } = 1.0;
+
+    [JsonPropertyName("max_late_tiers")]
+    public int MaxLateTiers { get; set; } = 0;
 }
 
 public class UpgradeConfig
@@ -170,11 +197,18 @@ public class StatGrowthConfig
     [JsonPropertyName("effect_per_level")]
     public double EffectPerLevel { get; set; } = 1;
 
+    [JsonPropertyName("damage_bonus_per_level")]
+    public double? DamageBonusPerLevel { get; set; }
+
     [JsonPropertyName("max_level")]
     public int MaxLevel { get; set; } = 0;
 
     [JsonPropertyName("max_effect")]
     public double MaxEffect { get; set; } = 0;  // 0 = 무제한
+
+    // Optional: tier-based effect scaling
+    [JsonPropertyName("tier_config")]
+    public StatTierEffectConfig? TierConfig { get; set; }
 
     public int CalculateCost(int level, double? discountPercent = null)
     {
@@ -195,7 +229,35 @@ public class StatGrowthConfig
 
     public double CalculateEffect(int level)
     {
-        double effect = level * EffectPerLevel;
+        if (level <= 0) return 0;
+
+        double effect;
+
+        if (TierConfig != null &&
+            (TierConfig.EffectMultiplierPerTier != 1.0 || TierConfig.EffectAddPerTier != 0.0))
+        {
+            int interval = Math.Max(1, TierConfig.TierInterval);
+            int remaining = level;
+            int tier = 0;
+            double total = 0;
+
+            while (remaining > 0)
+            {
+                int inTier = Math.Min(remaining, interval);
+                double perLevel = EffectPerLevel * Math.Pow(TierConfig.EffectMultiplierPerTier, tier)
+                                  + (TierConfig.EffectAddPerTier * tier);
+                total += inTier * perLevel;
+                remaining -= inTier;
+                tier++;
+            }
+
+            effect = total;
+        }
+        else
+        {
+            effect = level * EffectPerLevel;
+        }
+
         // 데이터 한계 적용
         if (MaxEffect > 0 && effect > MaxEffect)
         {
@@ -232,6 +294,21 @@ public class StatGrowthConfig
         int maxLv = CalculateMaxLevel();
         return currentLevel < maxLv;
     }
+}
+
+/// <summary>
+/// 영구 스탯 효과용 티어 설정
+/// </summary>
+public class StatTierEffectConfig
+{
+    [JsonPropertyName("tier_interval")]
+    public int TierInterval { get; set; } = 1000;
+
+    [JsonPropertyName("effect_multiplier_per_tier")]
+    public double EffectMultiplierPerTier { get; set; } = 1.0;
+
+    [JsonPropertyName("effect_add_per_tier")]
+    public double EffectAddPerTier { get; set; } = 0.0;
 }
 
 /// <summary>

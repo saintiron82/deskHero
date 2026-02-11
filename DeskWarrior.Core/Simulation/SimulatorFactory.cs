@@ -36,7 +36,15 @@ public static class SimulatorFactory
         // SpecialMonsters.json 로드 (황금 고블린)
         var goldenGoblinConfig = LoadGoldenGoblinConfig(Path.Combine(configPath, "SpecialMonsters.json"));
 
-        return new BatchSimulator(gameConfig, inGameStats, permanentStats, monsterConfig, bossDropConfig, goldenGoblinConfig);
+        return new BatchSimulator(
+            gameConfig,
+            inGameStats,
+            permanentStats,
+            monsterConfig,
+            bossDropConfig,
+            goldenGoblinConfig,
+            monstersConfigPath: Path.Combine(configPath, "monsters")
+        );
     }
 
     /// <summary>
@@ -59,7 +67,16 @@ public static class SimulatorFactory
 
         var goldenGoblinConfig = LoadGoldenGoblinConfig(Path.Combine(configPath, "SpecialMonsters.json"));
 
-        return new SimulationEngine(gameConfig, inGameStats, permanentStats, monsterConfig, bossDropConfig, goldenGoblinConfig, seed);
+        return new SimulationEngine(
+            gameConfig,
+            inGameStats,
+            permanentStats,
+            monsterConfig,
+            bossDropConfig,
+            goldenGoblinConfig,
+            seed,
+            monstersConfigPath: Path.Combine(configPath, "monsters")
+        );
     }
 
     /// <summary>
@@ -113,7 +130,8 @@ public static class SimulatorFactory
                             SoftcapInterval = TryGetInt(stat.Value, "softcap_interval", 10),
                             EffectPerLevel = TryGetDouble(stat.Value, "effect_per_level", 1),
                             MaxLevel = TryGetInt(stat.Value, "max_level", 0),
-                            Weight = TryGetDouble(stat.Value, "weight", 1.0)
+                            Weight = TryGetDouble(stat.Value, "weight", 1.0),
+                            TierConfig = TryGetTierConfig(stat.Value)
                         };
                     }
                 }
@@ -201,6 +219,21 @@ public static class SimulatorFactory
         return defaultValue;
     }
 
+    private static TierConfigSim? TryGetTierConfig(System.Text.Json.JsonElement element)
+    {
+        if (!element.TryGetProperty("tier_config", out var tier))
+            return null;
+
+        return new TierConfigSim
+        {
+            TierInterval = TryGetInt(tier, "tier_interval", "tier_interval", 1000),
+            BaseMultiplier = TryGetDouble(tier, "base_multiplier", 1.0),
+            MultiplierDecreasePerTier = TryGetDouble(tier, "multiplier_decrease_per_tier", 0.1),
+            BaseSoftcap = TryGetInt(tier, "base_softcap", "base_softcap", 10),
+            SoftcapIncreasePerTier = TryGetInt(tier, "softcap_increase_per_tier", "softcap_increase_per_tier", 2)
+        };
+    }
+
     private static BossDropConfig LoadBossDropConfig(string path)
     {
         try
@@ -218,8 +251,12 @@ public static class SimulatorFactory
                     MaxDropChance = TryGetDouble(root, "max_drop_chance", 0.95),
                     BaseCrystalAmount = TryGetInt(root, "base_crystal_amount", 5),
                     CrystalPerLevel = TryGetInt(root, "crystal_per_level", 1),
+                    CrystalGrowthExponent = TryGetDouble(root, "crystal_growth_exponent", 1.0),
+                    CrystalGrowthBreakpoint = TryGetInt(root, "crystal_growth_breakpoint", 0),
                     CrystalVariance = TryGetDouble(root, "crystal_variance", 0.0),  // 고정값 (랜덤 없음)
-                    GuaranteedDropEveryNBosses = TryGetInt(root, "guaranteed_drop_every_n_bosses", 10)
+                    GuaranteedDropEveryNBosses = TryGetInt(root, "guaranteed_drop_every_n_bosses", 10),
+                    StageCompletionCrystal = TryGetInt(root, "stage_completion_crystal", 1),
+                    GoldToCrystalRate = TryGetInt(root, "gold_to_crystal_rate", 100)
                 };
             }
         }

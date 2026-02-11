@@ -10,6 +10,13 @@
     "critical_chance": 0.1,
     "critical_multiplier": 2.0,
     "upgrade_cost_interval": 50,
+    "tier_hp_system": {
+      "enabled": true,
+      "tier_interval": 50,
+      "tier_multiplier": 1.6,
+      "linear_growth_per_level": 8,
+      "growth_decrease_per_tier": 0.85
+    },
     "game_over_messages": [
       "Your finger needs a gym membership.",
       "Monster: 'Is that all you got?'",
@@ -19,7 +26,8 @@
       "Even my grandma clicks faster.",
       "Error 404: Skill not found.",
       "Try using both hands next time."
-    ]
+    ],
+    "upgrade_cost_tier_multiplier": 2.0
   },
   "upgrade": {
     "base_cost": 100,
