@@ -1,0 +1,92 @@
+{
+  "experiments": [
+    {
+      "name": "effect_minus_0p001",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.001
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.001
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p002",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.002
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.002
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p003",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.003
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.003
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p002_drop_0p0067",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.002
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.002
+          }
+        },
+        "config/BossDrops.json": {
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0067
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p003_drop_0p0067",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.003
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.003
+          }
+        },
+        "config/BossDrops.json": {
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0067
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

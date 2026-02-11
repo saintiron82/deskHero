@@ -1,0 +1,131 @@
+{
+  "experiments": [
+    {
+      "name": "time_0p575_crystal8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.575
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p575_crystal8_base29",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.575
+          }
+        },
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p575_crystal8_dropcurve_0p52_0p0065",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.575
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.52
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0065
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p575_dropcurve_0p52_0p0065",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.575
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.52
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0065
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p575_crystal9",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.575
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 9
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p57_crystal8_dropcurve_0p52_0p0065",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.52
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0065
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

@@ -1,0 +1,375 @@
+{
+  "experiments": [
+    {
+      "name": "rand1",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.002962
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.002962
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434651
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434651
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.526
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0061
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          }
+        }
+      }
+    },
+    {
+      "name": "rand2",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.002983
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.002983
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434558
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434558
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.52
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 30
+          }
+        }
+      }
+    },
+    {
+      "name": "rand3",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.003009
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.003009
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434741
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434741
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.522
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          }
+        }
+      }
+    },
+    {
+      "name": "rand4",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.003274
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.003274
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435131
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435131
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.523
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 30
+          }
+        }
+      }
+    },
+    {
+      "name": "rand5",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.002825
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.002825
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434721
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434721
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.522
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0061
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 30
+          }
+        }
+      }
+    },
+    {
+      "name": "rand6",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.002872
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.002872
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434618
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434618
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.512
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0067
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          }
+        }
+      }
+    },
+    {
+      "name": "rand7",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.002852
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.002852
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435071
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435071
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.508
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0061
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          }
+        }
+      }
+    },
+    {
+      "name": "rand8",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.003082
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.003082
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435119
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435119
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.52
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0064
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 30
+          }
+        }
+      }
+    },
+    {
+      "name": "rand9",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.003033
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.003033
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435423
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.435423
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.514
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0062
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          }
+        }
+      }
+    },
+    {
+      "name": "rand10",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.003149
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.003149
+          },
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434744
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434744
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.523
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0064
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 30
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

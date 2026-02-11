@@ -1,0 +1,57 @@
+{
+  "experiments": [
+    {
+      "name": "base_crystal_29",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          }
+        }
+      }
+    },
+    {
+      "name": "base_crystal_29_drop_0p0066",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0066
+          }
+        }
+      }
+    },
+    {
+      "name": "base_crystal_28",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 28
+          }
+        }
+      }
+    },
+    {
+      "name": "base_crystal_28_drop_0p0067",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 28
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0067
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

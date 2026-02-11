@@ -1,0 +1,65 @@
+{
+  "experiments": [
+    {
+      "name": "effect_0p43505",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.43505
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.43505
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p43510",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4351
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4351
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p43515",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.43515
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.43515
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p43520",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4352
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4352
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

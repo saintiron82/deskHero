@@ -1,0 +1,111 @@
+{
+  "experiments": [
+    {
+      "name": "stage2_crystal8_base29",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 2
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "stage2_only",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 2
+          }
+        }
+      }
+    },
+    {
+      "name": "stage2_dropcurve_late",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 2
+          },
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.54
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0065
+          }
+        }
+      }
+    },
+    {
+      "name": "dropcurve_late_only",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.53
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0065
+          }
+        }
+      }
+    },
+    {
+      "name": "crystal_late_only",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "stage2_dropcurve_late_crystal_late",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 2
+          },
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.54
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0065
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

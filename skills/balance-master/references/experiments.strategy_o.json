@@ -1,0 +1,94 @@
+{
+  "experiments": [
+    {
+      "name": "time_extend_effect_0p57",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          }
+        }
+      }
+    },
+    {
+      "name": "time_extend_effect_0p55",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.55
+          }
+        }
+      }
+    },
+    {
+      "name": "time_extend_damage_bonus_0p8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_extend_damage_bonus_0p7",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.7
+          }
+        }
+      }
+    },
+    {
+      "name": "time_extend_effect_0p57_damage_0p8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          },
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_extend_effect_0p55_damage_0p8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.55
+          },
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_extend_effect_0p57_damage_0p7",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          },
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.7
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

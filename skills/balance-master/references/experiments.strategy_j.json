@@ -1,0 +1,104 @@
+{
+  "experiments": [
+    {
+      "name": "effect_minus_0p01",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.01
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.01
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p02",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.02
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.02
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p01_growth_minus_0p005",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.01
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.01
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p02_growth_minus_0p005",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.02
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.02
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_minus_0p01_growth_minus_0p01",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "add",
+            "value": -0.01
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "add",
+            "value": -0.01
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "add",
+            "value": -0.01
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "add",
+            "value": -0.01
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

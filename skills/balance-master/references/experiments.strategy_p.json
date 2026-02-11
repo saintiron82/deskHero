@@ -1,0 +1,157 @@
+{
+  "experiments": [
+    {
+      "name": "time_effect_0p57",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p57_crystal8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p57_attack_tier_1p28",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p57_attack_tier_1p30",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.3
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.3
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p57_crystal8_attack_tier_1p28",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.57
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_crystal8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_attack_tier_1p28",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_crystal8_attack_tier_1p28",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

@@ -1,0 +1,50 @@
+{
+  "experiments": [
+    {
+      "name": "base_cost_plus_0p1pct",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.001
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.001
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_0p2pct",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.002
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.002
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_0p3pct",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.003
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.003
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

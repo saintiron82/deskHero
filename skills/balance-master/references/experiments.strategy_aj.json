@@ -1,0 +1,61 @@
+{
+  "experiments": [
+    {
+      "name": "stage4_only",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 4
+          }
+        }
+      }
+    },
+    {
+      "name": "stage4_drop_0p0063",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 4
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0063
+          }
+        }
+      }
+    },
+    {
+      "name": "stage4_drop_0p0062",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 4
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0062
+          }
+        }
+      }
+    },
+    {
+      "name": "stage4_base_drop_0p50",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 4
+          },
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.5
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

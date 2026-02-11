@@ -80,7 +80,29 @@
       "Bash(Where-Object {$_ProcessName -like \"*dotnet*\" -or $_ProcessName -like \"*DeskWarrior*\"})",
       "Bash(Select-Object ProcessName, Id, StartTime)",
       "Bash(xargs:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(du -sh:*)",
+      "Bash(# Check .gitignore for balanceDoc cat /Users/saintiron/Public/deskHero/.gitignore)",
+      "Bash(du:*)",
+      "Bash(dotnet --version:*)",
+      "Bash(dotnet --list-runtimes:*)",
+      "Bash(DOTNET_ROLL_FORWARD=LatestMajor dotnet run:*)",
+      "Bash(DOTNET_ROLL_FORWARD=LatestMajor dotnet build:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)",
+      "Bash(DOTNET_ROLL_FORWARD=LatestMajor timeout 180 dotnet run:*)",
+      "Bash(DOTNET_ROLL_FORWARD=LatestMajor gtimeout 180 dotnet run:*)",
+      "Bash(for wt in approach-a approach-b approach-c approach-d approach-e case-1 case-2 case-3 target-500)",
+      "Bash(do)",
+      "Bash(git worktree remove:*)",
+      "Bash(done)",
+      "Bash(for wt in /Users/saintiron/.codex/worktrees/03cc/deskHero /Users/saintiron/.codex/worktrees/5d6b/deskHero /Users/saintiron/.codex/worktrees/e329/deskHero)",
+      "Bash(for:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote prune:*)",
+      "Bash(git worktree:*)",
+      "Bash(git gc:*)",
+      "Bash(git clean:*)"
     ]
   }
 }

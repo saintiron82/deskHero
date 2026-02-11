@@ -1,0 +1,98 @@
+{
+  "experiments": [
+    {
+      "name": "time_damage_0p95",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.95
+          }
+        }
+      }
+    },
+    {
+      "name": "time_damage_0p90",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.9
+          }
+        }
+      }
+    },
+    {
+      "name": "time_weight_0p75",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.weight": {
+            "op": "set",
+            "value": 0.75
+          }
+        }
+      }
+    },
+    {
+      "name": "time_weight_0p75_damage_0p95",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.weight": {
+            "op": "set",
+            "value": 0.75
+          },
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.95
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p4348",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4348
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4348
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p4346",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4346
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4346
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p4352",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4352
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4352
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

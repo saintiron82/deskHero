@@ -1,0 +1,197 @@
+{
+  "experiments": [
+    {
+      "name": "baseline_hold",
+      "changes": {}
+    },
+    {
+      "name": "hp_decel_soft",
+      "changes": {
+        "config/GameData.json": {
+          "balance.tier_hp_system.growth_decrease_per_tier": {
+            "op": "set",
+            "value": 0.985
+          },
+          "balance.tier_hp_system.tier_multiplier_decay_per_tier": {
+            "op": "set",
+            "value": 0.99
+          }
+        }
+      }
+    },
+    {
+      "name": "time_econ_moderate",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.35
+          },
+          "stats.time_extend.base_cost": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.time_extend.multiplier": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.02
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 4.0
+          },
+          "stats.upgrade_discount.multiplier": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.upgrade_discount.growth_rate": {
+            "op": "mul",
+            "value": 0.9
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.keyboard_power.multiplier": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.mouse_power.multiplier": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "mul",
+            "value": 0.95
+          }
+        }
+      }
+    },
+    {
+      "name": "attack_early_nerf_late_boost",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.base_attack.effect_per_level": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.attack_percent.effect_per_level": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.crit_damage.effect_per_level": {
+            "op": "mul",
+            "value": 0.95
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "mul",
+            "value": 1.08
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "mul",
+            "value": 1.08
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "mul",
+            "value": 1.06
+          }
+        }
+      }
+    },
+    {
+      "name": "time_extend_early_nerf_late_boost",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.28
+          },
+          "stats.time_extend.damage_bonus_per_level": {
+            "op": "set",
+            "value": 0.8
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          }
+        }
+      }
+    }
+  ],
+  "injections": [
+    {
+      "name": "time_econ_overdrive",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.6
+          },
+          "stats.time_extend.base_cost": {
+            "op": "mul",
+            "value": 0.5
+          },
+          "stats.time_extend.multiplier": {
+            "op": "mul",
+            "value": 0.75
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 6.0
+          },
+          "stats.upgrade_discount.multiplier": {
+            "op": "mul",
+            "value": 0.7
+          },
+          "stats.upgrade_discount.growth_rate": {
+            "op": "mul",
+            "value": 0.5
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 0.6
+          },
+          "stats.keyboard_power.multiplier": {
+            "op": "mul",
+            "value": 0.7
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "mul",
+            "value": 0.7
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 0.6
+          },
+          "stats.mouse_power.multiplier": {
+            "op": "mul",
+            "value": 0.7
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "mul",
+            "value": 0.7
+          }
+        }
+      }
+    }
+  ]
+}
