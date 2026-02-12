@@ -209,6 +209,7 @@
   "ui.tray.title": "DeskWarrior - 트레이 더블클릭 또는 F1키로 드래그 모드",
   "ui.tray.dragMode": "📌 드래그 모드",
   "ui.tray.settings": "⚙️ 설정...",
+  "ui.tray.moveToScreen": "🖥️ 화면으로 이동",
   "ui.tray.exit": "❌ 종료",
 
   "ui.dragToggle.tooltip": "드래그 모드 전환 (F1)",

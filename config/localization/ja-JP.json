@@ -208,6 +208,7 @@
   "ui.tray.title": "DeskWarrior - トレイダブルクリックまたはF1キーでドラッグモード",
   "ui.tray.dragMode": "📌 ドラッグモード",
   "ui.tray.settings": "⚙️ 設定...",
+  "ui.tray.moveToScreen": "🖥️ 画面に移動",
   "ui.tray.exit": "❌ 終了",
 
   "ui.dragToggle.tooltip": "ドラッグモード切替 (F1)",

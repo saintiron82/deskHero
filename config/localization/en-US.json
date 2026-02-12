@@ -209,6 +209,7 @@
   "ui.tray.title": "DeskWarrior - Double-click tray or press F1 for drag mode",
   "ui.tray.dragMode": "📌 Drag Mode",
   "ui.tray.settings": "⚙️ Settings...",
+  "ui.tray.moveToScreen": "🖥️ Move to Screen",
   "ui.tray.exit": "❌ Exit",
 
   "ui.dragToggle.tooltip": "Toggle drag mode (F1)",

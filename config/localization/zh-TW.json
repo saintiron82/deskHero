@@ -208,6 +208,7 @@
   "ui.tray.title": "DeskWarrior - 雙擊托盤或按F1進入拖曳模式",
   "ui.tray.dragMode": "📌 拖曳模式",
   "ui.tray.settings": "⚙️ 設定...",
+  "ui.tray.moveToScreen": "🖥️ 移到螢幕",
   "ui.tray.exit": "❌ 離開",
 
   "ui.dragToggle.tooltip": "切換拖曳模式 (F1)",
