@@ -1,0 +1,93 @@
+{
+  "version": "1.0",
+  "base_paths": {
+    "config": "config",
+    "assets": "Assets",
+    "images": "Assets/Images",
+    "sounds": "Assets/Sounds"
+  },
+  "batches": {
+    "batch_01": {
+      "id": 1,
+      "data_file": "config/monsters/batch_01.json",
+      "sprite_base": "Batches/Batch_01",
+      "monster_folder": "Batches/Batch_01/Monster",
+      "boss_folder": "Batches/Batch_01/Boss"
+    },
+    "batch_02": {
+      "id": 2,
+      "data_file": "config/monsters/batch_02.json",
+      "sprite_base": "Batches/Batch_02",
+      "monster_folder": "Batches/Batch_02/Monster",
+      "boss_folder": "Batches/Batch_02/Boss"
+    },
+    "batch_03": {
+      "id": 3,
+      "data_file": "config/monsters/batch_03.json",
+      "sprite_base": "Batches/Batch_03",
+      "monster_folder": "Batches/Batch_03/Monster",
+      "boss_folder": "Batches/Batch_03/Boss"
+    },
+    "batch_04": {
+      "id": 4,
+      "data_file": "config/monsters/batch_04.json",
+      "sprite_base": "Batches/Batch_04",
+      "monster_folder": "Batches/Batch_04/Monster",
+      "boss_folder": "Batches/Batch_04/Boss"
+    },
+    "batch_05": {
+      "id": 5,
+      "data_file": "config/monsters/batch_05.json",
+      "sprite_base": "Batches/Batch_05",
+      "monster_folder": "Batches/Batch_05/Monster",
+      "boss_folder": "Batches/Batch_05/Boss"
+    },
+    "batch_06": {
+      "id": 6,
+      "data_file": "config/monsters/batch_06.json",
+      "sprite_base": "Batches/Batch_06",
+      "monster_folder": "Batches/Batch_06/Monster",
+      "boss_folder": "Batches/Batch_06/Boss"
+    },
+    "batch_07": {
+      "id": 7,
+      "data_file": "config/monsters/batch_07.json",
+      "sprite_base": "Batches/Batch_07",
+      "monster_folder": "Batches/Batch_07/Monster",
+      "boss_folder": "Batches/Batch_07/Boss"
+    },
+    "batch_08": {
+      "id": 8,
+      "data_file": "config/monsters/batch_08.json",
+      "sprite_base": "Batches/Batch_08",
+      "monster_folder": "Batches/Batch_08/Monster",
+      "boss_folder": "Batches/Batch_08/Boss"
+    },
+    "batch_09": {
+      "id": 9,
+      "data_file": "config/monsters/batch_09.json",
+      "sprite_base": "Batches/Batch_09",
+      "monster_folder": "Batches/Batch_09/Monster",
+      "boss_folder": "Batches/Batch_09/Boss"
+    }
+  },
+  "special_monsters": {
+    "golden_goblin": {
+      "sprite": "Production/monster_goblin.png",
+      "config": "config/SpecialMonsters.json"
+    }
+  },
+  "ui": {
+    "crystal": "Assets/Images/UI/crystal.png",
+    "gold": "Assets/Images/UI/gold.png",
+    "timer": "Assets/Images/UI/Icon_Timer.png",
+    "attack": "Assets/Images/UI/Icon_Attack.png",
+    "defense": "Assets/Images/UI/Icon_Defense.png",
+    "hp": "Assets/Images/UI/Icon_HP.png",
+    "speed": "Assets/Images/UI/Icon_Speed.png"
+  },
+  "sounds": {
+    "custom_folder": "Assets/Sounds/Custom",
+    "default_folder": "Assets/Sounds"
+  }
+}

@@ -1,0 +1,1452 @@
+{
+  "batch_id": 1,
+  "name": {
+    "ko-KR": "시작의 장",
+    "en-US": "The Beginning"
+  },
+  "theme": "The Beginning - Each creature with unique identity",
+  "unlock_condition": null,
+  "monsters": [
+    {
+      "id": "monster_slime",
+      "species": "slime",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 10,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 슬라임",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 슬라임."
+            },
+            "en-US": {
+              "name": "Forest Slime",
+              "description": "A normal-elemental slime found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_slime_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 슬라임",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 슬라임."
+            },
+            "en-US": {
+              "name": "Magma Slime",
+              "description": "A fire-elemental slime found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_slime_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 슬라임",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 슬라임."
+            },
+            "en-US": {
+              "name": "Ice Slime",
+              "description": "A ice-elemental slime found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_slime_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 슬라임",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 슬라임."
+            },
+            "en-US": {
+              "name": "Wind Slime",
+              "description": "A wind-elemental slime found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_slime_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 슬라임",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 슬라임."
+            },
+            "en-US": {
+              "name": "Golden Slime",
+              "description": "A holy-elemental slime found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_slime_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 슬라임",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 슬라임."
+            },
+            "en-US": {
+              "name": "Cursed Slime",
+              "description": "A dark-elemental slime found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_slime_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_bat",
+      "species": "bat",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 13,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 박쥐",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 박쥐."
+            },
+            "en-US": {
+              "name": "Forest Bat",
+              "description": "A normal-elemental bat found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_bat_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 박쥐",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 박쥐."
+            },
+            "en-US": {
+              "name": "Magma Bat",
+              "description": "A fire-elemental bat found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_bat_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 박쥐",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 박쥐."
+            },
+            "en-US": {
+              "name": "Ice Bat",
+              "description": "A ice-elemental bat found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_bat_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 박쥐",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 박쥐."
+            },
+            "en-US": {
+              "name": "Wind Bat",
+              "description": "A wind-elemental bat found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_bat_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 박쥐",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 박쥐."
+            },
+            "en-US": {
+              "name": "Golden Bat",
+              "description": "A holy-elemental bat found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_bat_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 박쥐",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 박쥐."
+            },
+            "en-US": {
+              "name": "Cursed Bat",
+              "description": "A dark-elemental bat found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_bat_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_skeleton",
+      "species": "skeleton",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 16,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 스켈레톤",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 스켈레톤."
+            },
+            "en-US": {
+              "name": "Forest Skeleton",
+              "description": "A normal-elemental skeleton found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_skeleton_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 스켈레톤",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 스켈레톤."
+            },
+            "en-US": {
+              "name": "Magma Skeleton",
+              "description": "A fire-elemental skeleton found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_skeleton_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 스켈레톤",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 스켈레톤."
+            },
+            "en-US": {
+              "name": "Ice Skeleton",
+              "description": "A ice-elemental skeleton found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_skeleton_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 스켈레톤",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 스켈레톤."
+            },
+            "en-US": {
+              "name": "Wind Skeleton",
+              "description": "A wind-elemental skeleton found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_skeleton_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 스켈레톤",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 스켈레톤."
+            },
+            "en-US": {
+              "name": "Golden Skeleton",
+              "description": "A holy-elemental skeleton found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_skeleton_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 스켈레톤",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 스켈레톤."
+            },
+            "en-US": {
+              "name": "Cursed Skeleton",
+              "description": "A dark-elemental skeleton found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_skeleton_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_goblin",
+      "species": "goblin",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 19,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 고블린",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 고블린."
+            },
+            "en-US": {
+              "name": "Forest Goblin",
+              "description": "A normal-elemental goblin found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_goblin_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 고블린",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 고블린."
+            },
+            "en-US": {
+              "name": "Magma Goblin",
+              "description": "A fire-elemental goblin found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_goblin_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 고블린",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 고블린."
+            },
+            "en-US": {
+              "name": "Ice Goblin",
+              "description": "A ice-elemental goblin found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_goblin_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 고블린",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 고블린."
+            },
+            "en-US": {
+              "name": "Wind Goblin",
+              "description": "A wind-elemental goblin found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_goblin_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 고블린",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 고블린."
+            },
+            "en-US": {
+              "name": "Golden Goblin",
+              "description": "A holy-elemental goblin found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_goblin_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 고블린",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 고블린."
+            },
+            "en-US": {
+              "name": "Cursed Goblin",
+              "description": "A dark-elemental goblin found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_goblin_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_orc",
+      "species": "orc",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 22,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 오크",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 오크."
+            },
+            "en-US": {
+              "name": "Forest Orc",
+              "description": "A normal-elemental orc found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_orc_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 오크",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 오크."
+            },
+            "en-US": {
+              "name": "Magma Orc",
+              "description": "A fire-elemental orc found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_orc_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 오크",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 오크."
+            },
+            "en-US": {
+              "name": "Ice Orc",
+              "description": "A ice-elemental orc found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_orc_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 오크",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 오크."
+            },
+            "en-US": {
+              "name": "Wind Orc",
+              "description": "A wind-elemental orc found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_orc_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 오크",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 오크."
+            },
+            "en-US": {
+              "name": "Golden Orc",
+              "description": "A holy-elemental orc found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_orc_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 오크",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 오크."
+            },
+            "en-US": {
+              "name": "Cursed Orc",
+              "description": "A dark-elemental orc found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_orc_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_ghost",
+      "species": "ghost",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 25,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 Ghost",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 Ghost."
+            },
+            "en-US": {
+              "name": "Forest Ghost",
+              "description": "A normal-elemental ghost found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_ghost_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 Ghost",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 Ghost."
+            },
+            "en-US": {
+              "name": "Magma Ghost",
+              "description": "A fire-elemental ghost found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_ghost_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 Ghost",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 Ghost."
+            },
+            "en-US": {
+              "name": "Ice Ghost",
+              "description": "A ice-elemental ghost found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_ghost_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 Ghost",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 Ghost."
+            },
+            "en-US": {
+              "name": "Wind Ghost",
+              "description": "A wind-elemental ghost found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_ghost_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 Ghost",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 Ghost."
+            },
+            "en-US": {
+              "name": "Golden Ghost",
+              "description": "A holy-elemental ghost found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_ghost_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 Ghost",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 Ghost."
+            },
+            "en-US": {
+              "name": "Cursed Ghost",
+              "description": "A dark-elemental ghost found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_ghost_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_golem",
+      "species": "golem",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 28,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 골렘",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 골렘."
+            },
+            "en-US": {
+              "name": "Forest Golem",
+              "description": "A normal-elemental golem found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_golem_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 골렘",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 골렘."
+            },
+            "en-US": {
+              "name": "Magma Golem",
+              "description": "A fire-elemental golem found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_golem_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 골렘",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 골렘."
+            },
+            "en-US": {
+              "name": "Ice Golem",
+              "description": "A ice-elemental golem found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_golem_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 골렘",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 골렘."
+            },
+            "en-US": {
+              "name": "Wind Golem",
+              "description": "A wind-elemental golem found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_golem_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 골렘",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 골렘."
+            },
+            "en-US": {
+              "name": "Golden Golem",
+              "description": "A holy-elemental golem found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_golem_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 골렘",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 골렘."
+            },
+            "en-US": {
+              "name": "Cursed Golem",
+              "description": "A dark-elemental golem found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_golem_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_mushroom",
+      "species": "mushroom",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 31,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 Mushroom",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 Mushroom."
+            },
+            "en-US": {
+              "name": "Forest Mushroom",
+              "description": "A normal-elemental mushroom found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_mushroom_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 Mushroom",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 Mushroom."
+            },
+            "en-US": {
+              "name": "Magma Mushroom",
+              "description": "A fire-elemental mushroom found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_mushroom_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 Mushroom",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 Mushroom."
+            },
+            "en-US": {
+              "name": "Ice Mushroom",
+              "description": "A ice-elemental mushroom found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_mushroom_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 Mushroom",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 Mushroom."
+            },
+            "en-US": {
+              "name": "Wind Mushroom",
+              "description": "A wind-elemental mushroom found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_mushroom_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 Mushroom",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 Mushroom."
+            },
+            "en-US": {
+              "name": "Golden Mushroom",
+              "description": "A holy-elemental mushroom found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_mushroom_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 Mushroom",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 Mushroom."
+            },
+            "en-US": {
+              "name": "Cursed Mushroom",
+              "description": "A dark-elemental mushroom found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_mushroom_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_spider",
+      "species": "spider",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 34,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 거미",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 거미."
+            },
+            "en-US": {
+              "name": "Forest Spider",
+              "description": "A normal-elemental spider found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_spider_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 거미",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 거미."
+            },
+            "en-US": {
+              "name": "Magma Spider",
+              "description": "A fire-elemental spider found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_spider_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 거미",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 거미."
+            },
+            "en-US": {
+              "name": "Ice Spider",
+              "description": "A ice-elemental spider found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_spider_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 거미",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 거미."
+            },
+            "en-US": {
+              "name": "Wind Spider",
+              "description": "A wind-elemental spider found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_spider_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 거미",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 거미."
+            },
+            "en-US": {
+              "name": "Golden Spider",
+              "description": "A holy-elemental spider found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_spider_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 거미",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 거미."
+            },
+            "en-US": {
+              "name": "Cursed Spider",
+              "description": "A dark-elemental spider found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_spider_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_wolf",
+      "species": "wolf",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 37,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 늑대",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 늑대."
+            },
+            "en-US": {
+              "name": "Forest Wolf",
+              "description": "A normal-elemental wolf found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_wolf_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 늑대",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 늑대."
+            },
+            "en-US": {
+              "name": "Magma Wolf",
+              "description": "A fire-elemental wolf found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_wolf_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 늑대",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 늑대."
+            },
+            "en-US": {
+              "name": "Ice Wolf",
+              "description": "A ice-elemental wolf found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_wolf_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 늑대",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 늑대."
+            },
+            "en-US": {
+              "name": "Wind Wolf",
+              "description": "A wind-elemental wolf found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_wolf_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 늑대",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 늑대."
+            },
+            "en-US": {
+              "name": "Golden Wolf",
+              "description": "A holy-elemental wolf found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_wolf_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 늑대",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 늑대."
+            },
+            "en-US": {
+              "name": "Cursed Wolf",
+              "description": "A dark-elemental wolf found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_wolf_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_snake",
+      "species": "snake",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 40,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 뱀",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 뱀."
+            },
+            "en-US": {
+              "name": "Forest Snake",
+              "description": "A normal-elemental snake found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_snake_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 뱀",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 뱀."
+            },
+            "en-US": {
+              "name": "Magma Snake",
+              "description": "A fire-elemental snake found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_snake_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 뱀",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 뱀."
+            },
+            "en-US": {
+              "name": "Ice Snake",
+              "description": "A ice-elemental snake found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_snake_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 뱀",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 뱀."
+            },
+            "en-US": {
+              "name": "Wind Snake",
+              "description": "A wind-elemental snake found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_snake_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 뱀",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 뱀."
+            },
+            "en-US": {
+              "name": "Golden Snake",
+              "description": "A holy-elemental snake found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_snake_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 뱀",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 뱀."
+            },
+            "en-US": {
+              "name": "Cursed Snake",
+              "description": "A dark-elemental snake found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_snake_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_boar",
+      "species": "boar",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 40,
+        "hp_growth": 10,
+        "base_gold": 43,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "display_options": {
+        "needs_flip": true,
+        "rotation": 0
+      },
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "숲 Boar",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 normal 속성의 Boar."
+            },
+            "en-US": {
+              "name": "Forest Boar",
+              "description": "A normal-elemental boar found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_boar_normal.png",
+          "emoji": "🟢",
+          "hue_shift": 0,
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 Boar",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 fire 속성의 Boar."
+            },
+            "en-US": {
+              "name": "Magma Boar",
+              "description": "A fire-elemental boar found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_boar_fire.png",
+          "emoji": "🔥",
+          "hue_shift": 20,
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 Boar",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 ice 속성의 Boar."
+            },
+            "en-US": {
+              "name": "Ice Boar",
+              "description": "A ice-elemental boar found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_boar_ice.png",
+          "emoji": "❄️",
+          "hue_shift": 200,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 Boar",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 wind 속성의 Boar."
+            },
+            "en-US": {
+              "name": "Wind Boar",
+              "description": "A wind-elemental boar found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_boar_wind.png",
+          "emoji": "💨",
+          "hue_shift": 90,
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 Boar",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 holy 속성의 Boar."
+            },
+            "en-US": {
+              "name": "Golden Boar",
+              "description": "A holy-elemental boar found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_boar_holy.png",
+          "emoji": "✨",
+          "hue_shift": 50,
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "커스드 Boar",
+              "description": "The Beginning - Each creature with unique identity에서 발견된 dark 속성의 Boar."
+            },
+            "en-US": {
+              "name": "Cursed Boar",
+              "description": "A dark-elemental boar found in The Beginning - Each creature with unique identity."
+            }
+          },
+          "sprite": "Production/monster_boar_dark.png",
+          "emoji": "💀",
+          "hue_shift": 280,
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    }
+  ],
+  "bosses": []
+}
