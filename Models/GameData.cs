@@ -43,6 +43,30 @@ namespace DeskWarrior.Models
     }
 
     /// <summary>
+    /// 연속 동일키 입력 페널티 설정
+    /// </summary>
+    public class ConsecutiveKeyPenaltyConfig
+    {
+        [JsonPropertyName("enabled")]
+        public bool Enabled { get; set; } = true;
+
+        [JsonPropertyName("penalty_start_count")]
+        public int PenaltyStartCount { get; set; } = 7;
+
+        [JsonPropertyName("penalty_per_count")]
+        public double PenaltyPerCount { get; set; } = 0.1;
+
+        [JsonPropertyName("combo_exempt")]
+        public bool ComboExempt { get; set; } = false;
+
+        [JsonPropertyName("mouse_exempt")]
+        public bool MouseExempt { get; set; }
+
+        [JsonPropertyName("max_cps")]
+        public int MaxCps { get; set; }
+    }
+
+    /// <summary>
     /// 게임 밸런스 설정 데이터 (GameData.json)
     /// </summary>
     public class GameData
@@ -61,6 +85,9 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("element_properties")]
         public Dictionary<string, ElementProperties> ElementProperties { get; set; } = new();
+
+        [JsonPropertyName("consecutive_key_penalty")]
+        public ConsecutiveKeyPenaltyConfig ConsecutiveKeyPenalty { get; set; } = new();
 
         /// <summary>
         /// JSON 파일에서 로드
@@ -101,7 +128,7 @@ namespace DeskWarrior.Models
         public int TimeLimit { get; set; } = 30;
 
         [JsonPropertyName("base_gold_multiplier")]
-        public int BaseGoldMultiplier { get; set; } = 1;
+        public double BaseGoldMultiplier { get; set; } = 1;
 
         [JsonPropertyName("critical_chance")]
         public double CriticalChance { get; set; } = 0.1;

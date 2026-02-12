@@ -138,9 +138,12 @@ namespace DeskWarrior.Managers
         public Monster CreateGoldenGoblin(int currentLevel)
         {
             string language = LocalizationManager.Instance.CurrentLanguage;
-            string name = _config.Name.TryGetValue(language, out var localizedName)
-                ? localizedName
-                : _config.Name.GetValueOrDefault("en-US", "Golden Goblin");
+            string name;
+            if (!_config.Name.TryGetValue(language, out var localizedName))
+            {
+                _config.Name.TryGetValue("en-US", out localizedName);
+            }
+            name = localizedName ?? "Golden Goblin";
 
             return new Monster(_config, currentLevel, name);
         }

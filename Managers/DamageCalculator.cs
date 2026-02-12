@@ -196,10 +196,11 @@ namespace DeskWarrior.Managers
                 effectivePower *= resistanceModifier;
             }
 
-            // 최종 데미지 = (int)⑧
+            // 최종 데미지 = (int)⑧ (최소 1 보장)
+            int finalDamage = Math.Max(1, (int)effectivePower);
             return new DamageResult
             {
-                Damage = (int)effectivePower,
+                Damage = finalDamage,
                 IsCritical = isCritical,
                 IsMultiHit = multiHit,
                 IsCombo = isCombo,

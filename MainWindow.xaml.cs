@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using WinFormsScreen = System.Windows.Forms.Screen;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -106,6 +108,7 @@ namespace DeskWarrior
 
             // TrayManager 이벤트
             TrayManager.ExitRequested += OnExitRequested;
+            TrayManager.MoveToScreenRequested += OnMoveToScreenRequested;
         }
 
         #endregion
@@ -139,6 +142,7 @@ namespace DeskWarrior
             // 저장된 위치 복원
             Left = SaveManager.CurrentSave.Position.X;
             Top = SaveManager.CurrentSave.Position.Y;
+            EnsureWindowOnScreen();
 
             // 트레이 아이콘 초기화
             ViewModel.InitializeTray();
@@ -198,6 +202,38 @@ namespace DeskWarrior
             SaveManager.UpdateWindowPosition(Left, Top);
         }
 
+        private void OnMoveToScreenRequested(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var primary = WinFormsScreen.PrimaryScreen;
+                if (primary != null)
+                {
+                    Left = primary.WorkingArea.Left + 100;
+                    Top = primary.WorkingArea.Top + 100;
+                }
+            });
+        }
+
+        private void EnsureWindowOnScreen()
+        {
+            var windowRect = new System.Drawing.Rectangle(
+                (int)Left, (int)Top, (int)Width, (int)Height);
+
+            bool isOnScreen = WinFormsScreen.AllScreens.Any(s =>
+                s.WorkingArea.IntersectsWith(windowRect));
+
+            if (!isOnScreen)
+            {
+                var primary = WinFormsScreen.PrimaryScreen;
+                if (primary != null)
+                {
+                    Left = primary.WorkingArea.Left + 100;
+                    Top = primary.WorkingArea.Top + 100;
+                }
+            }
+        }
+
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _windowInterop.HandleMouseLeftButtonDown(sender, e);
@@ -227,7 +263,6 @@ namespace DeskWarrior
                     SoundManager.Play(SoundType.MouseClick);
                 }
                 _heroAvatar.ShowHeroAttackSprite();
-                _visualEffect.ShakeMonster(GameManager.Config.Visual.ShakePower);
 
                 string inputInfo = e.Type == GameInputType.Keyboard
                     ? $"⌨️ Key:{e.VirtualKeyCode}"
@@ -248,6 +283,10 @@ namespace DeskWarrior
             Dispatcher.Invoke(() =>
             {
                 _visualEffect.ShowDamagePopup(e.Damage, e.IsCritical);
+                if (e.Damage > 0)
+                {
+                    _visualEffect.ShakeMonster(GameManager.Config.Visual.ShakePower);
+                }
                 // 몬스터가 살아있을 때만 HP 바 애니메이션 (죽으면 OnMonsterSpawned에서 처리)
                 if (GameManager.CurrentMonster?.IsAlive == true)
                 {

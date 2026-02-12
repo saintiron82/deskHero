@@ -42,6 +42,17 @@ namespace DeskWarrior
                 });
             });
 
+            // ResourceManager 초기화 (최우선)
+            try
+            {
+                ResourceManager.Instance.LoadResourceTable();
+                Logger.Log("ResourceManager initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Failed to initialize ResourceManager", ex);
+            }
+
             // 의존성 주입: AchievementDefinition에 LocalizationProvider 설정
             AchievementDefinition.LocalizationProvider = LocalizationManager.Instance;
 

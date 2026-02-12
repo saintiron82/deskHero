@@ -23,6 +23,7 @@ namespace DeskWarrior.Managers
 
         public event EventHandler? SettingsRequested;
         public event EventHandler? ExitRequested;
+        public event EventHandler? MoveToScreenRequested;
 
         #endregion
 
@@ -47,14 +48,20 @@ namespace DeskWarrior.Managers
             // 컨텍스트 메뉴 업데이트
             if (_contextMenu != null)
             {
-                // 설정 메뉴 (인덱스 0)
-                if (_contextMenu.Items.Count > 0 && _contextMenu.Items[0] is ToolStripMenuItem settingsItem)
+                // 화면으로 이동 메뉴 (인덱스 0)
+                if (_contextMenu.Items.Count > 0 && _contextMenu.Items[0] is ToolStripMenuItem moveItem)
+                {
+                    moveItem.Text = loc["ui.tray.moveToScreen"];
+                }
+
+                // 설정 메뉴 (인덱스 1)
+                if (_contextMenu.Items.Count > 1 && _contextMenu.Items[1] is ToolStripMenuItem settingsItem)
                 {
                     settingsItem.Text = loc["ui.tray.settings"];
                 }
 
-                // 종료 메뉴 (인덱스 2)
-                if (_contextMenu.Items.Count > 2 && _contextMenu.Items[2] is ToolStripMenuItem exitItem)
+                // 종료 메뉴 (인덱스 3)
+                if (_contextMenu.Items.Count > 3 && _contextMenu.Items[3] is ToolStripMenuItem exitItem)
                 {
                     exitItem.Text = loc["ui.tray.exit"];
                 }
@@ -69,6 +76,11 @@ namespace DeskWarrior.Managers
         {
             _contextMenu = new ContextMenuStrip();
             var loc = LocalizationManager.Instance;
+
+            // 화면으로 이동
+            var moveToScreenItem = new ToolStripMenuItem(loc["ui.tray.moveToScreen"]);
+            moveToScreenItem.Click += (s, e) => MoveToScreenRequested?.Invoke(this, EventArgs.Empty);
+            _contextMenu.Items.Add(moveToScreenItem);
 
             // 설정
             var settingsItem = new ToolStripMenuItem(loc["ui.tray.settings"]);

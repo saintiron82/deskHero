@@ -50,8 +50,8 @@ namespace DeskWarrior.Interfaces
         #region Methods
 
         void StartGame();
-        void OnKeyboardInput();
-        void OnMouseInput();
+        void OnKeyboardInput(int vkCode = 0);
+        void OnMouseInput(GameMouseButton button = GameMouseButton.None);
         bool UpgradeKeyboardPower();
         bool UpgradeMousePower();
         bool UpgradeInGameStat(string statId);

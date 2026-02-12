@@ -13,19 +13,39 @@ namespace DeskWarrior.Controls
     {
         public DamagePopup(int damage, bool isCritical = false)
         {
-            Text = damage.ToString();
-            FontSize = isCritical ? 18 : 14;
-            FontWeight = FontWeights.Bold;
-            Foreground = isCritical ? Brushes.Yellow : Brushes.White;
-            
-            // 그림자 효과
-            Effect = new System.Windows.Media.Effects.DropShadowEffect
+            // 데미지 0일 때 특별 표시
+            if (damage == 0)
             {
-                ShadowDepth = 1,
-                BlurRadius = 2,
-                Color = Colors.Black
-            };
-            
+                Text = "BLOCKED";
+                FontSize = 20;
+                FontWeight = FontWeights.ExtraBold;
+                Foreground = Brushes.Red;
+
+                // 강한 그림자 효과
+                Effect = new System.Windows.Media.Effects.DropShadowEffect
+                {
+                    ShadowDepth = 2,
+                    BlurRadius = 4,
+                    Color = Colors.Black,
+                    Opacity = 0.8
+                };
+            }
+            else
+            {
+                Text = damage.ToString();
+                FontSize = isCritical ? 18 : 14;
+                FontWeight = FontWeights.Bold;
+                Foreground = isCritical ? Brushes.Yellow : Brushes.White;
+
+                // 그림자 효과
+                Effect = new System.Windows.Media.Effects.DropShadowEffect
+                {
+                    ShadowDepth = 1,
+                    BlurRadius = 2,
+                    Color = Colors.Black
+                };
+            }
+
             RenderTransformOrigin = new Point(0.5, 0.5);
             RenderTransform = new TranslateTransform();
         }

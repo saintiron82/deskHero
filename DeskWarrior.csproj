@@ -9,6 +9,7 @@
     <ApplicationIcon></ApplicationIcon>
     <RootNamespace>DeskWarrior</RootNamespace>
     <AssemblyName>DeskWarrior</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- UTF-8 인코딩 설정 -->
     <EncodingWebName>utf-8</EncodingWebName>
   </PropertyGroup>
@@ -25,6 +26,10 @@
     <EmbeddedResource Remove="DeskWarrior.Simulator\**" />
     <None Remove="DeskWarrior.Core\**" />
     <None Remove="DeskWarrior.Simulator\**" />
+    <!-- tools 폴더 제외 -->
+    <Compile Remove="tools\**" />
+    <EmbeddedResource Remove="tools\**" />
+    <None Remove="tools\**" />
   </ItemGroup>
 
   <ItemGroup>

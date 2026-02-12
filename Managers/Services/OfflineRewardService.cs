@@ -52,11 +52,13 @@ namespace DeskWarrior.Managers.Services
         /// </summary>
         public string GetPopupMessage(OfflineRewardResult result, string languageCode)
         {
-            string template;
+            string? template;
             if (!_config.PopupMessage.TryGetValue(languageCode, out template))
             {
-                template = _config.PopupMessage.GetValueOrDefault("en-US",
-                    "Welcome back! You earned {gold} gold and {crystals} crystals during {hours} hours offline!");
+                if (!_config.PopupMessage.TryGetValue("en-US", out template))
+                {
+                    template = "Welcome back! You earned {gold} gold and {crystals} crystals during {hours} hours offline!";
+                }
             }
 
             return template

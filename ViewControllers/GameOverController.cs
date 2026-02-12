@@ -80,6 +80,43 @@ namespace DeskWarrior.ViewControllers
             };
             _window.MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, shakeAnim);
 
+            // 히어로 사망 애니메이션: 반시계 방향으로 빙글 돌며 튕겨 날아감
+            var heroRotateAnim = new DoubleAnimation
+            {
+                From = 0,
+                To = -720,
+                Duration = TimeSpan.FromSeconds(1.3),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+            };
+            _window.HeroRotateTransform.BeginAnimation(System.Windows.Media.RotateTransform.AngleProperty, heroRotateAnim);
+
+            var heroFlyX = new DoubleAnimation
+            {
+                From = 0,
+                To = -200,
+                Duration = TimeSpan.FromSeconds(1.3),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.XProperty, heroFlyX);
+
+            var heroFlyY = new DoubleAnimation
+            {
+                From = 0,
+                To = -120,
+                Duration = TimeSpan.FromSeconds(1.3),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.YProperty, heroFlyY);
+
+            var heroFadeAnim = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.0,
+                BeginTime = TimeSpan.FromSeconds(0.3),
+                Duration = TimeSpan.FromSeconds(0.8)
+            };
+            _window.HeroImage.BeginAnimation(UIElement.OpacityProperty, heroFadeAnim);
+
             var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
             timer.Tick += (s, args) =>
             {
@@ -161,6 +198,13 @@ namespace DeskWarrior.ViewControllers
             _window.MonsterImage.Width = MONSTER_SIZE;
             _window.MonsterImage.Height = MONSTER_SIZE;
             _window.MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, null);
+
+            // 히어로 애니메이션 리셋
+            _window.HeroImage.BeginAnimation(UIElement.OpacityProperty, null);
+            _window.HeroRotateTransform.BeginAnimation(System.Windows.Media.RotateTransform.AngleProperty, null);
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.XProperty, null);
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.YProperty, null);
+            _window.HeroImage.Opacity = 1.0;
 
             // 게임 재시작
             gameManager.RestartGame();

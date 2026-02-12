@@ -84,6 +84,12 @@
                             <TextBlock x:Name="TimerText" Text="{Binding TimerText}" FontSize="12" FontWeight="Bold" Foreground="#87CEEB" VerticalAlignment="Center" MinWidth="20" TextAlignment="Left"/>
                         </StackPanel>
 
+                        <!-- CPS (초당 입력) -->
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,4,0">
+                            <TextBlock Text="{Binding CurrentCPS, StringFormat={}{0:F0}}" FontSize="11" FontWeight="Bold" Foreground="#10B981" VerticalAlignment="Center"/>
+                            <TextBlock Text="/s" FontSize="9" Foreground="#888888" VerticalAlignment="Center"/>
+                        </StackPanel>
+
                         <!-- 우측: X 버튼 -->
                         <Border x:Name="ExitButtonBorderInline" Grid.Column="4"
                                 Background="#662222"
@@ -162,7 +168,15 @@
                            VerticalAlignment="Bottom"
                            Margin="10,0,0,0"
                            Panel.ZIndex="3"
-                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown"/>
+                           RenderTransformOrigin="0.5,0.5"
+                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <TranslateTransform x:Name="HeroTranslateTransform"/>
+                                <RotateTransform x:Name="HeroRotateTransform"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                    </Image>
                 </Grid>
 
                 <!-- Row 3: 업그레이드 버튼 패널 -->

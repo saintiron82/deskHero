@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
@@ -18,6 +19,7 @@ namespace DeskWarrior.Managers
         #region Fields
 
         private readonly Queue<DamageRecord> _damageRecords = new();
+        private readonly Queue<long> _recentInputTicks = new();
 
         #endregion
 
@@ -104,6 +106,23 @@ namespace DeskWarrior.Managers
         public double DurationMinutes => (DateTime.Now - StartTime).TotalMinutes;
 
         /// <summary>
+        /// 실시간 초당 입력 횟수 (CPS) - 읽을 때마다 만료 항목 정리
+        /// </summary>
+        public double CurrentCPS
+        {
+            get
+            {
+                long now = Stopwatch.GetTimestamp();
+                long oneSecondAgo = now - Stopwatch.Frequency;
+                while (_recentInputTicks.Count > 0 && _recentInputTicks.Peek() < oneSecondAgo)
+                {
+                    _recentInputTicks.Dequeue();
+                }
+                return _recentInputTicks.Count;
+            }
+        }
+
+        /// <summary>
         /// 최근 데미지 기록 (최대 100개)
         /// </summary>
         public IReadOnlyCollection<DamageRecord> DamageRecords => _damageRecords;
@@ -111,6 +130,14 @@ namespace DeskWarrior.Managers
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// 유효 입력 기록 (롤링 윈도우 1초)
+        /// </summary>
+        public void RecordInput()
+        {
+            _recentInputTicks.Enqueue(Stopwatch.GetTimestamp());
+        }
 
         /// <summary>
         /// 데미지 기록 (간단 버전 - 하위 호환용)
@@ -239,6 +266,7 @@ namespace DeskWarrior.Managers
             GoldenGoblinsKilled = 0;
             GoldenGoblinGoldEarned = 0;
             _damageRecords.Clear();
+            _recentInputTicks.Clear();
         }
 
         /// <summary>

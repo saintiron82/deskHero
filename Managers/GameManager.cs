@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -25,6 +27,7 @@ namespace DeskWarrior.Managers
         private readonly DamageCalculator _damageCalculator;
         private readonly StatGrowthManager _statGrowth;
         private readonly ComboTracker _comboTracker;
+        private readonly ConsecutiveKeyTracker _consecutiveKeyTracker;
         private readonly Random _random = new();
         private readonly GoldenGoblinManager _goldenGoblinManager;
         private Monster? _currentMonster;
@@ -35,6 +38,9 @@ namespace DeskWarrior.Managers
         private CollectionRewards? _collectionRewards; // 도감 보상 설정
         private bool _useBatchSystem = true; // 배치 시스템 사용 여부
         private bool _isGoldenGoblinActive = false; // 황금 고블린 활성화 상태
+
+        // 입력 속도 제한 (슬라이딩 윈도우 - 1초 내 입력 수 카운트)
+        private readonly Queue<long> _rateLimitTicks = new();
 
         // 인게임 스탯 (세션마다 리셋)
         private InGameStats _inGameStats = new();
@@ -115,6 +121,7 @@ namespace DeskWarrior.Managers
         public int SessionBossDropCrystals => _sessionTracker.SessionBossDropCrystals;
         public int SessionAchievementCrystals => _sessionTracker.SessionAchievementCrystals;
         public System.Collections.Generic.IReadOnlyCollection<DamageRecord> SessionDamageRecords => _sessionTracker.DamageRecords;
+        public double SessionCPS => _sessionTracker.CurrentCPS;
 
         #endregion
 
@@ -125,6 +132,7 @@ namespace DeskWarrior.Managers
             // 설정 로드
             var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "GameData.json");
             _gameData = GameData.LoadFromFile(configPath);
+            Logger.Log($"[GameData] MaxCps={_gameData.ConsecutiveKeyPenalty.MaxCps}, MouseExempt={_gameData.ConsecutiveKeyPenalty.MouseExempt}");
 
             // 배치 기반 몬스터 데이터 로드 시도
             _monsterDataManager = new MonsterDataManager();
@@ -159,6 +167,9 @@ namespace DeskWarrior.Managers
 
             // 콤보 트래커 초기화
             _comboTracker = new ComboTracker();
+
+            // 연속 키 추적 초기화
+            _consecutiveKeyTracker = new ConsecutiveKeyTracker(_gameData.ConsecutiveKeyPenalty);
 
             // 황금 고블린 매니저 초기화
             _goldenGoblinManager = new GoldenGoblinManager();
@@ -241,6 +252,7 @@ namespace DeskWarrior.Managers
             CurrentLevel = 1 + (int)_statGrowth.GetPermanentStatEffect("start_level", permStats?.StartLevelLevel ?? 0);
             Gold = (int)_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0);
             _sessionTracker.Reset();
+            _rateLimitTicks.Clear();
 
             // 콤보 트래커 리셋
             _comboTracker.FullReset();
@@ -251,28 +263,76 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 키보드 입력 처리
         /// </summary>
-        public void OnKeyboardInput()
+        public void OnKeyboardInput(int vkCode = 0)
         {
             if (_currentMonster == null || !_currentMonster.IsAlive) return;
+
+            // 입력 속도 제한 (슬라이딩 윈도우 - 1초 내 입력 수 제한)
+            int maxCps = _gameData.ConsecutiveKeyPenalty.MaxCps;
+            if (maxCps > 0)
+            {
+                long now = Stopwatch.GetTimestamp();
+                long oneSecondAgo = now - Stopwatch.Frequency;
+                while (_rateLimitTicks.Count > 0 && _rateLimitTicks.Peek() < oneSecondAgo)
+                    _rateLimitTicks.Dequeue();
+
+                if (_rateLimitTicks.Count >= maxCps)
+                {
+                    Logger.Log($"[BLOCKED] RateLimit: queue={_rateLimitTicks.Count}/{maxCps}, vkCode={vkCode}");
+                    DamageDealt?.Invoke(this, new DamageEventArgs(0, false, false));
+                    return;
+                }
+                _rateLimitTicks.Enqueue(now);
+            }
+
+            // CPS 추적 (속도 제한 통과한 유효 입력만)
+            _sessionTracker.RecordInput();
 
             // 콤보 처리
             int comboStack = _comboTracker.ProcessInput();
 
-            var result = CalculateDamage(KeyboardPower, comboStack, AttackType.Keyboard);
+            // 연속 키 페널티 계산
+            double penalty = _consecutiveKeyTracker.ProcessKeyboardInput(vkCode, IsComboActive);
+
+            var result = CalculateDamage(KeyboardPower, comboStack, AttackType.Keyboard, penalty);
             ApplyDamage(result, isMouse: false);
         }
 
         /// <summary>
         /// 마우스 입력 처리
         /// </summary>
-        public void OnMouseInput()
+        public void OnMouseInput(GameMouseButton button = GameMouseButton.None)
         {
             if (_currentMonster == null || !_currentMonster.IsAlive) return;
+
+            // 마우스 면제가 아닌 경우만 입력 속도 제한
+            if (!_gameData.ConsecutiveKeyPenalty.MouseExempt)
+            {
+                int maxCps = _gameData.ConsecutiveKeyPenalty.MaxCps;
+                if (maxCps > 0)
+                {
+                    long now = Stopwatch.GetTimestamp();
+                    long oneSecondAgo = now - Stopwatch.Frequency;
+                    while (_rateLimitTicks.Count > 0 && _rateLimitTicks.Peek() < oneSecondAgo)
+                        _rateLimitTicks.Dequeue();
+
+                    if (_rateLimitTicks.Count >= maxCps)
+                    {
+                        DamageDealt?.Invoke(this, new DamageEventArgs(0, false, true));
+                        return;
+                    }
+                    _rateLimitTicks.Enqueue(now);
+                }
+            }
+
+            // CPS 추적 (속도 제한 통과한 유효 입력만)
+            _sessionTracker.RecordInput();
 
             // 콤보 처리
             int comboStack = _comboTracker.ProcessInput();
 
-            var result = CalculateDamage(MousePower, comboStack, AttackType.Mouse);
+            // 마우스는 연속 페널티 면제
+            var result = CalculateDamage(MousePower, comboStack, AttackType.Mouse, 1.0);
             ApplyDamage(result, isMouse: true);
         }
 
@@ -429,10 +489,37 @@ namespace DeskWarrior.Managers
 
         #region Private Methods
 
-        private DamageResult CalculateDamage(int basePower, int comboStack = 0, AttackType attackType = AttackType.Keyboard)
+        private DamageResult CalculateDamage(int basePower, int comboStack = 0, AttackType attackType = AttackType.Keyboard, double consecutivePenalty = 1.0)
         {
             var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            return _damageCalculator.Calculate(basePower, permStats, 0, comboStack, attackType, _currentMonster);
+            var result = _damageCalculator.Calculate(basePower, permStats, 0, comboStack, attackType, _currentMonster);
+
+            // 연속 키 페널티 적용
+            if (consecutivePenalty < 1.0)
+            {
+                int originalDamage = result.Damage;
+                int penalizedDamage = (int)(result.Damage * consecutivePenalty);
+
+                Logger.Log($"[Damage] Original: {originalDamage}, Penalty: {consecutivePenalty:F2}, Final: {penalizedDamage}");
+
+                result = new DamageResult
+                {
+                    Damage = penalizedDamage,
+                    IsCritical = result.IsCritical,
+                    IsMultiHit = result.IsMultiHit,
+                    IsCombo = result.IsCombo,
+                    ComboStack = result.ComboStack,
+                    IsResisted = result.IsResisted,
+                    BasePower = result.BasePower,
+                    BaseAttackBonus = result.BaseAttackBonus,
+                    AttackMultiplier = result.AttackMultiplier,
+                    CritMultiplier = result.CritMultiplier,
+                    UtilityBonus = result.UtilityBonus,
+                    ResistanceModifier = result.ResistanceModifier * consecutivePenalty
+                };
+            }
+
+            return result;
         }
 
         private void ApplyDamage(DamageResult result, bool isMouse)

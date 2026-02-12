@@ -28,6 +28,7 @@ namespace DeskWarrior.ViewModels
         private readonly TimerViewModel _timer;
 
         private int _sessionInputCount;
+        private double _currentCPS;
         private bool _disposed;
 
         #endregion
@@ -55,6 +56,12 @@ namespace DeskWarrior.ViewModels
         {
             get => _sessionInputCount;
             private set => SetProperty(ref _sessionInputCount, value);
+        }
+
+        public double CurrentCPS
+        {
+            get => _currentCPS;
+            private set => SetProperty(ref _currentCPS, value);
         }
 
         #endregion
@@ -283,13 +290,14 @@ namespace DeskWarrior.ViewModels
 
             if (e.Type == GameInputType.Keyboard)
             {
-                _gameManager.OnKeyboardInput();
+                _gameManager.OnKeyboardInput(e.VirtualKeyCode);
             }
             else
             {
-                _gameManager.OnMouseInput();
+                _gameManager.OnMouseInput(e.MouseButton);
             }
 
+            CurrentCPS = _gameManager.SessionCPS;
             InputReceived?.Invoke(this, e);
         }
 
@@ -328,6 +336,7 @@ namespace DeskWarrior.ViewModels
             _timer.Update();
             OnPropertyChanged(nameof(TimerText));
             OnPropertyChanged(nameof(TimerColor));
+            CurrentCPS = _gameManager.SessionCPS;
         }
 
         private void OnStatsChanged(object? sender, EventArgs e)
