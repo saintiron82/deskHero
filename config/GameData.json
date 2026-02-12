@@ -37,6 +37,14 @@
     "shake_power": 2.5,
     "boss_scale": 1.5
   },
+  "consecutive_key_penalty": {
+    "enabled": true,
+    "penalty_start_count": 7,
+    "penalty_per_count": 0.1,
+    "combo_exempt": false,
+    "mouse_exempt": true,
+    "max_cps": 20
+  },
   "monster_spawning": {
     "element_weights": {
       "normal": 50,

@@ -1,5 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
   "max_hours": 8,
   "rewards_per_hour": {
     "gold": 100,

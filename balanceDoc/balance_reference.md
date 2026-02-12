@@ -1,9 +1,9 @@
 # DeskWarrior 밸런스 레퍼런스 (Balance Reference)
 
 **생성일**: 2026-02-04
-**최종 수정**: 2026-02-05
-**버전**: 2.0.0
-**기준**: C# 코드베이스 (실제 게임 구현) + Tier HP 시스템 적용 + 50시간 밸런스 검증 완료
+**최종 수정**: 2026-02-06
+**버전**: 2.1.0
+**기준**: C# 코드베이스 (실제 게임 구현) + Tier HP 시스템 적용 + 50시간 밸런스 검증 완료 + 연속 키 페널티 시스템 추가
 
 ---
 
@@ -18,7 +18,7 @@
 
 ## 📚 목차
 
-1. [전투 시스템](#1-전투-시스템) - 데미지 8단계, 크리티컬, 멀티히트, 콤보, 저항
+1. [전투 시스템](#1-전투-시스템) - 데미지 9단계, 크리티컬, 멀티히트, 콤보, 저항, **연속 키 페널티** ⚠️ NEW
 2. [몬스터 시스템](#2-몬스터-시스템) - HP, 골드, 속성, 배치
 3. [시간 시스템](#3-시간-시스템) - 타이머, Wind 배속, 시간 연장
 4. [확률 시스템](#4-확률-시스템) - 몬스터 등장, 크리티컬
@@ -33,11 +33,11 @@
 
 ## 1. 전투 시스템
 
-### 1.1 데미지 계산 공식 (8단계)
+### 1.1 데미지 계산 공식 (9단계)
 
-**출처**: `Managers/DamageCalculator.cs` (Line 97-199)
+**출처**: `Managers/DamageCalculator.cs` (Line 97-199), `Managers/GameManager.cs` (ConsecutiveKeyPenalty)
 
-데미지는 다음 8단계를 거쳐 계산됩니다:
+데미지는 다음 9단계를 거쳐 계산됩니다:
 
 ```
 ① 기본 파워 분리
@@ -82,7 +82,29 @@
    resistanceModifier = 키보드 공격 시 KeyboardResistance, 마우스 공격 시 MouseResistance
    effectivePower = ⑦ × resistanceModifier
 
-   최종 데미지 = (int)⑧
+⑨ 연속 키 페널티 (2026-02-06 추가) ⚠️ NEW
+   if (콤보 활성화):
+       consecutivePenalty = 1.0  // 콤보 중엔 페널티 면제
+   else:
+       consecutivePenalty = max(0, 1.0 - max(0, consecutiveCount - 7) × 0.1)
+
+   effectivePower = ⑧ × consecutivePenalty
+
+   **페널티 테이블** (콤보 비활성화 시):
+   - 연속 1~7회: 100% (페널티 없음)
+   - 연속 8회: 90% (-10%)
+   - 연속 10회: 70% (-30%)
+   - 연속 15회: 20% (-80%)
+   - 연속 18회 이상: 0% (완전 차단, "BLOCKED" 표시)
+
+   **출처**:
+   - config/GameData.json → consecutive_key_penalty
+   - Managers/ConsecutiveKeyTracker.cs
+   - Managers/GameManager.cs → CalculateDamage()
+
+   **목적**: 키보드/마우스 자동 반복(키 꾹 누르기) 차단, 입력 다양성 유도
+
+   최종 데미지 = (int)⑨
 ```
 
 **파라미터 출처**:
