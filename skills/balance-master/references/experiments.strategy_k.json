@@ -1,0 +1,183 @@
+{
+  "experiments": [
+    {
+      "name": "base_cost_plus_2pct",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_3pct",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.03
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.03
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_2pct_growth_minus_0p005",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_2pct_base_attack_tier_plus_0p03",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.03
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_2pct_attack_pct_tier_plus_0p03",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.03
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_2pct_both_tier_plus_0p03",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.03
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.03
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_2pct_both_tier_plus_0p05",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.05
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.05
+          }
+        }
+      }
+    },
+    {
+      "name": "base_cost_plus_2pct_growth_minus_0p005_both_tier_plus_0p03",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.02
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "add",
+            "value": -0.005
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.03
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "add",
+            "value": 0.03
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

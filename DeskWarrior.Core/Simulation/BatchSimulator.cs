@@ -14,6 +14,7 @@ public class BatchSimulator
     private readonly MonsterConfig _monsterConfig;
     private readonly BossDropConfig _bossDropConfig;
     private readonly SimGoldenGoblinConfig _goldenGoblinConfig;
+    private readonly string? _monstersConfigPath;
 
     public BatchSimulator(
         GameConfig gameConfig,
@@ -21,7 +22,8 @@ public class BatchSimulator
         Dictionary<string, StatGrowthConfig> permanentStats,
         MonsterConfig? monsterConfig = null,
         BossDropConfig? bossDropConfig = null,
-        SimGoldenGoblinConfig? goldenGoblinConfig = null)
+        SimGoldenGoblinConfig? goldenGoblinConfig = null,
+        string? monstersConfigPath = null)
     {
         _gameConfig = gameConfig;
         _inGameStats = inGameStats;
@@ -29,6 +31,7 @@ public class BatchSimulator
         _monsterConfig = monsterConfig ?? new MonsterConfig();
         _bossDropConfig = bossDropConfig ?? new BossDropConfig();
         _goldenGoblinConfig = goldenGoblinConfig ?? new SimGoldenGoblinConfig();
+        _monstersConfigPath = monstersConfigPath;
     }
 
     /// <summary>
@@ -66,7 +69,8 @@ public class BatchSimulator
                 _monsterConfig,
                 _bossDropConfig,
                 _goldenGoblinConfig,
-                seed: i  // 재현 가능한 시드
+                seed: i,  // 재현 가능한 시드
+                monstersConfigPath: _monstersConfigPath
             );
 
             var result = engine.SimulateSession(permStats, profile);
@@ -103,7 +107,8 @@ public class BatchSimulator
                 _monsterConfig,
                 _bossDropConfig,
                 _goldenGoblinConfig,
-                seed: i
+                seed: i,
+                monstersConfigPath: _monstersConfigPath
             );
 
             var result = engine.SimulateSession(permStats, profile);

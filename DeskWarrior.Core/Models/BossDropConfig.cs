@@ -20,6 +20,12 @@ public class BossDropConfig
     /// <summary>레벨당 크리스털 증가량</summary>
     public int CrystalPerLevel { get; set; } = 1;
 
+    /// <summary>크리스털 성장 지수 (1.0 = 선형)</summary>
+    public double CrystalGrowthExponent { get; set; } = 1.0;
+
+    /// <summary>지수 성장 적용 시작 레벨 (0 = 사용 안 함)</summary>
+    public int CrystalGrowthBreakpoint { get; set; } = 0;
+
     /// <summary>크리스털 변동폭 (0.0 = 고정값, 랜덤 없음)</summary>
     public double CrystalVariance { get; set; } = 0.0;
 

@@ -1,0 +1,62 @@
+{
+  "experiments": [
+    {
+      "name": "growth_0p33",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.growth_rate": {
+            "op": "set",
+            "value": 0.33
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "set",
+            "value": 0.33
+          }
+        }
+      }
+    },
+    {
+      "name": "growth_0p36",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.growth_rate": {
+            "op": "set",
+            "value": 0.36
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "set",
+            "value": 0.36
+          }
+        }
+      }
+    },
+    {
+      "name": "crystal_per_level_8",
+      "changes": {
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    }
+  ],
+  "injections": [
+    {
+      "name": "growth_0p345",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.growth_rate": {
+            "op": "set",
+            "value": 0.7
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "set",
+            "value": 0.7
+          }
+        }
+      }
+    }
+  ]
+}

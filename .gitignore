@@ -22,3 +22,17 @@ Thumbs.db
 Desktop.ini__pycache__/
 nul
 tmpclaude-*
+
+# Balance experiment session data (summaries at root are kept)
+balanceDoc/auto_evolution_*/
+balanceDoc/2026-*/
+balanceDoc/perf_*/
+balanceDoc/targeted_*/
+balanceDoc/final_50h_*/
+balanceDoc/grid_crystal_search_*/
+balanceDoc/single_*/
+balanceDoc/quick_eval_*/
+balanceDoc/strategy_*/
+balanceDoc/hp_only_test/
+balanceDoc/latest_best_config/
+balanceDoc/one_exp_test/

@@ -249,7 +249,13 @@ namespace DeskWarrior.Managers
             _inGameStats.KeyboardPowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_keyboard", permStats?.StartKeyboardLevel ?? 0);
             _inGameStats.MousePowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_mouse", permStats?.StartMouseLevel ?? 0);
 
-            CurrentLevel = 1 + (int)_statGrowth.GetPermanentStatEffect("start_level", permStats?.StartLevelLevel ?? 0);
+            int startLevel = (int)_statGrowth.GetPermanentStatEffect("start_level", permStats?.StartLevelLevel ?? 0);
+            int maxLevel = _saveManager?.CurrentSave?.Stats.MaxLevel ?? 0;
+            if (maxLevel > 0)
+            {
+                startLevel = Math.Min(startLevel, maxLevel);
+            }
+            CurrentLevel = 1 + startLevel;
             Gold = (int)_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0);
             _sessionTracker.Reset();
             _rateLimitTicks.Clear();
@@ -407,7 +413,9 @@ namespace DeskWarrior.Managers
             if (interval <= 0) interval = 50;  // 기본값
 
             int tier = (CurrentLevel - 1) / interval;
-            double multiplier = Math.Pow(2, tier);
+            double tierMultiplier = _gameData.Balance.UpgradeCostTierMultiplier;
+            if (tierMultiplier <= 1.0) tierMultiplier = 2.0;
+            double multiplier = Math.Pow(tierMultiplier, tier);
             return (int)(baseCost * multiplier);
         }
 

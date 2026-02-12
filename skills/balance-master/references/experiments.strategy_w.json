@@ -1,0 +1,97 @@
+{
+  "experiments": [
+    {
+      "name": "weight_attack_1p8_both",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.base_attack.weight": {
+            "op": "set",
+            "value": 1.8
+          },
+          "stats.attack_percent.weight": {
+            "op": "set",
+            "value": 1.8
+          }
+        }
+      }
+    },
+    {
+      "name": "weight_attack_1p6_both",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.base_attack.weight": {
+            "op": "set",
+            "value": 1.6
+          },
+          "stats.attack_percent.weight": {
+            "op": "set",
+            "value": 1.6
+          }
+        }
+      }
+    },
+    {
+      "name": "weight_base_attack_1p8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.base_attack.weight": {
+            "op": "set",
+            "value": 1.8
+          }
+        }
+      }
+    },
+    {
+      "name": "weight_attack_percent_1p8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.attack_percent.weight": {
+            "op": "set",
+            "value": 1.8
+          }
+        }
+      }
+    },
+    {
+      "name": "weight_attack_1p8_both_time_0p7",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.base_attack.weight": {
+            "op": "set",
+            "value": 1.8
+          },
+          "stats.attack_percent.weight": {
+            "op": "set",
+            "value": 1.8
+          },
+          "stats.time_extend.weight": {
+            "op": "set",
+            "value": 0.7
+          }
+        }
+      }
+    },
+    {
+      "name": "weight_attack_1p8_both_crystal8",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.base_attack.weight": {
+            "op": "set",
+            "value": 1.8
+          },
+          "stats.attack_percent.weight": {
+            "op": "set",
+            "value": 1.8
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

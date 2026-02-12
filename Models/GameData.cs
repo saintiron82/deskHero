@@ -139,6 +139,9 @@ namespace DeskWarrior.Models
         [JsonPropertyName("upgrade_cost_interval")]
         public int UpgradeCostInterval { get; set; } = 50;  // 50스테이지마다 비용 2배
 
+        [JsonPropertyName("upgrade_cost_tier_multiplier")]
+        public double UpgradeCostTierMultiplier { get; set; } = 2.0;
+
         [JsonPropertyName("tier_hp_system")]
         public TierHpSystemConfig TierHpSystem { get; set; } = new();
 
@@ -160,11 +163,35 @@ namespace DeskWarrior.Models
         [JsonPropertyName("tier_multiplier")]
         public double TierMultiplier { get; set; } = 1.0;
 
+        [JsonPropertyName("tier_multiplier_decay_per_tier")]
+        public double TierMultiplierDecayPerTier { get; set; } = 1.0;
+
+        [JsonPropertyName("min_tier_multiplier")]
+        public double MinTierMultiplier { get; set; } = 0.0;
+
+        [JsonPropertyName("tier_curve_exponent")]
+        public double TierCurveExponent { get; set; } = 1.0;
+
         [JsonPropertyName("linear_growth_per_level")]
         public int LinearGrowthPerLevel { get; set; } = 5;
 
+        [JsonPropertyName("min_linear_growth_per_level")]
+        public double MinLinearGrowthPerLevel { get; set; } = 0.0;
+
         [JsonPropertyName("growth_decrease_per_tier")]
         public double GrowthDecreasePerTier { get; set; } = 0.85;
+
+        [JsonPropertyName("late_start_level")]
+        public int LateStartLevel { get; set; } = 0;
+
+        [JsonPropertyName("late_tier_interval")]
+        public int LateTierInterval { get; set; } = 0;
+
+        [JsonPropertyName("late_tier_multiplier")]
+        public double LateTierMultiplier { get; set; } = 1.0;
+
+        [JsonPropertyName("max_late_tiers")]
+        public int MaxLateTiers { get; set; } = 0;
     }
 
     public class UpgradeConfig

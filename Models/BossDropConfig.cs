@@ -22,6 +22,12 @@ namespace DeskWarrior.Models
         [JsonPropertyName("crystal_per_level")]
         public int CrystalPerLevel { get; set; } = 1;
 
+        [JsonPropertyName("crystal_growth_exponent")]
+        public double CrystalGrowthExponent { get; set; } = 1.0;
+
+        [JsonPropertyName("crystal_growth_breakpoint")]
+        public int CrystalGrowthBreakpoint { get; set; } = 0;
+
         [JsonPropertyName("crystal_variance")]
         public double CrystalVariance { get; set; } = 0.2; // ±20% randomness
 

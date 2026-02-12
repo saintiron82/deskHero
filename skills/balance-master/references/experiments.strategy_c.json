@@ -1,0 +1,262 @@
+{
+  "experiments": [
+    {
+      "name": "early_cost_brake_late_tier_boost",
+      "changes": {
+        "config/GameData.json": {
+          "balance.base_gold_multiplier": {
+            "op": "set",
+            "value": 10.0
+          },
+          "balance.upgrade_cost_tier_multiplier": {
+            "op": "set",
+            "value": 1.6
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.base_cost": {
+            "op": "mul",
+            "value": 1.4
+          },
+          "stats.attack_percent.base_cost": {
+            "op": "mul",
+            "value": 1.4
+          },
+          "stats.crit_damage.base_cost": {
+            "op": "mul",
+            "value": 1.25
+          },
+          "stats.base_attack.growth_rate": {
+            "op": "set",
+            "value": 0.9
+          },
+          "stats.attack_percent.growth_rate": {
+            "op": "set",
+            "value": 0.8
+          },
+          "stats.crit_damage.growth_rate": {
+            "op": "set",
+            "value": 0.3
+          },
+          "stats.base_attack.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.attack_percent.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.crit_damage.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.12
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.12
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.07
+          },
+          "stats.gold_flat_perm.tier_config.tier_interval": {
+            "op": "set",
+            "value": 160
+          },
+          "stats.gold_multi_perm.tier_config.tier_interval": {
+            "op": "set",
+            "value": 160
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.05
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.05
+          }
+        }
+      }
+    },
+    {
+      "name": "utility_discount_late_scale",
+      "changes": {
+        "config/GameData.json": {
+          "balance.base_gold_multiplier": {
+            "op": "set",
+            "value": 10.5
+          },
+          "balance.upgrade_cost_tier_multiplier": {
+            "op": "set",
+            "value": 1.55
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.38
+          },
+          "stats.time_extend.tier_config.tier_interval": {
+            "op": "set",
+            "value": 140
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.time_extend.base_cost": {
+            "op": "mul",
+            "value": 1.15
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 5.8
+          },
+          "stats.upgrade_discount.tier_config.tier_interval": {
+            "op": "set",
+            "value": 140
+          },
+          "stats.upgrade_discount.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.03
+          },
+          "stats.upgrade_discount.base_cost": {
+            "op": "mul",
+            "value": 1.1
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.04
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.04
+          }
+        }
+      }
+    },
+    {
+      "name": "attack_cost_soft_brake",
+      "changes": {
+        "config/GameData.json": {
+          "balance.base_gold_multiplier": {
+            "op": "set",
+            "value": 11.0
+          },
+          "balance.upgrade_cost_tier_multiplier": {
+            "op": "set",
+            "value": 1.5
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.base_cost": {
+            "op": "mul",
+            "value": 1.25
+          },
+          "stats.attack_percent.base_cost": {
+            "op": "mul",
+            "value": 1.25
+          },
+          "stats.crit_damage.base_cost": {
+            "op": "mul",
+            "value": 1.15
+          },
+          "stats.base_attack.tier_config.tier_interval": {
+            "op": "set",
+            "value": 130
+          },
+          "stats.attack_percent.tier_config.tier_interval": {
+            "op": "set",
+            "value": 130
+          },
+          "stats.crit_damage.tier_config.tier_interval": {
+            "op": "set",
+            "value": 130
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.05
+          },
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.42
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.time_extend.tier_config.tier_interval": {
+            "op": "set",
+            "value": 130
+          }
+        }
+      }
+    }
+  ],
+  "injections": [
+    {
+      "name": "late_econ_relief",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.4
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 5.9
+          },
+          "stats.upgrade_discount.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.04
+          },
+          "stats.upgrade_discount.tier_config.tier_interval": {
+            "op": "set",
+            "value": 130
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "mul",
+            "value": 0.9
+          }
+        }
+      }
+    }
+  ]
+}

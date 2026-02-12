@@ -159,6 +159,15 @@ public class SimMonster
         GoldReward = baseGold + level * (int)goldGrowth;
     }
 
+    public void ApplyHpModifier(double modifier)
+    {
+        if (modifier == 1.0)
+            return;
+
+        MaxHp = (long)(MaxHp * modifier);
+        CurrentHp = MaxHp;
+    }
+
     /// <summary>
     /// HP 계산 (티어 시스템 지원)
     /// </summary>
@@ -168,16 +177,47 @@ public class SimMonster
         if (tierConfig?.Enabled == true)
         {
             int tier = (level - 1) / tierConfig.TierInterval;
-            double tierMultiplier = Math.Pow(tierConfig.TierMultiplier, tier);
+            double tierIndex = tier;
+            if (tierConfig.TierCurveExponent > 0.0 && tierConfig.TierCurveExponent != 1.0 && tierIndex > 0.0)
+            {
+                tierIndex = Math.Pow(tierIndex, tierConfig.TierCurveExponent);
+            }
+            double tierMultiplier = Math.Pow(tierConfig.TierMultiplier, tierIndex);
+            if (tierConfig.TierMultiplierDecayPerTier != 1.0)
+            {
+                double decay = Math.Pow(tierConfig.TierMultiplierDecayPerTier, tierIndex * (tierIndex - 1) / 2.0);
+                tierMultiplier *= decay;
+            }
+            if (tierConfig.MinTierMultiplier > 0.0 && tierMultiplier < tierConfig.MinTierMultiplier)
+            {
+                tierMultiplier = tierConfig.MinTierMultiplier;
+            }
             long tierBaseHp = (long)(baseHp * tierMultiplier);
 
             int levelInTier = (level - 1) % tierConfig.TierInterval;
 
             // 티어마다 성장률 감소 적용
-            double tierGrowthRate = tierConfig.LinearGrowthPerLevel * Math.Pow(tierConfig.GrowthDecreasePerTier, tier);
+            double tierGrowthRate = tierConfig.LinearGrowthPerLevel * Math.Pow(tierConfig.GrowthDecreasePerTier, tierIndex);
+            if (tierConfig.MinLinearGrowthPerLevel > 0.0 && tierGrowthRate < tierConfig.MinLinearGrowthPerLevel)
+            {
+                tierGrowthRate = tierConfig.MinLinearGrowthPerLevel;
+            }
             long linearIncrease = (long)(levelInTier * tierGrowthRate);
+            long hp = tierBaseHp + linearIncrease;
 
-            return tierBaseHp + linearIncrease;
+            if (tierConfig.LateStartLevel > 0 && level >= tierConfig.LateStartLevel)
+            {
+                int lateInterval = tierConfig.LateTierInterval > 0 ? tierConfig.LateTierInterval : tierConfig.TierInterval;
+                int lateTier = (level - tierConfig.LateStartLevel) / Math.Max(1, lateInterval);
+                if (tierConfig.MaxLateTiers > 0 && lateTier > tierConfig.MaxLateTiers)
+                    lateTier = tierConfig.MaxLateTiers;
+                double lateMultiplier = tierConfig.LateTierMultiplier != 1.0
+                    ? Math.Pow(tierConfig.LateTierMultiplier, lateTier)
+                    : 1.0;
+                hp = (long)(hp * lateMultiplier);
+            }
+
+            return hp;
         }
 
         // Legacy: 선형 공식

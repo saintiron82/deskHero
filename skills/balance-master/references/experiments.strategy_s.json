@@ -1,0 +1,155 @@
+{
+  "experiments": [
+    {
+      "name": "time_0p58_tier_1p28_base_crystal_29",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 29
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p58_tier_1p28_base_crystal_28",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 28
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p58_tier_1p28_stage_crystal_3",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p58_tier_1p28_drop_per_level_0p0055",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0055
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p58_tier_1p28_base_drop_0p53",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.53
+          }
+        }
+      }
+    },
+    {
+      "name": "time_0p58_tier_1p28_gold_to_crystal_65",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "gold_to_crystal_rate": {
+            "op": "set",
+            "value": 65
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

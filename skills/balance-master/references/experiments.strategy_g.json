@@ -1,0 +1,110 @@
+{
+  "experiments": [
+    {
+      "name": "cost_up_crystal7",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.1
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.1
+          }
+        },
+        "config/BossDrops.json": {
+          "crystal_per_level": {
+            "op": "set",
+            "value": 7
+          }
+        }
+      }
+    },
+    {
+      "name": "start_level_brake",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.start_level.effect_per_level": {
+            "op": "set",
+            "value": 1.0
+          },
+          "stats.start_level.base_cost": {
+            "op": "mul",
+            "value": 1.5
+          },
+          "stats.start_level.growth_rate": {
+            "op": "set",
+            "value": 0.35
+          }
+        }
+      }
+    },
+    {
+      "name": "time_scale_3p8",
+      "changes": {
+        "config/GameData.json": {
+          "element_properties.normal.time_scale": {
+            "op": "set",
+            "value": 3.8
+          },
+          "element_properties.fire.time_scale": {
+            "op": "set",
+            "value": 3.8
+          },
+          "element_properties.ice.time_scale": {
+            "op": "set",
+            "value": 3.8
+          },
+          "element_properties.wind.time_scale": {
+            "op": "set",
+            "value": 4.2
+          },
+          "element_properties.holy.time_scale": {
+            "op": "set",
+            "value": 3.8
+          },
+          "element_properties.dark.time_scale": {
+            "op": "set",
+            "value": 3.8
+          }
+        },
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 32
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 7
+          }
+        }
+      }
+    }
+  ],
+  "injections": [
+    {
+      "name": "late_econ_relief_small",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 6.0
+          },
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.6
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.22
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.22
+          }
+        }
+      }
+    }
+  ]
+}

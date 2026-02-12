@@ -14,8 +14,23 @@
       "max_level": 0,
       "weight": 2.0,
       "localization": {
-        "ko-KR": { "name": "기본 공격력", "description": "모든 공격에 +{n} 데미지" },
-        "en-US": { "name": "Base Attack", "description": "+{n} damage to all attacks" }
+        "ko-KR": {
+          "name": "기본 공격력",
+          "description": "모든 공격에 +{n} 데미지"
+        },
+        "en-US": {
+          "name": "Base Attack",
+          "description": "+{n} damage to all attacks"
+        }
+      },
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.6,
+        "multiplier_decrease_per_tier": 0.1,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2,
+        "effect_multiplier_per_tier": 1.05,
+        "effect_add_per_tier": 0.0
       }
     },
     "attack_percent": {
@@ -30,8 +45,23 @@
       "max_level": 0,
       "weight": 2.0,
       "localization": {
-        "ko-KR": { "name": "공격력 배수", "description": "데미지 +{n}%" },
-        "en-US": { "name": "Attack Multiplier", "description": "+{n}% damage" }
+        "ko-KR": {
+          "name": "공격력 배수",
+          "description": "데미지 +{n}%"
+        },
+        "en-US": {
+          "name": "Attack Multiplier",
+          "description": "+{n}% damage"
+        }
+      },
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.6,
+        "multiplier_decrease_per_tier": 0.1,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2,
+        "effect_multiplier_per_tier": 1.05,
+        "effect_add_per_tier": 0.0
       }
     },
     "crit_chance": {
@@ -43,13 +73,26 @@
       "multiplier": 1.4,
       "softcap_interval": 12,
       "effect_per_level": 0.5,
-      "max_level": 0,
+      "max_level": 180,
       "max_effect": 90,
       "weight": 1.8,
       "_comment": "기본 10% + 최대 90% = 100%",
       "localization": {
-        "ko-KR": { "name": "크리티컬 확률", "description": "크리티컬 확률 +{n}%" },
-        "en-US": { "name": "Critical Chance", "description": "+{n}% critical chance" }
+        "ko-KR": {
+          "name": "크리티컬 확률",
+          "description": "크리티컬 확률 +{n}%"
+        },
+        "en-US": {
+          "name": "Critical Chance",
+          "description": "+{n}% critical chance"
+        }
+      },
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.6,
+        "multiplier_decrease_per_tier": 0.05,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2
       }
     },
     "crit_damage": {
@@ -66,8 +109,23 @@
       "weight": 1.8,
       "_comment": "배율 무제한 (밸런스 개선: 0.15→0.2)",
       "localization": {
-        "ko-KR": { "name": "크리티컬 배율", "description": "크리티컬 시 x{n} 배율" },
-        "en-US": { "name": "Critical Damage", "description": "x{n} critical multiplier" }
+        "ko-KR": {
+          "name": "크리티컬 배율",
+          "description": "크리티컬 시 x{n} 배율"
+        },
+        "en-US": {
+          "name": "Critical Damage",
+          "description": "x{n} critical multiplier"
+        }
+      },
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.5,
+        "multiplier_decrease_per_tier": 0.05,
+        "base_softcap": 18,
+        "softcap_increase_per_tier": 3,
+        "effect_multiplier_per_tier": 1.08,
+        "effect_add_per_tier": 0.0
       }
     },
     "multi_hit": {
@@ -79,13 +137,26 @@
       "multiplier": 1.3,
       "softcap_interval": 12,
       "effect_per_level": 1.0,
-      "max_level": 0,
+      "max_level": 100,
       "max_effect": 100,
       "weight": 1.5,
       "_comment": "100% 확률이 한계",
       "localization": {
-        "ko-KR": { "name": "멀티히트 확률", "description": "{n}% 확률로 2배 타격" },
-        "en-US": { "name": "Multi-Hit Chance", "description": "{n}% chance for double hit" }
+        "ko-KR": {
+          "name": "멀티히트 확률",
+          "description": "{n}% 확률로 2배 타격"
+        },
+        "en-US": {
+          "name": "Multi-Hit Chance",
+          "description": "{n}% chance for double hit"
+        }
+      },
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.45,
+        "multiplier_decrease_per_tier": 0.04,
+        "base_softcap": 12,
+        "softcap_increase_per_tier": 2
       }
     },
     "gold_flat_perm": {
@@ -100,8 +171,14 @@
       "max_level": 0,
       "weight": 0.3,
       "localization": {
-        "ko-KR": { "name": "영구 골드+", "description": "몬스터 처치 시 +{n} 골드" },
-        "en-US": { "name": "Permanent Gold+", "description": "+{n} gold per kill" }
+        "ko-KR": {
+          "name": "영구 골드+",
+          "description": "몬스터 처치 시 +{n} 골드"
+        },
+        "en-US": {
+          "name": "Permanent Gold+",
+          "description": "+{n} gold per kill"
+        }
       }
     },
     "gold_multi_perm": {
@@ -116,8 +193,14 @@
       "max_level": 0,
       "weight": 0.3,
       "localization": {
-        "ko-KR": { "name": "영구 골드*", "description": "골드 획득량 +{n}%" },
-        "en-US": { "name": "Permanent Gold*", "description": "+{n}% gold gain" }
+        "ko-KR": {
+          "name": "영구 골드*",
+          "description": "골드 획득량 +{n}%"
+        },
+        "en-US": {
+          "name": "Permanent Gold*",
+          "description": "+{n}% gold gain"
+        }
       }
     },
     "crystal_flat": {
@@ -132,8 +215,14 @@
       "max_level": 0,
       "weight": 0.8,
       "localization": {
-        "ko-KR": { "name": "크리스탈+", "description": "보스 드롭 +{n} 크리스탈" },
-        "en-US": { "name": "Crystal+", "description": "+{n} crystals from boss" }
+        "ko-KR": {
+          "name": "크리스탈+",
+          "description": "보스 드롭 +{n} 크리스탈"
+        },
+        "en-US": {
+          "name": "Crystal+",
+          "description": "+{n} crystals from boss"
+        }
       }
     },
     "crystal_chance": {
@@ -145,31 +234,50 @@
       "multiplier": 1.4,
       "softcap_interval": 8,
       "effect_per_level": 2,
-      "max_level": 0,
+      "max_level": 50,
       "max_effect": 100,
       "weight": 0.8,
       "_comment": "100% 확률이 한계, 비용 곡선 완화",
       "localization": {
-        "ko-KR": { "name": "크리스탈*", "description": "크리스탈 드롭 확률 +{n}%" },
-        "en-US": { "name": "Crystal*", "description": "+{n}% crystal drop chance" }
+        "ko-KR": {
+          "name": "크리스탈*",
+          "description": "크리스탈 드롭 확률 +{n}%"
+        },
+        "en-US": {
+          "name": "Crystal*",
+          "description": "+{n}% crystal drop chance"
+        }
       }
     },
     "time_extend": {
       "stat_name": "TimeExtendLevel",
       "category": "utility",
       "icon": "⏰",
-      "base_cost": 1,
+      "base_cost": 5,
       "growth_rate": 0.35,
       "multiplier": 1.25,
       "softcap_interval": 15,
-      "effect_per_level": 0.4,
-      "max_level": 0,
+      "effect_per_level": 0.2,
+      "max_level": 300,
       "max_effect": 60,
       "weight": 1.2,
       "_comment": "기본 30초에서 최대 +60초 = 90초 (150레벨 필요), 비용 곡선 완화",
       "localization": {
-        "ko-KR": { "name": "기본 시간 연장", "description": "제한시간 +{n}초" },
-        "en-US": { "name": "Time Extension", "description": "+{n}s time limit" }
+        "ko-KR": {
+          "name": "기본 시간 연장",
+          "description": "제한시간 +{n}초"
+        },
+        "en-US": {
+          "name": "Time Extension",
+          "description": "+{n}s time limit"
+        }
+      },
+      "tier_config": {
+        "tier_interval": 100,
+        "base_multiplier": 1.4,
+        "multiplier_decrease_per_tier": 0.06,
+        "base_softcap": 15,
+        "softcap_increase_per_tier": 3
       }
     },
     "upgrade_discount": {
@@ -181,30 +289,42 @@
       "multiplier": 1.15,
       "softcap_interval": 18,
       "effect_per_level": 3.0,
-      "max_level": 0,
+      "max_level": 20,
       "max_effect": 60,
       "weight": 0.5,
       "_comment": "최대 60% 할인, 비용 곡선 완화",
       "localization": {
-        "ko-KR": { "name": "업그레이드 할인", "description": "골드 업그레이드 비용 -{n}%" },
-        "en-US": { "name": "Upgrade Discount", "description": "-{n}% gold upgrade cost" }
+        "ko-KR": {
+          "name": "업그레이드 할인",
+          "description": "골드 업그레이드 비용 -{n}%"
+        },
+        "en-US": {
+          "name": "Upgrade Discount",
+          "description": "-{n}% gold upgrade cost"
+        }
       }
     },
     "start_level": {
       "stat_name": "StartLevelLevel",
       "category": "starting_bonus",
       "icon": "🚀",
-      "base_cost": 1,
+      "base_cost": 3,
       "growth_rate": 0.25,
-      "multiplier": 1.15,
+      "multiplier": 1.2,
       "softcap_interval": 20,
-      "effect_per_level": 5,
+      "effect_per_level": 1.45,
       "max_level": 0,
       "weight": 1.5,
       "_comment": "450레벨 벽 우회용 - 90레벨 투자 시 451에서 시작",
       "localization": {
-        "ko-KR": { "name": "시작 레벨", "description": "레벨 {n}에서 시작" },
-        "en-US": { "name": "Starting Level", "description": "Start at level {n}" }
+        "ko-KR": {
+          "name": "시작 레벨",
+          "description": "레벨 {n}에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Level",
+          "description": "Start at level {n}"
+        }
       }
     },
     "start_gold": {
@@ -220,8 +340,14 @@
       "weight": 0.8,
       "_comment": "start_level 시너지 - 초반 업그레이드 가속",
       "localization": {
-        "ko-KR": { "name": "시작 골드", "description": "골드 {n}에서 시작" },
-        "en-US": { "name": "Starting Gold", "description": "Start with {n} gold" }
+        "ko-KR": {
+          "name": "시작 골드",
+          "description": "골드 {n}에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Gold",
+          "description": "Start with {n} gold"
+        }
       }
     },
     "start_keyboard": {
@@ -237,8 +363,14 @@
       "weight": 1.0,
       "_comment": "start_level 시너지 - 초반 화력 강화",
       "localization": {
-        "ko-KR": { "name": "시작 키보드", "description": "키보드 공격력 +{n}에서 시작" },
-        "en-US": { "name": "Starting Keyboard", "description": "Start with +{n} keyboard power" }
+        "ko-KR": {
+          "name": "시작 키보드",
+          "description": "키보드 공격력 +{n}에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Keyboard",
+          "description": "Start with +{n} keyboard power"
+        }
       }
     },
     "start_mouse": {
@@ -253,8 +385,14 @@
       "max_level": 0,
       "weight": 0.8,
       "localization": {
-        "ko-KR": { "name": "시작 마우스", "description": "마우스 공격력 +{n}에서 시작" },
-        "en-US": { "name": "Starting Mouse", "description": "Start with +{n} mouse power" }
+        "ko-KR": {
+          "name": "시작 마우스",
+          "description": "마우스 공격력 +{n}에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Mouse",
+          "description": "Start with +{n} mouse power"
+        }
       }
     },
     "start_gold_flat": {
@@ -269,8 +407,14 @@
       "max_level": 0,
       "weight": 0.5,
       "localization": {
-        "ko-KR": { "name": "시작 골드+", "description": "골드+ {n}에서 시작" },
-        "en-US": { "name": "Starting Gold+", "description": "Start with +{n} gold bonus" }
+        "ko-KR": {
+          "name": "시작 골드+",
+          "description": "골드+ {n}에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Gold+",
+          "description": "Start with +{n} gold bonus"
+        }
       }
     },
     "start_gold_multi": {
@@ -285,8 +429,14 @@
       "max_level": 0,
       "weight": 0.5,
       "localization": {
-        "ko-KR": { "name": "시작 골드*", "description": "골드* +{n}%에서 시작" },
-        "en-US": { "name": "Starting Gold*", "description": "Start with +{n}% gold multiplier" }
+        "ko-KR": {
+          "name": "시작 골드*",
+          "description": "골드* +{n}%에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Gold*",
+          "description": "Start with +{n}% gold multiplier"
+        }
       }
     },
     "start_combo_flex": {
@@ -301,8 +451,14 @@
       "max_level": 0,
       "weight": 0.6,
       "localization": {
-        "ko-KR": { "name": "시작 콤보유연성", "description": "콤보유연성 +{n}에서 시작" },
-        "en-US": { "name": "Starting Combo Flex", "description": "Start with +{n} combo flexibility" }
+        "ko-KR": {
+          "name": "시작 콤보유연성",
+          "description": "콤보유연성 +{n}에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Combo Flex",
+          "description": "Start with +{n} combo flexibility"
+        }
       }
     },
     "start_combo_damage": {
@@ -317,15 +473,33 @@
       "max_level": 0,
       "weight": 0.7,
       "localization": {
-        "ko-KR": { "name": "시작 콤보데미지", "description": "콤보데미지 +{n}%에서 시작" },
-        "en-US": { "name": "Starting Combo Damage", "description": "Start with +{n}% combo damage" }
+        "ko-KR": {
+          "name": "시작 콤보데미지",
+          "description": "콤보데미지 +{n}%에서 시작"
+        },
+        "en-US": {
+          "name": "Starting Combo Damage",
+          "description": "Start with +{n}% combo damage"
+        }
       }
     }
   },
   "categories": {
-    "base_stats": { "name": "기본 능력", "order": 1 },
-    "currency_bonus": { "name": "재화 보너스", "order": 2 },
-    "utility": { "name": "유틸리티", "order": 3 },
-    "starting_bonus": { "name": "시작 보너스", "order": 4 }
+    "base_stats": {
+      "name": "기본 능력",
+      "order": 1
+    },
+    "currency_bonus": {
+      "name": "재화 보너스",
+      "order": 2
+    },
+    "utility": {
+      "name": "유틸리티",
+      "order": 3
+    },
+    "starting_bonus": {
+      "name": "시작 보너스",
+      "order": 4
+    }
   }
 }

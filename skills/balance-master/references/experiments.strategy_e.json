@@ -1,0 +1,158 @@
+{
+  "experiments": [
+    {
+      "name": "hp_linear_60_decel",
+      "changes": {
+        "config/GameData.json": {
+          "balance.tier_hp_system.linear_growth_per_level": {
+            "op": "set",
+            "value": 60
+          },
+          "balance.tier_hp_system.growth_decrease_per_tier": {
+            "op": "set",
+            "value": 0.98
+          },
+          "balance.tier_hp_system.tier_multiplier_decay_per_tier": {
+            "op": "set",
+            "value": 0.985
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.04
+          }
+        }
+      }
+    },
+    {
+      "name": "hp_linear_70_decel",
+      "changes": {
+        "config/GameData.json": {
+          "balance.tier_hp_system.linear_growth_per_level": {
+            "op": "set",
+            "value": 70
+          },
+          "balance.tier_hp_system.growth_decrease_per_tier": {
+            "op": "set",
+            "value": 0.975
+          },
+          "balance.tier_hp_system.tier_multiplier_decay_per_tier": {
+            "op": "set",
+            "value": 0.985
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.05
+          }
+        }
+      }
+    },
+    {
+      "name": "hp_linear_80_decel",
+      "changes": {
+        "config/GameData.json": {
+          "balance.tier_hp_system.linear_growth_per_level": {
+            "op": "set",
+            "value": 80
+          },
+          "balance.tier_hp_system.growth_decrease_per_tier": {
+            "op": "set",
+            "value": 0.97
+          },
+          "balance.tier_hp_system.tier_multiplier_decay_per_tier": {
+            "op": "set",
+            "value": 0.98
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.12
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.12
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          }
+        }
+      }
+    }
+  ],
+  "injections": [
+    {
+      "name": "late_econ_relief",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.4
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 5.9
+          },
+          "stats.upgrade_discount.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.04
+          },
+          "stats.upgrade_discount.tier_config.tier_interval": {
+            "op": "set",
+            "value": 130
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "mul",
+            "value": 0.9
+          }
+        }
+      }
+    }
+  ]
+}

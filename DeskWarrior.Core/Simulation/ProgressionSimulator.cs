@@ -57,6 +57,7 @@ public class ProgressionSimulator
         long bestLevelEver = 0;
         double totalGameTime = 0;
         int sessionNumber = 0;
+        bool targetReachedRecorded = false;
 
         // 황금 고블린 통계
         int totalGoldenGoblinsKilled = 0;
@@ -71,10 +72,19 @@ public class ProgressionSimulator
             progress?.Invoke(totalGameTime, targetTimeSeconds);
 
             // 세션 시뮬레이션
-            var session = _engine.SimulateSession(currentStats, profile);
+            var session = _engine.SimulateSession(currentStats, profile, (int)bestLevelEver);
 
             // 세션 시간 누적
             totalGameTime += session.SessionDuration;
+
+            // 목표 시간 이후 처음 도래한 사망 레벨 기록
+            if (!targetReachedRecorded && totalGameTime >= targetTimeSeconds)
+            {
+                result.TargetReachedDeathLevel = session.MaxLevel;
+                result.TargetReachedSessionNumber = sessionNumber;
+                result.TargetReachedGameTimeSeconds = totalGameTime;
+                targetReachedRecorded = true;
+            }
 
             // 세션 기록
             long crystalsEarned = session.TotalCrystals;
@@ -121,7 +131,9 @@ public class ProgressionSimulator
         result.FinalStats = currentStats;
         result.TotalCrystalsEarned = totalCrystalsEarned;
         result.TotalCrystalsSpent = totalCrystalsSpent;
-        result.FinalMaxLevel = result.SessionHistory.LastOrDefault()?.MaxLevel ?? 0;
+        result.FinalMaxLevel = result.TargetReachedDeathLevel > 0
+            ? result.TargetReachedDeathLevel
+            : result.SessionHistory.LastOrDefault()?.MaxLevel ?? 0;
         result.BestLevelEver = bestLevelEver;
         result.TotalGameTimeSeconds = totalGameTime;
 
@@ -168,7 +180,7 @@ public class ProgressionSimulator
             progress?.Invoke(attempt, maxAttempts);
 
             // 세션 시뮬레이션
-            var session = _engine.SimulateSession(currentStats, profile);
+            var session = _engine.SimulateSession(currentStats, profile, (int)bestLevel);
 
             // 황금 고블린 통계 누적
             totalGoldenGoblinsKilled += session.GoldenGoblinsKilled;
@@ -267,6 +279,33 @@ public class ProgressionSimulator
 
             case UpgradeStrategy.EconomyFirst:
                 totalSpent = ApplyEconomyFirstStrategy(stats, ref crystals, afterSession, upgradeHistory);
+                break;
+
+            case UpgradeStrategy.DamageOnly:
+                totalSpent = ApplyRestrictedStrategy(stats, ref crystals, afterSession, upgradeHistory,
+                    new[] { "base_attack", "attack_percent", "crit_chance", "crit_damage", "multi_hit" });
+                break;
+
+            case UpgradeStrategy.DamageTime:
+                totalSpent = ApplyRestrictedStrategy(stats, ref crystals, afterSession, upgradeHistory,
+                    new[] { "base_attack", "attack_percent", "crit_chance", "crit_damage", "multi_hit", "time_extend" });
+                break;
+
+            case UpgradeStrategy.EconomyOnly:
+                totalSpent = ApplyRestrictedStrategy(stats, ref crystals, afterSession, upgradeHistory,
+                    new[] { "gold_flat_perm", "gold_multi_perm", "crystal_flat", "crystal_multi" });
+                break;
+
+            case UpgradeStrategy.UtilityOnly:
+                totalSpent = ApplyRestrictedStrategy(stats, ref crystals, afterSession, upgradeHistory,
+                    new[]
+                    {
+                        "time_extend", "upgrade_discount",
+                        "start_level", "start_gold",
+                        "start_keyboard", "start_mouse",
+                        "start_gold_flat", "start_gold_multi",
+                        "start_combo_flex", "start_combo_damage"
+                    });
                 break;
 
             case UpgradeStrategy.SimulationBased:
@@ -383,8 +422,10 @@ public class ProgressionSimulator
     }
 
     /// <summary>
-    /// 크리스털 파밍 전략 - DamageFirst와 동일 (크리스탈 보조 제거)
-    /// 데미지 투자가 우선, 크리스탈 수익은 진행에서 자연 획득
+    /// 크리스털 파밍 전략 - 크리스탈 수입 스탯 우선 투자
+    /// Phase 1: 크리스탈 스탯 (40% 예산)
+    /// Phase 2: 데미지 스탯 (40% 예산)
+    /// Phase 3: 유틸리티 (나머지)
     /// </summary>
     private long ApplyCrystalFarmStrategy(
         SimPermanentStats stats,
@@ -392,8 +433,28 @@ public class ProgressionSimulator
         int afterSession,
         List<UpgradeRecord> history)
     {
-        // DamageFirst와 완전히 동일한 로직 사용
-        return ApplyDamageFirstStrategy(stats, ref crystals, afterSession, history);
+        long totalSpent = 0;
+        long initialCrystals = crystals;
+
+        // Phase 1: 크리스탈 수입 스탯에 25% 예산
+        var crystalStats = new[] { "crystal_flat", "crystal_chance" };
+        long phase1Budget = (long)(initialCrystals * 0.25);
+        long phase1Crystals = phase1Budget;
+        totalSpent += ApplyPriorityStrategy(stats, ref phase1Crystals, afterSession, history, crystalStats);
+        crystals -= (phase1Budget - phase1Crystals);
+
+        // Phase 2: 데미지 스탯에 50% 예산
+        var damageStats = new[] { "base_attack", "attack_percent", "crit_damage" };
+        long phase2Budget = (long)(crystals * 0.67); // 남은 75% 중 50%
+        long phase2Crystals = phase2Budget;
+        totalSpent += ApplyPriorityStrategy(stats, ref phase2Crystals, afterSession, history, damageStats);
+        crystals -= (phase2Budget - phase2Crystals);
+
+        // Phase 3: 유틸리티 (나머지)
+        var utilityStats = new[] { "time_extend", "start_level" };
+        totalSpent += ApplyPriorityStrategy(stats, ref crystals, afterSession, history, utilityStats);
+
+        return totalSpent;
     }
 
     /// <summary>
@@ -474,8 +535,10 @@ public class ProgressionSimulator
     }
 
     /// <summary>
-    /// 경제력 우선 전략 - DamageFirst와 동일 (골드 보조 제거)
-    /// 데미지 투자가 우선, 골드 수익은 진행에서 자연 획득
+    /// 경제력 우선 전략 - 골드 스탯 우선 투자
+    /// Phase 1: 골드 스탯 (40% 예산)
+    /// Phase 2: 데미지 스탯 (40% 예산)
+    /// Phase 3: 유틸리티 (나머지)
     /// </summary>
     private long ApplyEconomyFirstStrategy(
         SimPermanentStats stats,
@@ -483,8 +546,88 @@ public class ProgressionSimulator
         int afterSession,
         List<UpgradeRecord> history)
     {
-        // DamageFirst와 완전히 동일한 로직 사용
-        return ApplyDamageFirstStrategy(stats, ref crystals, afterSession, history);
+        long totalSpent = 0;
+        long initialCrystals = crystals;
+
+        // Phase 1: 골드 스탯에 40% 예산
+        var goldStats = new[] { "gold_flat_perm", "gold_multi_perm", "upgrade_discount" };
+        long phase1Budget = (long)(initialCrystals * 0.4);
+        long phase1Crystals = phase1Budget;
+        totalSpent += ApplyPriorityStrategy(stats, ref phase1Crystals, afterSession, history, goldStats);
+        crystals -= (phase1Budget - phase1Crystals);
+
+        // Phase 2: 데미지 스탯에 40% 예산
+        var damageStats = new[] { "base_attack", "attack_percent", "crit_damage", "crit_chance" };
+        long phase2Budget = (long)(crystals * 0.67); // 남은 60% 중 40%
+        long phase2Crystals = phase2Budget;
+        totalSpent += ApplyPriorityStrategy(stats, ref phase2Crystals, afterSession, history, damageStats);
+        crystals -= (phase2Budget - phase2Crystals);
+
+        // Phase 3: 유틸리티 (나머지)
+        var utilityStats = new[] { "time_extend", "start_level" };
+        totalSpent += ApplyPriorityStrategy(stats, ref crystals, afterSession, history, utilityStats);
+
+        return totalSpent;
+    }
+
+    /// <summary>
+    /// 제한된 스탯만 사용하는 그리디 전략
+    /// 허용된 스탯 중 효율이 가장 높은 것을 반복 구매
+    /// </summary>
+    private long ApplyRestrictedStrategy(
+        SimPermanentStats stats,
+        ref long crystals,
+        int afterSession,
+        List<UpgradeRecord> history,
+        string[] allowedStats)
+    {
+        long totalSpent = 0;
+
+        while (true)
+        {
+            string? bestStat = null;
+            int bestCost = 0;
+            double bestEfficiency = 0;
+            int bestLevel = 0;
+
+            foreach (var statId in allowedStats)
+            {
+                int currentLevel = _costCalculator.GetStatLevel(stats, statId);
+                if (!_costCalculator.CanUpgrade(statId, currentLevel))
+                    continue;
+
+                int cost = _costCalculator.GetUpgradeCost(statId, currentLevel);
+                if (cost <= 0 || cost > crystals)
+                    continue;
+
+                double efficiency = _costCalculator.GetEfficiency(statId, currentLevel);
+                if (bestStat == null || efficiency > bestEfficiency)
+                {
+                    bestStat = statId;
+                    bestCost = cost;
+                    bestEfficiency = efficiency;
+                    bestLevel = currentLevel;
+                }
+            }
+
+            if (bestStat == null)
+                break;
+
+            crystals -= bestCost;
+            totalSpent += bestCost;
+            _costCalculator.SetStatLevel(stats, bestStat, bestLevel + 1);
+
+            history.Add(new UpgradeRecord
+            {
+                AfterSessionNumber = afterSession,
+                StatId = bestStat,
+                FromLevel = bestLevel,
+                ToLevel = bestLevel + 1,
+                CrystalsCost = bestCost
+            });
+        }
+
+        return totalSpent;
     }
 
     /// <summary>

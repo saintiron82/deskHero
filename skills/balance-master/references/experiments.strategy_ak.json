@@ -1,0 +1,38 @@
+{
+  "experiments": [
+    {
+      "name": "base_drop_0p53",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.53
+          }
+        }
+      }
+    },
+    {
+      "name": "base_drop_0p54",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.54
+          }
+        }
+      }
+    },
+    {
+      "name": "base_drop_0p55",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.55
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

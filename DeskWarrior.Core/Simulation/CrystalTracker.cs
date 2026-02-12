@@ -29,7 +29,17 @@ public class CrystalTracker
     public CrystalDropResult ProcessBossKill(int bossLevel, string bossElement, int crystalFlat, Dictionary<string, double> crystalMultipliers)
     {
         // ✅ 기본 크리스탈 계산 (100% 지급)
-        int baseCrystals = _config.BaseCrystalAmount + bossLevel * _config.CrystalPerLevel;
+        double growth;
+        if (_config.CrystalGrowthBreakpoint > 0 && bossLevel > _config.CrystalGrowthBreakpoint)
+        {
+            double tail = Math.Pow(bossLevel - _config.CrystalGrowthBreakpoint, _config.CrystalGrowthExponent);
+            growth = _config.CrystalGrowthBreakpoint + tail;
+        }
+        else
+        {
+            growth = bossLevel;
+        }
+        int baseCrystals = (int)Math.Round(_config.BaseCrystalAmount + _config.CrystalPerLevel * growth);
         baseCrystals += crystalFlat;  // 영구 스탯 보너스
 
         // ✅ 속성별 배율 적용 (Holy/Dark: 2.0배 고정)
