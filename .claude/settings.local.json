@@ -80,7 +80,18 @@
       "Bash(Where-Object {$_ProcessName -like \"*dotnet*\" -or $_ProcessName -like \"*DeskWarrior*\"})",
       "Bash(Select-Object ProcessName, Id, StartTime)",
       "Bash(xargs:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(start dotnet run)",
+      "Bash(Select-String -Pattern \"error|경고 [0-9]+개|오류 [0-9]+개|succeeded|실패\")",
+      "Bash(Select-String \"error\")",
+      "Bash(Select-String -NotMatch \"MSB3026|MSB3027|MSB3021|warning\")",
+      "Bash(more:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:ccusage.com)",
+      "Bash(powershell -NoProfile -Command \"Get-Content ''C:\\\\Users\\\\saint\\\\.claude\\\\stats-cache.json'' -Raw\")",
+      "Bash(powershell:*)"
     ]
   }
 }
