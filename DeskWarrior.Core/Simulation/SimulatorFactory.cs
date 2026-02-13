@@ -27,9 +27,6 @@ public static class SimulatorFactory
         var permanentPath = Path.Combine(configPath, "PermanentStats.json");
         var permanentStats = LoadStatConfigs(permanentPath);
 
-        // CharacterData.json에서 몬스터 기본값 로드
-        var monsterConfig = LoadMonsterConfig(Path.Combine(configPath, "CharacterData.json"));
-
         // BossDrops.json 로드
         var bossDropConfig = LoadBossDropConfig(Path.Combine(configPath, "BossDrops.json"));
 
@@ -40,7 +37,7 @@ public static class SimulatorFactory
             gameConfig,
             inGameStats,
             permanentStats,
-            monsterConfig,
+            new MonsterConfig { BaseHp = 30, HpGrowth = 10, BaseGold = 10, GoldGrowth = 2 },
             bossDropConfig,
             goldenGoblinConfig,
             monstersConfigPath: Path.Combine(configPath, "monsters")
@@ -61,8 +58,6 @@ public static class SimulatorFactory
         var permanentPath = Path.Combine(configPath, "PermanentStats.json");
         var permanentStats = LoadStatConfigs(permanentPath);
 
-        var monsterConfig = LoadMonsterConfig(Path.Combine(configPath, "CharacterData.json"));
-
         var bossDropConfig = LoadBossDropConfig(Path.Combine(configPath, "BossDrops.json"));
 
         var goldenGoblinConfig = LoadGoldenGoblinConfig(Path.Combine(configPath, "SpecialMonsters.json"));
@@ -71,7 +66,7 @@ public static class SimulatorFactory
             gameConfig,
             inGameStats,
             permanentStats,
-            monsterConfig,
+            new MonsterConfig { BaseHp = 30, HpGrowth = 10, BaseGold = 10, GoldGrowth = 2 },
             bossDropConfig,
             goldenGoblinConfig,
             seed,
@@ -165,60 +160,6 @@ public static class SimulatorFactory
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 
-    private static MonsterConfig LoadMonsterConfig(string path)
-    {
-        // CharacterData.json에서 첫 번째 몬스터의 기본값을 사용
-        try
-        {
-            if (File.Exists(path))
-            {
-                var json = File.ReadAllText(path);
-                using var doc = System.Text.Json.JsonDocument.Parse(json);
-
-                // "Monsters" (Pascal Case) 또는 "monsters" (camelCase) 시도
-                System.Text.Json.JsonElement monsters;
-                if (!doc.RootElement.TryGetProperty("Monsters", out monsters))
-                {
-                    doc.RootElement.TryGetProperty("monsters", out monsters);
-                }
-
-                if (monsters.ValueKind == System.Text.Json.JsonValueKind.Array && monsters.GetArrayLength() > 0)
-                {
-                    var first = monsters[0];
-
-                    // Pascal Case 또는 camelCase 프로퍼티 이름 시도
-                    int baseHp = TryGetInt(first, "BaseHp", "base_hp", 20);
-                    int hpGrowth = TryGetInt(first, "HpGrowth", "hp_growth", 5);
-                    int baseGold = TryGetInt(first, "BaseGold", "base_gold", 10);
-                    int goldGrowth = TryGetInt(first, "GoldGrowth", "gold_growth", 2);
-
-                    return new MonsterConfig
-                    {
-                        BaseHp = baseHp,
-                        HpGrowth = hpGrowth,
-                        BaseGold = baseGold,
-                        GoldGrowth = goldGrowth
-                    };
-                }
-            }
-        }
-        catch
-        {
-            // 기본값 사용
-        }
-
-        return new MonsterConfig { BaseHp = 20, HpGrowth = 5, BaseGold = 10, GoldGrowth = 2 };
-    }
-
-    private static int TryGetInt(System.Text.Json.JsonElement element, string name1, string name2, int defaultValue)
-    {
-        if (element.TryGetProperty(name1, out var prop1))
-            return prop1.GetInt32();
-        if (element.TryGetProperty(name2, out var prop2))
-            return prop2.GetInt32();
-        return defaultValue;
-    }
-
     private static TierConfigSim? TryGetTierConfig(System.Text.Json.JsonElement element)
     {
         if (!element.TryGetProperty("tier_config", out var tier))
@@ -226,11 +167,11 @@ public static class SimulatorFactory
 
         return new TierConfigSim
         {
-            TierInterval = TryGetInt(tier, "tier_interval", "tier_interval", 1000),
+            TierInterval = TryGetInt(tier, "tier_interval", 1000),
             BaseMultiplier = TryGetDouble(tier, "base_multiplier", 1.0),
             MultiplierDecreasePerTier = TryGetDouble(tier, "multiplier_decrease_per_tier", 0.1),
-            BaseSoftcap = TryGetInt(tier, "base_softcap", "base_softcap", 10),
-            SoftcapIncreasePerTier = TryGetInt(tier, "softcap_increase_per_tier", "softcap_increase_per_tier", 2)
+            BaseSoftcap = TryGetInt(tier, "base_softcap", 10),
+            SoftcapIncreasePerTier = TryGetInt(tier, "softcap_increase_per_tier", 2)
         };
     }
 

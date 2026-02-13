@@ -19,7 +19,7 @@ namespace DeskWarrior.Managers
         #region Fields
 
         private readonly GameData _gameData;
-        private readonly CharacterDataRoot _characterData;
+        private readonly List<HeroData> _heroes = new();
         private readonly MonsterDataManager _monsterDataManager;
         private readonly DispatcherTimer _timer;
         private readonly GameOverMessageManager _messageManager;
@@ -36,7 +36,6 @@ namespace DeskWarrior.Managers
         private CompendiumManager? _compendiumManager;
         private MonsterCollection _monsterCollection = new(); // 도감 시스템
         private CollectionRewards? _collectionRewards; // 도감 보상 설정
-        private bool _useBatchSystem = true; // 배치 시스템 사용 여부
         private bool _isGoldenGoblinActive = false; // 황금 고블린 활성화 상태
 
         // 입력 속도 제한 (슬라이딩 윈도우 - 1초 내 입력 수 카운트)
@@ -70,17 +69,12 @@ namespace DeskWarrior.Managers
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
         public GameData GameData => _gameData;
-        public System.Collections.Generic.List<HeroData> Heroes => _characterData.Heroes;
+        public System.Collections.Generic.List<HeroData> Heroes => _heroes;
 
         /// <summary>
         /// 몬스터 데이터 매니저 (배치 시스템)
         /// </summary>
         public MonsterDataManager MonsterDataManager => _monsterDataManager;
-
-        /// <summary>
-        /// 배치 시스템 사용 여부
-        /// </summary>
-        public bool UseBatchSystem => _useBatchSystem;
 
         // 인게임 스탯 접근자
         public InGameStats InGameStats => _inGameStats;
@@ -134,24 +128,25 @@ namespace DeskWarrior.Managers
             _gameData = GameData.LoadFromFile(configPath);
             Logger.Log($"[GameData] MaxCps={_gameData.ConsecutiveKeyPenalty.MaxCps}, MouseExempt={_gameData.ConsecutiveKeyPenalty.MouseExempt}");
 
-            // 배치 기반 몬스터 데이터 로드 시도
+            // 배치 기반 몬스터 데이터 로드 (필수)
             _monsterDataManager = new MonsterDataManager();
             _monsterDataManager.SetGameData(_gameData);
-            try
+            _monsterDataManager.LoadBatchIndex();
+            _monsterDataManager.LoadAllEnabledBatches();
+
+            if (_monsterDataManager.LoadedBatchCount == 0)
             {
-                _monsterDataManager.LoadBatchIndex();
-                _monsterDataManager.LoadAllEnabledBatches();
-                _useBatchSystem = _monsterDataManager.LoadedBatchCount > 0;
-            }
-            catch
-            {
-                _useBatchSystem = false;
+                throw new InvalidOperationException(
+                    "Failed to load monster batch data. " +
+                    "Please ensure config/monsters/_index.json and batch_01.json exist."
+                );
             }
 
-            // 캐릭터 데이터 로드 (Heroes + 레거시 폴백)
-            var characterDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "CharacterData.json");
-            var json = File.ReadAllText(characterDataPath);
-            _characterData = JsonSerializer.Deserialize<CharacterDataRoot>(json) ?? new CharacterDataRoot();
+            // Heroes 데이터 로드
+            var heroesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "Heroes.json");
+            var heroesJson = File.ReadAllText(heroesPath);
+            var heroesRoot = JsonSerializer.Deserialize<HeroesRoot>(heroesJson) ?? new HeroesRoot();
+            _heroes.AddRange(heroesRoot.Heroes);
 
             // 메시지 매니저 초기화
             _messageManager = new GameOverMessageManager();
@@ -696,23 +691,19 @@ namespace DeskWarrior.Managers
         /// </summary>
         private int CalculateStageExpectedGold(int level)
         {
-            // 배치 시스템에서 평균 몬스터 골드 계산
-            if (_useBatchSystem)
+            var monsters = _monsterDataManager.GetAllMonsters();
+            if (monsters.Count == 0)
             {
-                var monsters = _monsterDataManager.GetAllMonsters();
-                if (monsters.Count > 0)
-                {
-                    int totalGold = 0;
-                    foreach (var m in monsters)
-                    {
-                        totalGold += m.BaseGold + level * m.GoldGrowth;
-                    }
-                    return totalGold / monsters.Count;
-                }
+                Logger.Log("[WARNING] No monsters loaded in batch system");
+                return 10 + level * 2;  // Emergency fallback
             }
 
-            // 레거시 폴백: 기본값
-            return 10 + level * 2;
+            int totalGold = 0;
+            foreach (var m in monsters)
+            {
+                totalGold += m.BaseGold + level * m.GoldGrowth;
+            }
+            return totalGold / monsters.Count;
         }
 
         private void SpawnMonster()
@@ -731,35 +722,11 @@ namespace DeskWarrior.Managers
             string element = "normal";
             MonsterData selectedData;
 
-            if (_useBatchSystem)
-            {
-                // 배치 시스템 사용 (FlattenedMonsterData로 가져와서 species/element 추출)
-                var flattenedData = _monsterDataManager.GetRandomMonsterData(CurrentLevel, isBoss);
-                selectedData = flattenedData.ToMonsterData();
-                species = flattenedData.Species;
-                element = flattenedData.Element;
-            }
-            else
-            {
-                // 레거시 시스템 폴백
-                if (isBoss && _characterData.Bosses.Count > 0)
-                {
-                    // 보스 레벨: 랜덤하게 보스 선택
-                    int bossIndex = _random.Next(_characterData.Bosses.Count);
-                    selectedData = _characterData.Bosses[bossIndex];
-                }
-                else if (_characterData.Monsters.Count > 0)
-                {
-                    // 일반 몬스터: 레벨 기반 순환 인덱스
-                    int monsterIndex = (CurrentLevel - 1) % _characterData.Monsters.Count;
-                    selectedData = _characterData.Monsters[monsterIndex];
-                }
-                else
-                {
-                    // 폴백: 기본 데이터
-                    selectedData = new MonsterData { Id = "monster", Name = "??", BaseHp = 10, HpGrowth = 5, BaseGold = 10, GoldGrowth = 2, Emoji = "👹" };
-                }
-            }
+            // Batch 시스템으로 몬스터 데이터 가져오기 (폴백 제거)
+            var flattenedData = _monsterDataManager.GetRandomMonsterData(CurrentLevel, isBoss);
+            selectedData = flattenedData.ToMonsterData();
+            species = flattenedData.Species;
+            element = flattenedData.Element;
 
             // 몬스터 생성 (species/element 전달)
             _currentMonster = new Monster(selectedData, CurrentLevel, isBoss, _gameData.Balance.TierHpSystem, species, element);

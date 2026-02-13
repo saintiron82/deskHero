@@ -85,6 +85,7 @@ namespace DeskWarrior.ViewControllers
             {
                 From = 0,
                 To = -720,
+                BeginTime = TimeSpan.FromSeconds(0.5),
                 Duration = TimeSpan.FromSeconds(1.3),
                 EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
             };
@@ -94,6 +95,7 @@ namespace DeskWarrior.ViewControllers
             {
                 From = 0,
                 To = -200,
+                BeginTime = TimeSpan.FromSeconds(0.5),
                 Duration = TimeSpan.FromSeconds(1.3),
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
             };
@@ -103,6 +105,7 @@ namespace DeskWarrior.ViewControllers
             {
                 From = 0,
                 To = -120,
+                BeginTime = TimeSpan.FromSeconds(0.5),
                 Duration = TimeSpan.FromSeconds(1.3),
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
             };
@@ -112,7 +115,7 @@ namespace DeskWarrior.ViewControllers
             {
                 From = 1.0,
                 To = 0.0,
-                BeginTime = TimeSpan.FromSeconds(0.3),
+                BeginTime = TimeSpan.FromSeconds(0.5),
                 Duration = TimeSpan.FromSeconds(0.8)
             };
             _window.HeroImage.BeginAnimation(UIElement.OpacityProperty, heroFadeAnim);
