@@ -103,7 +103,10 @@
       "Bash(git worktree:*)",
       "Bash(git gc:*)",
       "Bash(git clean:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash($env:PYTHONIOENCODING=\"utf-8\")",
+      "Bash(iconv:*)",
+      "Bash(Select-Object -Last 30)"
     ]
   }
 }

@@ -1,0 +1,195 @@
+{
+  "created_at": "2026-02-13T14:43:50.565441",
+  "updated_at": "2026-02-13T16:00:10.336615",
+  "meta": {
+    "goal": "GameManager.cs 리팩토링 (900+ 줄 → 책임 분리: 몬스터 스폰, 전투, 보상, 타이머 로직 분리)",
+    "max_depth": 5,
+    "max_retries": 3
+  },
+  "current_node": "NODE-4",
+  "nodes": {
+    "ROOT": {
+      "id": "ROOT",
+      "goal": "GameManager.cs 리팩토링 (900+ 줄 → 책임 분리: 몬스터 스폰, 전투, 보상, 타이머 로직 분리)",
+      "parent": null,
+      "children": [
+        "NODE-1",
+        "NODE-2",
+        "NODE-3",
+        "NODE-4"
+      ],
+      "depth": 0,
+      "status": "passed",
+      "is_leaf": false,
+      "retry_count": 0,
+      "test_criteria": []
+    },
+    "NODE-1": {
+      "id": "NODE-1",
+      "goal": "Extract combat system (input handling, damage calculation, rate limiting) into CombatManager",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": false,
+      "retry_count": 0,
+      "test_criteria": [
+        {
+          "name": "Build succeeds",
+          "passed": true
+        },
+        {
+          "name": "Keyboard input triggers damage event",
+          "passed": true
+        },
+        {
+          "name": "Mouse input triggers damage event",
+          "passed": true
+        },
+        {
+          "name": "Rate limiting blocks excessive inputs",
+          "passed": true
+        },
+        {
+          "name": "Critical hits calculated correctly",
+          "passed": true
+        },
+        {
+          "name": "Combo system integrates properly",
+          "passed": true
+        }
+      ]
+    },
+    "NODE-2": {
+      "id": "NODE-2",
+      "goal": "Extract monster spawning logic (normal, boss, golden goblin selection) into MonsterSpawnManager",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": true,
+      "retry_count": 0,
+      "test_criteria": [
+        {
+          "name": "Build succeeds without errors",
+          "passed": true
+        },
+        {
+          "name": "Normal monster spawns correctly with species and element",
+          "passed": true
+        },
+        {
+          "name": "Boss monster spawns correctly at boss intervals",
+          "passed": true
+        },
+        {
+          "name": "Golden goblin spawns when cooldown is met",
+          "passed": true
+        },
+        {
+          "name": "CalculateStageExpectedGold returns valid value",
+          "passed": true
+        },
+        {
+          "name": "MonsterSpawnManager integrates with existing managers",
+          "passed": true
+        },
+        {
+          "name": "All existing tests pass",
+          "passed": true
+        }
+      ],
+      "fast_track": true
+    },
+    "NODE-3": {
+      "id": "NODE-3",
+      "goal": "Extract reward calculation (gold, crystals, collection milestones) into RewardManager",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": true,
+      "retry_count": 0,
+      "test_criteria": [
+        {
+          "name": "Build succeeds without errors",
+          "passed": true
+        },
+        {
+          "name": "Gold rewards calculated correctly for normal monster kills",
+          "passed": true
+        },
+        {
+          "name": "Boss crystal drops work with element multipliers",
+          "passed": true
+        },
+        {
+          "name": "Golden goblin rewards calculated properly",
+          "passed": true
+        },
+        {
+          "name": "Collection milestone rewards (first holy/dark) granted correctly",
+          "passed": true
+        },
+        {
+          "name": "Species completion rewards granted correctly",
+          "passed": true
+        },
+        {
+          "name": "All elements milestone reward works",
+          "passed": true
+        },
+        {
+          "name": "Stage clear crystals awarded properly",
+          "passed": true
+        },
+        {
+          "name": "SessionTracker records reward events correctly",
+          "passed": true
+        },
+        {
+          "name": "All existing game tests pass",
+          "passed": true
+        }
+      ],
+      "fast_track": true
+    },
+    "NODE-4": {
+      "id": "NODE-4",
+      "goal": "Extract timer/game loop management (tick handling, time scale, game over) into GameLoopManager",
+      "parent": "ROOT",
+      "children": [],
+      "depth": 1,
+      "status": "passed",
+      "is_leaf": true,
+      "retry_count": 0,
+      "test_criteria": [
+        {
+          "name": "Build succeeds (dotnet build)",
+          "passed": null
+        },
+        {
+          "name": "GameLoopManager.cs created with timer logic",
+          "passed": null
+        },
+        {
+          "name": "GameManager delegates timer operations to GameLoopManager",
+          "passed": null
+        },
+        {
+          "name": "All timer events still triggered correctly",
+          "passed": null
+        },
+        {
+          "name": "RemainingTime property accessible",
+          "passed": null
+        },
+        {
+          "name": "Pause/Resume timer methods work",
+          "passed": null
+        }
+      ],
+      "fast_track": true
+    }
+  }
+}
