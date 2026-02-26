@@ -56,5 +56,21 @@ namespace DeskWarrior.Models
                 return null;
             }
         }
+
+        public bool SaveToFile(string path)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string json = JsonSerializer.Serialize(this, options);
+                File.WriteAllText(path, json);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to save SoundThemes: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

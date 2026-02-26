@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Media;
 using System.Windows.Media;
 using DeskWarrior.Helpers;
 using DeskWarrior.Interfaces;
@@ -110,6 +109,7 @@ namespace DeskWarrior.Managers
 #pragma warning restore CS0618
 
             // 테마 체크: override 우선, 없으면 테마 기본값
+            // _activeTheme가 null이면 소리 끔 (안전 기본값)
             string key = type.ToString();
             double themeVol;
             if (_themeOverrides.TryGetValue(key, out var overrideVol))
@@ -117,11 +117,12 @@ namespace DeskWarrior.Managers
             else if (_activeTheme != null)
                 themeVol = _activeTheme.GetVolume(key);
             else
-                themeVol = 1.0;
+                themeVol = 0.0;
 
             // 볼륨 0 이하 = 꺼짐
             if (themeVol <= 0) return;
 
+            // MediaPlayer가 로드된 경우에만 재생 (시스템 비프음 폴백 제거)
             if (_sounds.TryGetValue(type, out var player))
             {
                 player.Position = TimeSpan.Zero;
@@ -132,10 +133,6 @@ namespace DeskWarrior.Managers
                 player.Volume = _volume * (config?.GetVolumeMultiplier(type) ?? 1.0) * themeVol;
 
                 player.Play();
-            }
-            else
-            {
-                PlaySystemSound(type);
             }
         }
 
@@ -258,6 +255,22 @@ namespace DeskWarrior.Managers
             _themeOverrides[soundTypeKey] = volume;
         }
 
+        public bool AddCustomTheme(SoundThemeData theme)
+        {
+            if (string.IsNullOrEmpty(theme.Id)) return false;
+            theme.IsBuiltin = false;
+            _soundThemes[theme.Id] = theme;
+            return SaveThemesToFile();
+        }
+
+        public bool DeleteCustomTheme(string themeId)
+        {
+            if (!_soundThemes.TryGetValue(themeId, out var theme)) return false;
+            if (theme.IsBuiltin) return false;
+            _soundThemes.Remove(themeId);
+            return SaveThemesToFile();
+        }
+
         public void Dispose()
         {
             UnloadAllSounds();
@@ -267,11 +280,13 @@ namespace DeskWarrior.Managers
 
         #region Private Methods
 
+        private string GetThemesFilePath() =>
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "SoundThemes.json");
+
         private void LoadSoundThemes()
         {
             _soundThemes.Clear();
-            var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "SoundThemes.json");
-            var file = SoundThemesFile.LoadFromFile(configPath);
+            var file = SoundThemesFile.LoadFromFile(GetThemesFilePath());
             if (file != null)
             {
                 foreach (var theme in file.Themes)
@@ -279,6 +294,15 @@ namespace DeskWarrior.Managers
             }
 
             _soundThemes.TryGetValue("default", out _activeTheme);
+        }
+
+        private bool SaveThemesToFile()
+        {
+            var file = new SoundThemesFile
+            {
+                Themes = new List<SoundThemeData>(_soundThemes.Values)
+            };
+            return file.SaveToFile(GetThemesFilePath());
         }
 
         private void EnsureDirectoriesExist()
@@ -460,40 +484,6 @@ namespace DeskWarrior.Managers
                 string category = SoundCategory.GetCategory(kvp.Key);
                 var config = _categoryConfigs.TryGetValue(category, out var c) ? c : null;
                 kvp.Value.Volume = _volume * (config?.GetVolumeMultiplier(kvp.Key) ?? 1.0) * themeVol;
-            }
-        }
-
-        private void PlaySystemSound(SoundType type)
-        {
-            switch (type)
-            {
-                case SoundType.KeyboardHit:
-                case SoundType.MouseClick:
-                case SoundType.Critical:
-                    SystemSounds.Asterisk.Play();
-                    break;
-                case SoundType.Defeat:
-                case SoundType.BossDefeat:
-                    SystemSounds.Exclamation.Play();
-                    break;
-                case SoundType.GameOver:
-                    SystemSounds.Hand.Play();
-                    break;
-                case SoundType.Upgrade:
-                case SoundType.LevelUp:
-                case SoundType.OfflineReward:
-                    SystemSounds.Beep.Play();
-                    break;
-                case SoundType.BossAppear:
-                case SoundType.GoldenGoblinAppear:
-                    SystemSounds.Question.Play();
-                    break;
-                case SoundType.GoldenGoblinDefeat:
-                    SystemSounds.Exclamation.Play();
-                    break;
-                case SoundType.GoldenGoblinEscape:
-                    SystemSounds.Asterisk.Play();
-                    break;
             }
         }
 

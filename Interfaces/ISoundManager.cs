@@ -175,5 +175,11 @@ namespace DeskWarrior.Interfaces
 
         /// <summary>개별 사운드 override 설정 (UI에서 실시간 변경)</summary>
         void SetSoundTypeOverride(string soundTypeKey, double volume);
+
+        /// <summary>커스텀 테마 추가 (JSON 저장 포함)</summary>
+        bool AddCustomTheme(SoundThemeData theme);
+
+        /// <summary>커스텀 테마 삭제 (builtin 삭제 불가)</summary>
+        bool DeleteCustomTheme(string themeId);
     }
 }

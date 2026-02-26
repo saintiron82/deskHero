@@ -189,7 +189,7 @@ namespace DeskWarrior.Models
         public Dictionary<string, string> CategorySoundPacks { get; set; } = new();
 
         [JsonPropertyName("sound_theme_id")]
-        public string SoundThemeId { get; set; } = "default";
+        public string SoundThemeId { get; set; } = "minimal";
 
         [JsonPropertyName("sound_theme_overrides")]
         public Dictionary<string, double> SoundThemeOverrides { get; set; } = new();
