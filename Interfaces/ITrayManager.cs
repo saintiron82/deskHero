@@ -11,6 +11,7 @@ namespace DeskWarrior.Interfaces
 
         event EventHandler? SettingsRequested;
         event EventHandler? ExitRequested;
+        event EventHandler? MoveToScreenRequested;
 
         #endregion
 

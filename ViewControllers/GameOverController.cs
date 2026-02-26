@@ -16,8 +16,7 @@ namespace DeskWarrior.ViewControllers
         private readonly GameOverViewModel _viewModel;
         private System.Windows.Threading.DispatcherTimer? _autoRestartTimer;
         private int _autoRestartCountdown;
-
-        private const double MONSTER_SIZE = 80;
+        private bool _isShowingGameOver;
 
         public GameOverController(MainWindow window)
         {
@@ -56,29 +55,92 @@ namespace DeskWarrior.ViewControllers
             _autoRestartTimer.Tick += AutoRestartTimer_Tick;
         }
 
+        public bool IsShowingGameOver => _isShowingGameOver;
+
         public void StartGameOverSequence(SoundManager soundManager)
         {
+            // 이미 게임 오버 화면이 표시 중이면 무시 (재진입 방지)
+            if (_isShowingGameOver)
+                return;
+
+            _isShowingGameOver = true;
+
             if (_window.MainBackgroundBorder != null)
                 _window.MainBackgroundBorder.IsHitTestVisible = false;
 
-            var growAnim = new DoubleAnimation
+            // Phase 1 (0~0.7s): 몬스터 돌진 - 가속하며 히어로에 도달
+            var moveX = new DoubleAnimation
             {
-                To = 500,
-                Duration = TimeSpan.FromSeconds(1.5),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+                From = 0, To = -60,
+                Duration = TimeSpan.FromSeconds(0.7),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
             };
+            var moveY = new DoubleAnimation
+            {
+                From = 0, To = 50,
+                Duration = TimeSpan.FromSeconds(0.7),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+            };
+            _window.MonsterMoveTransform.BeginAnimation(TranslateTransform.XProperty, moveX);
+            _window.MonsterMoveTransform.BeginAnimation(TranslateTransform.YProperty, moveY);
 
-            _window.MonsterImage.BeginAnimation(FrameworkElement.WidthProperty, growAnim);
-            _window.MonsterImage.BeginAnimation(FrameworkElement.HeightProperty, growAnim);
+            var scaleUp = new DoubleAnimation
+            {
+                From = 1.0, To = 1.25,
+                Duration = TimeSpan.FromSeconds(0.7),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
+            };
+            _window.MonsterScaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleUp);
+            _window.MonsterScaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleUp);
 
             var shakeAnim = new DoubleAnimation
             {
-                From = -5, To = 5,
-                Duration = TimeSpan.FromMilliseconds(50),
+                From = -4, To = 4,
+                Duration = TimeSpan.FromMilliseconds(40),
                 RepeatBehavior = new RepeatBehavior(TimeSpan.FromSeconds(1.5)),
                 AutoReverse = true
             };
             _window.MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, shakeAnim);
+
+            // Phase 2 (0.7s~): 충돌 후 히어로가 날아감
+            var heroRotateAnim = new DoubleAnimation
+            {
+                From = 0,
+                To = -540,
+                BeginTime = TimeSpan.FromSeconds(0.7),
+                Duration = TimeSpan.FromSeconds(0.8),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            _window.HeroRotateTransform.BeginAnimation(System.Windows.Media.RotateTransform.AngleProperty, heroRotateAnim);
+
+            var heroFlyX = new DoubleAnimation
+            {
+                From = 0,
+                To = -180,
+                BeginTime = TimeSpan.FromSeconds(0.7),
+                Duration = TimeSpan.FromSeconds(0.8),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.XProperty, heroFlyX);
+
+            var heroFlyY = new DoubleAnimation
+            {
+                From = 0,
+                To = -100,
+                BeginTime = TimeSpan.FromSeconds(0.7),
+                Duration = TimeSpan.FromSeconds(0.8),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.YProperty, heroFlyY);
+
+            var heroFadeAnim = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.0,
+                BeginTime = TimeSpan.FromSeconds(0.8),
+                Duration = TimeSpan.FromSeconds(0.5)
+            };
+            _window.HeroImage.BeginAnimation(UIElement.OpacityProperty, heroFadeAnim);
 
             var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
             timer.Tick += (s, args) =>
@@ -105,17 +167,18 @@ namespace DeskWarrior.ViewControllers
                 : gameManager.RemainingTime <= 0 ? "timeout" : "normal";
 
             // 세션 통계 수집 (크리스탈 변환 전)
-            int sessionGold = (int)gameManager.SessionTotalGold;
+            long sessionGold = gameManager.SessionTotalGold;
             long sessionDamage = gameManager.SessionDamage;
             int sessionLevel = gameManager.CurrentLevel;
             int sessionKills = gameManager.SessionKills;
 
-            // 세션 중 획득한 크리스탈 (보스 드롭, 업적 보상)
+            // 세션 중 획득한 크리스탈 (보스 드롭, 업적 보상, 스테이지 클리어)
             int bossDropCrystals = gameManager.SessionBossDropCrystals;
             int achievementCrystals = gameManager.SessionAchievementCrystals;
+            int stageClearCrystals = gameManager.SessionStageClearCrystals;
 
             // 골드 → 크리스탈 변환 (1000:1)
-            int convertedCrystals = sessionGold / 1000;
+            int convertedCrystals = (int)(sessionGold / 1000);
 
             // 세션 저장 (크리스탈이 자동으로 지급됨)
             vm.SaveSession();
@@ -130,7 +193,7 @@ namespace DeskWarrior.ViewControllers
 
             // 세션 후 크리스탈 잔액
             long crystalsAfterSession = saveManager.CurrentSave.PermanentCurrency.Crystals;
-            int totalEarned = convertedCrystals + bossDropCrystals + achievementCrystals;
+            int totalEarned = stageClearCrystals + bossDropCrystals + achievementCrystals + convertedCrystals;
 
             // ViewModel 업데이트 - 세션 통계
             _viewModel.GameOverMessage = gameManager.GetGameOverMessage(deathType);
@@ -156,17 +219,25 @@ namespace DeskWarrior.ViewControllers
             _window.ApplyBackgroundOpacity(saveManager.CurrentSave.Settings.BackgroundOpacity);
 
             // 몬스터 애니메이션 리셋
-            _window.MonsterImage.BeginAnimation(FrameworkElement.WidthProperty, null);
-            _window.MonsterImage.BeginAnimation(FrameworkElement.HeightProperty, null);
-            _window.MonsterImage.Width = MONSTER_SIZE;
-            _window.MonsterImage.Height = MONSTER_SIZE;
             _window.MonsterShakeTransform.BeginAnimation(TranslateTransform.XProperty, null);
+            _window.MonsterMoveTransform.BeginAnimation(TranslateTransform.XProperty, null);
+            _window.MonsterMoveTransform.BeginAnimation(TranslateTransform.YProperty, null);
+            _window.MonsterScaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            _window.MonsterScaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+            _window.MonsterMoveTransform.X = 0;
+            _window.MonsterMoveTransform.Y = 0;
+            _window.MonsterScaleTransform.ScaleX = 1;
+            _window.MonsterScaleTransform.ScaleY = 1;
 
-            // 게임 재시작
-            gameManager.RestartGame();
+            // 히어로 애니메이션 리셋
+            _window.HeroImage.BeginAnimation(UIElement.OpacityProperty, null);
+            _window.HeroRotateTransform.BeginAnimation(System.Windows.Media.RotateTransform.AngleProperty, null);
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.XProperty, null);
+            _window.HeroTranslateTransform.BeginAnimation(TranslateTransform.YProperty, null);
+            _window.HeroImage.Opacity = 1.0;
 
-            // 자동 닫기 타이머 시작
-            _autoRestartCountdown = 10;
+            // 자동 닫기 타이머 시작 (게임 재시작은 오버레이 닫힐 때 수행)
+            _autoRestartCountdown = 7;
             UpdateAutoCloseCountdown();
             _autoRestartTimer?.Start();
 
@@ -197,9 +268,16 @@ namespace DeskWarrior.ViewControllers
 
         public void CloseGameOverOverlay()
         {
+            // 오버레이 애니메이션 정리 후 숨기기
+            _window.GameOverOverlayControl.BeginAnimation(UIElement.OpacityProperty, null);
             _window.GameOverOverlayControl.Visibility = Visibility.Collapsed;
             if (_window.MainBackgroundBorder != null)
                 _window.MainBackgroundBorder.IsHitTestVisible = true;
+
+            _isShowingGameOver = false;
+
+            // 게임 재시작 (오버레이가 닫힌 후 수행)
+            _window.ViewModel.GameManager.RestartGame();
 
             // Trigger UI update
             _window.UpdateAllUI();

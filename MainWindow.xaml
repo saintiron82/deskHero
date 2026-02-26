@@ -22,7 +22,6 @@
     <Grid>
         <!-- 배경 이미지 (윈도우 전체, 가장 뒤) -->
         <Image x:Name="BackgroundImage"
-               Source="pack://application:,,,/Assets/Images/bg_floor_sparse_pilot_v2.png"
                Stretch="UniformToFill"
                Margin="3"
                Panel.ZIndex="0"
@@ -60,13 +59,13 @@
 
                         <!-- 골드 -->
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="pack://application:,,,/Assets/Images/UI/gold.png" Width="16" Height="16" VerticalAlignment="Center" Margin="0,2,3,0"/>
+                            <Image Source="{DynamicResource IconGold}" Width="16" Height="16" VerticalAlignment="Center" Margin="0,2,3,0"/>
                             <TextBlock x:Name="GoldTextTop" Text="{Binding GoldText}" FontSize="12" Foreground="#FFD700" FontWeight="Bold" VerticalAlignment="Center" MinWidth="32"/>
                         </StackPanel>
 
                         <!-- 크리스털 -->
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
-                            <Image Source="pack://application:,,,/Assets/Images/UI/crystal.png" Width="16" Height="16" VerticalAlignment="Center" Margin="0,2,3,0">
+                            <Image Source="{DynamicResource IconCrystal}" Width="16" Height="16" VerticalAlignment="Center" Margin="0,2,3,0">
                                 <Image.Effect>
                                     <DropShadowEffect Color="#00CED1" ShadowDepth="0" BlurRadius="4" Opacity="0.5"/>
                                 </Image.Effect>
@@ -80,8 +79,14 @@
 
                         <!-- 타이머 -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
-                            <Image Source="pack://application:,,,/Assets/Images/UI/Icon_Timer.png" Width="14" Height="14" VerticalAlignment="Center" Margin="0,2,3,0"/>
+                            <Image Source="{DynamicResource IconTimer}" Width="14" Height="14" VerticalAlignment="Center" Margin="0,2,3,0"/>
                             <TextBlock x:Name="TimerText" Text="{Binding TimerText}" FontSize="12" FontWeight="Bold" Foreground="#87CEEB" VerticalAlignment="Center" MinWidth="20" TextAlignment="Left"/>
+                        </StackPanel>
+
+                        <!-- CPS (초당 입력) -->
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,4,0">
+                            <TextBlock Text="{Binding CurrentCPS, StringFormat={}{0:F0}}" FontSize="11" FontWeight="Bold" Foreground="#10B981" VerticalAlignment="Center"/>
+                            <TextBlock Text="/s" FontSize="9" Foreground="#888888" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <!-- 우측: X 버튼 -->
@@ -113,7 +118,7 @@
 
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock x:Name="LevelText" Text="{Binding LevelText}" FontSize="12" Foreground="White" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding MonsterName}" FontSize="12" Foreground="#88ff88" Margin="5,0,0,0" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="MonsterNameText" Text="{Binding MonsterName}" FontSize="12" Foreground="#88ff88" Margin="5,0,0,0" FontWeight="SemiBold"/>
                             <TextBlock x:Name="MaxLevelText" Text="{Binding MaxLevelText}" FontSize="8" Foreground="#AAA" VerticalAlignment="Bottom" Margin="4,0,0,0" Visibility="Collapsed"/>
                         </StackPanel>
 
@@ -130,7 +135,6 @@
                 <Grid Grid.Row="2" Panel.ZIndex="1">
                     <!-- 적 몬스터 (우측 상단) -->
                     <Image x:Name="MonsterImage"
-                           Source="pack://application:,,,/Assets/Images/monster.png"
                            Width="80" Height="80"
                            Stretch="Uniform"
                            HorizontalAlignment="Right"
@@ -140,7 +144,11 @@
                            Panel.ZIndex="2"
                            MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
                         <Image.RenderTransform>
-                            <TranslateTransform x:Name="MonsterShakeTransform"/>
+                            <TransformGroup>
+                                <TranslateTransform x:Name="MonsterShakeTransform"/>
+                                <TranslateTransform x:Name="MonsterMoveTransform"/>
+                                <ScaleTransform x:Name="MonsterScaleTransform" ScaleX="1" ScaleY="1"/>
+                            </TransformGroup>
                         </Image.RenderTransform>
                     </Image>
 
@@ -153,16 +161,41 @@
                             Panel.ZIndex="10"
                             IsHitTestVisible="False"/>
 
+                    <!-- 황금 고블린 알림 (등장/처치/도주) -->
+                    <Border x:Name="GoldenGoblinNotification"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="#CC000000"
+                            BorderThickness="2"
+                            CornerRadius="8"
+                            Padding="12,6"
+                            Panel.ZIndex="15"
+                            IsHitTestVisible="False"
+                            Visibility="Collapsed">
+                        <TextBlock x:Name="GoldenGoblinNotificationText"
+                                   FontSize="14" FontWeight="Bold"
+                                   Foreground="#FFD700"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"/>
+                    </Border>
+
                     <!-- 플레이어 히어로 (좌측 하단) -->
                     <Image x:Name="HeroImage"
-                           Source="pack://application:,,,/Assets/Images/hero.png"
                            Width="90" Height="90"
                            Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
                            Margin="10,0,0,0"
                            Panel.ZIndex="3"
-                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown"/>
+                           RenderTransformOrigin="0.5,0.5"
+                           MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <TranslateTransform x:Name="HeroTranslateTransform"/>
+                                <RotateTransform x:Name="HeroRotateTransform"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                    </Image>
                 </Grid>
 
                 <!-- Row 3: 업그레이드 버튼 패널 -->
@@ -227,7 +260,7 @@
                                 Style="{StaticResource SettingsButton}"
                                 Margin="1" Height="24">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Image Source="pack://application:,,,/Assets/Images/UI/crystal.png" Width="12" Height="12" VerticalAlignment="Center" Margin="0,0,3,0"/>
+                                <Image Source="{DynamicResource IconCrystal}" Width="12" Height="12" VerticalAlignment="Center" Margin="0,0,3,0"/>
                                 <TextBlock x:Name="ShopBtnText" FontSize="10" VerticalAlignment="Center" Foreground="White"/>
                             </StackPanel>
                         </Button>

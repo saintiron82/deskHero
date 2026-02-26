@@ -1,0 +1,125 @@
+{
+  "golden_goblin": {
+    "id": "special_golden_goblin",
+    "spawn_chance": 0.001,
+    "cooldown_kills": 500,
+    "hp": 150,
+    "hp_min": 100,
+    "hp_max": 200,
+    "time_limit": 10,
+    "reward_min": 2,
+    "reward_max": 100,
+    "_reward_distribution": "삼각분포: 50배 부근이 가장 높은 확률",
+    "sprite": "Production/Special/monster_goldengoblin.png",
+    "emoji": "💰",
+    "name": {
+      "ko-KR": "황금 고블린",
+      "en-US": "Golden Goblin",
+      "ja-JP": "ゴールデンゴブリン",
+      "zh-CN": "黄金哥布林",
+      "zh-TW": "黃金哥布林"
+    },
+    "grades": [
+      {
+        "grade_id": "bronze",
+        "reward_min": 2,
+        "reward_max": 19,
+        "hp_min": 80,
+        "hp_max": 120,
+        "time_limit": 10,
+        "sprite": "Production/Special/monster_goldengoblin.png",
+        "background": "Production/Background/bg_floor_cave_v1.png",
+        "border_color": "#CD7F32",
+        "name_color": "#FFFFFF",
+        "effect": "none",
+        "name": {
+          "ko-KR": "청동 황금 고블린",
+          "en-US": "Bronze Golden Goblin",
+          "ja-JP": "ブロンズゴールデンゴブリン",
+          "zh-CN": "青铜黄金哥布林",
+          "zh-TW": "青銅黃金哥布林"
+        }
+      },
+      {
+        "grade_id": "silver",
+        "reward_min": 20,
+        "reward_max": 40,
+        "hp_min": 100,
+        "hp_max": 150,
+        "time_limit": 10,
+        "sprite": "Production/Special/monster_goldengoblin.png",
+        "background": "Production/Background/bg_floor_grassland_v2.png",
+        "border_color": "#C0C0C0",
+        "name_color": "#FFFFFF",
+        "effect": "shimmer_weak",
+        "name": {
+          "ko-KR": "은빛 황금 고블린",
+          "en-US": "Silver Golden Goblin",
+          "ja-JP": "シルバーゴールデンゴブリン",
+          "zh-CN": "银色黄金哥布林",
+          "zh-TW": "銀色黃金哥布林"
+        }
+      },
+      {
+        "grade_id": "gold",
+        "reward_min": 41,
+        "reward_max": 65,
+        "hp_min": 120,
+        "hp_max": 180,
+        "time_limit": 10,
+        "sprite": "Production/Special/monster_goldengoblin.png",
+        "background": "Production/Background/bg_floor_desert_v1.png",
+        "border_color": "#FFD700",
+        "name_color": "#FFD700",
+        "effect": "shimmer_medium",
+        "name": {
+          "ko-KR": "황금 고블린",
+          "en-US": "Golden Goblin",
+          "ja-JP": "ゴールデンゴブリン",
+          "zh-CN": "黄金哥布林",
+          "zh-TW": "黃金哥布林"
+        }
+      },
+      {
+        "grade_id": "diamond",
+        "reward_min": 66,
+        "reward_max": 85,
+        "hp_min": 150,
+        "hp_max": 220,
+        "time_limit": 10,
+        "sprite": "Production/Special/monster_goldengoblin.png",
+        "background": "Production/Background/bg_floor_temple_v1.png",
+        "border_color": "#B9F2FF",
+        "name_color": "#B9F2FF",
+        "effect": "shimmer_strong",
+        "name": {
+          "ko-KR": "다이아 황금 고블린",
+          "en-US": "Diamond Golden Goblin",
+          "ja-JP": "ダイヤゴールデンゴブリン",
+          "zh-CN": "钻石黄金哥布林",
+          "zh-TW": "鑽石黃金哥布林"
+        }
+      },
+      {
+        "grade_id": "legendary",
+        "reward_min": 86,
+        "reward_max": 100,
+        "hp_min": 180,
+        "hp_max": 280,
+        "time_limit": 10,
+        "sprite": "Production/Special/monster_goldengoblin.png",
+        "background": "Production/Background/bg_floor_lava_v1.png",
+        "border_color": "#FF0000",
+        "name_color": "#FF00FF",
+        "effect": "rainbow_glow",
+        "name": {
+          "ko-KR": "전설의 황금 고블린",
+          "en-US": "Legendary Golden Goblin",
+          "ja-JP": "レジェンダリーゴールデンゴブリン",
+          "zh-CN": "传说黄金哥布林",
+          "zh-TW": "傳說黃金哥布林"
+        }
+      }
+    ]
+  }
+}

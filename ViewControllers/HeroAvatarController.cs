@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DeskWarrior.Helpers;
+using DeskWarrior.Managers;
 using DeskWarrior.Models;
 
 namespace DeskWarrior.ViewControllers
@@ -36,7 +37,7 @@ namespace DeskWarrior.ViewControllers
                 {
                     _currentHero = heroes[_random.Next(heroes.Count)];
                     _window.HeroImage.Source = ImageHelper.LoadWithChromaKey(
-                        $"pack://application:,,,/Assets/Images/{_currentHero.IdleSprite}.png");
+                        ResourceManager.Instance.GetImageUri(_currentHero.IdleSprite).ToString());
                 }
             }
             catch (Exception ex)
@@ -48,13 +49,13 @@ namespace DeskWarrior.ViewControllers
         public void ShowHeroAttackSprite()
         {
             if (_currentHero == null) return;
-            
+
             _heroAttackTimer?.Stop();
-            
-            try 
+
+            try
             {
                 _window.HeroImage.Source = ImageHelper.LoadWithChromaKey(
-                    $"pack://application:,,,/Assets/Images/{_currentHero.AttackSprite}.png");
+                    ResourceManager.Instance.GetImageUri(_currentHero.AttackSprite).ToString());
             }
             catch { }
 
@@ -69,7 +70,7 @@ namespace DeskWarrior.ViewControllers
                 try
                 {
                     _window.HeroImage.Source = ImageHelper.LoadWithChromaKey(
-                        $"pack://application:,,,/Assets/Images/{_currentHero.IdleSprite}.png");
+                        ResourceManager.Instance.GetImageUri(_currentHero.IdleSprite).ToString());
                 }
                 catch { }
             }

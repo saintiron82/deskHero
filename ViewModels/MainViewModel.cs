@@ -28,6 +28,7 @@ namespace DeskWarrior.ViewModels
         private readonly TimerViewModel _timer;
 
         private int _sessionInputCount;
+        private double _currentCPS;
         private bool _disposed;
 
         #endregion
@@ -44,10 +45,10 @@ namespace DeskWarrior.ViewModels
         #region Properties - Game State (Direct Access)
 
         public int CurrentLevel => _gameManager.CurrentLevel;
-        public int Gold => _gameManager.Gold;
+        public long Gold => _gameManager.Gold;
         public int KeyboardPower => _gameManager.KeyboardPower;
         public int MousePower => _gameManager.MousePower;
-        public int RemainingTime => _gameManager.RemainingTime;
+        public double RemainingTime => _gameManager.RemainingTime;
         public Monster? CurrentMonster => _gameManager.CurrentMonster;
         public GameData GameConfig => _gameManager.GameData;
 
@@ -55,6 +56,12 @@ namespace DeskWarrior.ViewModels
         {
             get => _sessionInputCount;
             private set => SetProperty(ref _sessionInputCount, value);
+        }
+
+        public double CurrentCPS
+        {
+            get => _currentCPS;
+            private set => SetProperty(ref _currentCPS, value);
         }
 
         #endregion
@@ -79,10 +86,11 @@ namespace DeskWarrior.ViewModels
         public string MonsterEmoji => _monster.Emoji;
         public string MonsterName => _monster.Name;
         public string MonsterSkinType => _monster.SkinType;
-        public int MonsterCurrentHp => _monster.CurrentHp;
-        public int MonsterMaxHp => _monster.MaxHp;
+        public long MonsterCurrentHp => _monster.CurrentHp;
+        public long MonsterMaxHp => _monster.MaxHp;
         public double HpRatio => _monster.HpRatio;
         public bool IsBoss => _monster.IsBoss;
+        public bool IsGoldenGoblin => _monster.IsGoldenGoblin;
         public string HpText => _monster.HpText;
 
         #endregion
@@ -117,6 +125,9 @@ namespace DeskWarrior.ViewModels
         public event EventHandler<GameInputEventArgs>? InputReceived;
         public event Action? SettingsRequested;
         public event Action? StatsRequested;
+        public event EventHandler<GoldenGoblinSpawnEventArgs>? GoldenGoblinSpawned;
+        public event EventHandler? GoldenGoblinEscaped;
+        public event EventHandler<GoldenGoblinRewardEventArgs>? GoldenGoblinDefeated;
 
         #endregion
 
@@ -256,6 +267,9 @@ namespace DeskWarrior.ViewModels
             _gameManager.TimerTick += OnTimerTick;
             _gameManager.StatsChanged += OnStatsChanged;
             _gameManager.GameOver += OnGameOver;
+            _gameManager.GoldenGoblinSpawned += OnGoldenGoblinSpawned;
+            _gameManager.GoldenGoblinEscaped += OnGoldenGoblinEscaped;
+            _gameManager.GoldenGoblinDefeated += OnGoldenGoblinDefeated;
 
             // Tray Manager
             _trayManager.SettingsRequested += (s, e) => SettingsRequested?.Invoke();
@@ -276,19 +290,20 @@ namespace DeskWarrior.ViewModels
 
             if (e.Type == GameInputType.Keyboard)
             {
-                _gameManager.OnKeyboardInput();
+                _gameManager.OnKeyboardInput(e.VirtualKeyCode);
             }
             else
             {
-                _gameManager.OnMouseInput();
+                _gameManager.OnMouseInput(e.MouseButton);
             }
 
+            CurrentCPS = _gameManager.SessionCPS;
             InputReceived?.Invoke(this, e);
         }
 
         private void OnDamageDealt(object? sender, DamageEventArgs e)
         {
-            _soundManager.Play(SoundType.Hit);
+            // 사운드는 MainWindow.OnInputReceived에서 입력 타입별로 재생됨
             _monster.Update();
             NotifyUIPropertiesChanged();
             DamageDealt?.Invoke(this, e);
@@ -296,7 +311,7 @@ namespace DeskWarrior.ViewModels
 
         private void OnMonsterDefeated(object? sender, EventArgs e)
         {
-            _soundManager.Play(SoundType.Defeat);
+            // 사운드는 MainWindow.OnMonsterDefeated에서 재생 (중복 방지)
             _gameState.Update();
             NotifyUIPropertiesChanged();
             MonsterDefeated?.Invoke(this, e);
@@ -307,10 +322,7 @@ namespace DeskWarrior.ViewModels
             _monster.Update();
             _timer.Update();
 
-            if (_gameManager.CurrentMonster?.IsBoss == true)
-            {
-                _soundManager.Play(SoundType.BossAppear);
-            }
+            // 사운드는 MainWindow.OnMonsterSpawned에서 재생 (중복 방지)
 
             NotifyUIPropertiesChanged();
             MonsterSpawned?.Invoke(this, e);
@@ -321,6 +333,7 @@ namespace DeskWarrior.ViewModels
             _timer.Update();
             OnPropertyChanged(nameof(TimerText));
             OnPropertyChanged(nameof(TimerColor));
+            CurrentCPS = _gameManager.SessionCPS;
         }
 
         private void OnStatsChanged(object? sender, EventArgs e)
@@ -334,6 +347,26 @@ namespace DeskWarrior.ViewModels
         {
             SaveSession();
             GameOver?.Invoke(this, e);
+        }
+
+        private void OnGoldenGoblinSpawned(object? sender, GoldenGoblinSpawnEventArgs e)
+        {
+            _monster.Update();
+            NotifyUIPropertiesChanged();
+            GoldenGoblinSpawned?.Invoke(this, e);
+        }
+
+        private void OnGoldenGoblinEscaped(object? sender, EventArgs e)
+        {
+            GoldenGoblinEscaped?.Invoke(this, e);
+        }
+
+        private void OnGoldenGoblinDefeated(object? sender, GoldenGoblinRewardEventArgs e)
+        {
+            // 사운드는 MainWindow.OnGoldenGoblinDefeated에서 재생 (중복 방지)
+            _gameState.Update();
+            NotifyUIPropertiesChanged();
+            GoldenGoblinDefeated?.Invoke(this, e);
         }
 
         private void OnUpgradePerformed(object? sender, EventArgs e)
@@ -364,6 +397,7 @@ namespace DeskWarrior.ViewModels
             OnPropertyChanged(nameof(MonsterMaxHp));
             OnPropertyChanged(nameof(HpRatio));
             OnPropertyChanged(nameof(IsBoss));
+            OnPropertyChanged(nameof(IsGoldenGoblin));
             OnPropertyChanged(nameof(HpText));
             OnPropertyChanged(nameof(KeyboardPowerText));
             OnPropertyChanged(nameof(MousePowerText));

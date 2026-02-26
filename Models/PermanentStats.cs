@@ -136,46 +136,5 @@ namespace DeskWarrior.Models
         public int StartComboDamageLevel { get; set; } = 0;
 
         #endregion
-
-        #region Legacy Properties (Backward Compatibility)
-
-        // 기존 코드 호환성을 위해 유지 (값은 새 스탯에서 계산)
-        [JsonIgnore]
-        public int BaseAttack => BaseAttackLevel;
-
-        [JsonIgnore]
-        public double AttackPercentBonus => AttackPercentLevel * 0.05; // 5% per level
-
-        [JsonIgnore]
-        public double GoldPercentBonus => GoldMultiPermLevel * 0.03; // 3% per level
-
-        [JsonIgnore]
-        public double CriticalChanceBonus => CritChanceLevel * 0.01; // 1% per level
-
-        [JsonIgnore]
-        public double CriticalDamageBonus => CritDamageLevel * 0.1; // 0.1x per level
-
-        [JsonIgnore]
-        public double MultiHitChance => MultiHitLevel * 0.01; // 1% per level
-
-        [JsonIgnore]
-        public int StartingLevelBonus => StartLevelLevel;
-
-        [JsonIgnore]
-        public int StartingGoldBonus => StartGoldLevel * 50;
-
-        [JsonIgnore]
-        public int StartingKeyboardPower => StartKeyboardLevel;
-
-        [JsonIgnore]
-        public int StartingMousePower => StartMouseLevel;
-
-        [JsonIgnore]
-        public int GameOverTimeExtension => TimeExtendLevel * 5;
-
-        [JsonIgnore]
-        public double UpgradeCostReduction => UpgradeDiscountLevel * 0.02; // 2% per level
-
-        #endregion
     }
 }

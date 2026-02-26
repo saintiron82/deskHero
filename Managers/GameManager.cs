@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
-using System.Windows.Threading;
+using DeskWarrior.Helpers;
 using DeskWarrior.Interfaces;
 using DeskWarrior.Models;
 
@@ -15,17 +17,27 @@ namespace DeskWarrior.Managers
         #region Fields
 
         private readonly GameData _gameData;
-        private readonly CharacterDataRoot _characterData;
-        private readonly DispatcherTimer _timer;
+        private readonly List<HeroData> _heroes = new();
+        private readonly MonsterDataManager _monsterDataManager;
+        private readonly GameLoopManager _gameLoopManager;
         private readonly GameOverMessageManager _messageManager;
         private readonly SessionTracker _sessionTracker;
         private readonly DamageCalculator _damageCalculator;
         private readonly StatGrowthManager _statGrowth;
         private readonly ComboTracker _comboTracker;
+        private readonly ConsecutiveKeyTracker _consecutiveKeyTracker;
+        private readonly CombatManager _combatManager;
         private readonly Random _random = new();
+        private readonly GoldenGoblinManager _goldenGoblinManager;
+        private readonly MonsterSpawnManager _monsterSpawnManager;
         private Monster? _currentMonster;
         private SaveManager? _saveManager;
         private PermanentProgressionManager? _permanentProgression;
+        private CompendiumManager? _compendiumManager;
+        private MonsterCollection _monsterCollection = new(); // 도감 시스템
+        private CollectionRewards? _collectionRewards; // 도감 보상 설정
+        private RewardManager? _rewardManager; // 보상 관리자
+        private bool _isGoldenGoblinActive = false; // 황금 고블린 활성화 상태
 
         // 인게임 스탯 (세션마다 리셋)
         private InGameStats _inGameStats = new();
@@ -41,18 +53,26 @@ namespace DeskWarrior.Managers
         public event EventHandler? StatsChanged;
         public event EventHandler<DamageEventArgs>? DamageDealt;
         public event EventHandler<BossDropResult>? CrystalDropped;
+        public event EventHandler<GoldenGoblinSpawnEventArgs>? GoldenGoblinSpawned;
+        public event EventHandler? GoldenGoblinEscaped;
+        public event EventHandler<GoldenGoblinRewardEventArgs>? GoldenGoblinDefeated;
 
         #endregion
 
         #region Properties
 
         public int CurrentLevel { get; private set; } = 1;
-        public int Gold { get; private set; }
-        public int RemainingTime { get; private set; }
+        public long Gold { get; private set; }
+        public double RemainingTime => _gameLoopManager.RemainingTime;
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
         public GameData GameData => _gameData;
-        public System.Collections.Generic.List<HeroData> Heroes => _characterData.Heroes;
+        public System.Collections.Generic.List<HeroData> Heroes => _heroes;
+
+        /// <summary>
+        /// 몬스터 데이터 매니저 (배치 시스템)
+        /// </summary>
+        public MonsterDataManager MonsterDataManager => _monsterDataManager;
 
         // 인게임 스탯 접근자
         public InGameStats InGameStats => _inGameStats;
@@ -92,7 +112,9 @@ namespace DeskWarrior.Managers
         public DateTime SessionStartTime => _sessionTracker.StartTime;
         public int SessionBossDropCrystals => _sessionTracker.SessionBossDropCrystals;
         public int SessionAchievementCrystals => _sessionTracker.SessionAchievementCrystals;
+        public int SessionStageClearCrystals => _sessionTracker.SessionStageClearCrystals;
         public System.Collections.Generic.IReadOnlyCollection<DamageRecord> SessionDamageRecords => _sessionTracker.DamageRecords;
+        public double SessionCPS => _sessionTracker.CurrentCPS;
 
         #endregion
 
@@ -103,11 +125,27 @@ namespace DeskWarrior.Managers
             // 설정 로드
             var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "GameData.json");
             _gameData = GameData.LoadFromFile(configPath);
+            Logger.Log($"[GameData] MaxCps={_gameData.ConsecutiveKeyPenalty.MaxCps}, MouseExempt={_gameData.ConsecutiveKeyPenalty.MouseExempt}");
 
-            // 캐릭터 데이터 로드
-            var characterDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "CharacterData.json");
-            var json = File.ReadAllText(characterDataPath);
-            _characterData = JsonSerializer.Deserialize<CharacterDataRoot>(json) ?? new CharacterDataRoot();
+            // 배치 기반 몬스터 데이터 로드 (필수)
+            _monsterDataManager = new MonsterDataManager();
+            _monsterDataManager.SetGameData(_gameData);
+            _monsterDataManager.LoadBatchIndex();
+            _monsterDataManager.LoadAllEnabledBatches();
+
+            if (_monsterDataManager.LoadedBatchCount == 0)
+            {
+                throw new InvalidOperationException(
+                    "Failed to load monster batch data. " +
+                    "Please ensure config/monsters/_index.json and batch_01.json exist."
+                );
+            }
+
+            // Heroes 데이터 로드
+            var heroesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "Heroes.json");
+            var heroesJson = File.ReadAllText(heroesPath);
+            var heroesRoot = JsonSerializer.Deserialize<HeroesRoot>(heroesJson) ?? new HeroesRoot();
+            _heroes.AddRange(heroesRoot.Heroes);
 
             // 메시지 매니저 초기화
             _messageManager = new GameOverMessageManager();
@@ -115,21 +153,53 @@ namespace DeskWarrior.Managers
             // 세션 트래커 초기화
             _sessionTracker = new SessionTracker();
 
-            // 데미지 계산기 초기화
-            _damageCalculator = new DamageCalculator(_gameData, _random);
-
-            // 스탯 성장 매니저 초기화
+            // 스탯 성장 매니저 초기화 (데미지 계산기보다 먼저 초기화)
             _statGrowth = new StatGrowthManager();
 
-            // 콤보 트래커 초기화
-            _comboTracker = new ComboTracker();
+            // 데미지 계산기 초기화
+            _damageCalculator = new DamageCalculator(_gameData, _random, _statGrowth);
 
-            // 타이머 설정 (1초마다)
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-            _timer.Tick += OnTimerTick;
+            // 콤보 트래커 초기화
+            _comboTracker = new ComboTracker(_gameData.Combo);
+
+            // 연속 키 추적 초기화
+            _consecutiveKeyTracker = new ConsecutiveKeyTracker(_gameData.ConsecutiveKeyPenalty);
+
+            // 황금 고블린 매니저 초기화
+            _goldenGoblinManager = new GoldenGoblinManager();
+
+            // 몬스터 스폰 매니저 초기화
+            _monsterSpawnManager = new MonsterSpawnManager(
+                _gameData,
+                _monsterDataManager,
+                _goldenGoblinManager,
+                _statGrowth,
+                _random
+            );
+
+            // 전투 매니저 초기화
+            _combatManager = new CombatManager(
+                _gameData,
+                _damageCalculator,
+                _comboTracker,
+                _consecutiveKeyTracker,
+                _statGrowth,
+                _sessionTracker
+            );
+
+            // 전투 매니저 이벤트 구독
+            _combatManager.DamageDealt += (sender, e) => DamageDealt?.Invoke(this, e);
+            _combatManager.StatsChanged += (sender, e) => StatsChanged?.Invoke(this, e);
+
+            // 도감 보상 설정 로드
+            var collectionRewardsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "CollectionRewards.json");
+            _collectionRewards = CollectionRewards.LoadFromFile(collectionRewardsPath);
+
+            // 게임 루프 매니저 초기화
+            _gameLoopManager = new GameLoopManager();
+            _gameLoopManager.TimerTick += (sender, e) => TimerTick?.Invoke(this, e);
+            _gameLoopManager.GameOver += (sender, e) => GameOver?.Invoke(this, e);
+            _gameLoopManager.GoldenGoblinEscaped += OnGoldenGoblinEscaped;
         }
 
         #endregion
@@ -143,6 +213,28 @@ namespace DeskWarrior.Managers
         {
             _saveManager = saveManager;
             _permanentProgression = new PermanentProgressionManager(saveManager);
+            _compendiumManager = new CompendiumManager(saveManager);
+
+            // RewardManager 초기화
+            _rewardManager = new RewardManager(
+                _permanentProgression,
+                _statGrowth,
+                _monsterCollection,
+                _collectionRewards!,
+                _sessionTracker,
+                _goldenGoblinManager,
+                _monsterSpawnManager,
+                saveManager
+            );
+
+            // RewardManager 이벤트 구독
+            _rewardManager.CrystalDropped += (sender, e) => CrystalDropped?.Invoke(this, e);
+
+            // 황금 고블린 쿨다운 로드
+            if (saveManager.CurrentSave != null)
+            {
+                _goldenGoblinManager.LoadFromSave(saveManager.CurrentSave);
+            }
 
             // 크리스탈 획득 이벤트 구독 (세션 트래커에 기록)
             if (_permanentProgression != null)
@@ -152,15 +244,24 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
+        /// CompendiumManager 접근자
+        /// </summary>
+        public CompendiumManager? CompendiumManager => _compendiumManager;
+
+        /// <summary>
         /// 크리스탈 획득 시 세션 트래커에 기록
         /// </summary>
         private void OnCrystalEarned(object? sender, CrystalEarnedEventArgs e)
         {
-            if (e.Source == "boss_drop")
+            if (e.Source == "boss_kill")
             {
                 _sessionTracker.RecordBossDropCrystals(e.Amount);
             }
-            else if (e.Source.StartsWith("achievement:"))
+            else if (e.Source == "stage_clear")
+            {
+                _sessionTracker.RecordStageClearCrystals(e.Amount);
+            }
+            else if (e.Source.StartsWith("achievement:") || e.Source.StartsWith("collection_"))
             {
                 _sessionTracker.RecordAchievementCrystals(e.Amount);
             }
@@ -183,9 +284,16 @@ namespace DeskWarrior.Managers
             _inGameStats.KeyboardPowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_keyboard", permStats?.StartKeyboardLevel ?? 0);
             _inGameStats.MousePowerLevel = (int)_statGrowth.GetPermanentStatEffect("start_mouse", permStats?.StartMouseLevel ?? 0);
 
-            CurrentLevel = 1 + (int)_statGrowth.GetPermanentStatEffect("start_level", permStats?.StartLevelLevel ?? 0);
-            Gold = (int)_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0);
+            int startLevel = (int)_statGrowth.GetPermanentStatEffect("start_level", permStats?.StartLevelLevel ?? 0);
+            int maxLevel = _saveManager?.CurrentSave?.Stats.MaxLevel ?? 0;
+            if (maxLevel > 0)
+            {
+                startLevel = Math.Min(startLevel, maxLevel);
+            }
+            CurrentLevel = 1 + startLevel;
+            Gold = Helpers.SafeMath.ToLong(_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0));
             _sessionTracker.Reset();
+            _combatManager.ResetRateLimit();
 
             // 콤보 트래커 리셋
             _comboTracker.FullReset();
@@ -196,29 +304,41 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 키보드 입력 처리
         /// </summary>
-        public void OnKeyboardInput()
+        public void OnKeyboardInput(int vkCode = 0)
         {
-            if (_currentMonster == null || !_currentMonster.IsAlive) return;
+            var permStats = _saveManager?.CurrentSave?.PermanentStats;
+            var result = _combatManager.ProcessKeyboardInput(
+                _currentMonster,
+                KeyboardPower,
+                permStats,
+                _isGoldenGoblinActive,
+                vkCode
+            );
 
-            // 콤보 처리
-            int comboStack = _comboTracker.ProcessInput();
-
-            var result = CalculateDamage(KeyboardPower, comboStack);
-            ApplyDamage(result, isMouse: false);
+            if (result.HasValue && _currentMonster != null && !_currentMonster.IsAlive)
+            {
+                OnMonsterDefeated();
+            }
         }
 
         /// <summary>
         /// 마우스 입력 처리
         /// </summary>
-        public void OnMouseInput()
+        public void OnMouseInput(GameMouseButton button = GameMouseButton.None)
         {
-            if (_currentMonster == null || !_currentMonster.IsAlive) return;
+            var permStats = _saveManager?.CurrentSave?.PermanentStats;
+            var result = _combatManager.ProcessMouseInput(
+                _currentMonster,
+                MousePower,
+                permStats,
+                _isGoldenGoblinActive,
+                button
+            );
 
-            // 콤보 처리
-            int comboStack = _comboTracker.ProcessInput();
-
-            var result = CalculateDamage(MousePower, comboStack);
-            ApplyDamage(result, isMouse: true);
+            if (result.HasValue && _currentMonster != null && !_currentMonster.IsAlive)
+            {
+                OnMonsterDefeated();
+            }
         }
 
         /// <summary>
@@ -227,8 +347,9 @@ namespace DeskWarrior.Managers
         public bool UpgradeInGameStat(string statId)
         {
             int currentLevel = GetInGameStatLevel(statId);
-            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
-            int cost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.GetUpgradeCostReduction();
+            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            int cost = ApplyStageCostMultiplier(baseCost);
 
             if (!_statGrowth.CanUpgradeInGameStat(statId, currentLevel))
                 return false;
@@ -267,7 +388,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         public int CalculateUpgradeCost(int currentLevel)
         {
-            return (int)(_gameData.Upgrade.BaseCost * Math.Pow(_gameData.Upgrade.CostMultiplier, currentLevel - 1));
+            return Helpers.SafeMath.CostToInt(_gameData.Upgrade.BaseCost * Math.Pow(_gameData.Upgrade.CostMultiplier, currentLevel - 1));
         }
 
         /// <summary>
@@ -276,8 +397,25 @@ namespace DeskWarrior.Managers
         public int GetInGameStatUpgradeCost(string statId)
         {
             int currentLevel = GetInGameStatLevel(statId);
-            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.UpgradeCostReduction;
-            return _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.GetUpgradeCostReduction();
+            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            return ApplyStageCostMultiplier(baseCost);
+        }
+
+        /// <summary>
+        /// 스테이지 구간별 업그레이드 비용 배율 적용
+        /// 50스테이지마다 비용 2배 증가 (로그라이크 진행 벽)
+        /// </summary>
+        private int ApplyStageCostMultiplier(int baseCost)
+        {
+            int interval = _gameData.Balance.UpgradeCostInterval;
+            if (interval <= 0) interval = 50;  // 기본값
+
+            int tier = (CurrentLevel - 1) / interval;
+            double tierMultiplier = _gameData.Balance.UpgradeCostTierMultiplier;
+            if (tierMultiplier <= 1.0) tierMultiplier = 2.0;
+            double multiplier = Math.Pow(tierMultiplier, tier);
+            return Helpers.SafeMath.CostToInt(baseCost * multiplier);
         }
 
         /// <summary>
@@ -340,7 +478,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         public void PauseTimer()
         {
-            _timer.Stop();
+            _gameLoopManager.PauseTimer();
         }
 
         /// <summary>
@@ -348,92 +486,65 @@ namespace DeskWarrior.Managers
         /// </summary>
         public void ResumeTimer()
         {
-            if (_currentMonster != null && _currentMonster.IsAlive && RemainingTime > 0)
-            {
-                _timer.Start();
-            }
+            _gameLoopManager.ResumeTimer();
         }
 
         #endregion
 
         #region Private Methods
 
-        private DamageResult CalculateDamage(int basePower, int comboStack = 0)
-        {
-            var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            return _damageCalculator.Calculate(basePower, permStats, 0, comboStack);
-        }
-
-        private void ApplyDamage(DamageResult result, bool isMouse)
-        {
-            if (_currentMonster == null) return;
-
-            _currentMonster.TakeDamage(result.Damage);
-
-            // 상세 데미지 기록 생성
-            var record = new DamageRecord
-            {
-                BasePower = result.BasePower,
-                BaseAttackBonus = result.BaseAttackBonus,
-                AttackMultiplier = result.AttackMultiplier,
-                IsCritical = result.IsCritical,
-                CritMultiplier = result.CritMultiplier,
-                IsMultiHit = result.IsMultiHit,
-                IsCombo = result.IsCombo,
-                ComboStack = result.ComboStack,
-                FinalDamage = result.Damage,
-                IsMouse = isMouse
-            };
-
-            // 세션 트래커에 상세 기록
-            _sessionTracker.RecordDamageDetailed(record);
-
-            // 데미지 이벤트 발생
-            DamageDealt?.Invoke(this, new DamageEventArgs(result.Damage, result.IsCritical, isMouse));
-
-            StatsChanged?.Invoke(this, EventArgs.Empty);
-
-            if (!_currentMonster.IsAlive)
-            {
-                OnMonsterDefeated();
-            }
-        }
-
         private void OnMonsterDefeated()
         {
-            if (_currentMonster == null) return;
+            if (_currentMonster == null || _rewardManager == null) return;
 
-            // 골드 획득 공식 (영구 스탯만 사용)
-            // 기본 = 몬스터 기본 골드
-            double baseGold = _currentMonster.GoldReward;
+            // 황금 고블린 처치 처리
+            if (_isGoldenGoblinActive)
+            {
+                OnGoldenGoblinDefeatedInternal();
+                return;
+            }
 
-            // +가산 = 기본 + gold_flat_perm (영구)
-            var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            double goldFlatPerm = _statGrowth.GetPermanentStatEffect("gold_flat_perm", permStats?.GoldFlatPermLevel ?? 0);
-            double goldFlat = baseGold + goldFlatPerm;
-
-            // ×배수 = +가산 × (1 + gold_multi_perm (영구))
-            double goldMultiPerm = _statGrowth.GetPermanentStatEffect("gold_multi_perm", permStats?.GoldMultiPermLevel ?? 0) / 100.0;
-            int goldReward = (int)(goldFlat * (1.0 + goldMultiPerm));
-
-            Gold += goldReward;
+            // 골드 획득 (RewardManager 위임)
+            long goldReward = _rewardManager.CalculateMonsterGoldReward(_currentMonster);
+            Gold = Helpers.SafeMath.AddLong(Gold, goldReward);
 
             // 세션 트래커에 킬 기록
             _sessionTracker.RecordKill(_currentMonster.IsBoss, goldReward);
 
-            // 보스 처치 시 크리스탈 드롭 처리
-            if (_currentMonster.IsBoss && _permanentProgression != null)
+            // 모든 몬스터 처치 시 크리스탈 지급 (RewardManager 위임)
+            _rewardManager.ProcessStageClearReward(CurrentLevel);
+
+            // 황금 고블린 쿨다운 카운터 업데이트
+            _goldenGoblinManager.RecordKill(false);
+            if (_saveManager?.CurrentSave != null)
             {
-                var dropResult = _permanentProgression.ProcessBossKill(CurrentLevel);
-                if (dropResult.Dropped)
-                {
-                    // UI에 드롭 알림 표시 (이벤트 발생)
-                    CrystalDropped?.Invoke(this, dropResult);
-                }
+                _goldenGoblinManager.SaveToSave(_saveManager.CurrentSave);
+            }
+
+            // 도감 처치 기록 (레거시)
+            _compendiumManager?.RecordKill(_currentMonster.Id, _currentMonster.TotalDamageTaken);
+
+            // 몬스터 도감 처치 기록 (신규 속성 시스템)
+            if (!string.IsNullOrEmpty(_currentMonster.Species) && !string.IsNullOrEmpty(_currentMonster.Element))
+            {
+                _monsterCollection.RecordKill(_currentMonster.Species, _currentMonster.Element);
+
+                // 종족 도감 완성 체크 및 보상 (RewardManager 위임)
+                _rewardManager.CheckAndGrantCollectionRewards(_currentMonster.Species, _currentMonster.Element);
+            }
+
+            // 보스 처치 시 크리스탈 지급 (RewardManager 위임)
+            if (_currentMonster.IsBoss)
+            {
+                _rewardManager.ProcessBossKillReward(
+                    CurrentLevel,
+                    _currentMonster.Element,
+                    _gameData.ElementProperties
+                );
             }
 
             // 타이머 정지
-            _timer.Stop();
+            _gameLoopManager.StopTimer();
 
             // 이벤트 발생
             MonsterDefeated?.Invoke(this, EventArgs.Empty);
@@ -445,60 +556,96 @@ namespace DeskWarrior.Managers
             SpawnMonster();
         }
 
+        /// <summary>
+        /// 황금 고블린 처치 처리
+        /// </summary>
+        private void OnGoldenGoblinDefeatedInternal()
+        {
+            if (_rewardManager == null) return;
+
+            _gameLoopManager.StopTimer();
+            _isGoldenGoblinActive = false;
+
+            // 보상 계산 (스폰 시 결정된 배수 사용)
+            int predeterminedMultiplier = _currentMonster?.RewardMultiplier ?? 0;
+            var (reward, multiplier) = _rewardManager.CalculateGoldenGoblinReward(CurrentLevel, predeterminedMultiplier);
+
+            Gold = Helpers.SafeMath.AddLong(Gold, reward);
+
+            // 세션 트래커에 기록
+            _sessionTracker.RecordKill(false, reward);
+            _sessionTracker.RecordGoldenGoblinKill(reward);
+
+            // 황금 고블린 쿨다운 리셋 및 통계 업데이트
+            _goldenGoblinManager.RecordKill(true);
+            if (_saveManager?.CurrentSave != null)
+            {
+                _goldenGoblinManager.SaveToSave(_saveManager.CurrentSave);
+                _saveManager.CurrentSave.GoldenGoblinsCaught++;
+                _saveManager.CurrentSave.GoldenGoblinTotalGold = Helpers.SafeMath.AddLong(_saveManager.CurrentSave.GoldenGoblinTotalGold, reward);
+            }
+
+            // 처치 이벤트 발생 (등급 정보 포함)
+            string? gradeId = _currentMonster?.GradeId;
+            GoldenGoblinDefeated?.Invoke(this, new GoldenGoblinRewardEventArgs(reward, multiplier, gradeId));
+            MonsterDefeated?.Invoke(this, EventArgs.Empty);
+
+            // 다음 스테이지로 진행
+            CurrentLevel++;
+            SpawnMonster();
+        }
+
         private void SpawnMonster()
         {
-            var balance = _gameData.Balance;
-            bool isBoss = CurrentLevel > 0 && CurrentLevel % balance.BossInterval == 0;
+            // MonsterSpawnManager를 통해 몬스터 스폰
+            var spawnResult = _monsterSpawnManager.SpawnMonster(CurrentLevel, _saveManager);
 
-            MonsterData selectedData;
-            if (isBoss && _characterData.Bosses.Count > 0)
+            _currentMonster = spawnResult.Monster;
+            _isGoldenGoblinActive = spawnResult.IsGoldenGoblin;
+
+            // 도감 조우 기록
+            _compendiumManager?.RecordEncounter(_currentMonster.Id);
+
+            // 게임 루프 매니저 초기화 및 타이머 시작
+            _gameLoopManager.InitializeForMonster(_currentMonster, spawnResult.TimeLimit, spawnResult.IsGoldenGoblin);
+
+            // 이벤트 발생
+            if (spawnResult.IsGoldenGoblin)
             {
-                // 보스 레벨: 랜덤하게 보스 선택
-                int bossIndex = _random.Next(_characterData.Bosses.Count);
-                selectedData = _characterData.Bosses[bossIndex];
+                var spawnArgs = new GoldenGoblinSpawnEventArgs(
+                    _currentMonster.GradeId,
+                    _currentMonster.GradeBackground,
+                    _currentMonster.GradeBorderColor,
+                    _currentMonster.GradeNameColor,
+                    _currentMonster.RewardMultiplier);
+                GoldenGoblinSpawned?.Invoke(this, spawnArgs);
             }
-            else if (_characterData.Monsters.Count > 0)
-            {
-                // 일반 몬스터: 레벨 기반 순환 인덱스
-                int monsterIndex = (CurrentLevel - 1) % _characterData.Monsters.Count;
-                selectedData = _characterData.Monsters[monsterIndex];
-            }
-            else
-            {
-                // 폴백: 기본 데이터
-                selectedData = new MonsterData { Id = "monster", Name = "??", BaseHp = 10, HpGrowth = 5, BaseGold = 10, GoldGrowth = 2, Emoji = "👹" };
-            }
-
-            _currentMonster = new Monster(selectedData, CurrentLevel, isBoss);
-
-            // 타이머 시작 (영구 스탯 시간 연장 적용)
-            var permStats = _saveManager?.CurrentSave?.PermanentStats;
-            double timeExtend = _statGrowth.GetPermanentStatEffect("time_extend", permStats?.TimeExtendLevel ?? 0);
-            int timeLimit = _gameData.Balance.TimeLimit + (int)timeExtend;
-            RemainingTime = timeLimit;
-            _timer.Start();
-
             MonsterSpawned?.Invoke(this, EventArgs.Empty);
             StatsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnTimerTick(object? sender, EventArgs e)
+        /// <summary>
+        /// 황금 고블린 도주 처리 (시간 초과)
+        /// </summary>
+        private void OnGoldenGoblinEscaped(object? sender, EventArgs e)
         {
-            RemainingTime--;
-            TimerTick?.Invoke(this, EventArgs.Empty);
+            _isGoldenGoblinActive = false;
 
-            if (RemainingTime <= 0)
+            // 쿨다운 카운터 갱신 (황금 고블린 처치 실패)
+            _goldenGoblinManager.RecordKill(false);
+
+            // 저장 데이터 업데이트
+            if (_saveManager?.CurrentSave != null)
             {
-                // 시간 초과 - 게임 오버 시퀀스 시작
-                TriggerGameOver();
+                _goldenGoblinManager.SaveToSave(_saveManager.CurrentSave);
             }
-        }
 
-        private void TriggerGameOver()
-        {
-            _timer.Stop();
-            // UI에서 애니메이션 재생 후 RestartGame()을 호출하도록 유도
-            GameOver?.Invoke(this, EventArgs.Empty);
+            // 도주 이벤트 발생
+            GoldenGoblinEscaped?.Invoke(this, EventArgs.Empty);
+
+            // 다음 스테이지로 진행 (게임오버 없음)
+            CurrentLevel++;
+            SpawnMonster();
         }
 
         #endregion

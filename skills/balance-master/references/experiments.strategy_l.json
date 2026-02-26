@@ -1,0 +1,126 @@
+{
+  "experiments": [
+    {
+      "name": "dropcurve_soft",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.55
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          }
+        }
+      }
+    },
+    {
+      "name": "dropcurve_stronger",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.5
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.007
+          }
+        }
+      }
+    },
+    {
+      "name": "crystal_curve",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 28
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "stage_shift",
+      "changes": {
+        "config/BossDrops.json": {
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 3
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "dropcurve_soft_crystal_curve",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.55
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          },
+          "base_crystal_amount": {
+            "op": "set",
+            "value": 28
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "dropcurve_soft_stage_shift",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.55
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          },
+          "stage_completion_crystal": {
+            "op": "set",
+            "value": 3
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    },
+    {
+      "name": "gold_to_crystal_rate_plus5_crystal_plus1",
+      "changes": {
+        "config/BossDrops.json": {
+          "gold_to_crystal_rate": {
+            "op": "set",
+            "value": 65
+          },
+          "crystal_per_level": {
+            "op": "set",
+            "value": 8
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

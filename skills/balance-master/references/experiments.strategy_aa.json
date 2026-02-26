@@ -1,0 +1,80 @@
+{
+  "experiments": [
+    {
+      "name": "drop_0p51_0p0067",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.51
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0067
+          }
+        }
+      }
+    },
+    {
+      "name": "drop_0p51_0p0069",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.51
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0069
+          }
+        }
+      }
+    },
+    {
+      "name": "drop_0p50_0p0069",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.5
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0069
+          }
+        }
+      }
+    },
+    {
+      "name": "drop_0p50_0p0071",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.5
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0071
+          }
+        }
+      }
+    },
+    {
+      "name": "drop_0p49_0p0071",
+      "changes": {
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.49
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.0071
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

@@ -1,0 +1,80 @@
+{
+  "experiments": [
+    {
+      "name": "effect_0p4345",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4345
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4345
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p4340",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.434
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p4335",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4335
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4335
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p4330",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.433
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.433
+          }
+        }
+      }
+    },
+    {
+      "name": "effect_0p4325",
+      "changes": {
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4325
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.4325
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

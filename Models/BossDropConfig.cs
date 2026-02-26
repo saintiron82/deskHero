@@ -22,11 +22,23 @@ namespace DeskWarrior.Models
         [JsonPropertyName("crystal_per_level")]
         public int CrystalPerLevel { get; set; } = 1;
 
+        [JsonPropertyName("crystal_growth_exponent")]
+        public double CrystalGrowthExponent { get; set; } = 1.0;
+
+        [JsonPropertyName("crystal_growth_breakpoint")]
+        public int CrystalGrowthBreakpoint { get; set; } = 0;
+
         [JsonPropertyName("crystal_variance")]
         public double CrystalVariance { get; set; } = 0.2; // ±20% randomness
 
         [JsonPropertyName("guaranteed_drop_every_n_bosses")]
         public int GuaranteedDropInterval { get; set; } = 10; // Pity system
+
+        [JsonPropertyName("stage_completion_crystal")]
+        public int StageCompletionCrystal { get; set; } = 1; // 스테이지 클리어당 크리스탈
+
+        [JsonPropertyName("gold_to_crystal_rate")]
+        public int GoldToCrystalRate { get; set; } = 100; // 골드→크리스탈 변환 비율
     }
 
     /// <summary>
@@ -34,8 +46,9 @@ namespace DeskWarrior.Models
     /// </summary>
     public class BossDropResult
     {
-        public bool Dropped { get; set; }
+        public bool Dropped { get; set; }  // 항상 true (100% 지급)
         public int CrystalsDropped { get; set; }
-        public bool WasGuaranteed { get; set; }
+        public int ElementBonus { get; set; }  // 속성 보너스량 (UI 표시용)
+        public bool WasGuaranteed { get; set; }  // 더 이상 의미 없음 (확률 제거됨)
     }
 }

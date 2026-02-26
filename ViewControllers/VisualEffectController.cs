@@ -60,7 +60,7 @@ namespace DeskWarrior.ViewControllers
             _window.MonsterImage.BeginAnimation(UIElement.OpacityProperty, opacityFlash);
         }
 
-        public void ShowDamagePopup(int damage, bool isCritical)
+        public void ShowDamagePopup(long damage, bool isCritical)
         {
             var popup = new Controls.DamagePopup(damage, isCritical);
             double x = 30 + _random.NextDouble() * 40;
@@ -73,7 +73,7 @@ namespace DeskWarrior.ViewControllers
             popup.Animate(() => _window.DamagePopupCanvas.Children.Remove(popup));
         }
 
-        public void FlashEffect(int goldReward)
+        public void FlashEffect(long goldReward)
         {
             var brush = new SolidColorBrush(Colors.Gold);
             _window.GoldTextTop.Foreground = brush;
@@ -134,7 +134,7 @@ namespace DeskWarrior.ViewControllers
                 };
 
                 toast.Show(achievement);
-                soundManager.Play(SoundType.Upgrade);
+                soundManager.Play(SoundType.Achievement);
             }
             else
             {

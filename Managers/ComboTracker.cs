@@ -1,4 +1,5 @@
 using System;
+using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
 {
@@ -8,19 +9,23 @@ namespace DeskWarrior.Managers
     /// </summary>
     public class ComboTracker
     {
-        #region Constants
-
-        private const double BASE_TOLERANCE = 0.01; // 기본 허용 오차 ±0.01초
-        private const double COMBO_EXPIRE_TIME = 3.0; // 콤보 유지 시간 3초
-
-        #endregion
-
         #region Fields
+
+        private readonly ComboConfig _config;
 
         private DateTime _lastInputTime;
         private double _lastInterval; // 이전 입력 간격
         private int _comboStack = 0; // 0 = 없음, 1-3 = 스택
         private double _comboFlexBonus = 0.0; // combo_flex 스탯 보너스
+
+        #endregion
+
+        #region Constructor
+
+        public ComboTracker(ComboConfig config)
+        {
+            _config = config;
+        }
 
         #endregion
 
@@ -51,7 +56,7 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 입력 처리 및 콤보 판정
         /// </summary>
-        /// <returns>현재 콤보 스택 (0-3)</returns>
+        /// <returns>현재 콤보 스택 (0-N)</returns>
         public int ProcessInput()
         {
             var now = DateTime.UtcNow;
@@ -66,8 +71,8 @@ namespace DeskWarrior.Managers
             // 현재 입력 간격
             double currentInterval = (now - _lastInputTime).TotalSeconds;
 
-            // 콤보 만료 체크 (3초 경과)
-            if (currentInterval > COMBO_EXPIRE_TIME)
+            // 콤보 만료 체크
+            if (currentInterval > _config.ExpireTime)
             {
                 Reset();
                 _lastInputTime = now;
@@ -77,13 +82,13 @@ namespace DeskWarrior.Managers
             // 리듬 판정 (두 번째 입력부터)
             if (_lastInterval > 0)
             {
-                double tolerance = BASE_TOLERANCE + _comboFlexBonus;
+                double tolerance = _config.BaseTolerance + _comboFlexBonus;
                 double intervalDiff = Math.Abs(currentInterval - _lastInterval);
 
                 // 리듬 일치 → 콤보 스택 증가
                 if (intervalDiff <= tolerance)
                 {
-                    _comboStack = Math.Min(_comboStack + 1, 3); // 최대 3스택
+                    _comboStack = Math.Min(_comboStack + 1, _config.MaxStack);
                 }
                 // 리듬 깨짐 → 콤보 해제
                 else

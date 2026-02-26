@@ -17,17 +17,26 @@
     },
     "damage": {
       "name": "데미지 계산",
-      "formula": "(base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier",
-      "params": ["base_power", "base_attack", "attack_percent", "crit_multiplier", "multi_hit_multiplier", "combo_multiplier"],
+      "formula": "(base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier * utility_bonus",
+      "params": ["base_power", "base_attack", "attack_percent", "crit_multiplier", "multi_hit_multiplier", "combo_multiplier", "utility_bonus"],
       "return_type": "int",
+      "description": "기본 데미지 공식 - 원복",
       "steps": [
-        {"name": "기본", "formula": "base_power"},
-        {"name": "가산", "formula": "base_power + base_attack"},
-        {"name": "배수", "formula": "(base_power + base_attack) * (1 + attack_percent)"},
+        {"name": "기본", "formula": "base_power + base_attack"},
+        {"name": "배수", "formula": "step1 * (1 + attack_percent * 1.5)"},
+        {"name": "크리티컬", "formula": "step2 * crit_multiplier"},
         {"name": "크리티컬", "formula": "step3 * crit_multiplier"},
         {"name": "멀티히트", "formula": "step4 * multi_hit_multiplier"},
-        {"name": "콤보", "formula": "step5 * combo_multiplier"}
+        {"name": "콤보", "formula": "step5 * combo_multiplier"},
+        {"name": "유틸리티", "formula": "step6 * utility_bonus"}
       ]
+    },
+    "utility_bonus": {
+      "name": "유틸리티 보너스",
+      "formula": "1 + (time_extend_level + upgrade_discount_level) * 0.005",
+      "params": ["time_extend_level", "upgrade_discount_level"],
+      "return_type": "double",
+      "description": "유틸리티 스탯 투자에 따른 데미지 보너스 (0.5%/레벨)"
     },
     "gold_earned": {
       "name": "골드 획득",
@@ -114,7 +123,7 @@
     "MAX_COMBO_STACK": 3,
     "GOLD_TO_CRYSTAL_RATE": 1000,
     "BASE_HP": 100,
-    "HP_GROWTH": 1.2,
+    "HP_GROWTH": 1.12,
     "BOSS_INTERVAL": 10,
     "BOSS_HP_MULTI": 5.0,
     "BASE_GOLD_MULTI": 1.5

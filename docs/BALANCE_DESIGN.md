@@ -405,9 +405,7 @@ final_multiplier = base_multiplier * bonus_multiplier
   - 잔여 골드: 200-700
 
 검증 방법:
-python tools/balance_calculator.py
-> 4. 플레이 시뮬레이션
-> 세션당 평균 레벨: 20
+dotnet run --project DeskWarrior.Simulator -- --target 20 --runs 1000
 
 합격 기준:
 - 주력 스탯 2종 Lv5 이상 달성
@@ -427,9 +425,7 @@ python tools/balance_calculator.py
 - 하이브리드 빌드 1회 가능
 
 검증 방법:
-python tools/balance_calculator.py
-> 4. 플레이 시뮬레이션
-> 시뮬레이션 횟수: 50
+dotnet run --project DeskWarrior.Simulator -- --progress --target 100 --strategy balanced
 
 합격 기준:
 - 특정 빌드 완성 가능 (경제 또는 하이브리드)
@@ -549,14 +545,17 @@ python tools/balance_calculator.py
 
 #### 테스트 실행 명령
 ```bash
-# 전체 밸런스 테스트
-python tools/balance_test_suite.py --all
+# 전체 밸런스 분석 (문서 자동 생성)
+dotnet run --project DeskWarrior.Simulator -- --analyze --target 50 --crystals 1000 --output balanceDoc/report
 
-# 특정 시나리오 테스트
-python tools/balance_test_suite.py --test TC-001
+# 진행도 시뮬레이션
+dotnet run --project DeskWarrior.Simulator -- --progress --target 100 --strategy greedy
 
-# 시뮬레이션 기반 통계
-python tools/balance_calculator.py --auto-test
+# 디버그 모드 (단계별 확인)
+dotnet run --project DeskWarrior.Simulator -- --debug
+
+# 배치 시뮬레이션
+dotnet run --project DeskWarrior.Simulator -- --target 50 --runs 10000 --cps 5
 ```
 
 #### 자동 검증 기준
@@ -674,8 +673,9 @@ metrics_to_track = {
 ### 8.1 관련 문서
 - `docs/STAT_SYSTEM.md`: 스탯 시스템 전체 설계
 - `config/InGameStatGrowth.json`: 인게임 스탯 파라미터
-- `config/PermanentStatGrowth.json`: 영구 스탯 파라미터
-- `tools/balance_calculator.py`: 밸런스 계산 도구
+- `config/PermanentStats.json`: 영구 스탯 파라미터 (통합 데이터)
+- `DeskWarrior.Simulator/`: 공식 밸런스 시뮬레이터 (C# .NET)
+- `balance_dashboard_qt.py`: 대화형 밸런스 대시보드 (Python GUI)
 
 ### 8.2 외부 레퍼런스
 - **Cookie Clicker**: 지수 성장 곡선 모델
@@ -683,7 +683,8 @@ metrics_to_track = {
 - **Vampire Survivors**: 세션 기반 성장 밸런스
 
 ### 8.3 데이터 시트
-- **밸런스 시뮬레이션 결과**: `C:\Users\saint\Game\DeskWarrior\tools\balance_calculator.py` 실행
+- **밸런스 시뮬레이션 결과**: `DeskWarrior.Simulator/balanceDoc/` (자동 생성 보고서)
+- **분석 히스토리**: `DeskWarrior.Simulator/balanceDoc/analysis_history.json`
 - **사용자 플레이 로그**: (향후 구현 예정)
 
 ---

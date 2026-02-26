@@ -184,9 +184,10 @@ def remove_background(input_path: str, output_path: str = None,
         "-mode", "1",  # Single color mode
         "-color", color,
         "-tolerance", str(tolerance),
-        "-erosion", str(erosion)
+        "-erosion", str(erosion),
+        "-overwrite"
     ]
-    
+
     if output_path:
         cmd.extend(["-o", output_path])
     
@@ -215,12 +216,7 @@ if __name__ == "__main__":
     resize <입력> [출력] <배율>     - 크기 조절 (예: 0.5, 2.0)
     margin <입력> [출력] <패딩%>    - 여백 조절 (예: 5, 10)
     removebg <입력> [출력폴더]      - 녹색 배경 제거 (AutoAlphaChannel 사용)
-
-예시:
-    python image_utils.py flip monster.png
-    python image_utils.py resize monster.png output.png 0.8
-    python image_utils.py margin monster.png output.png 10
-    python image_utils.py removebg monster.png ./output/
+    hue <입력> [출력] <각도>        - 색조 변경 (예: 90, -45)
         """)
         sys.exit(1)
     

@@ -7,7 +7,7 @@ DB_FILE = os.path.join(os.path.dirname(__file__), "monster_db.json")
 new_monsters = [
     {
         "id": "monster_bee",
-        "base_file": "monster_beeA.png",
+        "base_file": "monster_bee.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "일벌", "hue": None, "filename": "monster_bee_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "불침 벌", "hue": 358, "filename": "monster_bee_fire.png"},
@@ -19,7 +19,7 @@ new_monsters = [
     },
     {
         "id": "monster_crab",
-        "base_file": "monster_crabA.png",
+        "base_file": "monster_crab.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "갯벌 게", "hue": None, "filename": "monster_crab_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "용암 게", "hue": 358, "filename": "monster_crab_fire.png"},
@@ -31,7 +31,7 @@ new_monsters = [
     },
     {
         "id": "monster_turtle",
-        "base_file": "monster_turtleA.png",
+        "base_file": "monster_turtle.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "숲 거북", "hue": None, "filename": "monster_turtle_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "마그마 터틀", "hue": 358, "filename": "monster_turtle_fire.png"},
@@ -43,7 +43,7 @@ new_monsters = [
     },
     {
         "id": "monster_plant",
-        "base_file": "monster_plantA.png",
+        "base_file": "monster_plant.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "식인초", "hue": None, "filename": "monster_plant_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "불꽃 덩굴", "hue": 358, "filename": "monster_plant_fire.png"},
@@ -55,7 +55,7 @@ new_monsters = [
     },
     {
         "id": "monster_mimic",
-        "base_file": "monster_mimicA.png",
+        "base_file": "monster_mimic.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "나무 상자", "hue": None, "filename": "monster_mimic_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "화약 상자", "hue": 358, "filename": "monster_mimic_fire.png"},
@@ -67,7 +67,7 @@ new_monsters = [
     },
     {
         "id": "monster_eyeball",
-        "base_file": "monster_eyeballA.png",
+        "base_file": "monster_eyeball.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "감시자", "hue": None, "filename": "monster_eyeball_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "작열하는 눈", "hue": 358, "filename": "monster_eyeball_fire.png"},
@@ -79,7 +79,7 @@ new_monsters = [
     },
     {
         "id": "monster_elemental",
-        "base_file": "monster_elementalA.png",
+        "base_file": "monster_elemental.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "자연의 정령", "hue": None, "filename": "monster_elemental_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "불의 정령", "hue": 358, "filename": "monster_elemental_fire.png"},
@@ -91,7 +91,7 @@ new_monsters = [
     },
     {
         "id": "monster_rat",
-        "base_file": "monster_ratA.png",
+        "base_file": "monster_rat.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "시궁창 쥐", "hue": None, "filename": "monster_rat_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "역병 쥐", "hue": 358, "filename": "monster_rat_fire.png"},

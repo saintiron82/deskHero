@@ -517,7 +517,7 @@ namespace DeskWarrior.Windows
             // Summary 계산
             int totalRecords = records.Count;
             double avgDamage = records.Average(r => r.FinalDamage);
-            int maxDamage = records.Max(r => r.FinalDamage);
+            long maxDamage = records.Max(r => r.FinalDamage);
 
             TxtDmRecordCount.Text = totalRecords.ToString();
             TxtDmAvgDamage.Text = FormatNumber((long)avgDamage);

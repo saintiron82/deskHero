@@ -1,0 +1,4 @@
+interface:
+  display_name: "Balance Master"
+  short_description: "Run DeskWarrior balance simulations and evolve configs"
+  default_prompt: "Run DeskWarrior simulator tests, compare CSV results, and evolve balance configs via independent experiments."

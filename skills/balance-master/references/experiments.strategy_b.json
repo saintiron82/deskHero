@@ -1,0 +1,122 @@
+{
+  "experiments": [
+    {
+      "name": "tier_delay_attack",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.attack_percent.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.crit_damage.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          }
+        }
+      }
+    },
+    {
+      "name": "economy_delay_gold",
+      "changes": {
+        "config/GameData.json": {
+          "balance.base_gold_multiplier": {
+            "op": "set",
+            "value": 9.5
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.gold_flat_perm.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.gold_multi_perm.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.05
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.05
+          },
+          "stats.upgrade_discount.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.upgrade_discount.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.05
+          }
+        }
+      }
+    },
+    {
+      "name": "time_delay_extend",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.35
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.25
+          }
+        }
+      }
+    }
+  ],
+  "injections": [
+    {
+      "name": "late_cost_relief",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.upgrade_discount.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.upgrade_discount.tier_config.tier_interval": {
+            "op": "set",
+            "value": 150
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 4.8
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.05
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.05
+          }
+        }
+      }
+    }
+  ]
+}

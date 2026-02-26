@@ -29,12 +29,20 @@ namespace DeskWarrior.Models
     }
 
     /// <summary>
-    /// CharacterData.json 루트 구조
+    /// CharacterData.json 루트 구조 (레거시)
     /// </summary>
     public class CharacterDataRoot
     {
         public List<MonsterData> Monsters { get; set; } = new();
         public List<MonsterData> Bosses { get; set; } = new();
+        public List<HeroData> Heroes { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Heroes.json 루트 구조
+    /// </summary>
+    public class HeroesRoot
+    {
         public List<HeroData> Heroes { get; set; } = new();
     }
 }

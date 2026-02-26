@@ -1,0 +1,296 @@
+{
+  "experiments": [
+    {
+      "name": "time_scale_3p2_late_boost",
+      "changes": {
+        "config/GameData.json": {
+          "element_properties.normal.time_scale": {
+            "op": "set",
+            "value": 3.2
+          },
+          "element_properties.fire.time_scale": {
+            "op": "set",
+            "value": 3.2
+          },
+          "element_properties.ice.time_scale": {
+            "op": "set",
+            "value": 3.2
+          },
+          "element_properties.wind.time_scale": {
+            "op": "set",
+            "value": 3.6
+          },
+          "element_properties.holy.time_scale": {
+            "op": "set",
+            "value": 3.2
+          },
+          "element_properties.dark.time_scale": {
+            "op": "set",
+            "value": 3.2
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.48
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.48
+          },
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.2
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.2
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.15
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.15
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 6.2
+          },
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.48
+          }
+        }
+      }
+    },
+    {
+      "name": "time_scale_3p4_late_boost",
+      "changes": {
+        "config/GameData.json": {
+          "element_properties.normal.time_scale": {
+            "op": "set",
+            "value": 3.4
+          },
+          "element_properties.fire.time_scale": {
+            "op": "set",
+            "value": 3.4
+          },
+          "element_properties.ice.time_scale": {
+            "op": "set",
+            "value": 3.4
+          },
+          "element_properties.wind.time_scale": {
+            "op": "set",
+            "value": 3.8
+          },
+          "element_properties.holy.time_scale": {
+            "op": "set",
+            "value": 3.4
+          },
+          "element_properties.dark.time_scale": {
+            "op": "set",
+            "value": 3.4
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.46
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.46
+          },
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.2
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.2
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.18
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.18
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.1
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 6.8
+          },
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.5
+          }
+        }
+      }
+    },
+    {
+      "name": "time_scale_3p6_late_boost",
+      "changes": {
+        "config/GameData.json": {
+          "element_properties.normal.time_scale": {
+            "op": "set",
+            "value": 3.6
+          },
+          "element_properties.fire.time_scale": {
+            "op": "set",
+            "value": 3.6
+          },
+          "element_properties.ice.time_scale": {
+            "op": "set",
+            "value": 3.6
+          },
+          "element_properties.wind.time_scale": {
+            "op": "set",
+            "value": 4.0
+          },
+          "element_properties.holy.time_scale": {
+            "op": "set",
+            "value": 3.6
+          },
+          "element_properties.dark.time_scale": {
+            "op": "set",
+            "value": 3.6
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.effect_per_level": {
+            "op": "set",
+            "value": 0.44
+          },
+          "stats.mouse_power.effect_per_level": {
+            "op": "set",
+            "value": 0.44
+          },
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 1.25
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 1.25
+          }
+        },
+        "config/PermanentStats.json": {
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.2
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.2
+          },
+          "stats.crit_damage.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.12
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.12
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.12
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 7.5
+          },
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.52
+          }
+        }
+      }
+    }
+  ],
+  "injections": [
+    {
+      "name": "late_econ_relief",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.4
+          },
+          "stats.time_extend.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.08
+          },
+          "stats.upgrade_discount.effect_per_level": {
+            "op": "set",
+            "value": 5.9
+          },
+          "stats.upgrade_discount.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.04
+          },
+          "stats.upgrade_discount.tier_config.tier_interval": {
+            "op": "set",
+            "value": 130
+          },
+          "stats.gold_flat_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          },
+          "stats.gold_multi_perm.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.06
+          }
+        },
+        "config/InGameStatGrowth.json": {
+          "stats.keyboard_power.base_cost": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.keyboard_power.growth_rate": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.mouse_power.base_cost": {
+            "op": "mul",
+            "value": 0.9
+          },
+          "stats.mouse_power.growth_rate": {
+            "op": "mul",
+            "value": 0.9
+          }
+        }
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using DeskWarrior.Models;
+using DeskWarrior.Helpers;
 
 namespace DeskWarrior.Managers
 {
@@ -15,7 +16,7 @@ namespace DeskWarrior.Managers
         #region Fields
 
         private readonly SaveManager _saveManager;
-        private readonly List<PermanentUpgradeDefinition> _upgradeDefinitions;
+        private readonly Dictionary<string, StatGrowthConfig> _statConfigs;
         private readonly BossDropConfig _bossDropConfig;
         private readonly Random _random = new();
 
@@ -33,7 +34,7 @@ namespace DeskWarrior.Managers
         public PermanentProgressionManager(SaveManager saveManager)
         {
             _saveManager = saveManager;
-            _upgradeDefinitions = LoadUpgradeDefinitions();
+            _statConfigs = LoadStatConfigs();
             _bossDropConfig = LoadBossDropConfig();
         }
 
@@ -42,49 +43,70 @@ namespace DeskWarrior.Managers
         #region Boss Drop
 
         /// <summary>
-        /// 보스 처치 시 드롭 계산
+        /// 보스 처치 시 크리스탈 지급 (100% 확정, 속성별 배율 적용)
         /// </summary>
-        public BossDropResult ProcessBossKill(int bossLevel)
+        public BossDropResult ProcessBossKill(int bossLevel, string bossElement, Dictionary<string, double> crystalMultipliers)
         {
             var save = _saveManager.CurrentSave;
-            save.BossKillCounter++;
+            var permStats = save.PermanentStats;
 
-            // 피티 시스템 체크
-            bool isGuaranteed = save.BossKillCounter >= _bossDropConfig.GuaranteedDropInterval;
-
-            // 드롭 확률 계산
-            double dropChance = _bossDropConfig.BaseDropChance +
-                               (bossLevel * _bossDropConfig.DropChancePerLevel);
-            dropChance = Math.Min(dropChance, _bossDropConfig.MaxDropChance);
-
-            bool dropped = isGuaranteed || _random.NextDouble() < dropChance;
-
-            if (!dropped)
+            // ✅ 기본 크리스탈 계산 (100% 지급)
+            double growth;
+            if (_bossDropConfig.CrystalGrowthBreakpoint > 0 && bossLevel > _bossDropConfig.CrystalGrowthBreakpoint)
             {
-                return new BossDropResult { Dropped = false };
+                double tail = Math.Pow(bossLevel - _bossDropConfig.CrystalGrowthBreakpoint, _bossDropConfig.CrystalGrowthExponent);
+                growth = _bossDropConfig.CrystalGrowthBreakpoint + tail;
+            }
+            else
+            {
+                growth = bossLevel;
+            }
+            int baseCrystals = Helpers.SafeMath.ToInt(Math.Round(
+                _bossDropConfig.BaseCrystalAmount +
+                (_bossDropConfig.CrystalPerLevel * growth)
+            ));
+
+            // ✅ 영구 스탯 보너스 적용
+            if (permStats != null)
+            {
+                baseCrystals += permStats.GetCrystalFlatBonus();
             }
 
-            // 카운터 리셋
-            save.BossKillCounter = 0;
+            // ✅ 속성별 배율 적용
+            if (!crystalMultipliers.TryGetValue(bossElement, out double elementMultiplier))
+            {
+                Logger.Log($"[Warning] Crystal multiplier not found for element '{bossElement}', defaulting to 1.0");
+                elementMultiplier = 1.0;
+            }
+            int finalCrystals = Helpers.SafeMath.ToInt(baseCrystals * elementMultiplier);
 
-            // 크리스탈 양 계산
-            int baseCrystals = _bossDropConfig.BaseCrystalAmount +
-                              (bossLevel * _bossDropConfig.CrystalPerLevel);
+            // ✅ 분산 제거 - 모든 보상은 고정값 (황금 고블린 제외)
+            // 이전: variance ±20% 적용 (제거됨)
+            finalCrystals = Math.Max(1, finalCrystals);
 
-            // 분산 적용 (±20%)
-            double variance = 1.0 + ((_random.NextDouble() * 2 - 1) * _bossDropConfig.CrystalVariance);
-            int crystals = (int)(baseCrystals * variance);
-            crystals = Math.Max(1, crystals);
+            // ✅ 크리스탈 지급
+            AddCrystals(finalCrystals, "boss_kill");
 
-            // 크리스탈 지급
-            AddCrystals(crystals, "boss_drop");
+            // ✅ 속성 보너스 계산 (UI 표시용)
+            int elementBonus = (int)((elementMultiplier - 1.0) * baseCrystals);
 
             return new BossDropResult
             {
-                Dropped = true,
-                CrystalsDropped = crystals,
-                WasGuaranteed = isGuaranteed
+                Dropped = true,  // 항상 true
+                CrystalsDropped = finalCrystals,
+                ElementBonus = elementBonus,
+                WasGuaranteed = false  // 더 이상 의미 없음
             };
+        }
+
+        /// <summary>
+        /// 스테이지 클리어 시 크리스탈 보상 (초반 부스터)
+        /// </summary>
+        public void ProcessStageClear(int clearedStage)
+        {
+            // 매 스테이지 클리어 시 크리스탈 (100레벨마다 +1)
+            int crystalAmount = _bossDropConfig.StageCompletionCrystal + (clearedStage / 100);
+            AddCrystals(crystalAmount, "stage_clear");
         }
 
         #endregion
@@ -108,7 +130,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         public int ConvertGoldToCrystals(int sessionGold)
         {
-            const int conversionRate = 1000; // 1000 골드 = 1 크리스탈
+            int conversionRate = _bossDropConfig.GoldToCrystalRate; // config에서 로드 (기본값 100)
             int crystals = sessionGold / conversionRate;
 
             if (crystals > 0)
@@ -128,18 +150,18 @@ namespace DeskWarrior.Managers
         /// </summary>
         public bool PurchaseUpgrade(string upgradeId)
         {
-            var definition = _upgradeDefinitions.FirstOrDefault(u => u.Id == upgradeId);
-            if (definition == null) return false;
+            if (!_statConfigs.TryGetValue(upgradeId, out var config))
+                return false;
 
             var save = _saveManager.CurrentSave;
             var progress = GetOrCreateProgress(upgradeId);
 
             // 최대 레벨 체크
-            if (definition.MaxLevel > 0 && progress.CurrentLevel >= definition.MaxLevel)
+            if (config.MaxLevel > 0 && progress.CurrentLevel >= config.MaxLevel)
                 return false;
 
             // 비용 계산
-            int cost = CalculateUpgradeCost(definition, progress.CurrentLevel);
+            int cost = config.CalculateCost(progress.CurrentLevel + 1);
 
             // 크리스탈 체크
             if (save.PermanentCurrency.Crystals < cost)
@@ -154,7 +176,7 @@ namespace DeskWarrior.Managers
             progress.TotalInvested += cost;
 
             // 스탯 업그레이드 적용
-            ApplyStatUpgrade(definition, progress.CurrentLevel);
+            ApplyStatUpgrade(upgradeId, config, progress.CurrentLevel);
 
             UpgradePurchased?.Invoke(this, new UpgradePurchasedEventArgs(upgradeId, progress.CurrentLevel));
 
@@ -164,34 +186,36 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 업그레이드 비용 계산
         /// </summary>
-        public int CalculateUpgradeCost(PermanentUpgradeDefinition def, int currentLevel)
+        public int CalculateUpgradeCost(string upgradeId, int currentLevel)
         {
-            double cost = def.BaseCost * Math.Pow(def.CostMultiplier, currentLevel);
-            return Math.Max(1, (int)Math.Round(cost));
+            if (!_statConfigs.TryGetValue(upgradeId, out var config))
+                return int.MaxValue;
+            return config.CalculateCost(currentLevel + 1);
         }
 
         /// <summary>
-        /// 업그레이드 정의 가져오기
+        /// 스탯 설정 가져오기
         /// </summary>
-        public PermanentUpgradeDefinition? GetUpgradeDefinition(string upgradeId)
+        public StatGrowthConfig? GetStatConfig(string upgradeId)
         {
-            return _upgradeDefinitions.FirstOrDefault(u => u.Id == upgradeId);
+            return _statConfigs.TryGetValue(upgradeId, out var config) ? config : null;
         }
 
         /// <summary>
-        /// 모든 업그레이드 정의 가져오기
+        /// 모든 스탯 설정 가져오기
         /// </summary>
-        public List<PermanentUpgradeDefinition> GetAllUpgradeDefinitions()
+        public Dictionary<string, StatGrowthConfig> GetAllStatConfigs()
         {
-            return _upgradeDefinitions;
+            return _statConfigs;
         }
 
         /// <summary>
-        /// 카테고리별 업그레이드 가져오기
+        /// 카테고리별 스탯 가져오기
         /// </summary>
-        public List<PermanentUpgradeDefinition> GetUpgradesByCategory(string category)
+        public Dictionary<string, StatGrowthConfig> GetStatsByCategory(string category)
         {
-            return _upgradeDefinitions.Where(u => u.Category == category).ToList();
+            return _statConfigs.Where(kvp => kvp.Value.Category == category)
+                               .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         #endregion
@@ -201,14 +225,15 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 스탯 업그레이드 적용
         /// </summary>
-        private void ApplyStatUpgrade(PermanentUpgradeDefinition def, int newLevel)
+        private void ApplyStatUpgrade(string upgradeId, StatGrowthConfig config, int newLevel)
         {
             var stats = _saveManager.CurrentSave.PermanentStats;
-            var property = typeof(PermanentStats).GetProperty(def.StatName);
+            var statName = !string.IsNullOrEmpty(config.StatName) ? config.StatName : upgradeId;
+            var property = typeof(PermanentStats).GetProperty(statName);
 
             if (property == null) return;
 
-            double newValue = def.IncrementPerLevel * newLevel;
+            double newValue = config.EffectPerLevel * newLevel;
 
             if (property.PropertyType == typeof(int))
             {
@@ -242,29 +267,29 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 업그레이드 정의 로드
+        /// 스탯 설정 로드
         /// </summary>
-        private List<PermanentUpgradeDefinition> LoadUpgradeDefinitions()
+        private Dictionary<string, StatGrowthConfig> LoadStatConfigs()
         {
             try
             {
-                var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "PermanentUpgrades.json");
+                var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "PermanentStats.json");
                 if (!File.Exists(configPath))
                 {
-                    return new List<PermanentUpgradeDefinition>();
+                    return new Dictionary<string, StatGrowthConfig>();
                 }
 
                 var json = File.ReadAllText(configPath);
-                var root = JsonSerializer.Deserialize<PermanentUpgradesRoot>(json, new JsonSerializerOptions
+                var root = JsonSerializer.Deserialize<StatGrowthConfigRoot>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
-                return root?.Upgrades ?? new List<PermanentUpgradeDefinition>();
+                return root?.Stats ?? new Dictionary<string, StatGrowthConfig>();
             }
             catch
             {
-                return new List<PermanentUpgradeDefinition>();
+                return new Dictionary<string, StatGrowthConfig>();
             }
         }
 

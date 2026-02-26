@@ -25,7 +25,7 @@ namespace DeskWarrior.ViewModels
 
         #region Properties
 
-        public int RemainingTime => _gameManager.RemainingTime;
+        public double RemainingTime => _gameManager.RemainingTime;
 
         public string TimerText
         {
@@ -48,8 +48,8 @@ namespace DeskWarrior.ViewModels
         /// </summary>
         public void Update()
         {
-            int time = _gameManager.RemainingTime;
-            TimerText = time.ToString();
+            double time = _gameManager.RemainingTime;
+            TimerText = time.ToString("F1");
 
             // 타이머 색상 결정
             if (time > 20)

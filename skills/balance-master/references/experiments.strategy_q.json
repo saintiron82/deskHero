@@ -1,0 +1,170 @@
+{
+  "experiments": [
+    {
+      "name": "time_effect_0p58_tier_1p27",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.27
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.27
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_tier_1p265",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.265
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.265
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_tier_1p26",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.26
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.26
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_drop_0p54",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.54
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_drop_0p54_tier_1p28",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.54
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_drop_0p545_tier_1p28",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.28
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.545
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          }
+        }
+      }
+    },
+    {
+      "name": "time_effect_0p58_drop_0p54_tier_1p27",
+      "changes": {
+        "config/PermanentStats.json": {
+          "stats.time_extend.effect_per_level": {
+            "op": "set",
+            "value": 0.58
+          },
+          "stats.base_attack.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.27
+          },
+          "stats.attack_percent.tier_config.effect_multiplier_per_tier": {
+            "op": "set",
+            "value": 1.27
+          }
+        },
+        "config/BossDrops.json": {
+          "base_drop_chance": {
+            "op": "set",
+            "value": 0.54
+          },
+          "drop_chance_per_level": {
+            "op": "set",
+            "value": 0.006
+          }
+        }
+      }
+    }
+  ],
+  "injections": []
+}

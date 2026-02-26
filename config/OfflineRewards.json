@@ -1,0 +1,13 @@
+{
+  "enabled": false,
+  "max_hours": 8,
+  "rewards_per_hour": {
+    "gold": 100,
+    "crystals": 1
+  },
+  "min_offline_minutes": 30,
+  "popup_message": {
+    "ko-KR": "돌아오셨군요! {hours}시간 동안 {gold} 골드와 {crystals} 크리스탈을 획득했습니다!",
+    "en-US": "Welcome back! You earned {gold} gold and {crystals} crystals during {hours} hours offline!"
+  }
+}

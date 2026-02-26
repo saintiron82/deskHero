@@ -223,7 +223,7 @@ namespace DeskWarrior.Managers
             _statsCalculator.UpdateLifetimeStats(_currentSave.LifetimeStats, session);
 
             // 골드 → 크리스탈 변환 (1000:1 비율)
-            int crystalsEarned = (int)(session.TotalGold / 1000);
+            int crystalsEarned = (int)Math.Min(session.TotalGold / 1000, int.MaxValue);
             if (crystalsEarned > 0)
             {
                 _currentSave.PermanentCurrency.Crystals += crystalsEarned;

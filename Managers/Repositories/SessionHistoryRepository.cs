@@ -6,8 +6,9 @@ namespace DeskWarrior.Managers.Repositories
 {
     /// <summary>
     /// SessionHistory.json 저장소
+    /// RELEASE: 암호화된 저장
     /// </summary>
-    public class SessionHistoryRepository : JsonFileRepository<List<SessionStats>>
+    public class SessionHistoryRepository : SecureJsonFileRepository<List<SessionStats>>
     {
         private const int MaxSessionHistory = 100;
 

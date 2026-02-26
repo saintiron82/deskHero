@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="DeskWarrior.Core/DeskWarrior.Core.csproj" />
   <Project Path="DeskWarrior.csproj" />
+  <Project Path="DeskWarrior.Simulator/DeskWarrior.Simulator.csproj" />
 </Solution>

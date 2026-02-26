@@ -1,6 +1,6 @@
 """
 DeskWarrior 스탯 공식 (자동 생성)
-생성일: 2026-01-26 18:57:40
+생성일: 2026-01-29 20:58:49
 경고: 이 파일을 직접 수정하지 마세요!
       config/StatFormulas.json을 수정 후 generate_stat_code.py 실행
 """
@@ -18,7 +18,7 @@ COMBO_DURATION = 3.0
 MAX_COMBO_STACK = 3
 GOLD_TO_CRYSTAL_RATE = 1000
 BASE_HP = 100
-HP_GROWTH = 1.2
+HP_GROWTH = 1.12
 BOSS_INTERVAL = 10
 BOSS_HP_MULTI = 5.0
 BASE_GOLD_MULTI = 1.5
@@ -44,12 +44,22 @@ def calc_stat_effect(effect_per_level, level):
     return effect_per_level * level
 
 
-def calc_damage(base_power, base_attack, attack_percent, crit_multiplier, multi_hit_multiplier, combo_multiplier):
+def calc_damage(base_power, base_attack, attack_percent, crit_multiplier, multi_hit_multiplier, combo_multiplier, utility_bonus):
     """
     데미지 계산
-    공식: (base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier
+    기본 데미지 공식 - 원복
+    공식: (base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier * utility_bonus
     """
-    return int((base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier)
+    return int((base_power + base_attack) * (1 + attack_percent) * crit_multiplier * multi_hit_multiplier * combo_multiplier * utility_bonus)
+
+
+def calc_utility_bonus(time_extend_level, upgrade_discount_level):
+    """
+    유틸리티 보너스
+    유틸리티 스탯 투자에 따른 데미지 보너스 (0.5%/레벨)
+    공식: 1 + (time_extend_level + upgrade_discount_level) * 0.005
+    """
+    return 1 + (time_extend_level + upgrade_discount_level) * 0.005
 
 
 def calc_gold_earned(base_gold, gold_flat, gold_flat_perm, gold_multi, gold_multi_perm):

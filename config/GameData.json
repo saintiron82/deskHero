@@ -1,13 +1,30 @@
 {
+  "_comment": "게임 밸런스 설정 - CharacterData.json의 평균값 (fallback용)",
   "balance": {
-    "base_hp": 100,
-    "hp_growth": 1.2,
+    "base_hp": 10,
+    "hp_growth": 5,
     "boss_interval": 10,
-    "boss_hp_multiplier": 5.0,
-    "base_gold_multiplier": 1.5,
+    "boss_hp_multiplier": 3.0,
+    "base_gold_multiplier": 12.127500000000001,
     "time_limit": 30,
     "critical_chance": 0.1,
     "critical_multiplier": 2.0,
+    "upgrade_cost_interval": 50,
+    "tier_hp_system": {
+      "enabled": true,
+      "tier_interval": 100,
+      "tier_multiplier": 1.92,
+      "min_tier_multiplier": 1.0,
+      "tier_curve_exponent": 1.0,
+      "linear_growth_per_level": 8,
+      "min_linear_growth_per_level": 1.0,
+      "growth_decrease_per_tier": 0.96,
+      "tier_multiplier_decay_per_tier": 0.99,
+      "late_start_level": 1000,
+      "late_tier_interval": 50,
+      "late_tier_multiplier": 0.80,
+      "max_late_tiers": 30
+    },
     "game_over_messages": [
       "Your finger needs a gym membership.",
       "Monster: 'Is that all you got?'",
@@ -17,15 +34,89 @@
       "Even my grandma clicks faster.",
       "Error 404: Skill not found.",
       "Try using both hands next time."
-    ]
+    ],
+    "upgrade_cost_tier_multiplier": 2.0
   },
   "upgrade": {
-    "base_cost": 100,
-    "cost_multiplier": 1.5,
+    "base_cost": 1,
+    "cost_multiplier": 1.15,
     "attack_increase": 0.5
   },
   "visual": {
     "shake_power": 2.5,
     "boss_scale": 1.5
+  },
+  "consecutive_key_penalty": {
+    "enabled": true,
+    "penalty_start_count": 7,
+    "penalty_per_count": 0.1,
+    "combo_exempt": false,
+    "mouse_exempt": true,
+    "max_cps": 20
+  },
+  "combo": {
+    "base_tolerance": 0.01,
+    "expire_time": 3.0,
+    "max_stack": 3
+  },
+  "emergency_fallback": {
+    "base_gold": 10,
+    "gold_per_level": 2
+  },
+  "monster_spawning": {
+    "element_weights": {
+      "normal": 50,
+      "fire": 50,
+      "ice": 50,
+      "wind": 50,
+      "holy": 2,
+      "dark": 6
+    },
+    "use_weighted_selection": true,
+    "use_batch_progression": true
+  },
+  "element_properties": {
+    "normal": {
+      "hp_modifier": 1.0,
+      "time_scale": 3.6,
+      "keyboard_resistance": 1.0,
+      "mouse_resistance": 1.0,
+      "crystal_multiplier": 1.0
+    },
+    "fire": {
+      "hp_modifier": 1.0,
+      "time_scale": 3.6,
+      "keyboard_resistance": 0.67,
+      "mouse_resistance": 1.0,
+      "crystal_multiplier": 1.0
+    },
+    "ice": {
+      "hp_modifier": 1.0,
+      "time_scale": 3.6,
+      "keyboard_resistance": 1.0,
+      "mouse_resistance": 0.67,
+      "crystal_multiplier": 1.0
+    },
+    "wind": {
+      "hp_modifier": 0.8,
+      "time_scale": 4.0,
+      "keyboard_resistance": 1.0,
+      "mouse_resistance": 1.0,
+      "crystal_multiplier": 1.0
+    },
+    "holy": {
+      "hp_modifier": 1.0,
+      "time_scale": 3.6,
+      "keyboard_resistance": 1.0,
+      "mouse_resistance": 1.0,
+      "crystal_multiplier": 2.0
+    },
+    "dark": {
+      "hp_modifier": 1.5,
+      "time_scale": 3.6,
+      "keyboard_resistance": 1.0,
+      "mouse_resistance": 1.0,
+      "crystal_multiplier": 2.0
+    }
   }
 }

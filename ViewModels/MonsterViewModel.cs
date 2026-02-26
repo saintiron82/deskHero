@@ -13,10 +13,11 @@ namespace DeskWarrior.ViewModels
         private string _emoji = "";
         private string _name = "";
         private string _skinType = "";
-        private int _currentHp;
-        private int _maxHp;
+        private long _currentHp;
+        private long _maxHp;
         private double _hpRatio = 1.0;
         private bool _isBoss;
+        private bool _isGoldenGoblin;
 
         public MonsterViewModel(GameManager gameManager)
         {
@@ -45,13 +46,13 @@ namespace DeskWarrior.ViewModels
             private set => SetProperty(ref _skinType, value);
         }
 
-        public int CurrentHp
+        public long CurrentHp
         {
             get => _currentHp;
             private set => SetProperty(ref _currentHp, value);
         }
 
-        public int MaxHp
+        public long MaxHp
         {
             get => _maxHp;
             private set => SetProperty(ref _maxHp, value);
@@ -67,6 +68,12 @@ namespace DeskWarrior.ViewModels
         {
             get => _isBoss;
             private set => SetProperty(ref _isBoss, value);
+        }
+
+        public bool IsGoldenGoblin
+        {
+            get => _isGoldenGoblin;
+            private set => SetProperty(ref _isGoldenGoblin, value);
         }
 
         public string HpText => $"{CurrentHp:N0}/{MaxHp:N0}";
@@ -90,6 +97,7 @@ namespace DeskWarrior.ViewModels
             MaxHp = monster.MaxHp;
             HpRatio = monster.HpRatio;
             IsBoss = monster.IsBoss;
+            IsGoldenGoblin = monster.IsGoldenGoblin;
 
             OnPropertyChanged(nameof(HpText));
         }

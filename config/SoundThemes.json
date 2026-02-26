@@ -1,0 +1,59 @@
+{
+  "themes": [
+    {
+      "id": "none",
+      "name_key": "sound.theme.none",
+      "is_builtin": true,
+      "sounds": {}
+    },
+    {
+      "id": "default",
+      "name_key": "sound.theme.default",
+      "is_builtin": true,
+      "sounds": {
+        "KeyboardHit": 1.0,
+        "MouseClick": 1.0,
+        "Defeat": 1.0,
+        "Critical": 1.0,
+        "BossAppear": 1.0,
+        "BossDefeat": 1.0,
+        "Upgrade": 1.0,
+        "GameOver": 1.0,
+        "Achievement": 1.0,
+        "Combo": 1.0,
+        "LevelUp": 1.0,
+        "OfflineReward": 1.0,
+        "GoldenGoblinAppear": 1.0,
+        "GoldenGoblinDefeat": 1.0,
+        "GoldenGoblinEscape": 1.0
+      }
+    },
+    {
+      "id": "minimal",
+      "name_key": "sound.theme.minimal",
+      "is_builtin": true,
+      "sounds": {
+        "Critical": 0.8,
+        "BossAppear": 1.0,
+        "BossDefeat": 1.0,
+        "Upgrade": 0.7,
+        "GameOver": 1.0,
+        "Achievement": 1.0,
+        "LevelUp": 0.8,
+        "OfflineReward": 0.8,
+        "GoldenGoblinAppear": 1.0,
+        "GoldenGoblinDefeat": 1.0,
+        "GoldenGoblinEscape": 1.0
+      }
+    },
+    {
+      "id": "input_only",
+      "name_key": "sound.theme.inputOnly",
+      "is_builtin": true,
+      "sounds": {
+        "KeyboardHit": 1.0,
+        "MouseClick": 1.0
+      }
+    }
+  ]
+}

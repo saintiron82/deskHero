@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
 using DeskWarrior.Helpers;
 using DeskWarrior.Managers;
 using DeskWarrior.Models;
+using DeskWarrior.Security;
 
 namespace DeskWarrior
 {
@@ -23,14 +25,77 @@ namespace DeskWarrior
             Logger.Log($"Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
             Logger.Log($"OS: {System.Environment.OSVersion}");
             Logger.Log($".NET: {System.Environment.Version}");
+            Logger.Log($"Security: {(SecurityConfig.SecurityEnabled ? "Enabled" : "Disabled")}");
             Logger.Log("========================================");
+
+            // 안티-치트 초기화 (RELEASE 빌드에서만 활성화)
+            AntiCheat.Initialize(onViolationDetected: () =>
+            {
+                Logger.Log("[Security] Violation detected - shutting down");
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show(
+                        "비정상적인 실행 환경이 감지되었습니다.\n게임을 종료합니다.",
+                        "보안 경고",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    Application.Current.Shutdown(-1);
+                });
+            });
+
+            // ResourceManager 초기화 (최우선)
+            try
+            {
+                ResourceManager.Instance.LoadResourceTable();
+                Logger.Log("ResourceManager initialized successfully");
+
+                // UI 아이콘을 DynamicResource로 등록 (XAML에서 {DynamicResource IconGold} 등으로 사용)
+                RegisterUIIconResources();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Failed to initialize ResourceManager", ex);
+            }
 
             // 의존성 주입: AchievementDefinition에 LocalizationProvider 설정
             AchievementDefinition.LocalizationProvider = LocalizationManager.Instance;
 
+            // PermanentStatsExtensions 초기화 (Config 기반 효과 계산)
+            var statGrowthManager = new StatGrowthManager();
+            PermanentStatsExtensions.Initialize(statGrowthManager);
+            Logger.Log("PermanentStatsExtensions initialized with config-based calculations");
+
             base.OnStartup(e);
 
             Logger.Log("Application startup completed");
+        }
+
+        /// <summary>
+        /// ResourcePaths.json의 UI 아이콘을 Application.Resources에 등록
+        /// XAML에서 {DynamicResource IconGold}, {DynamicResource IconCrystal} 등으로 사용
+        /// </summary>
+        private void RegisterUIIconResources()
+        {
+            var uiIcons = new Dictionary<string, string>
+            {
+                { "IconGold", "gold" },
+                { "IconCrystal", "crystal" },
+                { "IconTimer", "timer" }
+            };
+
+            foreach (var (resourceKey, uiKey) in uiIcons)
+            {
+                try
+                {
+                    var uri = ResourceManager.Instance.GetUIImageUri(uiKey);
+                    var bitmap = new System.Windows.Media.Imaging.BitmapImage(uri);
+                    Resources[resourceKey] = bitmap;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Failed to register UI icon resource '{resourceKey}': {ex.Message}");
+                }
+            }
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -51,6 +116,9 @@ namespace DeskWarrior
             Logger.Log("DeskWarrior Application Exiting...");
             Logger.Log($"Exit Code: {e.ApplicationExitCode}");
             Logger.Log("========================================");
+
+            // 안티-치트 종료
+            AntiCheat.Shutdown();
 
             base.OnExit(e);
         }

@@ -1,0 +1,139 @@
+namespace DeskWarrior.Core.Models;
+
+/// <summary>
+/// 다중 세션 시뮬레이션 결과
+/// </summary>
+public class ProgressionResult
+{
+    /// <summary>목표 레벨 도달 성공 여부</summary>
+    public bool Success { get; set; }
+
+    /// <summary>목표 레벨 도달까지 필요한 시도 횟수</summary>
+    public int AttemptsNeeded { get; set; }
+
+    /// <summary>최종 영구 스탯 상태</summary>
+    public SimPermanentStats FinalStats { get; set; } = new();
+
+    /// <summary>총 획득 크리스털</summary>
+    public long TotalCrystalsEarned { get; set; }
+
+    /// <summary>총 소비 크리스털</summary>
+    public long TotalCrystalsSpent { get; set; }
+
+    /// <summary>세션별 기록 (요약)</summary>
+    public List<SessionProgressRecord> SessionHistory { get; set; } = new();
+
+    /// <summary>세션별 상세 기록 (CSV 출력용)</summary>
+    public List<SessionResult> DetailedSessions { get; set; } = new();
+
+    /// <summary>업그레이드 기록</summary>
+    public List<UpgradeRecord> UpgradeHistory { get; set; } = new();
+
+    /// <summary>최종 도달 레벨 (실패 시 마지막 최고 레벨)</summary>
+    public long FinalMaxLevel { get; set; }
+
+    /// <summary>총 게임 플레이 시간 (초)</summary>
+    public double TotalGameTimeSeconds { get; set; }
+
+    /// <summary>역대 최고 도달 레벨</summary>
+    public long BestLevelEver { get; set; }
+
+    /// <summary>목표 시간 이후 처음 도래한 사망 레벨</summary>
+    public long TargetReachedDeathLevel { get; set; }
+
+    /// <summary>목표 시간 이후 처음 도래한 사망 세션 번호</summary>
+    public int TargetReachedSessionNumber { get; set; }
+
+    /// <summary>목표 시간 이후 처음 도래한 사망 시점의 누적 게임 시간(초)</summary>
+    public double TargetReachedGameTimeSeconds { get; set; }
+
+    // 황금 고블린 통계
+    /// <summary>총 처치한 황금 고블린 수</summary>
+    public int TotalGoldenGoblinsKilled { get; set; }
+
+    /// <summary>총 도주한 황금 고블린 수</summary>
+    public int TotalGoldenGoblinsEscaped { get; set; }
+
+    /// <summary>황금 고블린에서 획득한 총 골드</summary>
+    public long TotalGoldenGoblinGold { get; set; }
+
+    // 오버플로우 감지
+    /// <summary>시뮬레이션 중 오버플로우 발생 여부</summary>
+    public bool OverflowDetected { get; set; }
+
+    /// <summary>오버플로우 상세 리포트</summary>
+    public string? OverflowReport { get; set; }
+}
+
+/// <summary>
+/// 세션별 진행 기록
+/// </summary>
+public class SessionProgressRecord
+{
+    public int SessionNumber { get; set; }
+    public long MaxLevel { get; set; }
+    public long CrystalsEarned { get; set; }
+    public long CrystalsBeforeSession { get; set; }
+    public long CrystalsAfterSession { get; set; }
+    public double SessionDurationSeconds { get; set; }
+    public double CumulativeGameTimeSeconds { get; set; }
+
+    // 황금 고블린 통계
+    public int GoldenGoblinsKilled { get; set; }
+    public int GoldenGoblinsEscaped { get; set; }
+    public long GoldenGoblinGoldEarned { get; set; }
+}
+
+/// <summary>
+/// 업그레이드 기록
+/// </summary>
+public class UpgradeRecord
+{
+    public int AfterSessionNumber { get; set; }
+    public string StatId { get; set; } = "";
+    public int FromLevel { get; set; }
+    public int ToLevel { get; set; }
+    public long CrystalsCost { get; set; }
+}
+
+/// <summary>
+/// 업그레이드 전략
+/// </summary>
+public enum UpgradeStrategy
+{
+    /// <summary>비용 대비 효율 최대화 (그리디)</summary>
+    Greedy,
+
+    /// <summary>공격력 우선</summary>
+    DamageFirst,
+
+    /// <summary>시간 연장 우선</summary>
+    SurvivalFirst,
+
+    /// <summary>크리스털 획득 우선</summary>
+    CrystalFarm,
+
+    /// <summary>균형 잡힌 업그레이드</summary>
+    Balanced,
+
+    /// <summary>경제력 우선 (골드/크리스털 수입 극대화)</summary>
+    EconomyFirst,
+
+    /// <summary>공격 스탯만 투자</summary>
+    DamageOnly,
+
+    /// <summary>공격 + 시간 연장 투자</summary>
+    DamageTime,
+
+    /// <summary>경제 스탯만 투자</summary>
+    EconomyOnly,
+
+    /// <summary>유틸리티/시작 보너스만 투자</summary>
+    UtilityOnly,
+
+    /// <summary>시뮬레이션 기반 최적화</summary>
+    SimulationBased,
+
+    /// <summary>업그레이드 안함 (테스트용)</summary>
+    None
+}

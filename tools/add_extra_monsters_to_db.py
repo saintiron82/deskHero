@@ -8,7 +8,7 @@ DB_FILE = os.path.join(os.path.dirname(__file__), "monster_db.json")
 new_monsters = [
     {
         "id": "monster_dullahan",
-        "base_file": "monster_dullahanA.png",
+        "base_file": "monster_dullahan.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "듀라한", "hue": None, "filename": "monster_dullahan_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "화염 듀라한", "hue": 358, "filename": "monster_dullahan_fire.png"},
@@ -20,7 +20,7 @@ new_monsters = [
     },
     {
         "id": "monster_harpy",
-        "base_file": "monster_harpyA.png",
+        "base_file": "monster_harpy.png",
         "variations": [
             {"suffix": "A", "attribute": "Normal", "name": "하피", "hue": None, "filename": "monster_harpy_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "불꽃 하피", "hue": 358, "filename": "monster_harpy_fire.png"},
@@ -34,11 +34,6 @@ new_monsters = [
         "id": "monster_female_mermaid",
         "base_file": "monster_female_mermaid.png",
         "variations": [
-            # Base file has no suffix 'A' in the progress doc, but code expects A for base? 
-            # generate_monsters.py logic: if name_part.endswith("A")...
-            # We should probably stick to the pattern and rename the base file to monster_female_mermaidA.png if consistent.
-            # But the progress doc said `monster_female_mermaid.png`.
-            # I will use 'monster_female_mermaidA.png' in DB to be consistent with script, and save the image as such.
             {"suffix": "A", "attribute": "Normal", "name": "인어(여)", "hue": None, "filename": "monster_female_mermaid_normal.png"},
             {"suffix": "B", "attribute": "Fire", "name": "화염 인어(여)", "hue": 358, "filename": "monster_female_mermaid_fire.png"},
             {"suffix": "C", "attribute": "Ice", "name": "얼음 인어(여)", "hue": 210, "filename": "monster_female_mermaid_ice.png"},

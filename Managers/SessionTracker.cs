@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
@@ -18,6 +19,7 @@ namespace DeskWarrior.Managers
         #region Fields
 
         private readonly Queue<DamageRecord> _damageRecords = new();
+        private readonly Queue<long> _recentInputTicks = new();
 
         #endregion
 
@@ -74,9 +76,56 @@ namespace DeskWarrior.Managers
         public int SessionAchievementCrystals { get; private set; }
 
         /// <summary>
+        /// 세션 중 스테이지 클리어로 획득한 크리스탈
+        /// </summary>
+        public int SessionStageClearCrystals { get; private set; }
+
+        /// <summary>
+        /// 세션 중 콤보 발동 횟수
+        /// </summary>
+        public int ComboTriggers { get; private set; }
+
+        /// <summary>
+        /// 세션 중 풀 콤보(3스택) 달성 횟수
+        /// </summary>
+        public int MaxComboStackCount { get; private set; }
+
+        /// <summary>
+        /// 세션 중 멀티히트 횟수
+        /// </summary>
+        public int MultiHits { get; private set; }
+
+        /// <summary>
+        /// 세션 중 처치한 황금 고블린 수
+        /// </summary>
+        public int GoldenGoblinsKilled { get; private set; }
+
+        /// <summary>
+        /// 세션 중 황금 고블린에서 획득한 골드
+        /// </summary>
+        public long GoldenGoblinGoldEarned { get; private set; }
+
+        /// <summary>
         /// 세션 경과 시간 (분)
         /// </summary>
         public double DurationMinutes => (DateTime.Now - StartTime).TotalMinutes;
+
+        /// <summary>
+        /// 실시간 초당 입력 횟수 (CPS) - 읽을 때마다 만료 항목 정리
+        /// </summary>
+        public double CurrentCPS
+        {
+            get
+            {
+                long now = Stopwatch.GetTimestamp();
+                long oneSecondAgo = now - Stopwatch.Frequency;
+                while (_recentInputTicks.Count > 0 && _recentInputTicks.Peek() < oneSecondAgo)
+                {
+                    _recentInputTicks.Dequeue();
+                }
+                return _recentInputTicks.Count;
+            }
+        }
 
         /// <summary>
         /// 최근 데미지 기록 (최대 100개)
@@ -88,9 +137,17 @@ namespace DeskWarrior.Managers
         #region Public Methods
 
         /// <summary>
+        /// 유효 입력 기록 (롤링 윈도우 1초)
+        /// </summary>
+        public void RecordInput()
+        {
+            _recentInputTicks.Enqueue(Stopwatch.GetTimestamp());
+        }
+
+        /// <summary>
         /// 데미지 기록 (간단 버전 - 하위 호환용)
         /// </summary>
-        public void RecordDamage(int damage, bool isCritical, bool isMouse)
+        public void RecordDamage(long damage, bool isCritical, bool isMouse)
         {
             TotalDamage += damage;
 
@@ -130,6 +187,22 @@ namespace DeskWarrior.Managers
                 KeyboardInputs++;
             }
 
+            // 콤보 추적
+            if (record.IsCombo)
+            {
+                ComboTriggers++;
+                if (record.ComboStack >= 3)
+                {
+                    MaxComboStackCount++;
+                }
+            }
+
+            // 멀티히트 추적
+            if (record.IsMultiHit)
+            {
+                MultiHits++;
+            }
+
             // 최근 100개만 유지
             _damageRecords.Enqueue(record);
             while (_damageRecords.Count > MaxDamageRecords)
@@ -141,7 +214,7 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 몬스터 처치 기록
         /// </summary>
-        public void RecordKill(bool isBoss, int goldReward)
+        public void RecordKill(bool isBoss, long goldReward)
         {
             MonstersKilled++;
             TotalGold += goldReward;
@@ -169,6 +242,23 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
+        /// 크리스탈 획득 기록 (스테이지 클리어)
+        /// </summary>
+        public void RecordStageClearCrystals(int amount)
+        {
+            SessionStageClearCrystals += amount;
+        }
+
+        /// <summary>
+        /// 황금 고블린 처치 기록
+        /// </summary>
+        public void RecordGoldenGoblinKill(long goldReward)
+        {
+            GoldenGoblinsKilled++;
+            GoldenGoblinGoldEarned += goldReward;
+        }
+
+        /// <summary>
         /// 세션 초기화
         /// </summary>
         public void Reset()
@@ -183,7 +273,14 @@ namespace DeskWarrior.Managers
             CriticalHits = 0;
             SessionBossDropCrystals = 0;
             SessionAchievementCrystals = 0;
+            SessionStageClearCrystals = 0;
+            ComboTriggers = 0;
+            MaxComboStackCount = 0;
+            MultiHits = 0;
+            GoldenGoblinsKilled = 0;
+            GoldenGoblinGoldEarned = 0;
             _damageRecords.Clear();
+            _recentInputTicks.Clear();
         }
 
         /// <summary>
@@ -197,12 +294,15 @@ namespace DeskWarrior.Managers
                 EndTime = DateTime.Now,
                 MaxLevel = maxLevel,
                 TotalDamage = TotalDamage,
-                TotalGold = (int)TotalGold,
+                TotalGold = TotalGold,
                 MonstersKilled = MonstersKilled,
                 BossesKilled = BossesKilled,
                 KeyboardInputs = KeyboardInputs,
                 MouseInputs = MouseInputs,
-                EndReason = endReason
+                EndReason = endReason,
+                ComboTriggers = ComboTriggers,
+                MaxComboStackCount = MaxComboStackCount,
+                MultiHits = MultiHits
             };
         }
 

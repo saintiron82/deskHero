@@ -1,0 +1,2035 @@
+{
+  "batch_id": 2,
+  "name": {
+    "ko-KR": "고전 던전",
+    "en-US": "Classic Dungeon"
+  },
+  "theme": "Classic Fantasy",
+  "unlock_condition": {
+    "min_level": 101
+  },
+  "monsters": [
+    {
+      "id": "monster_dullahan",
+      "species": "dullahan",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 50,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "듀라한",
+              "description": "고전 던전에 출몰하는 듀라한."
+            },
+            "en-US": {
+              "name": "Dullahan",
+              "description": "A dullahan found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_dullahan.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화염 듀라한",
+              "description": "고전 던전에 출몰하는 화염 속성의 듀라한."
+            },
+            "en-US": {
+              "name": "Flame Dullahan",
+              "description": "A fire-elemental dullahan found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_dullahan.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "냉기 듀라한",
+              "description": "고전 던전에 출몰하는 얼음 속성의 듀라한."
+            },
+            "en-US": {
+              "name": "Frost Dullahan",
+              "description": "An ice-elemental dullahan found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_dullahan.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "질풍 듀라한",
+              "description": "고전 던전에 출몰하는 바람 속성의 듀라한."
+            },
+            "en-US": {
+              "name": "Gale Dullahan",
+              "description": "A wind-elemental dullahan found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_dullahan.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "신성 듀라한",
+              "description": "고전 던전에 출몰하는 신성 속성의 듀라한."
+            },
+            "en-US": {
+              "name": "Holy Dullahan",
+              "description": "A holy-elemental dullahan found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_dullahan.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "암흑 듀라한",
+              "description": "고전 던전에 출몰하는 어둠 속성의 듀라한."
+            },
+            "en-US": {
+              "name": "Dark Dullahan",
+              "description": "A dark-elemental dullahan found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_dullahan.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_harpy",
+      "species": "harpy",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 53,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "하피",
+              "description": "고전 던전에 출몰하는 하피."
+            },
+            "en-US": {
+              "name": "Harpy",
+              "description": "A harpy found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_harpy.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "불꽃 하피",
+              "description": "고전 던전에 출몰하는 화염 속성의 하피."
+            },
+            "en-US": {
+              "name": "Flame Harpy",
+              "description": "A fire-elemental harpy found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_harpy.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "얼음 하피",
+              "description": "고전 던전에 출몰하는 얼음 속성의 하피."
+            },
+            "en-US": {
+              "name": "Ice Harpy",
+              "description": "An ice-elemental harpy found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_harpy.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "바람 하피",
+              "description": "고전 던전에 출몰하는 바람 속성의 하피."
+            },
+            "en-US": {
+              "name": "Wind Harpy",
+              "description": "A wind-elemental harpy found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_harpy.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "엔젤 하피",
+              "description": "고전 던전에 출몰하는 신성 속성의 하피."
+            },
+            "en-US": {
+              "name": "Angel Harpy",
+              "description": "A holy-elemental harpy found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_harpy.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "다크 하피",
+              "description": "고전 던전에 출몰하는 어둠 속성의 하피."
+            },
+            "en-US": {
+              "name": "Dark Harpy",
+              "description": "A dark-elemental harpy found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_harpy.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_female_mermaid",
+      "species": "female_mermaid",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 56,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "인어(여)",
+              "description": "고전 던전에 출몰하는 인어(여)."
+            },
+            "en-US": {
+              "name": "Mermaid",
+              "description": "A mermaid found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_female_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화염 인어",
+              "description": "고전 던전에 출몰하는 화염 속성의 인어(여)."
+            },
+            "en-US": {
+              "name": "Flame Mermaid",
+              "description": "A fire-elemental mermaid found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_female_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "얼음 인어",
+              "description": "고전 던전에 출몰하는 얼음 속성의 인어(여)."
+            },
+            "en-US": {
+              "name": "Frost Mermaid",
+              "description": "An ice-elemental mermaid found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_female_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "바람 인어",
+              "description": "고전 던전에 출몰하는 바람 속성의 인어(여)."
+            },
+            "en-US": {
+              "name": "Wind Mermaid",
+              "description": "A wind-elemental mermaid found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_female_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "신성 인어",
+              "description": "고전 던전에 출몰하는 신성 속성의 인어(여)."
+            },
+            "en-US": {
+              "name": "Holy Mermaid",
+              "description": "A holy-elemental mermaid found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_female_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "암흑 인어",
+              "description": "고전 던전에 출몰하는 어둠 속성의 인어(여)."
+            },
+            "en-US": {
+              "name": "Dark Mermaid",
+              "description": "A dark-elemental mermaid found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_female_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_male_mermaid",
+      "species": "male_mermaid",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 59,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "인어(남)",
+              "description": "고전 던전에 출몰하는 인어(남)."
+            },
+            "en-US": {
+              "name": "Merman",
+              "description": "A merman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_male_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화염 인어(남)",
+              "description": "고전 던전에 출몰하는 화염 속성의 인어(남)."
+            },
+            "en-US": {
+              "name": "Flame Merman",
+              "description": "A fire-elemental merman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_male_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "얼음 인어(남)",
+              "description": "고전 던전에 출몰하는 얼음 속성의 인어(남)."
+            },
+            "en-US": {
+              "name": "Frost Merman",
+              "description": "An ice-elemental merman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_male_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "바람 인어(남)",
+              "description": "고전 던전에 출몰하는 바람 속성의 인어(남)."
+            },
+            "en-US": {
+              "name": "Wind Merman",
+              "description": "A wind-elemental merman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_male_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "신성 인어(남)",
+              "description": "고전 던전에 출몰하는 신성 속성의 인어(남)."
+            },
+            "en-US": {
+              "name": "Holy Merman",
+              "description": "A holy-elemental merman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_male_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "암흑 인어(남)",
+              "description": "고전 던전에 출몰하는 어둠 속성의 인어(남)."
+            },
+            "en-US": {
+              "name": "Dark Merman",
+              "description": "A dark-elemental merman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_male_mermaid.png",
+          "emoji": "🧜",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_nymph",
+      "species": "nymph",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 62,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "님프",
+              "description": "고전 던전에 출몰하는 님프."
+            },
+            "en-US": {
+              "name": "Nymph",
+              "description": "A nymph found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_nymph.png",
+          "emoji": "🌿",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화산 님프",
+              "description": "고전 던전에 출몰하는 화염 속성의 님프."
+            },
+            "en-US": {
+              "name": "Volcanic Nymph",
+              "description": "A fire-elemental nymph found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_nymph.png",
+          "emoji": "🌿",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "나이아드",
+              "description": "고전 던전에 출몰하는 얼음 속성의 님프."
+            },
+            "en-US": {
+              "name": "Naiad",
+              "description": "An ice-elemental nymph found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_nymph.png",
+          "emoji": "🌿",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "오레아드",
+              "description": "고전 던전에 출몰하는 바람 속성의 님프."
+            },
+            "en-US": {
+              "name": "Oread",
+              "description": "A wind-elemental nymph found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_nymph.png",
+          "emoji": "🌿",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "천상의 님프",
+              "description": "고전 던전에 출몰하는 신성 속성의 님프."
+            },
+            "en-US": {
+              "name": "Celestial Nymph",
+              "description": "A holy-elemental nymph found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_nymph.png",
+          "emoji": "🌿",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "늪지 님프",
+              "description": "고전 던전에 출몰하는 어둠 속성의 님프."
+            },
+            "en-US": {
+              "name": "Swamp Nymph",
+              "description": "A dark-elemental nymph found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_nymph.png",
+          "emoji": "🌿",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_banshee",
+      "species": "banshee",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 71,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "밴시",
+              "description": "고전 던전에 출몰하는 밴시."
+            },
+            "en-US": {
+              "name": "Banshee",
+              "description": "A banshee found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_banshee.png",
+          "emoji": "👻",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "절규하는 영혼",
+              "description": "고전 던전에 출몰하는 화염 속성의 밴시."
+            },
+            "en-US": {
+              "name": "Screaming Soul",
+              "description": "A fire-elemental banshee found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_banshee.png",
+          "emoji": "👻",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "통곡의 밴시",
+              "description": "고전 던전에 출몰하는 얼음 속성의 밴시."
+            },
+            "en-US": {
+              "name": "Wailing Banshee",
+              "description": "An ice-elemental banshee found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_banshee.png",
+          "emoji": "👻",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "바람의 비명",
+              "description": "고전 던전에 출몰하는 바람 속성의 밴시."
+            },
+            "en-US": {
+              "name": "Wind Scream",
+              "description": "A wind-elemental banshee found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_banshee.png",
+          "emoji": "👻",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "성녀의 영혼",
+              "description": "고전 던전에 출몰하는 신성 속성의 밴시."
+            },
+            "en-US": {
+              "name": "Saint's Spirit",
+              "description": "A holy-elemental banshee found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_banshee.png",
+          "emoji": "👻",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "저주받은 처녀",
+              "description": "고전 던전에 출몰하는 어둠 속성의 밴시."
+            },
+            "en-US": {
+              "name": "Cursed Maiden",
+              "description": "A dark-elemental banshee found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_banshee.png",
+          "emoji": "👻",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_gargoyle",
+      "species": "gargoyle",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 74,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "석상 가고일",
+              "description": "고전 던전에 출몰하는 가고일."
+            },
+            "en-US": {
+              "name": "Stone Gargoyle",
+              "description": "A gargoyle found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gargoyle.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "헬 가고일",
+              "description": "고전 던전에 출몰하는 화염 속성의 가고일."
+            },
+            "en-US": {
+              "name": "Hell Gargoyle",
+              "description": "A fire-elemental gargoyle found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gargoyle.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 가고일",
+              "description": "고전 던전에 출몰하는 얼음 속성의 가고일."
+            },
+            "en-US": {
+              "name": "Ice Gargoyle",
+              "description": "An ice-elemental gargoyle found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gargoyle.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 가고일",
+              "description": "고전 던전에 출몰하는 바람 속성의 가고일."
+            },
+            "en-US": {
+              "name": "Wind Gargoyle",
+              "description": "A wind-elemental gargoyle found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gargoyle.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "마블 가고일",
+              "description": "고전 던전에 출몰하는 신성 속성의 가고일."
+            },
+            "en-US": {
+              "name": "Marble Gargoyle",
+              "description": "A holy-elemental gargoyle found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gargoyle.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "흑요석 가고일",
+              "description": "고전 던전에 출몰하는 어둠 속성의 가고일."
+            },
+            "en-US": {
+              "name": "Obsidian Gargoyle",
+              "description": "A dark-elemental gargoyle found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gargoyle.png",
+          "emoji": "🗿",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_treant",
+      "species": "treant",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 77,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "고목나무",
+              "description": "고전 던전에 출몰하는 트리언트."
+            },
+            "en-US": {
+              "name": "Ancient Tree",
+              "description": "A treant found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_treant.png",
+          "emoji": "🌳",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "불타는 엔트",
+              "description": "고전 던전에 출몰하는 화염 속성의 트리언트."
+            },
+            "en-US": {
+              "name": "Burning Ent",
+              "description": "A fire-elemental treant found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_treant.png",
+          "emoji": "🌳",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈터 엔트",
+              "description": "고전 던전에 출몰하는 얼음 속성의 트리언트."
+            },
+            "en-US": {
+              "name": "Winter Ent",
+              "description": "An ice-elemental treant found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_treant.png",
+          "emoji": "🌳",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "위스프 트리",
+              "description": "고전 던전에 출몰하는 바람 속성의 트리언트."
+            },
+            "en-US": {
+              "name": "Wisp Tree",
+              "description": "A wind-elemental treant found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_treant.png",
+          "emoji": "🌳",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "세계수 묘목",
+              "description": "고전 던전에 출몰하는 신성 속성의 트리언트."
+            },
+            "en-US": {
+              "name": "World Tree Sapling",
+              "description": "A holy-elemental treant found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_treant.png",
+          "emoji": "🌳",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "썩은 엔트",
+              "description": "고전 던전에 출몰하는 어둠 속성의 트리언트."
+            },
+            "en-US": {
+              "name": "Rotting Ent",
+              "description": "A dark-elemental treant found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_treant.png",
+          "emoji": "🌳",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_lizardman",
+      "species": "lizardman",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 80,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "리자드맨",
+              "description": "고전 던전에 출몰하는 리자드맨."
+            },
+            "en-US": {
+              "name": "Lizardman",
+              "description": "A lizardman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_lizardman.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "샐러맨더 워리어",
+              "description": "고전 던전에 출몰하는 화염 속성의 리자드맨."
+            },
+            "en-US": {
+              "name": "Salamander Warrior",
+              "description": "A fire-elemental lizardman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_lizardman.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "프로스트 리자드",
+              "description": "고전 던전에 출몰하는 얼음 속성의 리자드맨."
+            },
+            "en-US": {
+              "name": "Frost Lizard",
+              "description": "An ice-elemental lizardman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_lizardman.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "스피드 리자드",
+              "description": "고전 던전에 출몰하는 바람 속성의 리자드맨."
+            },
+            "en-US": {
+              "name": "Speed Lizard",
+              "description": "A wind-elemental lizardman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_lizardman.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "드래곤 뉴트",
+              "description": "고전 던전에 출몰하는 신성 속성의 리자드맨."
+            },
+            "en-US": {
+              "name": "Dragon Newt",
+              "description": "A holy-elemental lizardman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_lizardman.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "다크 리자드",
+              "description": "고전 던전에 출몰하는 어둠 속성의 리자드맨."
+            },
+            "en-US": {
+              "name": "Dark Lizard",
+              "description": "A dark-elemental lizardman found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_lizardman.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_gnoll",
+      "species": "gnoll",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 83,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "놀",
+              "description": "고전 던전에 출몰하는 놀."
+            },
+            "en-US": {
+              "name": "Gnoll",
+              "description": "A gnoll found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gnoll.png",
+          "emoji": "🐾",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화염 놀",
+              "description": "고전 던전에 출몰하는 화염 속성의 놀."
+            },
+            "en-US": {
+              "name": "Flame Gnoll",
+              "description": "A fire-elemental gnoll found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gnoll.png",
+          "emoji": "🐾",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈터 놀",
+              "description": "고전 던전에 출몰하는 얼음 속성의 놀."
+            },
+            "en-US": {
+              "name": "Winter Gnoll",
+              "description": "An ice-elemental gnoll found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gnoll.png",
+          "emoji": "🐾",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "놀 약탈자",
+              "description": "고전 던전에 출몰하는 바람 속성의 놀."
+            },
+            "en-US": {
+              "name": "Gnoll Raider",
+              "description": "A wind-elemental gnoll found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gnoll.png",
+          "emoji": "🐾",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "골드 투스",
+              "description": "고전 던전에 출몰하는 신성 속성의 놀."
+            },
+            "en-US": {
+              "name": "Gold Tooth",
+              "description": "A holy-elemental gnoll found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gnoll.png",
+          "emoji": "🐾",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "미친 놀",
+              "description": "고전 던전에 출몰하는 어둠 속성의 놀."
+            },
+            "en-US": {
+              "name": "Mad Gnoll",
+              "description": "A dark-elemental gnoll found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_gnoll.png",
+          "emoji": "🐾",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_sercubus",
+      "species": "sercubus",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 86,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "서큐버스",
+              "description": "고전 던전에 출몰하는 서큐버스."
+            },
+            "en-US": {
+              "name": "Succubus",
+              "description": "A succubus found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_sercubus.png",
+          "emoji": "😈",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "불꽃 서큐버스",
+              "description": "고전 던전에 출몰하는 화염 속성의 서큐버스."
+            },
+            "en-US": {
+              "name": "Flame Succubus",
+              "description": "A fire-elemental succubus found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_sercubus.png",
+          "emoji": "😈",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "얼음 서큐버스",
+              "description": "고전 던전에 출몰하는 얼음 속성의 서큐버스."
+            },
+            "en-US": {
+              "name": "Ice Succubus",
+              "description": "An ice-elemental succubus found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_sercubus.png",
+          "emoji": "😈",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "유혹의 서큐버스",
+              "description": "고전 던전에 출몰하는 바람 속성의 서큐버스."
+            },
+            "en-US": {
+              "name": "Temptress Succubus",
+              "description": "A wind-elemental succubus found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_sercubus.png",
+          "emoji": "😈",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "타락한 성녀",
+              "description": "고전 던전에 출몰하는 신성 속성의 서큐버스."
+            },
+            "en-US": {
+              "name": "Fallen Saint",
+              "description": "A holy-elemental succubus found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_sercubus.png",
+          "emoji": "😈",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "심연의 서큐버스",
+              "description": "고전 던전에 출몰하는 어둠 속성의 서큐버스."
+            },
+            "en-US": {
+              "name": "Abyss Succubus",
+              "description": "A dark-elemental succubus found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_sercubus.png",
+          "emoji": "😈",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_ogre",
+      "species": "ogre",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 89,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "오우거",
+              "description": "고전 던전에 출몰하는 오우거."
+            },
+            "en-US": {
+              "name": "Ogre",
+              "description": "An ogre found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_ogre.png",
+          "emoji": "👹",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "레드 오우거",
+              "description": "고전 던전에 출몰하는 화염 속성의 오우거."
+            },
+            "en-US": {
+              "name": "Red Ogre",
+              "description": "A fire-elemental ogre found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_ogre.png",
+          "emoji": "👹",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "블루 오우거",
+              "description": "고전 던전에 출몰하는 얼음 속성의 오우거."
+            },
+            "en-US": {
+              "name": "Blue Ogre",
+              "description": "An ice-elemental ogre found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_ogre.png",
+          "emoji": "👹",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "오우거 투척병",
+              "description": "고전 던전에 출몰하는 바람 속성의 오우거."
+            },
+            "en-US": {
+              "name": "Ogre Hurler",
+              "description": "A wind-elemental ogre found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_ogre.png",
+          "emoji": "👹",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "타이탄 오우거",
+              "description": "고전 던전에 출몰하는 신성 속성의 오우거."
+            },
+            "en-US": {
+              "name": "Titan Ogre",
+              "description": "A holy-elemental ogre found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_ogre.png",
+          "emoji": "👹",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "오우거 메이지",
+              "description": "고전 던전에 출몰하는 어둠 속성의 오우거."
+            },
+            "en-US": {
+              "name": "Ogre Mage",
+              "description": "A dark-elemental ogre found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_ogre.png",
+          "emoji": "👹",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_centaur",
+      "species": "centaur",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 92,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "켄타우로스",
+              "description": "고전 던전에 출몰하는 켄타우로스."
+            },
+            "en-US": {
+              "name": "Centaur",
+              "description": "A centaur found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_centaur.png",
+          "emoji": "🐴",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "플레임 랜서",
+              "description": "고전 던전에 출몰하는 화염 속성의 켄타우로스."
+            },
+            "en-US": {
+              "name": "Flame Lancer",
+              "description": "A fire-elemental centaur found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_centaur.png",
+          "emoji": "🐴",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "프로스트 아처",
+              "description": "고전 던전에 출몰하는 얼음 속성의 켄타우로스."
+            },
+            "en-US": {
+              "name": "Frost Archer",
+              "description": "An ice-elemental centaur found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_centaur.png",
+          "emoji": "🐴",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 차저",
+              "description": "고전 던전에 출몰하는 바람 속성의 켄타우로스."
+            },
+            "en-US": {
+              "name": "Wind Charger",
+              "description": "A wind-elemental centaur found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_centaur.png",
+          "emoji": "🐴",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "성스러운 기사",
+              "description": "고전 던전에 출몰하는 신성 속성의 켄타우로스."
+            },
+            "en-US": {
+              "name": "Holy Knight",
+              "description": "A holy-elemental centaur found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_centaur.png",
+          "emoji": "🐴",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "타락한 기사",
+              "description": "고전 던전에 출몰하는 어둠 속성의 켄타우로스."
+            },
+            "en-US": {
+              "name": "Fallen Knight",
+              "description": "A dark-elemental centaur found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_centaur.png",
+          "emoji": "🐴",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_medusa",
+      "species": "medusa",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 95,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "메두사",
+              "description": "고전 던전에 출몰하는 메두사."
+            },
+            "en-US": {
+              "name": "Medusa",
+              "description": "A medusa found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_medusa.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "불뱀 메두사",
+              "description": "고전 던전에 출몰하는 화염 속성의 메두사."
+            },
+            "en-US": {
+              "name": "Fire Serpent Medusa",
+              "description": "A fire-elemental medusa found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_medusa.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "냉혈 메두사",
+              "description": "고전 던전에 출몰하는 얼음 속성의 메두사."
+            },
+            "en-US": {
+              "name": "Cold-Blood Medusa",
+              "description": "An ice-elemental medusa found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_medusa.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "폭풍의 눈",
+              "description": "고전 던전에 출몰하는 바람 속성의 메두사."
+            },
+            "en-US": {
+              "name": "Eye of the Storm",
+              "description": "A wind-elemental medusa found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_medusa.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "신전 수호자",
+              "description": "고전 던전에 출몰하는 신성 속성의 메두사."
+            },
+            "en-US": {
+              "name": "Temple Guardian",
+              "description": "A holy-elemental medusa found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_medusa.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "석화의 마녀",
+              "description": "고전 던전에 출몰하는 어둠 속성의 메두사."
+            },
+            "en-US": {
+              "name": "Petrifying Witch",
+              "description": "A dark-elemental medusa found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_medusa.png",
+          "emoji": "🐍",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_basilisk",
+      "species": "basilisk",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 98,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "바실리스크",
+              "description": "고전 던전에 출몰하는 바실리스크."
+            },
+            "en-US": {
+              "name": "Basilisk",
+              "description": "A basilisk found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_basilisk.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화염 바실리스크",
+              "description": "고전 던전에 출몰하는 화염 속성의 바실리스크."
+            },
+            "en-US": {
+              "name": "Flame Basilisk",
+              "description": "A fire-elemental basilisk found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_basilisk.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "크리스탈 바실리스크",
+              "description": "고전 던전에 출몰하는 얼음 속성의 바실리스크."
+            },
+            "en-US": {
+              "name": "Crystal Basilisk",
+              "description": "An ice-elemental basilisk found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_basilisk.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 바실리스크",
+              "description": "고전 던전에 출몰하는 바람 속성의 바실리스크."
+            },
+            "en-US": {
+              "name": "Wind Basilisk",
+              "description": "A wind-elemental basilisk found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_basilisk.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "황금 바실리스크",
+              "description": "고전 던전에 출몰하는 신성 속성의 바실리스크."
+            },
+            "en-US": {
+              "name": "Golden Basilisk",
+              "description": "A holy-elemental basilisk found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_basilisk.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "맹독 바실리스크",
+              "description": "고전 던전에 출몰하는 어둠 속성의 바실리스크."
+            },
+            "en-US": {
+              "name": "Venom Basilisk",
+              "description": "A dark-elemental basilisk found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_basilisk.png",
+          "emoji": "🦎",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_griffin",
+      "species": "griffin",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 101,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "그리폰",
+              "description": "고전 던전에 출몰하는 그리폰."
+            },
+            "en-US": {
+              "name": "Griffin",
+              "description": "A griffin found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_griffin.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "피닉스 그리폰",
+              "description": "고전 던전에 출몰하는 화염 속성의 그리폰."
+            },
+            "en-US": {
+              "name": "Phoenix Griffin",
+              "description": "A fire-elemental griffin found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_griffin.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "스노우 그리폰",
+              "description": "고전 던전에 출몰하는 얼음 속성의 그리폰."
+            },
+            "en-US": {
+              "name": "Snow Griffin",
+              "description": "An ice-elemental griffin found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_griffin.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "스카이 그리폰",
+              "description": "고전 던전에 출몰하는 바람 속성의 그리폰."
+            },
+            "en-US": {
+              "name": "Sky Griffin",
+              "description": "A wind-elemental griffin found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_griffin.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "로얄 그리폰",
+              "description": "고전 던전에 출몰하는 신성 속성의 그리폰."
+            },
+            "en-US": {
+              "name": "Royal Griffin",
+              "description": "A holy-elemental griffin found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_griffin.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "다크 그리폰",
+              "description": "고전 던전에 출몰하는 어둠 속성의 그리폰."
+            },
+            "en-US": {
+              "name": "Dark Griffin",
+              "description": "A dark-elemental griffin found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_griffin.png",
+          "emoji": "🦅",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_chimera",
+      "species": "chimera",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 104,
+        "gold_growth": 3
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "키메라",
+              "description": "고전 던전에 출몰하는 키메라."
+            },
+            "en-US": {
+              "name": "Chimera",
+              "description": "A chimera found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_chimera.png",
+          "emoji": "🦁",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "블레이즈 키메라",
+              "description": "고전 던전에 출몰하는 화염 속성의 키메라."
+            },
+            "en-US": {
+              "name": "Blaze Chimera",
+              "description": "A fire-elemental chimera found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_chimera.png",
+          "emoji": "🦁",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "프로스트 키메라",
+              "description": "고전 던전에 출몰하는 얼음 속성의 키메라."
+            },
+            "en-US": {
+              "name": "Frost Chimera",
+              "description": "An ice-elemental chimera found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_chimera.png",
+          "emoji": "🦁",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "썬더 키메라",
+              "description": "고전 던전에 출몰하는 바람 속성의 키메라."
+            },
+            "en-US": {
+              "name": "Thunder Chimera",
+              "description": "A wind-elemental chimera found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_chimera.png",
+          "emoji": "🦁",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "홀리 키메라",
+              "description": "고전 던전에 출몰하는 신성 속성의 키메라."
+            },
+            "en-US": {
+              "name": "Holy Chimera",
+              "description": "A holy-elemental chimera found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_chimera.png",
+          "emoji": "🦁",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "카오스 키메라",
+              "description": "고전 던전에 출몰하는 어둠 속성의 키메라."
+            },
+            "en-US": {
+              "name": "Chaos Chimera",
+              "description": "A dark-elemental chimera found in the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Monster/monster_chimera.png",
+          "emoji": "🦁",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    }
+  ],
+  "bosses": [
+    {
+      "id": "boss_demon",
+      "species": "demon",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 200,
+        "gold_growth": 40
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "마왕",
+              "description": "고전 던전에 군림하는 마왕."
+            },
+            "en-US": {
+              "name": "Demon Lord",
+              "description": "The Demon Lord that rules the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Boss/boss_demon.png",
+          "emoji": "😈",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        }
+      }
+    },
+    {
+      "id": "boss_lich",
+      "species": "lich",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 220,
+        "gold_growth": 45
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "리치 왕",
+              "description": "고전 던전에 군림하는 리치 왕."
+            },
+            "en-US": {
+              "name": "Lich King",
+              "description": "The Lich King that rules the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Boss/boss_lich.png",
+          "emoji": "💀",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        }
+      }
+    },
+    {
+      "id": "boss_reaper",
+      "species": "reaper",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 240,
+        "gold_growth": 50
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "그림 리퍼",
+              "description": "고전 던전에 군림하는 그림 리퍼."
+            },
+            "en-US": {
+              "name": "Grim Reaper",
+              "description": "The Grim Reaper that rules the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Boss/boss_reaper.png",
+          "emoji": "⚰️",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        }
+      }
+    },
+    {
+      "id": "boss_mummylord",
+      "species": "mummylord",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 180,
+        "gold_growth": 35
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "왕가의 미라",
+              "description": "고전 던전에 군림하는 왕가의 미라."
+            },
+            "en-US": {
+              "name": "Mummy Lord",
+              "description": "The Mummy Lord that rules the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Boss/boss_mummylord.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        }
+      }
+    },
+    {
+      "id": "boss_vampirelord",
+      "species": "vampirelord",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 15,
+        "hp_growth": 10,
+        "base_gold": 260,
+        "gold_growth": 55
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "뱀파이어 백작",
+              "description": "고전 던전에 군림하는 뱀파이어 백작."
+            },
+            "en-US": {
+              "name": "Vampire Count",
+              "description": "The Vampire Count that rules the Classic Dungeon."
+            }
+          },
+          "sprite": "Production/Batch2/Boss/boss_vampirelord.png",
+          "emoji": "🧛",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        }
+      }
+    }
+  ]
+}

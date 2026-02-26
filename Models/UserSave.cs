@@ -37,6 +37,24 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("boss_kill_counter")]
         public int BossKillCounter { get; set; } = 0; // 피티 시스템용
+
+        [JsonPropertyName("golden_goblin_cooldown")]
+        public int GoldenGoblinCooldown { get; set; } = 0; // 황금 고블린 재등장 쿨다운
+
+        [JsonPropertyName("golden_goblins_caught")]
+        public int GoldenGoblinsCaught { get; set; } = 0; // 잡은 황금 고블린 수
+
+        [JsonPropertyName("golden_goblin_total_gold")]
+        public long GoldenGoblinTotalGold { get; set; } = 0; // 황금 고블린에서 획득한 총 골드
+
+        [JsonPropertyName("last_online_time")]
+        public DateTime LastOnlineTime { get; set; } = DateTime.Now;
+
+        [JsonPropertyName("total_offline_rewards_claimed")]
+        public long TotalOfflineRewardsClaimed { get; set; } = 0;
+
+        [JsonPropertyName("monster_compendium")]
+        public UserCompendium MonsterCompendium { get; set; } = new();
     }
 
     public class WindowPosition
@@ -124,6 +142,15 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("last_play_date")]
         public string LastPlayDate { get; set; } = "";
+
+        [JsonPropertyName("combo_triggers")]
+        public int ComboTriggers { get; set; }
+
+        [JsonPropertyName("max_combo_stack_count")]
+        public int MaxComboStackCount { get; set; }
+
+        [JsonPropertyName("multi_hits")]
+        public int MultiHits { get; set; }
     }
 
     public class HourlyData
@@ -154,6 +181,18 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("volume")]
         public double Volume { get; set; } = 0.2;
+
+        [JsonPropertyName("sound_pack")]
+        public string SoundPack { get; set; } = "default";
+
+        [JsonPropertyName("category_sound_packs")]
+        public Dictionary<string, string> CategorySoundPacks { get; set; } = new();
+
+        [JsonPropertyName("sound_theme_id")]
+        public string SoundThemeId { get; set; } = "default";
+
+        [JsonPropertyName("sound_theme_overrides")]
+        public Dictionary<string, double> SoundThemeOverrides { get; set; } = new();
 
         [JsonPropertyName("background_opacity")]
         public double BackgroundOpacity { get; set; } = 0.4;
