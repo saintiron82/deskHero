@@ -271,6 +271,80 @@ namespace DeskWarrior.Managers
 
         #endregion
 
+        #region Public Methods - Image Resources
+
+        /// <summary>
+        /// 이미지 상대 경로 → pack:// URI 변환 (범용)
+        /// Assets/Images/ 하위 경로를 pack URI로 변환
+        /// </summary>
+        public Uri GetImageUri(string relativePath)
+        {
+            var path = relativePath.EndsWith(".png") ? relativePath : $"{relativePath}.png";
+            return new Uri($"pack://application:,,,/Assets/Images/{path}");
+        }
+
+        #endregion
+
+        #region Public Methods - Background Resources
+
+        /// <summary>
+        /// 기본 배경 이미지 URI 가져오기 (WPF pack:// 형식)
+        /// </summary>
+        public Uri GetDefaultBackgroundUri()
+        {
+            EnsureInitialized();
+            var path = _resourceTable!.Backgrounds.Default;
+            return new Uri($"pack://application:,,,/Assets/Images/{path}");
+        }
+
+        /// <summary>
+        /// 배경 이미지 URI 가져오기 (상대 경로 → pack:// URI)
+        /// </summary>
+        public Uri GetBackgroundUri(string relativePath)
+        {
+            return new Uri($"pack://application:,,,/Assets/Images/{relativePath}");
+        }
+
+        #endregion
+
+        #region Public Methods - Placeholder Resources
+
+        /// <summary>
+        /// Placeholder 이미지 URI 가져오기
+        /// </summary>
+        public Uri GetPlaceholderUri(string key)
+        {
+            EnsureInitialized();
+
+            if (!_resourceTable!.Placeholders.TryGetValue(key, out var path))
+            {
+                throw new KeyNotFoundException($"Placeholder resource not found: {key}");
+            }
+
+            return new Uri($"pack://application:,,,/Assets/Images/{path}");
+        }
+
+        #endregion
+
+        #region Public Methods - Data Resources
+
+        /// <summary>
+        /// 데이터 파일 URI 가져오기 (WPF pack:// 형식)
+        /// </summary>
+        public Uri GetDataUri(string key)
+        {
+            EnsureInitialized();
+
+            if (!_resourceTable!.Data.TryGetValue(key, out var path))
+            {
+                throw new KeyNotFoundException($"Data resource not found: {key}");
+            }
+
+            return new Uri($"pack://application:,,,/{path}");
+        }
+
+        #endregion
+
         #region Public Methods - Sound Resources
 
         /// <summary>

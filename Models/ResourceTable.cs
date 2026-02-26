@@ -28,6 +28,30 @@ namespace DeskWarrior.Models
         public Dictionary<string, BatchResource> Batches { get; set; } = new();
 
         /// <summary>
+        /// 히어로 리소스 경로
+        /// </summary>
+        [JsonPropertyName("heroes")]
+        public HeroResource Heroes { get; set; } = new();
+
+        /// <summary>
+        /// 배경 리소스 경로
+        /// </summary>
+        [JsonPropertyName("backgrounds")]
+        public BackgroundResource Backgrounds { get; set; } = new();
+
+        /// <summary>
+        /// Placeholder 이미지 경로
+        /// </summary>
+        [JsonPropertyName("placeholders")]
+        public Dictionary<string, string> Placeholders { get; set; } = new();
+
+        /// <summary>
+        /// 데이터 파일 경로
+        /// </summary>
+        [JsonPropertyName("data")]
+        public Dictionary<string, string> Data { get; set; } = new();
+
+        /// <summary>
         /// 특수 몬스터 리소스 경로
         /// </summary>
         [JsonPropertyName("special_monsters")]
@@ -80,6 +104,27 @@ namespace DeskWarrior.Models
         /// </summary>
         [JsonPropertyName("boss_folder")]
         public string BossFolder { get; set; } = "";
+    }
+
+    /// <summary>
+    /// 히어로 리소스 경로 정의
+    /// </summary>
+    public class HeroResource
+    {
+        [JsonPropertyName("sprite_folder")]
+        public string SpriteFolder { get; set; } = "";
+    }
+
+    /// <summary>
+    /// 배경 리소스 경로 정의
+    /// </summary>
+    public class BackgroundResource
+    {
+        [JsonPropertyName("default")]
+        public string Default { get; set; } = "";
+
+        [JsonPropertyName("available")]
+        public List<string> Available { get; set; } = new();
     }
 
     /// <summary>

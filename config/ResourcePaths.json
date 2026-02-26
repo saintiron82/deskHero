@@ -10,70 +10,96 @@
     "batch_01": {
       "id": 1,
       "data_file": "config/monsters/batch_01.json",
-      "sprite_base": "Batches/Batch_01",
-      "monster_folder": "Batches/Batch_01/Monster",
-      "boss_folder": "Batches/Batch_01/Boss"
+      "sprite_base": "Production/Batch1",
+      "monster_folder": "Production/Batch1/Monster",
+      "boss_folder": "Production/Batch1/Boss"
     },
     "batch_02": {
       "id": 2,
       "data_file": "config/monsters/batch_02.json",
-      "sprite_base": "Batches/Batch_02",
-      "monster_folder": "Batches/Batch_02/Monster",
-      "boss_folder": "Batches/Batch_02/Boss"
+      "sprite_base": "Production/Batch2",
+      "monster_folder": "Production/Batch2/Monster",
+      "boss_folder": "Production/Batch2/Boss"
     },
     "batch_03": {
       "id": 3,
       "data_file": "config/monsters/batch_03.json",
-      "sprite_base": "Batches/Batch_03",
-      "monster_folder": "Batches/Batch_03/Monster",
-      "boss_folder": "Batches/Batch_03/Boss"
+      "sprite_base": "Production/Batch3",
+      "monster_folder": "Production/Batch3/Monster",
+      "boss_folder": "Production/Batch3/Boss"
     },
     "batch_04": {
       "id": 4,
       "data_file": "config/monsters/batch_04.json",
-      "sprite_base": "Batches/Batch_04",
-      "monster_folder": "Batches/Batch_04/Monster",
-      "boss_folder": "Batches/Batch_04/Boss"
+      "sprite_base": "Production/Batch4",
+      "monster_folder": "Production/Batch4/Monster",
+      "boss_folder": "Production/Batch4/Boss"
     },
     "batch_05": {
       "id": 5,
       "data_file": "config/monsters/batch_05.json",
-      "sprite_base": "Batches/Batch_05",
-      "monster_folder": "Batches/Batch_05/Monster",
-      "boss_folder": "Batches/Batch_05/Boss"
+      "sprite_base": "Production/Batch5",
+      "monster_folder": "Production/Batch5/Monster",
+      "boss_folder": "Production/Batch5/Boss"
     },
     "batch_06": {
       "id": 6,
       "data_file": "config/monsters/batch_06.json",
-      "sprite_base": "Batches/Batch_06",
-      "monster_folder": "Batches/Batch_06/Monster",
-      "boss_folder": "Batches/Batch_06/Boss"
+      "sprite_base": "Production/Batch6",
+      "monster_folder": "Production/Batch6/Monster",
+      "boss_folder": "Production/Batch6/Boss"
     },
     "batch_07": {
       "id": 7,
       "data_file": "config/monsters/batch_07.json",
-      "sprite_base": "Batches/Batch_07",
-      "monster_folder": "Batches/Batch_07/Monster",
-      "boss_folder": "Batches/Batch_07/Boss"
+      "sprite_base": "Production/Batch7",
+      "monster_folder": "Production/Batch7/Monster",
+      "boss_folder": "Production/Batch7/Boss"
     },
     "batch_08": {
       "id": 8,
       "data_file": "config/monsters/batch_08.json",
-      "sprite_base": "Batches/Batch_08",
-      "monster_folder": "Batches/Batch_08/Monster",
-      "boss_folder": "Batches/Batch_08/Boss"
+      "sprite_base": "Production/Batch8",
+      "monster_folder": "Production/Batch8/Monster",
+      "boss_folder": "Production/Batch8/Boss"
     },
     "batch_09": {
       "id": 9,
       "data_file": "config/monsters/batch_09.json",
-      "sprite_base": "Batches/Batch_09",
-      "monster_folder": "Batches/Batch_09/Monster",
-      "boss_folder": "Batches/Batch_09/Boss"
+      "sprite_base": "Production/Batch9",
+      "monster_folder": "Production/Batch9/Monster",
+      "boss_folder": "Production/Batch9/Boss"
     }
+  },
+  "heroes": {
+    "sprite_folder": "Production/Hero"
+  },
+  "backgrounds": {
+    "default": "Production/Background/bg_floor_grassland_v2.png",
+    "available": [
+      "Production/Background/bg_floor_beach_v1.png",
+      "Production/Background/bg_floor_cave_v1.png",
+      "Production/Background/bg_floor_desert_v1.png",
+      "Production/Background/bg_floor_desert_v2.png",
+      "Production/Background/bg_floor_forest_v1.png",
+      "Production/Background/bg_floor_grassland_v2.png",
+      "Production/Background/bg_floor_lava_v1.png",
+      "Production/Background/bg_floor_lava_v2.png",
+      "Production/Background/bg_floor_snow_v1.png",
+      "Production/Background/bg_floor_snow_v2.png",
+      "Production/Background/bg_floor_temple_v1.png"
+    ]
+  },
+  "placeholders": {
+    "monster": "Production/Batch1/Monster/monster_slime.png",
+    "hero": "Production/Hero/hero_warrior.png"
+  },
+  "data": {
+    "game_over_messages": "Assets/Data/GameOverMessages.json"
   },
   "special_monsters": {
     "golden_goblin": {
-      "sprite": "Production/monster_goblin.png",
+      "sprite": "Production/Special/monster_goldengoblin.png",
       "config": "config/SpecialMonsters.json"
     }
   },
