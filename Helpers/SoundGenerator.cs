@@ -46,6 +46,9 @@ namespace DeskWarrior.Helpers
             GenerateLevelUp(Path.Combine(outputDir, "LevelUp.wav"), style);
             GenerateOfflineReward(Path.Combine(outputDir, "OfflineReward.wav"), style);
             GenerateAchievement(Path.Combine(outputDir, "Achievement.wav"), style);
+            GenerateGoldenGoblinAppear(Path.Combine(outputDir, "GoldenGoblinAppear.wav"), style);
+            GenerateGoldenGoblinDefeat(Path.Combine(outputDir, "GoldenGoblinDefeat.wav"), style);
+            GenerateGoldenGoblinEscape(Path.Combine(outputDir, "GoldenGoblinEscape.wav"), style);
         }
 
         /// <summary>
@@ -439,6 +442,92 @@ namespace DeskWarrior.Helpers
                     return (Math.Sin(2 * Math.PI * freq * t) * 0.5 +
                             Math.Sin(2 * Math.PI * freq * 2 * t) * 0.25 +
                             Math.Sin(2 * Math.PI * freq * 0.5 * t) * 0.25) * amp * 0.4;
+                });
+            }
+        }
+
+        // 황금 고블린 등장: 동전 쏟아지는 느낌 (하이피치 연타)
+        private static void GenerateGoldenGoblinAppear(string outputPath, SoundStyle style)
+        {
+            if (style == SoundStyle.EightBit)
+            {
+                CreateWavFile(outputPath, 0.6, t =>
+                {
+                    double freq = 800 + Math.Sin(t * 30) * 400;
+                    double amp = Math.Exp(-t * 3);
+                    return SquareWave(freq, t) * amp * 0.3;
+                });
+            }
+            else
+            {
+                CreateWavFile(outputPath, 0.6, t =>
+                {
+                    double freq = 1200 + Math.Sin(t * 40) * 600;
+                    double amp = Math.Exp(-t * 4);
+                    return Math.Sin(2 * Math.PI * freq * t) * amp * 0.35;
+                });
+            }
+        }
+
+        // 황금 고블린 처치: 잭팟/보상 사운드 (상승하는 아르페지오)
+        private static void GenerateGoldenGoblinDefeat(string outputPath, SoundStyle style)
+        {
+            if (style == SoundStyle.EightBit)
+            {
+                CreateWavFile(outputPath, 0.8, t =>
+                {
+                    double freq;
+                    if (t < 0.1) freq = 523.25;
+                    else if (t < 0.2) freq = 659.25;
+                    else if (t < 0.3) freq = 783.99;
+                    else if (t < 0.4) freq = 1046.50;
+                    else if (t < 0.5) freq = 1318.51;
+                    else freq = 1567.98;
+
+                    double localT = t % 0.1;
+                    double amp = Math.Sin(localT * Math.PI / 0.1) * Math.Exp(-t * 1.5);
+                    return SquareWave(freq, t) * amp * 0.3;
+                });
+            }
+            else
+            {
+                CreateWavFile(outputPath, 0.8, t =>
+                {
+                    double freq;
+                    if (t < 0.13) freq = 523.25;
+                    else if (t < 0.26) freq = 659.25;
+                    else if (t < 0.39) freq = 783.99;
+                    else if (t < 0.52) freq = 1046.50;
+                    else freq = 1318.51;
+
+                    double amp = Math.Exp(-t * 2);
+                    return (Math.Sin(2 * Math.PI * freq * t) * 0.5 +
+                            Math.Sin(2 * Math.PI * freq * 2 * t) * 0.2) * amp * 0.4;
+                });
+            }
+        }
+
+        // 황금 고블린 도주: 아쉬움 (하강하는 음)
+        private static void GenerateGoldenGoblinEscape(string outputPath, SoundStyle style)
+        {
+            if (style == SoundStyle.EightBit)
+            {
+                CreateWavFile(outputPath, 0.5, t =>
+                {
+                    double freq = 600 - t * 800;
+                    if (freq < 80) freq = 80;
+                    double amp = Math.Exp(-t * 4);
+                    return SquareWave(freq, t) * amp * 0.25;
+                });
+            }
+            else
+            {
+                CreateWavFile(outputPath, 0.5, t =>
+                {
+                    double freq = 500 - t * 600;
+                    if (freq < 80) freq = 80;
+                    double amp = Math.Exp(-t * 5);
+                    return Math.Sin(2 * Math.PI * freq * t) * amp * 0.35;
                 });
             }
         }

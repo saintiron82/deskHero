@@ -50,6 +50,7 @@ namespace DeskWarrior
 
         private const double MONSTER_SIZE = 80;
         private const double BOSS_SIZE = 130;  // Used in UpdateMonsterImage
+        private string DefaultBackgroundUri => ResourceManager.Instance.GetDefaultBackgroundUri().ToString();
 
         #endregion
 
@@ -80,6 +81,10 @@ namespace DeskWarrior
             // HP 바 컨테이너 크기 변경 시 HP 바 업데이트
             HpBarContainer.SizeChanged += HpBarContainer_SizeChanged;
 
+            // 배경 이미지 초기화 (ResourcePaths.json에서 로드)
+            BackgroundImage.Source = new System.Windows.Media.Imaging.BitmapImage(
+                ResourceManager.Instance.GetDefaultBackgroundUri());
+
             // 초기 UI 업데이트
             UpdateUI();
         }
@@ -98,6 +103,9 @@ namespace DeskWarrior
             ViewModel.InputReceived += OnInputReceived;
             ViewModel.SettingsRequested += OnSettingsRequested;
             ViewModel.StatsRequested += OnStatsRequested;
+            ViewModel.GoldenGoblinSpawned += OnGoldenGoblinSpawned;
+            ViewModel.GoldenGoblinDefeated += OnGoldenGoblinDefeated;
+            ViewModel.GoldenGoblinEscaped += OnGoldenGoblinEscaped;
 
             // GameManager 이벤트 (UI 업데이트용)
             GameManager.TimerTick += OnTimerTick;
@@ -282,6 +290,9 @@ namespace DeskWarrior
 
             Dispatcher.Invoke(() =>
             {
+                if (e.IsCritical)
+                    SoundManager.Play(SoundType.Critical);
+
                 _visualEffect.ShowDamagePopup(e.Damage, e.IsCritical);
                 if (e.Damage > 0)
                 {
@@ -306,7 +317,11 @@ namespace DeskWarrior
 
             Dispatcher.Invoke(() =>
             {
-                SoundManager.Play(SoundType.Defeat);
+                // 보스 처치 시 전용 사운드, 일반 몬스터는 Defeat 사운드
+                if (GameManager.CurrentMonster?.IsBoss == true)
+                    SoundManager.Play(SoundType.BossDefeat);
+                else
+                    SoundManager.Play(SoundType.Defeat);
 
                 if (GameManager.CurrentLevel > SaveManager.CurrentSave.Stats.MaxLevel)
                 {
@@ -375,6 +390,165 @@ namespace DeskWarrior
         private void OnAchievementUnlocked(object? sender, AchievementUnlockedEventArgs e)
         {
             Dispatcher.Invoke(() => _visualEffect.OnAchievementUnlocked(e.Achievement, SoundManager));
+        }
+
+        #endregion
+
+        #region Golden Goblin UI
+
+        private string? _savedBackgroundSource;
+
+        private void OnGoldenGoblinSpawned(object? sender, GoldenGoblinSpawnEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // 배경 이미지 교체
+                if (!string.IsNullOrEmpty(e.Background))
+                {
+                    _savedBackgroundSource = (BackgroundImage.Source as System.Windows.Media.Imaging.BitmapImage)?.UriSource?.ToString();
+                    try
+                    {
+                        var bgUri = ResourceManager.Instance.GetImageUri(e.Background);
+                        BackgroundImage.Source = new System.Windows.Media.Imaging.BitmapImage(bgUri);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log($"Golden goblin background load failed: {ex.Message}");
+                        BackgroundImage.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(DefaultBackgroundUri));
+                    }
+                }
+
+                // 테두리 색상 변경
+                if (!string.IsNullOrEmpty(e.BorderColor))
+                {
+                    try
+                    {
+                        var color = (Color)ColorConverter.ConvertFromString(e.BorderColor);
+                        EnemyInfoBorder.BorderBrush = new SolidColorBrush(color);
+                        EnemyInfoBorder.BorderThickness = new Thickness(2);
+                    }
+                    catch { }
+                }
+
+                // 이름 색상 변경
+                if (!string.IsNullOrEmpty(e.NameColor))
+                {
+                    try
+                    {
+                        var color = (Color)ColorConverter.ConvertFromString(e.NameColor);
+                        MonsterNameText.Foreground = new SolidColorBrush(color);
+                    }
+                    catch { }
+                }
+
+                // HP바 금색
+                HpBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD700"));
+
+                // 사운드 재생
+                SoundManager.Play(SoundType.GoldenGoblinAppear);
+
+                // 등장 알림 표시
+                ShowGoldenGoblinNotification(
+                    LocalizationManager.Instance["ui.golden_goblin.appear"],
+                    e.BorderColor ?? "#FFD700",
+                    2.0);
+            });
+        }
+
+        private void OnGoldenGoblinDefeated(object? sender, GoldenGoblinRewardEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // 사운드 재생
+                SoundManager.Play(SoundType.GoldenGoblinDefeat);
+
+                // 보상 알림
+                string msg = string.Format(
+                    LocalizationManager.Instance["ui.golden_goblin.reward"],
+                    e.Multiplier, e.GoldReward.ToString("N0"));
+                ShowGoldenGoblinNotification(msg, "#FFD700", 3.0);
+
+                // UI 원래대로 복원
+                RestoreNormalUI();
+            });
+        }
+
+        private void OnGoldenGoblinEscaped(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // 사운드 재생
+                SoundManager.Play(SoundType.GoldenGoblinEscape);
+
+                // 도주 알림
+                ShowGoldenGoblinNotification(
+                    LocalizationManager.Instance["ui.golden_goblin.escaped"],
+                    "#FF6666",
+                    2.0);
+
+                // UI 원래대로 복원
+                RestoreNormalUI();
+            });
+        }
+
+        private void RestoreNormalUI()
+        {
+            // 배경 복원
+            if (_savedBackgroundSource != null)
+            {
+                try
+                {
+                    BackgroundImage.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(_savedBackgroundSource));
+                }
+                catch
+                {
+                    BackgroundImage.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(DefaultBackgroundUri));
+                }
+                _savedBackgroundSource = null;
+            }
+
+            // 테두리 복원
+            EnemyInfoBorder.BorderBrush = null;
+            EnemyInfoBorder.BorderThickness = new Thickness(0);
+
+            // 이름 색상 복원
+            MonsterNameText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#88ff88"));
+        }
+
+        private void ShowGoldenGoblinNotification(string text, string borderColorHex, double durationSeconds)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+
+            GoldenGoblinNotificationText.Text = text;
+
+            try
+            {
+                var borderColor = (Color)ColorConverter.ConvertFromString(borderColorHex);
+                GoldenGoblinNotification.BorderBrush = new SolidColorBrush(borderColor);
+                GoldenGoblinNotificationText.Foreground = new SolidColorBrush(borderColor);
+            }
+            catch
+            {
+                GoldenGoblinNotification.BorderBrush = new SolidColorBrush(Colors.Gold);
+                GoldenGoblinNotificationText.Foreground = new SolidColorBrush(Colors.Gold);
+            }
+
+            GoldenGoblinNotification.Visibility = Visibility.Visible;
+
+            // 페이드 아웃 애니메이션
+            var fadeOut = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.0,
+                BeginTime = TimeSpan.FromSeconds(durationSeconds - 0.5),
+                Duration = TimeSpan.FromSeconds(0.5),
+            };
+            fadeOut.Completed += (s, args) =>
+            {
+                GoldenGoblinNotification.Visibility = Visibility.Collapsed;
+                GoldenGoblinNotification.Opacity = 1.0;
+            };
+            GoldenGoblinNotification.BeginAnimation(OpacityProperty, fadeOut);
         }
 
         #endregion
@@ -499,21 +673,22 @@ namespace DeskWarrior
                 return;
             }
 
-            // 게임 오버 오버레이가 표시된 경우에만 키보드 단축키 처리
+            // 게임 오버 오버레이가 표시된 경우: 모든 키 입력 차단 (게임 재진입 방지)
             if (GameOverOverlayControl.Visibility == Visibility.Visible)
             {
                 if (e.Key == Key.Space || e.Key == Key.Enter)
                 {
                     // SPACE 또는 ENTER: 게임 재시작
                     CloseOverlayButton_Click(sender, e);
-                    e.Handled = true;
                 }
                 else if (e.Key == Key.S)
                 {
                     // S: 상점 열기
                     ShopButton_Click(sender, e);
-                    e.Handled = true;
                 }
+                // 모든 키 입력 차단 (게임으로 전달 방지)
+                e.Handled = true;
+                return;
             }
         }
 
@@ -586,14 +761,21 @@ namespace DeskWarrior
 
         private void UpdateMonsterImage(Monster monster)
         {
+            var previousSource = MonsterImage.Source;
             try
             {
                 string spritePath = monster.SkinType;
-                string imagePath = spritePath.EndsWith(".png")
-                    ? $"pack://application:,,,/Assets/Images/{spritePath}"
-                    : $"pack://application:,,,/Assets/Images/{spritePath}.png";
+                string imagePath = ResourceManager.Instance.GetImageUri(spritePath).ToString();
 
-                MonsterImage.Source = ImageHelper.LoadWithChromaKey(imagePath);
+                var loaded = ImageHelper.LoadWithChromaKey(imagePath);
+                if (loaded == null)
+                {
+                    Logger.Log($"Monster image load failed (null): {imagePath}");
+                    MonsterImage.Source = previousSource;
+                    return;
+                }
+
+                MonsterImage.Source = loaded;
                 MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
                 MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
 
@@ -603,22 +785,21 @@ namespace DeskWarrior
                 var transformGroup = new TransformGroup();
                 transformGroup.Children.Add(new ScaleTransform(needsFlip ? -1 : 1, 1));
                 transformGroup.Children.Add(MonsterShakeTransform);
+                transformGroup.Children.Add(MonsterMoveTransform);
+                transformGroup.Children.Add(MonsterScaleTransform);
                 MonsterImage.RenderTransform = transformGroup;
             }
             catch (Exception ex)
             {
                 Logger.Log($"Monster image load failed: {ex.Message}");
+                MonsterImage.Source = previousSource;
             }
         }
 
         private static bool NeedsFlip(string spritePath)
         {
-            return spritePath.Contains("slime") || spritePath.Contains("bat") ||
-                   spritePath.Contains("skeleton") || spritePath.Contains("goblin") ||
-                   spritePath.Contains("orc") || spritePath.Contains("ghost") ||
-                   spritePath.Contains("golem") || spritePath.Contains("mushroom") ||
-                   spritePath.Contains("spider") || spritePath.Contains("wolf") ||
-                   spritePath.Contains("snake") || spritePath.Contains("boar");
+            // sprite-processor가 모든 이미지를 왼쪽(플레이어 방향) 기준으로 보정 완료
+            return false;
         }
 
         private static void LogHpBar(string message)
@@ -729,7 +910,7 @@ namespace DeskWarrior
 
         private void UpdateUpgradeCosts()
         {
-            int gold = GameManager.Gold;
+            long gold = GameManager.Gold;
             Logger.Log($"[UpdateUpgradeCosts] Gold={gold}");
 
             // 키보드 공격력
@@ -867,13 +1048,14 @@ namespace DeskWarrior
             var settings = SaveManager.CurrentSave.Settings;
             ApplyWindowOpacity(settings.WindowOpacity);
             ApplyBackgroundOpacity(settings.BackgroundOpacity);
+            SoundManager.Enabled = settings.SoundEnabled;
             SoundManager.Volume = settings.Volume;
 
-            // 저장된 사운드팩 적용
-            if (!string.IsNullOrEmpty(settings.SoundPack))
-            {
-                SoundManager.ChangeSoundPack(settings.SoundPack);
-            }
+            // 카테고리별 사운드팩 적용
+            SoundManager.ApplyCategorySettings(settings.CategorySoundPacks, settings.SoundPack);
+
+            // 사운드 테마 적용
+            SoundManager.ApplyThemeSettings(settings.SoundThemeId, settings.SoundThemeOverrides);
         }
 
         public void ApplyWindowOpacity(double opacity)

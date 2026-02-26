@@ -185,6 +185,15 @@ namespace DeskWarrior.Models
         [JsonPropertyName("sound_pack")]
         public string SoundPack { get; set; } = "default";
 
+        [JsonPropertyName("category_sound_packs")]
+        public Dictionary<string, string> CategorySoundPacks { get; set; } = new();
+
+        [JsonPropertyName("sound_theme_id")]
+        public string SoundThemeId { get; set; } = "default";
+
+        [JsonPropertyName("sound_theme_overrides")]
+        public Dictionary<string, double> SoundThemeOverrides { get; set; } = new();
+
         [JsonPropertyName("background_opacity")]
         public double BackgroundOpacity { get; set; } = 0.4;
 

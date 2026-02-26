@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using DeskWarrior.Models;
 
 namespace DeskWarrior.Interfaces
 {
@@ -20,10 +23,56 @@ namespace DeskWarrior.Interfaces
         Combo,          // 콤보 발동
         LevelUp,        // 레벨업
         OfflineReward,  // 오프라인 보상 수령
+        GoldenGoblinAppear,  // 황금 고블린 등장
+        GoldenGoblinDefeat,  // 황금 고블린 처치
+        GoldenGoblinEscape,  // 황금 고블린 도주
 
         // 레거시 호환 (deprecated)
         [Obsolete("Use KeyboardHit instead")]
         Hit = KeyboardHit
+    }
+
+    /// <summary>
+    /// 사운드 카테고리 정의 (카테고리 이름 → 포함된 SoundType 목록)
+    /// </summary>
+    public static class SoundCategory
+    {
+        public const string Input = "Input";
+        public const string Combat = "Combat";
+        public const string Progression = "Progression";
+        public const string Event = "Event";
+        public const string Special = "Special";
+
+        /// <summary>전체 카테고리 이름 목록 (UI 표시 순서)</summary>
+        public static readonly IReadOnlyList<string> AllCategories = new[]
+        {
+            Input, Combat, Progression, Event, Special
+        };
+
+        /// <summary>각 카테고리에 속한 SoundType 목록 (첫 항목 = 프리뷰 사운드)</summary>
+        public static readonly IReadOnlyDictionary<string, IReadOnlyList<SoundType>> CategorySoundTypes =
+            new ReadOnlyDictionary<string, IReadOnlyList<SoundType>>(
+                new Dictionary<string, IReadOnlyList<SoundType>>
+                {
+                    [Input] = new[] { SoundType.KeyboardHit, SoundType.MouseClick },
+                    [Combat] = new[] { SoundType.Defeat, SoundType.Critical, SoundType.BossAppear, SoundType.BossDefeat },
+                    [Progression] = new[] { SoundType.LevelUp, SoundType.Upgrade, SoundType.OfflineReward },
+                    [Event] = new[] { SoundType.Achievement, SoundType.Combo, SoundType.GameOver },
+                    [Special] = new[] { SoundType.GoldenGoblinAppear, SoundType.GoldenGoblinDefeat, SoundType.GoldenGoblinEscape },
+                });
+
+        /// <summary>카테고리 프리뷰 사운드 (첫 번째 항목)</summary>
+        public static SoundType GetPreviewSound(string category) =>
+            CategorySoundTypes.TryGetValue(category, out var list) ? list[0] : SoundType.KeyboardHit;
+
+        /// <summary>SoundType이 속한 카테고리 이름을 반환</summary>
+        public static string GetCategory(SoundType type)
+        {
+            foreach (var kvp in CategorySoundTypes)
+                if (kvp.Value.Contains(type))
+                    return kvp.Key;
+            return Input;
+        }
     }
 
     /// <summary>
@@ -66,9 +115,14 @@ namespace DeskWarrior.Interfaces
         double Volume { get; set; }
 
         /// <summary>
-        /// 현재 사운드팩 ID
+        /// 현재 사운드팩 ID (전역)
         /// </summary>
         string CurrentSoundPackId { get; }
+
+        /// <summary>
+        /// 카테고리별 현재 사운드팩 ID
+        /// </summary>
+        IReadOnlyDictionary<string, string> CategorySoundPackIds { get; }
 
         /// <summary>
         /// 사용 가능한 사운드팩 목록
@@ -76,9 +130,19 @@ namespace DeskWarrior.Interfaces
         IReadOnlyList<SoundPackInfo> AvailableSoundPacks { get; }
 
         /// <summary>
-        /// 사운드팩 변경
+        /// 사운드팩 변경 (전체 카테고리에 일괄 적용)
         /// </summary>
         bool ChangeSoundPack(string packId);
+
+        /// <summary>
+        /// 특정 카테고리의 사운드팩 변경
+        /// </summary>
+        bool ChangeCategorySoundPack(string category, string packId);
+
+        /// <summary>
+        /// 카테고리 설정 일괄 적용 (앱 시작 시 호출)
+        /// </summary>
+        void ApplyCategorySettings(Dictionary<string, string> categoryPacks, string globalPack);
 
         /// <summary>
         /// 사운드 재생
@@ -94,5 +158,22 @@ namespace DeskWarrior.Interfaces
         /// 사운드팩 변경 이벤트
         /// </summary>
         event EventHandler<SoundPackChangedEventArgs>? SoundPackChanged;
+
+        // ── 사운드 테마 ──
+
+        /// <summary>사용 가능한 테마 목록</summary>
+        IReadOnlyList<SoundThemeData> AvailableSoundThemes { get; }
+
+        /// <summary>현재 적용된 테마 ID</summary>
+        string CurrentThemeId { get; }
+
+        /// <summary>테마 적용 (override 초기화)</summary>
+        bool ApplySoundTheme(string themeId);
+
+        /// <summary>테마 + override 일괄 적용 (앱 시작 시)</summary>
+        void ApplyThemeSettings(string themeId, Dictionary<string, double> overrides);
+
+        /// <summary>개별 사운드 override 설정 (UI에서 실시간 변경)</summary>
+        void SetSoundTypeOverride(string soundTypeKey, double volume);
     }
 }

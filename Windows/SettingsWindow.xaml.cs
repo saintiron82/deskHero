@@ -47,6 +47,7 @@ namespace DeskWarrior.Windows
             WindowOpacitySlider.Value = _settings.WindowOpacity;
             OpacitySlider.Value = _settings.BackgroundOpacity;
             VolumeSlider.Value = _settings.Volume;
+            SoundEnabledCheckBox.IsChecked = _settings.SoundEnabled;
 
             // 언어 선택 초기화
             InitializeLanguageSelection();
@@ -139,6 +140,7 @@ namespace DeskWarrior.Windows
             LanguageLabel.Text = loc["ui.settings.language"];
             ResetGameBtn.Content = loc["ui.settings.resetGame"];
             CloseBtn.Content = loc["ui.settings.close"];
+            SoundDetailBtn.Content = loc["ui.settings.soundDetail"];
 
             // 사운드팩 목록 갱신 (언어 변경 시 이름 업데이트)
             if (!_isInitializing)
@@ -155,6 +157,14 @@ namespace DeskWarrior.Windows
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
             => HandleSliderChanged(VolumeValueText, e.NewValue, v => { _settings.Volume = v; _onVolumeChanged?.Invoke(v); });
+
+        private void SoundEnabledCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (_isInitializing || _soundManager == null) return;
+            bool enabled = SoundEnabledCheckBox.IsChecked == true;
+            _settings.SoundEnabled = enabled;
+            _soundManager.Enabled = enabled;
+        }
 
         private static void HandleSliderChanged(System.Windows.Controls.TextBlock? textBlock, double value, Action<double> updateAction)
         {
@@ -201,6 +211,22 @@ namespace DeskWarrior.Windows
             catch (Exception ex)
             {
                 Logger.LogError("[SettingsWindow] Failed to open custom sound folder", ex);
+            }
+        }
+
+        private void SoundDetailButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_soundManager == null) return;
+
+            try
+            {
+                var soundSettingsWindow = new SoundSettingsWindow(_soundManager, _settings);
+                soundSettingsWindow.Owner = this;
+                soundSettingsWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("[SettingsWindow] Failed to open SoundSettingsWindow", ex);
             }
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -11,7 +12,7 @@ using DeskWarrior.Models;
 namespace DeskWarrior.Managers
 {
     /// <summary>
-    /// 사운드 효과 관리 클래스 (사운드팩 시스템)
+    /// 사운드 효과 관리 클래스 (카테고리별 사운드팩 시스템)
     /// </summary>
     public class SoundManager : ISoundManager
     {
@@ -19,13 +20,20 @@ namespace DeskWarrior.Managers
 
         private readonly Dictionary<SoundType, MediaPlayer> _sounds = new();
         private readonly Dictionary<string, SoundPackConfig> _soundPacks = new();
-        private SoundPackConfig? _currentPack;
+        private readonly Dictionary<string, string> _categoryPackIds = new();
+        private readonly Dictionary<string, SoundPackConfig?> _categoryConfigs = new();
         private SoundPackConfig? _fallbackPack;
         private string _currentPackId = "default";
         private bool _enabled = true;
         private double _volume = 0.2;
         private readonly string _soundPacksPath;
         private readonly string _customPacksPath;
+
+        // 사운드 테마
+        private readonly Dictionary<string, SoundThemeData> _soundThemes = new();
+        private SoundThemeData? _activeTheme;
+        private readonly Dictionary<string, double> _themeOverrides = new();
+        private string _currentThemeId = "default";
 
         #endregion
 
@@ -49,8 +57,16 @@ namespace DeskWarrior.Managers
 
         public string CurrentSoundPackId => _currentPackId;
 
+        public IReadOnlyDictionary<string, string> CategorySoundPackIds =>
+            new ReadOnlyDictionary<string, string>(_categoryPackIds);
+
         public IReadOnlyList<SoundPackInfo> AvailableSoundPacks =>
             _soundPacks.Values.Select(p => p.ToInfo()).ToList().AsReadOnly();
+
+        public IReadOnlyList<SoundThemeData> AvailableSoundThemes =>
+            _soundThemes.Values.ToList().AsReadOnly();
+
+        public string CurrentThemeId => _currentThemeId;
 
         #endregion
 
@@ -70,7 +86,13 @@ namespace DeskWarrior.Managers
 
             EnsureDirectoriesExist();
             RefreshSoundPacks();
-            LoadSoundPack("default");
+            LoadSoundThemes();
+
+            // 기본 초기화: 모든 카테고리에 "default" 팩 적용
+            foreach (var category in SoundCategory.AllCategories)
+                _categoryPackIds[category] = "default";
+
+            ReloadAllSounds();
         }
 
         #endregion
@@ -87,13 +109,27 @@ namespace DeskWarrior.Managers
                 type = SoundType.KeyboardHit;
 #pragma warning restore CS0618
 
+            // 테마 체크: override 우선, 없으면 테마 기본값
+            string key = type.ToString();
+            double themeVol;
+            if (_themeOverrides.TryGetValue(key, out var overrideVol))
+                themeVol = overrideVol;
+            else if (_activeTheme != null)
+                themeVol = _activeTheme.GetVolume(key);
+            else
+                themeVol = 1.0;
+
+            // 볼륨 0 이하 = 꺼짐
+            if (themeVol <= 0) return;
+
             if (_sounds.TryGetValue(type, out var player))
             {
                 player.Position = TimeSpan.Zero;
 
-                // 볼륨 배율 적용
-                double volumeMultiplier = _currentPack?.GetVolumeMultiplier(type) ?? 1.0;
-                player.Volume = _volume * volumeMultiplier;
+                // 최종 볼륨 = 글로벌 × 팩 배율 × 테마 사운드별 볼륨
+                string category = SoundCategory.GetCategory(type);
+                var config = _categoryConfigs.TryGetValue(category, out var c) ? c : null;
+                player.Volume = _volume * (config?.GetVolumeMultiplier(type) ?? 1.0) * themeVol;
 
                 player.Play();
             }
@@ -108,27 +144,72 @@ namespace DeskWarrior.Managers
             if (!_soundPacks.ContainsKey(packId))
                 return false;
 
-            if (packId == _currentPackId)
-                return true;
-
             string oldPackId = _currentPackId;
+            _currentPackId = packId;
 
-            UnloadCurrentPack();
+            // 모든 카테고리에 일괄 적용 (전역 모드)
+            foreach (var category in SoundCategory.AllCategories)
+                _categoryPackIds[category] = packId;
 
-            if (LoadSoundPack(packId))
+            ReloadAllSounds();
+
+            if (oldPackId != packId)
             {
-                _currentPackId = packId;
                 SoundPackChanged?.Invoke(this, new SoundPackChangedEventArgs
                 {
                     OldPackId = oldPackId,
                     NewPackId = packId
                 });
-                return true;
             }
 
-            // 실패 시 이전 팩 복원
-            LoadSoundPack(oldPackId);
-            return false;
+            return true;
+        }
+
+        public bool ChangeCategorySoundPack(string category, string packId)
+        {
+            if (!SoundCategory.CategorySoundTypes.ContainsKey(category))
+                return false;
+            if (!_soundPacks.ContainsKey(packId))
+                return false;
+
+            _categoryPackIds[category] = packId;
+            _soundPacks.TryGetValue(packId, out var config);
+            _categoryConfigs[category] = config;
+
+            // 해당 카테고리의 사운드만 리로드
+            foreach (var type in SoundCategory.CategorySoundTypes[category])
+            {
+                if (_sounds.TryGetValue(type, out var old))
+                {
+                    old.Stop();
+                    old.Close();
+                }
+                _sounds.Remove(type);
+                LoadSoundType(type, config);
+            }
+
+            return true;
+        }
+
+        public void ApplyCategorySettings(Dictionary<string, string> categoryPacks, string globalPack)
+        {
+            _currentPackId = globalPack;
+
+            foreach (var category in SoundCategory.AllCategories)
+            {
+                if (categoryPacks.TryGetValue(category, out var packId)
+                    && _soundPacks.ContainsKey(packId))
+                {
+                    _categoryPackIds[category] = packId;
+                }
+                else
+                {
+                    // 카테고리 설정이 없으면 전역 팩 사용
+                    _categoryPackIds[category] = _soundPacks.ContainsKey(globalPack) ? globalPack : "default";
+                }
+            }
+
+            ReloadAllSounds();
         }
 
         public void RefreshSoundPacks()
@@ -148,14 +229,57 @@ namespace DeskWarrior.Managers
             }
         }
 
+        public bool ApplySoundTheme(string themeId)
+        {
+            if (!_soundThemes.TryGetValue(themeId, out var theme))
+                return false;
+
+            _currentThemeId = themeId;
+            _activeTheme = theme;
+            _themeOverrides.Clear();
+            return true;
+        }
+
+        public void ApplyThemeSettings(string themeId, Dictionary<string, double> overrides)
+        {
+            if (_soundThemes.TryGetValue(themeId, out var theme))
+            {
+                _currentThemeId = themeId;
+                _activeTheme = theme;
+            }
+
+            _themeOverrides.Clear();
+            foreach (var kvp in overrides)
+                _themeOverrides[kvp.Key] = kvp.Value;
+        }
+
+        public void SetSoundTypeOverride(string soundTypeKey, double volume)
+        {
+            _themeOverrides[soundTypeKey] = volume;
+        }
+
         public void Dispose()
         {
-            UnloadCurrentPack();
+            UnloadAllSounds();
         }
 
         #endregion
 
         #region Private Methods
+
+        private void LoadSoundThemes()
+        {
+            _soundThemes.Clear();
+            var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "SoundThemes.json");
+            var file = SoundThemesFile.LoadFromFile(configPath);
+            if (file != null)
+            {
+                foreach (var theme in file.Themes)
+                    _soundThemes[theme.Id] = theme;
+            }
+
+            _soundThemes.TryGetValue("default", out _activeTheme);
+        }
 
         private void EnsureDirectoriesExist()
         {
@@ -257,53 +381,58 @@ namespace DeskWarrior.Managers
             _soundPacks[id] = config;
         }
 
-        private bool LoadSoundPack(string packId)
+        private void ReloadAllSounds()
         {
-            if (!_soundPacks.TryGetValue(packId, out var config))
-                return false;
+            UnloadAllSounds();
 
-            _currentPack = config;
+            // fallback 팩 로드
+            _soundPacks.TryGetValue("default", out _fallbackPack);
 
-            // fallback 팩 로드 (default)
-            if (packId != "default" && _soundPacks.TryGetValue("default", out var defaultPack))
+            // 카테고리별 로드
+            foreach (var category in SoundCategory.AllCategories)
             {
-                _fallbackPack = defaultPack;
-            }
+                string packId = _categoryPackIds.TryGetValue(category, out var id) ? id : "default";
+                _soundPacks.TryGetValue(packId, out var config);
+                _categoryConfigs[category] = config;
 
-            foreach (SoundType type in Enum.GetValues<SoundType>())
-            {
-#pragma warning disable CS0618
-                if (type == SoundType.Hit) continue;
-#pragma warning restore CS0618
-
-                var soundPath = config.GetSoundPath(type);
-
-                // fallback 사용
-                if (string.IsNullOrEmpty(soundPath) || !File.Exists(soundPath))
+                foreach (var type in SoundCategory.CategorySoundTypes[category])
                 {
-                    soundPath = _fallbackPack?.GetSoundPath(type);
-                }
-
-                if (!string.IsNullOrEmpty(soundPath) && File.Exists(soundPath))
-                {
-                    try
-                    {
-                        var player = new MediaPlayer();
-                        player.Open(new Uri(soundPath));
-                        player.Volume = _volume * config.GetVolumeMultiplier(type);
-                        _sounds[type] = player;
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Failed to load sound: {soundPath} - {ex.Message}");
-                    }
+                    LoadSoundType(type, config);
                 }
             }
-
-            return true;
         }
 
-        private void UnloadCurrentPack()
+        private void LoadSoundType(SoundType type, SoundPackConfig? config)
+        {
+#pragma warning disable CS0618
+            if (type == SoundType.Hit) return;
+#pragma warning restore CS0618
+
+            var soundPath = config?.GetSoundPath(type);
+
+            // fallback 사용
+            if (string.IsNullOrEmpty(soundPath) || !File.Exists(soundPath))
+            {
+                soundPath = _fallbackPack?.GetSoundPath(type);
+            }
+
+            if (!string.IsNullOrEmpty(soundPath) && File.Exists(soundPath))
+            {
+                try
+                {
+                    var player = new MediaPlayer();
+                    player.Open(new Uri(soundPath));
+                    player.Volume = _volume * (config?.GetVolumeMultiplier(type) ?? 1.0);
+                    _sounds[type] = player;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load sound: {soundPath} - {ex.Message}");
+                }
+            }
+        }
+
+        private void UnloadAllSounds()
         {
             foreach (var player in _sounds.Values)
             {
@@ -311,7 +440,7 @@ namespace DeskWarrior.Managers
                 player.Close();
             }
             _sounds.Clear();
-            _currentPack = null;
+            _categoryConfigs.Clear();
             _fallbackPack = null;
         }
 
@@ -319,8 +448,18 @@ namespace DeskWarrior.Managers
         {
             foreach (var kvp in _sounds)
             {
-                double volumeMultiplier = _currentPack?.GetVolumeMultiplier(kvp.Key) ?? 1.0;
-                kvp.Value.Volume = _volume * volumeMultiplier;
+                string key = kvp.Key.ToString();
+                double themeVol;
+                if (_themeOverrides.TryGetValue(key, out var ov))
+                    themeVol = ov;
+                else if (_activeTheme != null)
+                    themeVol = _activeTheme.GetVolume(key);
+                else
+                    themeVol = 1.0;
+
+                string category = SoundCategory.GetCategory(kvp.Key);
+                var config = _categoryConfigs.TryGetValue(category, out var c) ? c : null;
+                kvp.Value.Volume = _volume * (config?.GetVolumeMultiplier(kvp.Key) ?? 1.0) * themeVol;
             }
         }
 
@@ -346,7 +485,14 @@ namespace DeskWarrior.Managers
                     SystemSounds.Beep.Play();
                     break;
                 case SoundType.BossAppear:
+                case SoundType.GoldenGoblinAppear:
                     SystemSounds.Question.Play();
+                    break;
+                case SoundType.GoldenGoblinDefeat:
+                    SystemSounds.Exclamation.Play();
+                    break;
+                case SoundType.GoldenGoblinEscape:
+                    SystemSounds.Asterisk.Play();
                     break;
             }
         }
