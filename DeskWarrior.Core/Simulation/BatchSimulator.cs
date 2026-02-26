@@ -152,7 +152,7 @@ public class BatchSimulator
         };
 
         // 레벨 분포 (1~max)
-        int maxLevel = (int)batch.MaxLevel;
+        int maxLevel = (int)Math.Min(batch.MaxLevel, 100000);
         batch.LevelDistribution = new double[maxLevel];
         foreach (var result in results)
         {

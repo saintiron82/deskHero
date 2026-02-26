@@ -56,6 +56,13 @@ public class ProgressionResult
 
     /// <summary>황금 고블린에서 획득한 총 골드</summary>
     public long TotalGoldenGoblinGold { get; set; }
+
+    // 오버플로우 감지
+    /// <summary>시뮬레이션 중 오버플로우 발생 여부</summary>
+    public bool OverflowDetected { get; set; }
+
+    /// <summary>오버플로우 상세 리포트</summary>
+    public string? OverflowReport { get; set; }
 }
 
 /// <summary>

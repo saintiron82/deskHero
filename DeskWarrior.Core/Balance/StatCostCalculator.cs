@@ -19,14 +19,14 @@ public class StatCostCalculator
     /// 특정 스탯의 다음 레벨 업그레이드 비용 계산
     /// 티어 시스템이 활성화되면 레벨에 따라 multiplier와 softcap이 자동 조정됩니다.
     /// </summary>
-    public int GetUpgradeCost(string statId, int currentLevel)
+    public long GetUpgradeCost(string statId, int currentLevel)
     {
         if (!_statConfigs.TryGetValue(statId, out var config))
-            return int.MaxValue;
+            return long.MaxValue;
 
         // MaxLevel 체크 (0 = 무제한)
         if (config.MaxLevel > 0 && currentLevel >= config.MaxLevel)
-            return int.MaxValue;
+            return long.MaxValue;
 
         int targetLevel = currentLevel + 1;
 
@@ -52,18 +52,30 @@ public class StatCostCalculator
 
         double linearFactor = 1.0 + targetLevel * config.GrowthRate;
         double exponentialFactor = Math.Pow(multiplier, (double)targetLevel / softcap);
-        return (int)Math.Ceiling(config.BaseCost * linearFactor * exponentialFactor);
+        double cost = config.BaseCost * linearFactor * exponentialFactor;
+
+        // 오버플로우 방지: long 범위 초과 시 센티넬 반환 (구매 불가)
+        if (double.IsNaN(cost) || double.IsInfinity(cost) || cost > 9.2E+18)
+            return long.MaxValue;
+
+        return (long)Math.Ceiling(cost);
     }
 
     /// <summary>
     /// 특정 스탯의 현재 레벨에서 목표 레벨까지 총 비용 계산
     /// </summary>
-    public int GetTotalCost(string statId, int fromLevel, int toLevel)
+    public long GetTotalCost(string statId, int fromLevel, int toLevel)
     {
-        int total = 0;
+        long total = 0;
         for (int level = fromLevel; level < toLevel; level++)
         {
-            total += GetUpgradeCost(statId, level);
+            long cost = GetUpgradeCost(statId, level);
+            if (cost == long.MaxValue)
+                return long.MaxValue;
+            // 오버플로우 방지
+            if (total > long.MaxValue - cost)
+                return long.MaxValue;
+            total += cost;
         }
         return total;
     }
@@ -71,21 +83,21 @@ public class StatCostCalculator
     /// <summary>
     /// 주어진 예산으로 달성 가능한 최대 레벨 계산
     /// </summary>
-    public int MaxLevelForBudget(string statId, int budget, int startLevel = 0)
+    public int MaxLevelForBudget(string statId, long budget, int startLevel = 0)
     {
         if (!_statConfigs.TryGetValue(statId, out var config))
             return startLevel;
 
         int level = startLevel;
-        int spent = 0;
+        long spent = 0;
 
         // MaxLevel 상한 체크 (0 = 무제한)
         int maxLevel = config.MaxLevel > 0 ? config.MaxLevel : int.MaxValue;
 
         while (level < maxLevel)
         {
-            int cost = GetUpgradeCost(statId, level);
-            if (cost == int.MaxValue || spent + cost > budget)
+            long cost = GetUpgradeCost(statId, level);
+            if (cost == long.MaxValue || spent + cost > budget)
                 break;
             spent += cost;
             level++;
@@ -102,7 +114,7 @@ public class StatCostCalculator
         if (!_statConfigs.TryGetValue(statId, out var config))
             return 0;
 
-        int cost = GetUpgradeCost(statId, currentLevel);
+        long cost = GetUpgradeCost(statId, currentLevel);
         if (cost <= 0) return 0;
 
         return config.EffectPerLevel / cost;
@@ -111,11 +123,11 @@ public class StatCostCalculator
     /// <summary>
     /// 모든 스탯 중 가장 효율적인 업그레이드 찾기
     /// </summary>
-    public (string statId, int cost, double efficiency)? FindBestUpgrade(
+    public (string statId, long cost, double efficiency)? FindBestUpgrade(
         SimPermanentStats stats,
         long availableCrystals)
     {
-        var candidates = new List<(string statId, int cost, double efficiency)>();
+        var candidates = new List<(string statId, long cost, double efficiency)>();
 
         foreach (var (statId, config) in _statConfigs)
         {
@@ -125,9 +137,9 @@ public class StatCostCalculator
             if (!CanUpgrade(statId, currentLevel))
                 continue;
 
-            int cost = GetUpgradeCost(statId, currentLevel);
+            long cost = GetUpgradeCost(statId, currentLevel);
 
-            if (cost <= availableCrystals && cost != int.MaxValue)
+            if (cost <= availableCrystals && cost != long.MaxValue)
             {
                 double efficiency = GetEfficiency(statId, currentLevel);
                 candidates.Add((statId, cost, efficiency));

@@ -11,7 +11,7 @@ namespace DeskWarrior.Controls
     /// </summary>
     public class DamagePopup : TextBlock
     {
-        public DamagePopup(int damage, bool isCritical = false)
+        public DamagePopup(long damage, bool isCritical = false)
         {
             // 데미지 0일 때 특별 표시
             if (damage == 0)

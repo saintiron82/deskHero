@@ -53,7 +53,7 @@ namespace DeskWarrior.Managers
         public event EventHandler? StatsChanged;
         public event EventHandler<DamageEventArgs>? DamageDealt;
         public event EventHandler<BossDropResult>? CrystalDropped;
-        public event EventHandler? GoldenGoblinSpawned;
+        public event EventHandler<GoldenGoblinSpawnEventArgs>? GoldenGoblinSpawned;
         public event EventHandler? GoldenGoblinEscaped;
         public event EventHandler<GoldenGoblinRewardEventArgs>? GoldenGoblinDefeated;
 
@@ -62,7 +62,7 @@ namespace DeskWarrior.Managers
         #region Properties
 
         public int CurrentLevel { get; private set; } = 1;
-        public int Gold { get; private set; }
+        public long Gold { get; private set; }
         public double RemainingTime => _gameLoopManager.RemainingTime;
         public Monster? CurrentMonster => _currentMonster;
         public GameData Config => _gameData;
@@ -112,6 +112,7 @@ namespace DeskWarrior.Managers
         public DateTime SessionStartTime => _sessionTracker.StartTime;
         public int SessionBossDropCrystals => _sessionTracker.SessionBossDropCrystals;
         public int SessionAchievementCrystals => _sessionTracker.SessionAchievementCrystals;
+        public int SessionStageClearCrystals => _sessionTracker.SessionStageClearCrystals;
         public System.Collections.Generic.IReadOnlyCollection<DamageRecord> SessionDamageRecords => _sessionTracker.DamageRecords;
         public double SessionCPS => _sessionTracker.CurrentCPS;
 
@@ -159,7 +160,7 @@ namespace DeskWarrior.Managers
             _damageCalculator = new DamageCalculator(_gameData, _random, _statGrowth);
 
             // 콤보 트래커 초기화
-            _comboTracker = new ComboTracker();
+            _comboTracker = new ComboTracker(_gameData.Combo);
 
             // 연속 키 추적 초기화
             _consecutiveKeyTracker = new ConsecutiveKeyTracker(_gameData.ConsecutiveKeyPenalty);
@@ -252,11 +253,15 @@ namespace DeskWarrior.Managers
         /// </summary>
         private void OnCrystalEarned(object? sender, CrystalEarnedEventArgs e)
         {
-            if (e.Source == "boss_drop")
+            if (e.Source == "boss_kill")
             {
                 _sessionTracker.RecordBossDropCrystals(e.Amount);
             }
-            else if (e.Source.StartsWith("achievement:"))
+            else if (e.Source == "stage_clear")
+            {
+                _sessionTracker.RecordStageClearCrystals(e.Amount);
+            }
+            else if (e.Source.StartsWith("achievement:") || e.Source.StartsWith("collection_"))
             {
                 _sessionTracker.RecordAchievementCrystals(e.Amount);
             }
@@ -286,7 +291,7 @@ namespace DeskWarrior.Managers
                 startLevel = Math.Min(startLevel, maxLevel);
             }
             CurrentLevel = 1 + startLevel;
-            Gold = (int)_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0);
+            Gold = Helpers.SafeMath.ToLong(_statGrowth.GetPermanentStatEffect("start_gold", permStats?.StartGoldLevel ?? 0));
             _sessionTracker.Reset();
             _combatManager.ResetRateLimit();
 
@@ -383,7 +388,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         public int CalculateUpgradeCost(int currentLevel)
         {
-            return (int)(_gameData.Upgrade.BaseCost * Math.Pow(_gameData.Upgrade.CostMultiplier, currentLevel - 1));
+            return Helpers.SafeMath.CostToInt(_gameData.Upgrade.BaseCost * Math.Pow(_gameData.Upgrade.CostMultiplier, currentLevel - 1));
         }
 
         /// <summary>
@@ -410,7 +415,7 @@ namespace DeskWarrior.Managers
             double tierMultiplier = _gameData.Balance.UpgradeCostTierMultiplier;
             if (tierMultiplier <= 1.0) tierMultiplier = 2.0;
             double multiplier = Math.Pow(tierMultiplier, tier);
-            return (int)(baseCost * multiplier);
+            return Helpers.SafeMath.CostToInt(baseCost * multiplier);
         }
 
         /// <summary>
@@ -500,8 +505,8 @@ namespace DeskWarrior.Managers
             }
 
             // 골드 획득 (RewardManager 위임)
-            int goldReward = _rewardManager.CalculateMonsterGoldReward(_currentMonster);
-            Gold += goldReward;
+            long goldReward = _rewardManager.CalculateMonsterGoldReward(_currentMonster);
+            Gold = Helpers.SafeMath.AddLong(Gold, goldReward);
 
             // 세션 트래커에 킬 기록
             _sessionTracker.RecordKill(_currentMonster.IsBoss, goldReward);
@@ -561,10 +566,11 @@ namespace DeskWarrior.Managers
             _gameLoopManager.StopTimer();
             _isGoldenGoblinActive = false;
 
-            // 보상 계산 (RewardManager 위임)
-            var (reward, multiplier) = _rewardManager.CalculateGoldenGoblinReward(CurrentLevel);
+            // 보상 계산 (스폰 시 결정된 배수 사용)
+            int predeterminedMultiplier = _currentMonster?.RewardMultiplier ?? 0;
+            var (reward, multiplier) = _rewardManager.CalculateGoldenGoblinReward(CurrentLevel, predeterminedMultiplier);
 
-            Gold += reward;
+            Gold = Helpers.SafeMath.AddLong(Gold, reward);
 
             // 세션 트래커에 기록
             _sessionTracker.RecordKill(false, reward);
@@ -576,11 +582,12 @@ namespace DeskWarrior.Managers
             {
                 _goldenGoblinManager.SaveToSave(_saveManager.CurrentSave);
                 _saveManager.CurrentSave.GoldenGoblinsCaught++;
-                _saveManager.CurrentSave.GoldenGoblinTotalGold += reward;
+                _saveManager.CurrentSave.GoldenGoblinTotalGold = Helpers.SafeMath.AddLong(_saveManager.CurrentSave.GoldenGoblinTotalGold, reward);
             }
 
-            // 처치 이벤트 발생
-            GoldenGoblinDefeated?.Invoke(this, new GoldenGoblinRewardEventArgs(reward, multiplier));
+            // 처치 이벤트 발생 (등급 정보 포함)
+            string? gradeId = _currentMonster?.GradeId;
+            GoldenGoblinDefeated?.Invoke(this, new GoldenGoblinRewardEventArgs(reward, multiplier, gradeId));
             MonsterDefeated?.Invoke(this, EventArgs.Empty);
 
             // 다음 스테이지로 진행
@@ -605,7 +612,13 @@ namespace DeskWarrior.Managers
             // 이벤트 발생
             if (spawnResult.IsGoldenGoblin)
             {
-                GoldenGoblinSpawned?.Invoke(this, EventArgs.Empty);
+                var spawnArgs = new GoldenGoblinSpawnEventArgs(
+                    _currentMonster.GradeId,
+                    _currentMonster.GradeBackground,
+                    _currentMonster.GradeBorderColor,
+                    _currentMonster.GradeNameColor,
+                    _currentMonster.RewardMultiplier);
+                GoldenGoblinSpawned?.Invoke(this, spawnArgs);
             }
             MonsterSpawned?.Invoke(this, EventArgs.Empty);
             StatsChanged?.Invoke(this, EventArgs.Empty);

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using DeskWarrior.Models;
 
@@ -123,29 +124,73 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 보상 골드 계산
+        /// 보상 배수로 등급 결정 (config/SpecialMonsters.json에서 로드)
         /// </summary>
-        /// <param name="stageExpectedGold">해당 스테이지 예상 골드</param>
-        public int CalculateReward(int stageExpectedGold)
+        public GoldenGoblinGrade? FindGradeForMultiplier(int multiplier)
         {
-            int multiplier = GetRewardMultiplier();
-            return stageExpectedGold * multiplier;
+            if (_config.Grades == null || _config.Grades.Count == 0)
+                return null;
+
+            return _config.Grades.FirstOrDefault(g => multiplier >= g.RewardMin && multiplier <= g.RewardMax);
         }
 
         /// <summary>
-        /// 황금 고블린 몬스터 생성
+        /// 등급과 배수를 동시에 결정 (스폰 시 호출)
+        /// </summary>
+        public (GoldenGoblinGrade? grade, int multiplier) DetermineGrade()
+        {
+            int multiplier = GetRewardMultiplier();
+            var grade = FindGradeForMultiplier(multiplier);
+            return (grade, multiplier);
+        }
+
+        /// <summary>
+        /// 사전 결정된 배수로 보상 골드 계산
+        /// </summary>
+        public long CalculateRewardWithMultiplier(long stageExpectedGold, int multiplier)
+        {
+            return Helpers.SafeMath.MulLong(stageExpectedGold, multiplier);
+        }
+
+        /// <summary>
+        /// 보상 골드 계산 (새 배수 생성)
+        /// </summary>
+        public long CalculateReward(long stageExpectedGold)
+        {
+            int multiplier = GetRewardMultiplier();
+            return Helpers.SafeMath.MulLong(stageExpectedGold, multiplier);
+        }
+
+        /// <summary>
+        /// 황금 고블린 몬스터 생성 (등급 시스템 적용)
         /// </summary>
         public Monster CreateGoldenGoblin(int currentLevel)
         {
+            var (grade, multiplier) = DetermineGrade();
+
+            // 등급별 로컬라이즈 이름 결정
             string language = LocalizationManager.Instance.CurrentLanguage;
             string name;
-            if (!_config.Name.TryGetValue(language, out var localizedName))
-            {
-                _config.Name.TryGetValue("en-US", out localizedName);
-            }
-            name = localizedName ?? "Golden Goblin";
 
-            return new Monster(_config, currentLevel, name);
+            // 등급에 이름이 있으면 등급 이름 사용
+            if (grade?.Name != null && grade.Name.Count > 0)
+            {
+                if (!grade.Name.TryGetValue(language, out var gradeName))
+                {
+                    grade.Name.TryGetValue("en-US", out gradeName);
+                }
+                name = gradeName ?? "Golden Goblin";
+            }
+            else
+            {
+                if (!_config.Name.TryGetValue(language, out var localizedName))
+                {
+                    _config.Name.TryGetValue("en-US", out localizedName);
+                }
+                name = localizedName ?? "Golden Goblin";
+            }
+
+            return new Monster(_config, currentLevel, name, grade, multiplier);
         }
     }
 }

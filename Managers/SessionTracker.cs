@@ -76,6 +76,11 @@ namespace DeskWarrior.Managers
         public int SessionAchievementCrystals { get; private set; }
 
         /// <summary>
+        /// 세션 중 스테이지 클리어로 획득한 크리스탈
+        /// </summary>
+        public int SessionStageClearCrystals { get; private set; }
+
+        /// <summary>
         /// 세션 중 콤보 발동 횟수
         /// </summary>
         public int ComboTriggers { get; private set; }
@@ -142,7 +147,7 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 데미지 기록 (간단 버전 - 하위 호환용)
         /// </summary>
-        public void RecordDamage(int damage, bool isCritical, bool isMouse)
+        public void RecordDamage(long damage, bool isCritical, bool isMouse)
         {
             TotalDamage += damage;
 
@@ -209,7 +214,7 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 몬스터 처치 기록
         /// </summary>
-        public void RecordKill(bool isBoss, int goldReward)
+        public void RecordKill(bool isBoss, long goldReward)
         {
             MonstersKilled++;
             TotalGold += goldReward;
@@ -237,9 +242,17 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
+        /// 크리스탈 획득 기록 (스테이지 클리어)
+        /// </summary>
+        public void RecordStageClearCrystals(int amount)
+        {
+            SessionStageClearCrystals += amount;
+        }
+
+        /// <summary>
         /// 황금 고블린 처치 기록
         /// </summary>
-        public void RecordGoldenGoblinKill(int goldReward)
+        public void RecordGoldenGoblinKill(long goldReward)
         {
             GoldenGoblinsKilled++;
             GoldenGoblinGoldEarned += goldReward;
@@ -260,6 +273,7 @@ namespace DeskWarrior.Managers
             CriticalHits = 0;
             SessionBossDropCrystals = 0;
             SessionAchievementCrystals = 0;
+            SessionStageClearCrystals = 0;
             ComboTriggers = 0;
             MaxComboStackCount = 0;
             MultiHits = 0;
@@ -280,7 +294,7 @@ namespace DeskWarrior.Managers
                 EndTime = DateTime.Now,
                 MaxLevel = maxLevel,
                 TotalDamage = TotalDamage,
-                TotalGold = (int)TotalGold,
+                TotalGold = TotalGold,
                 MonstersKilled = MonstersKilled,
                 BossesKilled = BossesKilled,
                 KeyboardInputs = KeyboardInputs,

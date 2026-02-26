@@ -5,6 +5,7 @@ namespace DeskWarrior.Simulator;
 
 /// <summary>
 /// 디버그용 단일 시뮬레이션 러너
+/// SimulationEngine을 사용하여 실제 게임과 동일한 공식으로 시뮬레이션
 /// </summary>
 public static class DebugRunner
 {
@@ -14,61 +15,59 @@ public static class DebugRunner
 
         var engine = SimulatorFactory.CreateEngine(configPath, seed: 42);
         var permStats = new SimPermanentStats();
+        permStats.SetConfig(engine.PermanentStatConfigs);
+
         var profile = new InputProfile
         {
             AverageCps = 5.0,
-            CpsVariance = 0.0,  // 변동 없음
+            CpsVariance = 0.0,
             ComboSkill = ComboSkillLevel.None,
             AutoUpgrade = true
         };
 
-        // 수동 시뮬레이션으로 첫 10 레벨 추적
-        var inGameStats = new SimInGameStats();
-        int currentLevel = 1;
-        int gold = 0;
-        double timeLimit = 30.0;
+        Console.WriteLine($"Starting simulation: CPS={profile.AverageCps}\n");
+        Console.WriteLine($"{"Lv.",4} | {"HP",8} | {"Dmg",5} | {"Element",-8} | {"Time",6} | {"Gold",8} | {"KbLv",4} | {"MsLv",4} | {"Result",-8}");
+        Console.WriteLine(new string('-', 80));
 
-        Console.WriteLine($"Starting simulation: CPS={profile.AverageCps}, TimeLimit={timeLimit}s\n");
-
-        for (int lvl = 1; lvl <= 200; lvl++)
+        // 디버그 이벤트 구독
+        engine.OnLevelProcessed += info =>
         {
-            bool isBoss = lvl % 10 == 0;
-            int monsterHp = 20 + (lvl - 1) * 5;
-            if (isBoss) monsterHp = (int)(monsterHp * 5.0);
+            string typeTag = info.IsGoldenGoblin ? "GOBLIN"
+                : info.IsBoss ? "BOSS"
+                : "";
 
-            int damage = 1 + inGameStats.KeyboardPowerLevel;  // 기본 데미지
-            int hitsNeeded = (int)Math.Ceiling((double)monsterHp / damage);
-            double timeNeeded = hitsNeeded / profile.AverageCps;
+            string resultTag = info.IsGoldenGoblin
+                ? (info.Survived ? "KILLED!" : "ESCAPED")
+                : (info.Survived ? $"+{info.GoldReward}g" : "DEAD");
 
-            int monsterGold = 10 + lvl * 2;
-            int kbCost = CalculateCost(10, 0.5, 1.5, 10, inGameStats.KeyboardPowerLevel + 1);
+            Console.WriteLine(
+                $"{info.Level,4} | {info.MonsterHp,8} | {info.BaseDamage,5} | {info.Element,-8} | {info.TimeElapsed,5:F1}s | {info.Gold,8} | {info.KeyboardLevel,4} | {info.MouseLevel,4} | {resultTag,-8} {typeTag}");
+        };
 
-            Console.WriteLine($"Lv.{lvl,3} | HP={monsterHp,5} | Dmg={damage,3} | Hits={hitsNeeded,4} | Time={timeNeeded,5:F1}s | Gold={gold,6} -> +{monsterGold} | KbLv={inGameStats.KeyboardPowerLevel} (cost={kbCost})");
+        var result = engine.SimulateSession(permStats, profile);
 
-            if (timeNeeded > timeLimit)
-            {
-                Console.WriteLine($"\n>>> GAME OVER at Level {lvl} <<<");
-                break;
-            }
+        Console.WriteLine(new string('-', 80));
 
-            gold += monsterGold;
-
-            // 자동 업그레이드
-            while (gold >= CalculateCost(10, 0.5, 1.5, 10, inGameStats.KeyboardPowerLevel + 1))
-            {
-                int cost = CalculateCost(10, 0.5, 1.5, 10, inGameStats.KeyboardPowerLevel + 1);
-                gold -= cost;
-                inGameStats.KeyboardPowerLevel++;
-                Console.WriteLine($"        >>> Upgraded Keyboard to Lv.{inGameStats.KeyboardPowerLevel} (spent {cost} gold, remaining {gold})");
-            }
+        if (result.OverflowDetected)
+        {
+            Console.WriteLine($"\n>>> OVERFLOW DETECTED at Level {result.OverflowLevel} <<<");
+            Console.WriteLine($"    Location: {result.OverflowLocation}");
+            Console.WriteLine($"    Computed Value: {result.OverflowValue:E4}");
+            Console.WriteLine($"    long.MaxValue:  {long.MaxValue:E4}");
         }
-    }
+        else
+        {
+            Console.WriteLine($"\n>>> GAME OVER at Level {result.MaxLevel} <<<");
+        }
 
-    private static int CalculateCost(double baseCost, double growthRate, double multiplier, int softcapInterval, int level)
-    {
-        if (level <= 0) return 0;
-        double linearFactor = 1.0 + level * growthRate;
-        double exponentialFactor = Math.Pow(multiplier, (double)level / softcapInterval);
-        return (int)Math.Ceiling(baseCost * linearFactor * exponentialFactor);
+        Console.WriteLine($"    Reason: {result.EndReason}");
+        Console.WriteLine($"    Monsters Killed: {result.MonstersKilled}");
+        Console.WriteLine($"    Total Gold: {result.TotalGold:N0}");
+        Console.WriteLine($"    Total Damage: {result.TotalDamage:N0}");
+        Console.WriteLine($"    Critical Hits: {result.CriticalHits}");
+        Console.WriteLine($"    Session Duration: {result.SessionDuration:F1}s");
+        Console.WriteLine($"    Golden Goblins: Killed={result.GoldenGoblinsKilled}, Escaped={result.GoldenGoblinsEscaped}");
+        Console.WriteLine($"    Final Keyboard Lv: {result.FinalKeyboardPowerLevel}");
+        Console.WriteLine($"    Final Mouse Lv: {result.FinalMousePowerLevel}");
     }
 }

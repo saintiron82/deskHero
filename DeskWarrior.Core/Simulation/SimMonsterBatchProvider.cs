@@ -32,7 +32,7 @@ internal sealed class SimMonsterBatchProvider
         return _loadedBatches.Count > 0;
     }
 
-    internal FlattenedMonsterData? GetRandomMonsterData(int level, bool isBoss)
+    internal FlattenedMonsterData? GetRandomMonsterData(long level, bool isBoss)
     {
         var list = isBoss ? GetAllBosses() : GetAllMonsters();
         if (list.Count == 0)
@@ -43,12 +43,12 @@ internal sealed class SimMonsterBatchProvider
             return SelectByWeight(list);
         }
 
-        int index = (level - 1) % list.Count;
+        int index = (int)((level - 1) % list.Count);
         if (index < 0) index = 0;
         return list[index];
     }
 
-    internal int CalculateStageExpectedGold(int level)
+    internal long CalculateStageExpectedGold(long level)
     {
         var monsters = GetAllMonsters();
         if (monsters.Count == 0)
@@ -57,10 +57,10 @@ internal sealed class SimMonsterBatchProvider
         long totalGold = 0;
         foreach (var monster in monsters)
         {
-            totalGold += monster.BaseGold + level * monster.GoldGrowth;
+            totalGold += (long)monster.BaseGold + level * monster.GoldGrowth;
         }
 
-        return (int)(totalGold / monsters.Count);
+        return totalGold / monsters.Count;
     }
 
     private void LoadBatchIndex()
@@ -197,14 +197,14 @@ internal sealed class SimMonsterBatchProvider
 
     private FlattenedMonsterData SelectByWeight(List<FlattenedMonsterData> list)
     {
-        int totalWeight = list.Sum(m => m.FinalWeight);
+        long totalWeight = list.Sum(m => (long)m.FinalWeight);
         if (totalWeight <= 0)
         {
             return list[_random.Next(list.Count)];
         }
 
-        int roll = _random.Next(totalWeight);
-        int cumulative = 0;
+        long roll = _random.NextInt64(totalWeight);
+        long cumulative = 0;
 
         foreach (var monster in list)
         {

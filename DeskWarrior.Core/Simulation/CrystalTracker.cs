@@ -10,7 +10,7 @@ public class CrystalTracker
 {
     private readonly BossDropConfig _config;
     private readonly Random _random;
-    private int _stageCompletionCrystals;  // 매 몬스터 처치 시 누적
+    private long _stageCompletionCrystals;  // 매 몬스터 처치 시 누적
 
     public CrystalTracker(BossDropConfig config, Random random)
     {
@@ -26,7 +26,7 @@ public class CrystalTracker
     /// <param name="bossElement">보스 속성 (normal, fire, holy 등)</param>
     /// <param name="crystalFlat">영구 스탯: 크리스털 추가량</param>
     /// <param name="crystalMultipliers">속성별 크리스털 배율 (config에서 로드)</param>
-    public CrystalDropResult ProcessBossKill(int bossLevel, string bossElement, int crystalFlat, Dictionary<string, double> crystalMultipliers)
+    public CrystalDropResult ProcessBossKill(long bossLevel, string bossElement, int crystalFlat, Dictionary<string, double> crystalMultipliers)
     {
         // ✅ 기본 크리스탈 계산 (100% 지급)
         double growth;
@@ -39,18 +39,27 @@ public class CrystalTracker
         {
             growth = bossLevel;
         }
-        int baseCrystals = (int)Math.Round(_config.BaseCrystalAmount + _config.CrystalPerLevel * growth);
-        baseCrystals += crystalFlat;  // 영구 스탯 보너스
+        long baseCrystals = OverflowGuard.ToLong(
+            Math.Round(_config.BaseCrystalAmount + _config.CrystalPerLevel * growth),
+            "Crystal.BossBase", bossLevel);
+        baseCrystals = OverflowGuard.Add(baseCrystals, crystalFlat, "Crystal.BossFlat", bossLevel);
 
-        // ✅ 속성별 배율 적용 (Holy/Dark: 2.0배 고정)
-        double elementMultiplier = crystalMultipliers.GetValueOrDefault(bossElement, 1.0);
-        int finalCrystals = Math.Max(1, (int)(baseCrystals * elementMultiplier));
+        // ✅ 속성별 배율 적용
+        if (!crystalMultipliers.TryGetValue(bossElement, out double elementMultiplier))
+        {
+            // 시뮬레이터에서는 누락 시 경고 (게임에선 Logger 사용)
+            System.Diagnostics.Debug.WriteLine($"[Warning] Crystal multiplier not found for element '{bossElement}', using 1.0");
+            elementMultiplier = 1.0;
+        }
+        long finalCrystals = Math.Max(1, OverflowGuard.ToLong(
+            baseCrystals * elementMultiplier, "Crystal.BossElement", bossLevel));
 
         // ✅ 분산 제거 - 모든 보상은 고정값 (황금 고블린 제외)
         // 이전: variance ±20% 적용 (제거됨)
 
         // ✅ 속성 보너스 계산
-        int elementBonus = (int)((elementMultiplier - 1.0) * baseCrystals);
+        long elementBonus = OverflowGuard.ToLong(
+            (elementMultiplier - 1.0) * baseCrystals, "Crystal.ElementBonus", bossLevel);
 
         return new CrystalDropResult
         {
@@ -65,16 +74,17 @@ public class CrystalTracker
     /// 몬스터 처치 크리스탈 (100레벨마다 +1)
     /// 게임과 동일: 매 몬스터 처치 시 레벨 기반 크리스탈 지급
     /// </summary>
-    public void ProcessStageClear(int currentLevel)
+    public void ProcessStageClear(long currentLevel)
     {
-        int crystalAmount = _config.StageCompletionCrystal + (currentLevel / 100);
-        _stageCompletionCrystals += crystalAmount;
+        long crystalAmount = _config.StageCompletionCrystal + (currentLevel / 100);
+        _stageCompletionCrystals = OverflowGuard.Add(
+            _stageCompletionCrystals, crystalAmount, "Crystal.StageAccum", currentLevel);
     }
 
     /// <summary>
     /// 누적된 스테이지 클리어 크리스털 반환
     /// </summary>
-    public int GetStageCompletionCrystals()
+    public long GetStageCompletionCrystals()
     {
         return _stageCompletionCrystals;
     }
@@ -82,7 +92,7 @@ public class CrystalTracker
     /// <summary>
     /// 골드를 크리스털로 변환 (세션 종료 시)
     /// </summary>
-    public int ConvertGoldToCrystals(int remainingGold)
+    public long ConvertGoldToCrystals(long remainingGold)
     {
         return remainingGold / _config.GoldToCrystalRate;
     }

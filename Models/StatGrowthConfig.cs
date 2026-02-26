@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DeskWarrior.Helpers;
 
 namespace DeskWarrior.Models
 {
@@ -137,7 +138,7 @@ namespace DeskWarrior.Models
                 cost *= (1.0 - discountPercent.Value);
             }
 
-            return (int)System.Math.Ceiling(cost);
+            return SafeMath.CostToInt(cost);
         }
 
         /// <summary>

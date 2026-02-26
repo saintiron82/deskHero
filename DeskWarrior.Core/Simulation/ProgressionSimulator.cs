@@ -72,7 +72,26 @@ public class ProgressionSimulator
             progress?.Invoke(totalGameTime, targetTimeSeconds);
 
             // 세션 시뮬레이션
-            var session = _engine.SimulateSession(currentStats, profile, (int)bestLevelEver);
+            var session = _engine.SimulateSession(currentStats, profile, (int)Math.Min(bestLevelEver, int.MaxValue));
+
+            // 오버플로우 감지 시 즉시 중단
+            if (session.OverflowDetected)
+            {
+                totalGameTime += session.SessionDuration;
+                result.OverflowDetected = true;
+                result.OverflowReport = $"[Session {sessionNumber}] {session.OverflowLocation} at level {session.OverflowLevel} (value: {session.OverflowValue:E4})";
+                result.AttemptsNeeded = sessionNumber;
+                result.FinalMaxLevel = session.MaxLevel;
+                result.BestLevelEver = Math.Max(bestLevelEver, session.MaxLevel);
+                result.TotalCrystalsEarned = totalCrystalsEarned + session.TotalCrystals;
+                result.TotalCrystalsSpent = totalCrystalsSpent;
+                result.TotalGameTimeSeconds = totalGameTime;
+                result.FinalStats = currentStats;
+                result.TotalGoldenGoblinsKilled = totalGoldenGoblinsKilled + session.GoldenGoblinsKilled;
+                result.TotalGoldenGoblinsEscaped = totalGoldenGoblinsEscaped + session.GoldenGoblinsEscaped;
+                result.TotalGoldenGoblinGold = totalGoldenGoblinGold + session.GoldenGoblinGoldEarned;
+                return result;
+            }
 
             // 세션 시간 누적
             totalGameTime += session.SessionDuration;
@@ -119,8 +138,8 @@ public class ProgressionSimulator
             // ✅ 상세 세션 데이터 저장 (영구 스탯 정보 포함)
             session.SessionNumber = sessionNumber;
             session.TotalPlaytime = totalGameTime;
-            session.SpentCrystals = (int)crystalsSpent;
-            session.RemainingCrystals = (int)crystals;
+            session.SpentCrystals = crystalsSpent;
+            session.RemainingCrystals = crystals;
             session.PermanentStatLevels = GetStatLevels(currentStats);
             result.DetailedSessions.Add(session);
         }
@@ -180,7 +199,24 @@ public class ProgressionSimulator
             progress?.Invoke(attempt, maxAttempts);
 
             // 세션 시뮬레이션
-            var session = _engine.SimulateSession(currentStats, profile, (int)bestLevel);
+            var session = _engine.SimulateSession(currentStats, profile, (int)Math.Min(bestLevel, int.MaxValue));
+
+            // 오버플로우 감지 시 즉시 중단
+            if (session.OverflowDetected)
+            {
+                result.OverflowDetected = true;
+                result.OverflowReport = $"[Session {attempt}] {session.OverflowLocation} at level {session.OverflowLevel} (value: {session.OverflowValue:E4})";
+                result.Success = false;
+                result.AttemptsNeeded = attempt;
+                result.FinalMaxLevel = Math.Max(bestLevel, session.MaxLevel);
+                result.FinalStats = currentStats;
+                result.TotalCrystalsEarned = totalCrystalsEarned;
+                result.TotalCrystalsSpent = totalCrystalsSpent;
+                result.TotalGoldenGoblinsKilled = totalGoldenGoblinsKilled + session.GoldenGoblinsKilled;
+                result.TotalGoldenGoblinsEscaped = totalGoldenGoblinsEscaped + session.GoldenGoblinsEscaped;
+                result.TotalGoldenGoblinGold = totalGoldenGoblinGold + session.GoldenGoblinGoldEarned;
+                return result;
+            }
 
             // 황금 고블린 통계 누적
             totalGoldenGoblinsKilled += session.GoldenGoblinsKilled;
@@ -479,7 +515,7 @@ public class ProgressionSimulator
             while (timeExtendCrystals > 0)
             {
                 int currentLevel = _costCalculator.GetStatLevel(stats, "time_extend");
-                int cost = _costCalculator.GetUpgradeCost("time_extend", currentLevel);
+                long cost = _costCalculator.GetUpgradeCost("time_extend", currentLevel);
 
                 if (cost > timeExtendCrystals)
                     break;
@@ -586,7 +622,7 @@ public class ProgressionSimulator
         while (true)
         {
             string? bestStat = null;
-            int bestCost = 0;
+            long bestCost = 0;
             double bestEfficiency = 0;
             int bestLevel = 0;
 
@@ -596,7 +632,7 @@ public class ProgressionSimulator
                 if (!_costCalculator.CanUpgrade(statId, currentLevel))
                     continue;
 
-                int cost = _costCalculator.GetUpgradeCost(statId, currentLevel);
+                long cost = _costCalculator.GetUpgradeCost(statId, currentLevel);
                 if (cost <= 0 || cost > crystals)
                     continue;
 
@@ -648,7 +684,7 @@ public class ProgressionSimulator
             while (crystals > 0)
             {
                 int currentLevel = _costCalculator.GetStatLevel(stats, statId);
-                int cost = _costCalculator.GetUpgradeCost(statId, currentLevel);
+                long cost = _costCalculator.GetUpgradeCost(statId, currentLevel);
 
                 if (cost > crystals)
                     break;

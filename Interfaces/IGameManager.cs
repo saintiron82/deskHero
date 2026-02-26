@@ -23,7 +23,7 @@ namespace DeskWarrior.Interfaces
         #region Properties
 
         int CurrentLevel { get; }
-        int Gold { get; }
+        long Gold { get; }
         int KeyboardPower { get; }
         int MousePower { get; }
         double RemainingTime { get; }
@@ -70,11 +70,11 @@ namespace DeskWarrior.Interfaces
     /// </summary>
     public class DamageEventArgs : EventArgs
     {
-        public int Damage { get; }
+        public long Damage { get; }
         public bool IsCritical { get; }
         public bool IsMouse { get; }
 
-        public DamageEventArgs(int damage, bool isCritical, bool isMouse)
+        public DamageEventArgs(long damage, bool isCritical, bool isMouse)
         {
             Damage = damage;
             IsCritical = isCritical;

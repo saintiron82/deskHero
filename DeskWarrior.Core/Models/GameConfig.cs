@@ -24,19 +24,19 @@ public class MonsterSpawningConfig
 public class ElementProperty
 {
     [JsonPropertyName("hp_modifier")]
-    public double HpModifier { get; set; } = 1.0;
+    public double HpModifier { get; set; }
 
     [JsonPropertyName("time_scale")]
-    public double TimeScale { get; set; } = 1.0;
+    public double TimeScale { get; set; }
 
     [JsonPropertyName("keyboard_resistance")]
-    public double KeyboardResistance { get; set; } = 1.0;
+    public double KeyboardResistance { get; set; }
 
     [JsonPropertyName("mouse_resistance")]
-    public double MouseResistance { get; set; } = 1.0;
+    public double MouseResistance { get; set; }
 
     [JsonPropertyName("crystal_multiplier")]
-    public double CrystalMultiplier { get; set; } = 1.0;
+    public double CrystalMultiplier { get; set; }
 }
 
 /// <summary>
@@ -70,34 +70,34 @@ public class GameConfig
 public class BalanceConfig
 {
     [JsonPropertyName("base_hp")]
-    public int BaseHp { get; set; } = 100;
+    public int BaseHp { get; set; }
 
     [JsonPropertyName("hp_growth")]
-    public double HpGrowth { get; set; } = 1.2;
+    public double HpGrowth { get; set; }
 
     [JsonPropertyName("boss_interval")]
-    public int BossInterval { get; set; } = 10;
+    public int BossInterval { get; set; }
 
     [JsonPropertyName("boss_hp_multiplier")]
-    public double BossHpMultiplier { get; set; } = 3.0;
+    public double BossHpMultiplier { get; set; }
 
     [JsonPropertyName("time_limit")]
-    public int TimeLimit { get; set; } = 30;
+    public int TimeLimit { get; set; }
 
     [JsonPropertyName("base_gold_multiplier")]
-    public double BaseGoldMultiplier { get; set; } = 1.5;
+    public double BaseGoldMultiplier { get; set; }
 
     [JsonPropertyName("critical_chance")]
-    public double CriticalChance { get; set; } = 0.1;
+    public double CriticalChance { get; set; }
 
     [JsonPropertyName("critical_multiplier")]
-    public double CriticalMultiplier { get; set; } = 2.0;
+    public double CriticalMultiplier { get; set; }
 
     [JsonPropertyName("upgrade_cost_interval")]
-    public int UpgradeCostInterval { get; set; } = 50;  // 50스테이지마다 비용 2배
+    public int UpgradeCostInterval { get; set; }
 
     [JsonPropertyName("upgrade_cost_tier_multiplier")]
-    public double UpgradeCostTierMultiplier { get; set; } = 2.0;
+    public double UpgradeCostTierMultiplier { get; set; }
 
     [JsonPropertyName("tier_hp_system")]
     public TierHpSystemConfig TierHpSystem { get; set; } = new();
@@ -109,55 +109,55 @@ public class BalanceConfig
 public class TierHpSystemConfig
 {
     [JsonPropertyName("enabled")]
-    public bool Enabled { get; set; } = false;
+    public bool Enabled { get; set; }
 
     [JsonPropertyName("tier_interval")]
-    public int TierInterval { get; set; } = 1000;
+    public int TierInterval { get; set; }
 
     [JsonPropertyName("tier_multiplier")]
-    public double TierMultiplier { get; set; } = 1.0;
+    public double TierMultiplier { get; set; }
 
     [JsonPropertyName("tier_multiplier_decay_per_tier")]
-    public double TierMultiplierDecayPerTier { get; set; } = 1.0;
+    public double TierMultiplierDecayPerTier { get; set; }
 
     [JsonPropertyName("min_tier_multiplier")]
-    public double MinTierMultiplier { get; set; } = 0.0;
+    public double MinTierMultiplier { get; set; }
 
     [JsonPropertyName("tier_curve_exponent")]
-    public double TierCurveExponent { get; set; } = 1.0;
+    public double TierCurveExponent { get; set; }
 
     [JsonPropertyName("linear_growth_per_level")]
-    public int LinearGrowthPerLevel { get; set; } = 5;
+    public int LinearGrowthPerLevel { get; set; }
 
     [JsonPropertyName("min_linear_growth_per_level")]
-    public double MinLinearGrowthPerLevel { get; set; } = 0.0;
+    public double MinLinearGrowthPerLevel { get; set; }
 
     [JsonPropertyName("growth_decrease_per_tier")]
-    public double GrowthDecreasePerTier { get; set; } = 0.85;
+    public double GrowthDecreasePerTier { get; set; }
 
     [JsonPropertyName("late_start_level")]
-    public int LateStartLevel { get; set; } = 0;
+    public int LateStartLevel { get; set; }
 
     [JsonPropertyName("late_tier_interval")]
-    public int LateTierInterval { get; set; } = 0;
+    public int LateTierInterval { get; set; }
 
     [JsonPropertyName("late_tier_multiplier")]
-    public double LateTierMultiplier { get; set; } = 1.0;
+    public double LateTierMultiplier { get; set; }
 
     [JsonPropertyName("max_late_tiers")]
-    public int MaxLateTiers { get; set; } = 0;
+    public int MaxLateTiers { get; set; }
 }
 
 public class UpgradeConfig
 {
     [JsonPropertyName("base_cost")]
-    public int BaseCost { get; set; } = 100;
+    public int BaseCost { get; set; }
 
     [JsonPropertyName("cost_multiplier")]
-    public double CostMultiplier { get; set; } = 1.5;
+    public double CostMultiplier { get; set; }
 
     [JsonPropertyName("attack_increase")]
-    public double AttackIncrease { get; set; } = 0.5;
+    public double AttackIncrease { get; set; }
 }
 
 /// <summary>
@@ -165,10 +165,10 @@ public class UpgradeConfig
 /// </summary>
 public class MonsterConfig
 {
-    public int BaseHp { get; set; } = 10;
-    public int HpGrowth { get; set; } = 5;
-    public int BaseGold { get; set; } = 10;
-    public int GoldGrowth { get; set; } = 2;
+    public int BaseHp { get; set; }
+    public int HpGrowth { get; set; }
+    public int BaseGold { get; set; }
+    public int GoldGrowth { get; set; }
 }
 
 /// <summary>
@@ -210,10 +210,10 @@ public class StatGrowthConfig
     [JsonPropertyName("tier_config")]
     public StatTierEffectConfig? TierConfig { get; set; }
 
-    public int CalculateCost(int level, double? discountPercent = null)
+    public long CalculateCost(int level, double? discountPercent = null)
     {
         if (level <= 0) return 0;
-        if (MaxLevel > 0 && level >= MaxLevel) return int.MaxValue;
+        if (MaxLevel > 0 && level >= MaxLevel) return long.MaxValue;
 
         double linearFactor = 1.0 + level * GrowthRate;
         double exponentialFactor = Math.Pow(Multiplier, (double)level / SoftcapInterval);
@@ -224,7 +224,11 @@ public class StatGrowthConfig
             cost *= (1.0 - discountPercent.Value);
         }
 
-        return (int)Math.Ceiling(cost);
+        // 오버플로우 방지: long 범위 초과 시 센티넬 반환 (구매 불가)
+        if (double.IsNaN(cost) || double.IsInfinity(cost) || cost > 9.2E+18)
+            return long.MaxValue;
+
+        return (long)Math.Ceiling(cost);
     }
 
     public double CalculateEffect(int level)

@@ -209,8 +209,8 @@ namespace DeskWarrior.Managers
             // 연속 키 페널티 적용
             if (consecutivePenalty < 1.0)
             {
-                int originalDamage = result.Damage;
-                int penalizedDamage = (int)(result.Damage * consecutivePenalty);
+                long originalDamage = result.Damage;
+                long penalizedDamage = Helpers.SafeMath.ToLong(result.Damage * consecutivePenalty);
 
                 Logger.Log($"[Damage] Original: {originalDamage}, Penalty: {consecutivePenalty:F2}, Final: {penalizedDamage}");
 
@@ -240,7 +240,7 @@ namespace DeskWarrior.Managers
         private void ApplyDamageToMonster(Monster monster, DamageResult result, bool isMouse, bool isGoldenGoblinActive)
         {
             // 황금 고블린은 모든 업그레이드 무시, 1 데미지 고정
-            int actualDamage = isGoldenGoblinActive ? 1 : result.Damage;
+            long actualDamage = isGoldenGoblinActive ? 1 : result.Damage;
             monster.TakeDamage(actualDamage);
 
             // 상세 데미지 기록 생성

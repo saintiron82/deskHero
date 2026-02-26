@@ -1,4 +1,5 @@
 using System;
+using DeskWarrior.Helpers;
 
 namespace DeskWarrior.Models
 {
@@ -10,7 +11,7 @@ namespace DeskWarrior.Models
         /// <summary>
         /// 실제 적용된 데미지
         /// </summary>
-        public int ActualDamage { get; init; }
+        public long ActualDamage { get; init; }
 
         /// <summary>
         /// 데미지 적용 후 사망 여부
@@ -20,7 +21,7 @@ namespace DeskWarrior.Models
         /// <summary>
         /// 오버킬 데미지 (HP를 초과한 데미지)
         /// </summary>
-        public int OverkillDamage { get; init; }
+        public long OverkillDamage { get; init; }
     }
 
     /// <summary>
@@ -63,7 +64,7 @@ namespace DeskWarrior.Models
         /// <summary>
         /// 처치 시 획득 골드
         /// </summary>
-        public int GoldReward { get; private set; }
+        public long GoldReward { get; private set; }
 
         /// <summary>
         /// 살아있는지 여부
@@ -130,6 +131,31 @@ namespace DeskWarrior.Models
         /// </summary>
         public double MouseResistance { get; set; } = 1.0;
 
+        /// <summary>
+        /// 황금 고블린 등급 ID (bronze/silver/gold/diamond/legendary)
+        /// </summary>
+        public string? GradeId { get; private set; }
+
+        /// <summary>
+        /// 황금 고블린 등급 배경 이미지 경로
+        /// </summary>
+        public string? GradeBackground { get; private set; }
+
+        /// <summary>
+        /// 황금 고블린 등급 테두리 색상
+        /// </summary>
+        public string? GradeBorderColor { get; private set; }
+
+        /// <summary>
+        /// 황금 고블린 등급 이름 색상
+        /// </summary>
+        public string? GradeNameColor { get; private set; }
+
+        /// <summary>
+        /// 황금 고블린 보상 배수 (스폰 시 결정)
+        /// </summary>
+        public int RewardMultiplier { get; private set; }
+
         #endregion
 
         #region Constructor
@@ -163,20 +189,23 @@ namespace DeskWarrior.Models
         }
 
         /// <summary>
-        /// 황금 고블린 생성 (특수 몬스터)
+        /// 황금 고블린 생성 (등급 시스템 적용)
         /// </summary>
-        public Monster(GoldenGoblinConfig config, int level, string localizedName)
+        public Monster(GoldenGoblinConfig config, int level, string localizedName, GoldenGoblinGrade? grade = null, int rewardMultiplier = 0)
         {
             Level = level;
             IsBoss = false;
             Type = MonsterType.GoldenGoblin;
+            RewardMultiplier = rewardMultiplier;
 
-            // 황금 고블린 HP: 100~200 랜덤 (레벨 무관)
-            // HpMin/HpMax가 설정되어 있으면 랜덤, 아니면 고정 Hp 사용
-            if (config.HpMin > 0 && config.HpMax > config.HpMin)
+            // 등급이 있으면 등급의 HP 범위 사용, 없으면 기본 config 사용
+            int hpMin = grade?.HpMin ?? config.HpMin;
+            int hpMax = grade?.HpMax ?? config.HpMax;
+
+            if (hpMin > 0 && hpMax > hpMin)
             {
                 var random = new System.Random();
-                MaxHp = random.Next(config.HpMin, config.HpMax + 1);
+                MaxHp = random.Next(hpMin, hpMax + 1);
             }
             else
             {
@@ -189,9 +218,20 @@ namespace DeskWarrior.Models
 
             Id = config.Id;
             Name = localizedName;
-            SkinType = config.Sprite;
             Emoji = config.Emoji;
             TotalDamageTaken = 0;
+
+            // 등급이 있으면 등급 스프라이트, 없으면 기본 스프라이트
+            SkinType = grade?.Sprite ?? config.Sprite;
+
+            // 등급 정보 설정
+            if (grade != null)
+            {
+                GradeId = grade.GradeId;
+                GradeBackground = grade.Background;
+                GradeBorderColor = grade.BorderColor;
+                GradeNameColor = grade.NameColor;
+            }
 
             // 황금 고블린은 특수 몬스터이므로 속성 없음
             Species = "golden_goblin";
@@ -206,7 +246,7 @@ namespace DeskWarrior.Models
         /// 데미지 적용
         /// </summary>
         /// <returns>실제 적용된 데미지</returns>
-        public int TakeDamage(int damage)
+        public long TakeDamage(long damage)
         {
             var result = ApplyDamage(damage);
             return result.ActualDamage;
@@ -215,7 +255,7 @@ namespace DeskWarrior.Models
         /// <summary>
         /// 데미지 적용 (상세 결과 반환)
         /// </summary>
-        public DamageApplyResult ApplyDamage(int damage)
+        public DamageApplyResult ApplyDamage(long damage)
         {
             if (damage < 0)
             {
@@ -223,8 +263,8 @@ namespace DeskWarrior.Models
             }
 
             long previousHp = CurrentHp;
-            int actualDamage = (int)Math.Min(damage, CurrentHp);
-            int overkill = damage - actualDamage;
+            long actualDamage = Math.Min(damage, CurrentHp);
+            long overkill = damage - actualDamage;
 
             CurrentHp -= actualDamage;
             TotalDamageTaken += actualDamage;
@@ -240,7 +280,7 @@ namespace DeskWarrior.Models
         /// <summary>
         /// HP 회복 (필요시 사용)
         /// </summary>
-        public int Heal(int amount)
+        public long Heal(long amount)
         {
             if (amount < 0)
             {
@@ -249,7 +289,7 @@ namespace DeskWarrior.Models
 
             long previousHp = CurrentHp;
             CurrentHp = Math.Min(CurrentHp + amount, MaxHp);
-            return (int)(CurrentHp - previousHp);
+            return CurrentHp - previousHp;
         }
 
         /// <summary>
@@ -263,10 +303,10 @@ namespace DeskWarrior.Models
         /// <summary>
         /// 남은 HP로 예상되는 처치 필요 타수 계산
         /// </summary>
-        public int EstimateHitsToKill(int damagePerHit)
+        public long EstimateHitsToKill(long damagePerHit)
         {
-            if (damagePerHit <= 0) return int.MaxValue;
-            return (int)Math.Ceiling((double)CurrentHp / damagePerHit);
+            if (damagePerHit <= 0) return long.MaxValue;
+            return (long)Math.Ceiling((double)CurrentHp / damagePerHit);
         }
 
         /// <summary>
@@ -315,7 +355,7 @@ namespace DeskWarrior.Models
             {
                 tierMultiplier = config.MinTierMultiplier;
             }
-            long tierBaseHp = (long)(baseHp * tierMultiplier);
+            long tierBaseHp = SafeMath.ToLong(baseHp * tierMultiplier);
 
             int levelInTier = (level - 1) % config.TierInterval;
             double tierGrowthRate = config.LinearGrowthPerLevel * Math.Pow(config.GrowthDecreasePerTier, tierIndex);
@@ -323,8 +363,8 @@ namespace DeskWarrior.Models
             {
                 tierGrowthRate = config.MinLinearGrowthPerLevel;
             }
-            long linearIncrease = (long)(levelInTier * tierGrowthRate);
-            long hp = tierBaseHp + linearIncrease;
+            long linearIncrease = SafeMath.ToLong(levelInTier * tierGrowthRate);
+            long hp = SafeMath.AddLong(tierBaseHp, linearIncrease);
 
             if (config.LateStartLevel > 0 && level >= config.LateStartLevel)
             {
@@ -335,15 +375,15 @@ namespace DeskWarrior.Models
                 double lateMultiplier = config.LateTierMultiplier != 1.0
                     ? Math.Pow(config.LateTierMultiplier, lateTier)
                     : 1.0;
-                hp = (long)(hp * lateMultiplier);
+                hp = SafeMath.MulLong(hp, lateMultiplier);
             }
 
             return hp;
         }
 
-        private static int CalculateGoldReward(int baseGold, int goldGrowth, int level)
+        private static long CalculateGoldReward(int baseGold, int goldGrowth, int level)
         {
-            return baseGold + level * goldGrowth;
+            return (long)baseGold + SafeMath.MulToLong(level, goldGrowth);
         }
 
         private static string GetSkinType(MonsterData data)

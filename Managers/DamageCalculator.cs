@@ -1,6 +1,6 @@
 using System;
-using DeskWarrior.Models;
 using DeskWarrior.Helpers;
+using DeskWarrior.Models;
 
 namespace DeskWarrior.Managers
 {
@@ -18,7 +18,7 @@ namespace DeskWarrior.Managers
     /// </summary>
     public struct DamageResult
     {
-        public int Damage { get; init; }
+        public long Damage { get; init; }
         public bool IsCritical { get; init; }
         public bool IsMultiHit { get; init; }
         public bool IsCombo { get; init; }
@@ -26,8 +26,8 @@ namespace DeskWarrior.Managers
         public bool IsResisted { get; init; } // NEW: 저항 적용 여부
 
         // 계산 과정 상세 (Damage Meter용)
-        public int BasePower { get; init; }
-        public int BaseAttackBonus { get; init; }
+        public long BasePower { get; init; }
+        public long BaseAttackBonus { get; init; }
         public double AttackMultiplier { get; init; }
         public double CritMultiplier { get; init; }
         public double UtilityBonus { get; init; } // NEW: 유틸리티 스탯 보너스
@@ -196,8 +196,8 @@ namespace DeskWarrior.Managers
                 effectivePower *= resistanceModifier;
             }
 
-            // 최종 데미지 = (int)⑧ (최소 1 보장)
-            int finalDamage = Math.Max(1, (int)effectivePower);
+            // 최종 데미지 (최소 1 보장)
+            long finalDamage = Math.Max(1L, SafeMath.ToLong(effectivePower));
             return new DamageResult
             {
                 Damage = finalDamage,

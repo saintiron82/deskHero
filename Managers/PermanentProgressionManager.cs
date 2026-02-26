@@ -61,10 +61,10 @@ namespace DeskWarrior.Managers
             {
                 growth = bossLevel;
             }
-            int baseCrystals = (int)Math.Round(
+            int baseCrystals = Helpers.SafeMath.ToInt(Math.Round(
                 _bossDropConfig.BaseCrystalAmount +
                 (_bossDropConfig.CrystalPerLevel * growth)
-            );
+            ));
 
             // ✅ 영구 스탯 보너스 적용
             if (permStats != null)
@@ -72,9 +72,13 @@ namespace DeskWarrior.Managers
                 baseCrystals += permStats.GetCrystalFlatBonus();
             }
 
-            // ✅ 속성별 배율 적용 (Holy/Dark: 2.0배 고정)
-            double elementMultiplier = crystalMultipliers.GetValueOrDefault(bossElement, 1.0);
-            int finalCrystals = (int)(baseCrystals * elementMultiplier);
+            // ✅ 속성별 배율 적용
+            if (!crystalMultipliers.TryGetValue(bossElement, out double elementMultiplier))
+            {
+                Logger.Log($"[Warning] Crystal multiplier not found for element '{bossElement}', defaulting to 1.0");
+                elementMultiplier = 1.0;
+            }
+            int finalCrystals = Helpers.SafeMath.ToInt(baseCrystals * elementMultiplier);
 
             // ✅ 분산 제거 - 모든 보상은 고정값 (황금 고블린 제외)
             // 이전: variance ±20% 적용 (제거됨)

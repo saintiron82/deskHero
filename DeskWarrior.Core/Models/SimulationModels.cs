@@ -1,3 +1,5 @@
+using DeskWarrior.Core.Simulation;
+
 namespace DeskWarrior.Core.Models;
 
 /// <summary>
@@ -126,22 +128,42 @@ public class SimInGameStats
 }
 
 /// <summary>
+/// 디버그용 레벨별 정보
+/// </summary>
+public class DebugLevelInfo
+{
+    public long Level { get; set; }
+    public long MonsterHp { get; set; }
+    public bool IsBoss { get; set; }
+    public bool IsGoldenGoblin { get; set; }
+    public string Element { get; set; } = "normal";
+    public int BaseDamage { get; set; }
+    public long Gold { get; set; }
+    public long GoldReward { get; set; }
+    public int KeyboardLevel { get; set; }
+    public int MouseLevel { get; set; }
+    public double TimeElapsed { get; set; }
+    public double TimeLimit { get; set; }
+    public bool Survived { get; set; }
+}
+
+/// <summary>
 /// 시뮬레이션용 몬스터 데이터
 /// 게임과 동일한 공식 사용 (지수 성장)
 /// </summary>
 public class SimMonster
 {
-    public int Level { get; private set; }
+    public long Level { get; private set; }
     public long MaxHp { get; private set; }
     public long CurrentHp { get; private set; }
     public bool IsBoss { get; private set; }
-    public int GoldReward { get; private set; }
+    public long GoldReward { get; private set; }
     public string Element { get; private set; }  // ✅ 추가: 몬스터 속성
     public double KeyboardResistance { get; private set; }  // ✅ 추가: 키보드 저항
     public double MouseResistance { get; private set; }  // ✅ 추가: 마우스 저항
     public bool IsAlive => CurrentHp > 0;
 
-    public SimMonster(int level, bool isBoss, int baseHp, double hpGrowth, int baseGold, double goldGrowth, TierHpSystemConfig? tierConfig = null, string element = "normal", double keyboardResistance = 1.0, double mouseResistance = 1.0)
+    public SimMonster(long level, bool isBoss, int baseHp, double hpGrowth, int baseGold, double goldGrowth, TierHpSystemConfig? tierConfig = null, string element = "normal", double keyboardResistance = 1.0, double mouseResistance = 1.0)
     {
         Level = level;
         IsBoss = isBoss;
@@ -156,7 +178,7 @@ public class SimMonster
         CurrentHp = MaxHp;
 
         // 골드 보상: baseGold + level * goldGrowth (게임과 동일)
-        GoldReward = baseGold + level * (int)goldGrowth;
+        GoldReward = (long)baseGold + (long)level * (long)goldGrowth;
     }
 
     public void ApplyHpModifier(double modifier)
@@ -164,19 +186,19 @@ public class SimMonster
         if (modifier == 1.0)
             return;
 
-        MaxHp = (long)(MaxHp * modifier);
+        MaxHp = OverflowGuard.ToLong((double)MaxHp * modifier, "MonsterHP.Modifier", Level);
         CurrentHp = MaxHp;
     }
 
     /// <summary>
     /// HP 계산 (티어 시스템 지원)
     /// </summary>
-    private static long CalculateHp(int baseHp, double hpGrowth, int level, TierHpSystemConfig? tierConfig)
+    private static long CalculateHp(int baseHp, double hpGrowth, long level, TierHpSystemConfig? tierConfig)
     {
         // Feature Flag: 티어 시스템 활성화 시
         if (tierConfig?.Enabled == true)
         {
-            int tier = (level - 1) / tierConfig.TierInterval;
+            long tier = (level - 1) / tierConfig.TierInterval;
             double tierIndex = tier;
             if (tierConfig.TierCurveExponent > 0.0 && tierConfig.TierCurveExponent != 1.0 && tierIndex > 0.0)
             {
@@ -192,9 +214,9 @@ public class SimMonster
             {
                 tierMultiplier = tierConfig.MinTierMultiplier;
             }
-            long tierBaseHp = (long)(baseHp * tierMultiplier);
+            long tierBaseHp = OverflowGuard.ToLong(baseHp * tierMultiplier, "MonsterHP.TierBase", level);
 
-            int levelInTier = (level - 1) % tierConfig.TierInterval;
+            long levelInTier = (level - 1) % tierConfig.TierInterval;
 
             // 티어마다 성장률 감소 적용
             double tierGrowthRate = tierConfig.LinearGrowthPerLevel * Math.Pow(tierConfig.GrowthDecreasePerTier, tierIndex);
@@ -202,19 +224,19 @@ public class SimMonster
             {
                 tierGrowthRate = tierConfig.MinLinearGrowthPerLevel;
             }
-            long linearIncrease = (long)(levelInTier * tierGrowthRate);
-            long hp = tierBaseHp + linearIncrease;
+            long linearIncrease = OverflowGuard.ToLong(levelInTier * tierGrowthRate, "MonsterHP.Linear", level);
+            long hp = OverflowGuard.Add(tierBaseHp, linearIncrease, "MonsterHP.Total", level);
 
             if (tierConfig.LateStartLevel > 0 && level >= tierConfig.LateStartLevel)
             {
                 int lateInterval = tierConfig.LateTierInterval > 0 ? tierConfig.LateTierInterval : tierConfig.TierInterval;
-                int lateTier = (level - tierConfig.LateStartLevel) / Math.Max(1, lateInterval);
+                long lateTier = (level - tierConfig.LateStartLevel) / Math.Max(1, lateInterval);
                 if (tierConfig.MaxLateTiers > 0 && lateTier > tierConfig.MaxLateTiers)
                     lateTier = tierConfig.MaxLateTiers;
                 double lateMultiplier = tierConfig.LateTierMultiplier != 1.0
                     ? Math.Pow(tierConfig.LateTierMultiplier, lateTier)
                     : 1.0;
-                hp = (long)(hp * lateMultiplier);
+                hp = OverflowGuard.ToLong((double)hp * lateMultiplier, "MonsterHP.Late", level);
             }
 
             return hp;
@@ -224,9 +246,9 @@ public class SimMonster
         return baseHp + (level - 1) * (int)hpGrowth;
     }
 
-    public int TakeDamage(int damage)
+    public long TakeDamage(long damage)
     {
-        int actualDamage = (int)Math.Min(damage, CurrentHp);
+        long actualDamage = Math.Min(damage, CurrentHp);
         CurrentHp -= actualDamage;
         return actualDamage;
     }
@@ -259,18 +281,24 @@ public class SessionResult
     public long GoldenGoblinGoldEarned { get; set; } // 황금 고블린에서 획득한 골드
 
     // ✅ 인게임 업그레이드 (세션 종료 시 최종값)
-    public int SpentGold { get; set; }                // 소비한 골드
+    public long SpentGold { get; set; }                // 소비한 골드
     public int FinalKeyboardPowerLevel { get; set; }  // 최종 키보드 파워 레벨
     public int FinalMousePowerLevel { get; set; }     // 최종 마우스 파워 레벨
 
     // ✅ 영구 스탯 투자 (세션 후 처리)
-    public int SpentCrystals { get; set; }            // 이번 세션 후 소비한 크리스탈
+    public long SpentCrystals { get; set; }            // 이번 세션 후 소비한 크리스탈
     public Dictionary<string, int> PermanentStatLevels { get; set; } = new(); // 세션 종료 시 영구 스탯 레벨
 
     // ✅ 메타데이터
     public int SessionNumber { get; set; }            // 세션 번호 (1, 2, 3...)
     public double TotalPlaytime { get; set; }         // 누적 플레이 시간 (초)
-    public int RemainingCrystals { get; set; }        // 남은 크리스탈 (누적)
+    public long RemainingCrystals { get; set; }        // 남은 크리스탈 (누적)
+
+    // 오버플로우 감지
+    public bool OverflowDetected { get; set; }
+    public string? OverflowLocation { get; set; }
+    public long OverflowLevel { get; set; }
+    public double OverflowValue { get; set; }
 }
 
 /// <summary>

@@ -1,5 +1,4 @@
 using DeskWarrior.Core.Models;
-using DeskWarrior.Core.Formulas;
 using System.Linq;
 
 namespace DeskWarrior.Core.Simulation;
@@ -23,6 +22,11 @@ public class SimulationEngine
     // 황금 고블린 상태
     private bool _isGoldenGoblinActive = false;
     private int _killsSinceLastGoblin = 0;
+
+    /// <summary>
+    /// 디버그용 레벨별 이벤트 (DebugRunner에서 사용)
+    /// </summary>
+    public event Action<DebugLevelInfo>? OnLevelProcessed;
 
     public SimulationEngine(
         GameConfig gameConfig,
@@ -108,9 +112,9 @@ public class SimulationEngine
         {
             startLevel = Math.Min(startLevel, Math.Max(0, maxStartLevel.Value));
         }
-        int currentLevel = 1 + startLevel;
-        int gold = 20 + permStats.StartGold;  // ✅ 시작 보너스: 첫 업그레이드 보장
-        int startGold = gold;  // ✅ 시작 골드 추적 (SpentGold 계산용)
+        long currentLevel = 1 + startLevel;
+        long gold = 20 + permStats.StartGold;  // ✅ 시작 보너스: 첫 업그레이드 보장
+        long startGold = gold;  // ✅ 시작 골드 추적 (SpentGold 계산용)
         inGameStats.KeyboardPowerLevel = permStats.StartKeyboardPower;
         inGameStats.MousePowerLevel = permStats.StartMousePower;
 
@@ -121,6 +125,8 @@ public class SimulationEngine
         int comboStack = 0;
         double lastInputInterval = 0;
 
+        try
+        {
         while (true)
         {
 
@@ -169,11 +175,11 @@ public class SimulationEngine
                     int multiplier = _goldenGoblinConfig.RewardMultiplierMin +
                         (int)(triangular * (_goldenGoblinConfig.RewardMultiplierMax - _goldenGoblinConfig.RewardMultiplierMin));
 
-                    int expectedGold = CalculateStageExpectedGold(currentLevel);
-                    int goldenGoblinReward = expectedGold * multiplier;
+                    long expectedGold = CalculateStageExpectedGold(currentLevel);
+                    long goldenGoblinReward = OverflowGuard.Mul(expectedGold, multiplier, "Gold.GoldenGoblin", currentLevel);
 
-                    gold += goldenGoblinReward;
-                    result.TotalGold += goldenGoblinReward;
+                    gold = OverflowGuard.Add(gold, goldenGoblinReward, "Gold.GoblinAccum", currentLevel);
+                    result.TotalGold = OverflowGuard.Add(result.TotalGold, goldenGoblinReward, "Gold.TotalAccum", currentLevel);
                     result.GoldenGoblinsKilled++;
                     result.GoldenGoblinGoldEarned += goldenGoblinReward;
                     result.MonstersKilled++;
@@ -187,6 +193,23 @@ public class SimulationEngine
                     result.GoldenGoblinsEscaped++;
                     _killsSinceLastGoblin = Math.Max(0, _killsSinceLastGoblin) + 1;
                 }
+
+                OnLevelProcessed?.Invoke(new DebugLevelInfo
+                {
+                    Level = currentLevel,
+                    MonsterHp = goblin.MaxHp,
+                    IsBoss = false,
+                    IsGoldenGoblin = true,
+                    Element = "golden",
+                    BaseDamage = 1,
+                    Gold = gold,
+                    GoldReward = goblin.IsAlive ? 0 : result.GoldenGoblinGoldEarned,
+                    KeyboardLevel = inGameStats.KeyboardPowerLevel,
+                    MouseLevel = inGameStats.MousePowerLevel,
+                    TimeElapsed = goblinTimeElapsed,
+                    TimeLimit = goblinTimeLimit,
+                    Survived = !goblin.IsAlive
+                });
 
                 _isGoldenGoblinActive = false;
                 currentLevel++;
@@ -205,7 +228,7 @@ public class SimulationEngine
                 // 자동 업그레이드 시도
                 if (profile.AutoUpgrade)
                 {
-                    TryAutoUpgrade(ref inGameStats, ref gold, permStats.UpgradeCostReduction, currentLevel);
+                    TryAutoUpgrade(ref inGameStats, ref gold, permStats.UpgradeCostReduction);
                 }
 
                 // 입력 생성 (CPS 기반)
@@ -236,7 +259,7 @@ public class SimulationEngine
 
                 basePower += permStats.BaseAttack;
 
-                int damage = CalculateDamage(basePower, permStats, comboStack, monster, useMouse, out bool isCrit);
+                long damage = CalculateDamage(basePower, permStats, comboStack, monster, useMouse, out bool isCrit);
 
                 if (isCrit) result.CriticalHits++;
 
@@ -247,6 +270,22 @@ public class SimulationEngine
             // 타임아웃 처리 = 게임오버
             if (monster.IsAlive)
             {
+                OnLevelProcessed?.Invoke(new DebugLevelInfo
+                {
+                    Level = currentLevel,
+                    MonsterHp = monster.MaxHp,
+                    IsBoss = isBoss,
+                    Element = monster.Element,
+                    BaseDamage = 1 + GetStatEffect("keyboard_power", inGameStats.KeyboardPowerLevel) + permStats.BaseAttack,
+                    Gold = gold,
+                    GoldReward = 0,
+                    KeyboardLevel = inGameStats.KeyboardPowerLevel,
+                    MouseLevel = inGameStats.MousePowerLevel,
+                    TimeElapsed = monsterTimeElapsed,
+                    TimeLimit = monsterTimeLimit,
+                    Survived = false
+                });
+
                 result.MaxLevel = currentLevel;
                 result.EndReason = "timeout";
                 result.SessionDuration = sessionTime;
@@ -300,19 +339,50 @@ public class SimulationEngine
             double goldFlatPerm = permStats.GoldFlatPerm;
             double goldFlat = baseGold + goldFlatPerm;
             double goldMultiPerm = permStats.GoldMultiPerm;
-            int goldReward = (int)(goldFlat * (1.0 + goldMultiPerm));
+            long goldReward = OverflowGuard.ToLong(goldFlat * (1.0 + goldMultiPerm), "Gold.Reward", currentLevel);
 
-            gold += goldReward;
-            result.TotalGold += goldReward;
+            gold = OverflowGuard.Add(gold, goldReward, "Gold.MonsterAccum", currentLevel);
+            result.TotalGold = OverflowGuard.Add(result.TotalGold, goldReward, "Gold.TotalAccum", currentLevel);
+
+            OnLevelProcessed?.Invoke(new DebugLevelInfo
+            {
+                Level = currentLevel,
+                MonsterHp = monster.MaxHp,
+                IsBoss = isBoss,
+                Element = monster.Element,
+                BaseDamage = 1 + GetStatEffect("keyboard_power", inGameStats.KeyboardPowerLevel) + permStats.BaseAttack,
+                Gold = gold,
+                GoldReward = goldReward,
+                KeyboardLevel = inGameStats.KeyboardPowerLevel,
+                MouseLevel = inGameStats.MousePowerLevel,
+                TimeElapsed = monsterTimeElapsed,
+                TimeLimit = monsterTimeLimit,
+                Survived = true
+            });
 
             // 인게임 업그레이드 (골드 사용)
             PerformInGameUpgrades(ref gold, inGameStats, currentLevel, permStats.UpgradeCostReduction);
 
             currentLevel++;
         }
+        } // try
+        catch (SimulationOverflowException ex)
+        {
+            result.MaxLevel = currentLevel;
+            result.EndReason = $"overflow:{ex.Location}";
+            result.SessionDuration = sessionTime;
+            result.CrystalsFromStages = crystalTracker.GetStageCompletionCrystals();
+            result.OverflowDetected = true;
+            result.OverflowLocation = ex.Location;
+            result.OverflowLevel = ex.GameLevel;
+            result.OverflowValue = ex.ComputedValue;
+            result.FinalKeyboardPowerLevel = inGameStats.KeyboardPowerLevel;
+            result.FinalMousePowerLevel = inGameStats.MousePowerLevel;
+            return result;
+        }
     }
 
-    private SimMonster CreateMonster(int level, bool isBoss, out double timeScale)
+    private SimMonster CreateMonster(long level, bool isBoss, out double timeScale)
     {
         // 기본값 (레거시 폴백: CharacterData 첫 몬스터)
         int baseHp = _monsterConfig.BaseHp;
@@ -388,7 +458,7 @@ public class SimulationEngine
     /// <summary>
     /// 황금 고블린 생성
     /// </summary>
-    private SimMonster CreateGoldenGoblin(int level)
+    private SimMonster CreateGoldenGoblin(long level)
     {
         // 게임 로직과 동일: HpMin/HpMax 있으면 랜덤, 없으면 고정
         int hp;
@@ -415,19 +485,19 @@ public class SimulationEngine
     /// <summary>
     /// 스테이지 예상 골드 계산 (게임 로직과 동일)
     /// </summary>
-    private int CalculateStageExpectedGold(int level)
+    private long CalculateStageExpectedGold(long level)
     {
         // 게임의 CalculateStageExpectedGold 로직 복제
         // 배치 시스템 사용 시: 모든 몬스터 평균 골드
         if (_useBatchSystem && _monsterBatchProvider != null)
         {
-            int avg = _monsterBatchProvider.CalculateStageExpectedGold(level);
+            long avg = _monsterBatchProvider.CalculateStageExpectedGold(level);
             if (avg > 0)
                 return avg;
         }
 
         // 레거시 폴백: 기본 몬스터 값
-        return _monsterConfig.BaseGold + level * _monsterConfig.GoldGrowth;
+        return (long)_monsterConfig.BaseGold + level * _monsterConfig.GoldGrowth;
     }
 
     /// <summary>
@@ -476,19 +546,19 @@ public class SimulationEngine
         return 0;
     }
 
-    private int GetUpgradeCost(string statId, int level, double discountPercent, int currentStage = 1)
+    private long GetUpgradeCost(string statId, int level, double discountPercent, int currentStage = 1)
     {
         if (_inGameStatConfigs.TryGetValue(statId, out var config))
         {
             return config.CalculateCost(level + 1, discountPercent);
         }
-        return int.MaxValue;
+        return long.MaxValue;
     }
 
-    private void TryAutoUpgrade(ref SimInGameStats stats, ref int gold, double discountPercent, int currentStage)
+    private void TryAutoUpgrade(ref SimInGameStats stats, ref long gold, double discountPercent)
     {
         // 키보드 파워 우선 업그레이드
-        int kbCost = GetUpgradeCost("keyboard_power", stats.KeyboardPowerLevel, discountPercent, currentStage);
+        long kbCost = GetUpgradeCost("keyboard_power", stats.KeyboardPowerLevel, discountPercent);
         if (gold >= kbCost)
         {
             gold -= kbCost;
@@ -497,7 +567,7 @@ public class SimulationEngine
         }
 
         // 마우스 파워 업그레이드
-        int msCost = GetUpgradeCost("mouse_power", stats.MousePowerLevel, discountPercent, currentStage);
+        long msCost = GetUpgradeCost("mouse_power", stats.MousePowerLevel, discountPercent);
         if (gold >= msCost)
         {
             gold -= msCost;
@@ -563,7 +633,7 @@ public class SimulationEngine
         return currentStack;
     }
 
-    private int CalculateDamage(int basePower, SimPermanentStats permStats, int comboStack, SimMonster monster, bool useMouse, out bool isCritical)
+    private long CalculateDamage(int basePower, SimPermanentStats permStats, int comboStack, SimMonster monster, bool useMouse, out bool isCritical)
     {
         // ① basePower에는 BaseAttack이 포함됨 (GameManager 공식과 동일하게 분리)
         int baseAttackBonus = permStats.BaseAttack;
@@ -622,22 +692,25 @@ public class SimulationEngine
             : monster.KeyboardResistance;
         effectivePower *= resistanceModifier;
 
-        return (int)effectivePower;
+        // Note: Step ⑨ (연속 키 페널티)는 시뮬레이터에서 의도적으로 생략
+        // CPS 기반 랜덤 간격 입력이므로 키 반복 매크로 방지용 페널티가 발동하지 않음
+
+        return Math.Max(1L, OverflowGuard.ToLong(effectivePower, "Damage.Calculate", monster.Level));
     }
 
     /// <summary>
     /// 인게임 업그레이드 수행 (골드 사용)
     /// 키보드/마우스 파워를 교대로 업그레이드
     /// </summary>
-    private void PerformInGameUpgrades(ref int gold, SimInGameStats inGameStats, int currentLevel, double discountPercent)
+    private void PerformInGameUpgrades(ref long gold, SimInGameStats inGameStats, long currentLevel, double discountPercent)
     {
         // 게임 로직과 유사한 비용 계산 적용
         while (true)
         {
-            int kbCost = GetUpgradeCost("keyboard_power", inGameStats.KeyboardPowerLevel, discountPercent, currentLevel);
-            int msCost = GetUpgradeCost("mouse_power", inGameStats.MousePowerLevel, discountPercent, currentLevel);
+            long kbCost = GetUpgradeCost("keyboard_power", inGameStats.KeyboardPowerLevel, discountPercent);
+            long msCost = GetUpgradeCost("mouse_power", inGameStats.MousePowerLevel, discountPercent);
 
-            if (kbCost == int.MaxValue && msCost == int.MaxValue)
+            if (kbCost == long.MaxValue && msCost == long.MaxValue)
                 break;
 
             if (kbCost <= msCost)

@@ -64,7 +64,7 @@ namespace DeskWarrior.Managers
         /// </summary>
         /// <param name="monster">처치한 몬스터</param>
         /// <returns>획득할 골드량</returns>
-        public int CalculateMonsterGoldReward(Monster monster)
+        public long CalculateMonsterGoldReward(Monster monster)
         {
             // 골드 획득 공식 (영구 스탯만 사용)
             // 기본 = 몬스터 기본 골드
@@ -77,23 +77,32 @@ namespace DeskWarrior.Managers
 
             // ×배수 = +가산 × (1 + gold_multi_perm (영구))
             double goldMultiPerm = _statGrowth.GetPermanentStatEffect("gold_multi_perm", permStats?.GoldMultiPermLevel ?? 0) / 100.0;
-            int goldReward = (int)(goldFlat * (1.0 + goldMultiPerm));
+            long goldReward = Helpers.SafeMath.ToLong(goldFlat * (1.0 + goldMultiPerm));
 
             return goldReward;
         }
 
         /// <summary>
-        /// 황금 고블린 처치 시 보상 계산
+        /// 황금 고블린 처치 시 보상 계산 (사전 결정된 배수 사용)
         /// </summary>
         /// <param name="currentStage">현재 스테이지 번호</param>
+        /// <param name="predeterminedMultiplier">스폰 시 결정된 배수 (0이면 새로 생성)</param>
         /// <returns>(보상 골드, 배율)</returns>
-        public (int reward, int multiplier) CalculateGoldenGoblinReward(int currentStage)
+        public (long reward, int multiplier) CalculateGoldenGoblinReward(int currentStage, int predeterminedMultiplier = 0)
         {
-            int expectedGold = _monsterSpawnManager.CalculateStageExpectedGold(currentStage);
-            int reward = _goldenGoblinManager.CalculateReward(expectedGold);
-            int multiplier = reward / Math.Max(expectedGold, 1);
+            long expectedGold = _monsterSpawnManager.CalculateStageExpectedGold(currentStage);
 
-            return (reward, multiplier);
+            if (predeterminedMultiplier > 0)
+            {
+                long reward = _goldenGoblinManager.CalculateRewardWithMultiplier(expectedGold, predeterminedMultiplier);
+                return (reward, predeterminedMultiplier);
+            }
+            else
+            {
+                long reward = _goldenGoblinManager.CalculateReward(expectedGold);
+                int multiplier = (int)(reward / Math.Max(expectedGold, 1));
+                return (reward, multiplier);
+            }
         }
 
         #endregion

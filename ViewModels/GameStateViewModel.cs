@@ -24,7 +24,7 @@ namespace DeskWarrior.ViewModels
         #region Properties
 
         public int CurrentLevel => _gameManager.CurrentLevel;
-        public int Gold => _gameManager.Gold;
+        public long Gold => _gameManager.Gold;
 
         public string LevelText
         {

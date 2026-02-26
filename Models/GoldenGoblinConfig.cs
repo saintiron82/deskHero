@@ -8,81 +8,89 @@ namespace DeskWarrior.Models
     /// </summary>
     public class GoldenGoblinConfig
     {
-        /// <summary>
-        /// 몬스터 ID
-        /// </summary>
         [JsonPropertyName("id")]
-        public string Id { get; set; } = "special_golden_goblin";
+        public string Id { get; set; } = "";
 
-        /// <summary>
-        /// 등장 확률 (0.00001 = 0.001%)
-        /// </summary>
         [JsonPropertyName("spawn_chance")]
-        public double SpawnChance { get; set; } = 0.001;
+        public double SpawnChance { get; set; }
 
-        /// <summary>
-        /// 재등장까지 필요한 처치 수
-        /// </summary>
         [JsonPropertyName("cooldown_kills")]
-        public int CooldownKills { get; set; } = 500;
+        public int CooldownKills { get; set; }
 
-        /// <summary>
-        /// 고정 HP (HpMin/HpMax가 설정되면 무시됨)
-        /// </summary>
         [JsonPropertyName("hp")]
-        public int Hp { get; set; } = 150;
+        public int Hp { get; set; }
 
-        /// <summary>
-        /// 최소 HP (랜덤 범위)
-        /// </summary>
         [JsonPropertyName("hp_min")]
-        public int HpMin { get; set; } = 100;
+        public int HpMin { get; set; }
 
-        /// <summary>
-        /// 최대 HP (랜덤 범위)
-        /// </summary>
         [JsonPropertyName("hp_max")]
-        public int HpMax { get; set; } = 200;
+        public int HpMax { get; set; }
 
-        /// <summary>
-        /// 제한 시간 (초)
-        /// </summary>
         [JsonPropertyName("time_limit")]
-        public int TimeLimit { get; set; } = 10;
+        public int TimeLimit { get; set; }
 
-        /// <summary>
-        /// 최소 보상 배수
-        /// </summary>
         [JsonPropertyName("reward_min")]
-        public int RewardMultiplierMin { get; set; } = 2;
+        public int RewardMultiplierMin { get; set; }
 
-        /// <summary>
-        /// 최대 보상 배수
-        /// </summary>
         [JsonPropertyName("reward_max")]
-        public int RewardMultiplierMax { get; set; } = 100;
+        public int RewardMultiplierMax { get; set; }
 
-        /// <summary>
-        /// 스프라이트 경로
-        /// </summary>
         [JsonPropertyName("sprite")]
-        public string Sprite { get; set; } = "Production/monster_goblin.png";
+        public string Sprite { get; set; } = "";
 
-        /// <summary>
-        /// 표시 이모지
-        /// </summary>
         [JsonPropertyName("emoji")]
-        public string Emoji { get; set; } = "💰";
+        public string Emoji { get; set; } = "";
 
-        /// <summary>
-        /// 다국어 이름
-        /// </summary>
         [JsonPropertyName("name")]
-        public Dictionary<string, string> Name { get; set; } = new()
-        {
-            ["ko-KR"] = "황금 고블린",
-            ["en-US"] = "Golden Goblin"
-        };
+        public Dictionary<string, string> Name { get; set; } = new();
+
+        [JsonPropertyName("grades")]
+        public List<GoldenGoblinGrade> Grades { get; set; } = new();
+    }
+
+    /// <summary>
+    /// 황금 고블린 등급 설정 (config/SpecialMonsters.json에서 로드)
+    /// </summary>
+    public class GoldenGoblinGrade
+    {
+        [JsonPropertyName("grade_id")]
+        public string GradeId { get; set; } = "";
+
+        [JsonPropertyName("reward_min")]
+        public int RewardMin { get; set; }
+
+        [JsonPropertyName("reward_max")]
+        public int RewardMax { get; set; }
+
+        [JsonPropertyName("hp_min")]
+        public int HpMin { get; set; }
+
+        [JsonPropertyName("hp_max")]
+        public int HpMax { get; set; }
+
+        [JsonPropertyName("time_limit")]
+        public int TimeLimit { get; set; }
+
+        [JsonPropertyName("sprite")]
+        public string Sprite { get; set; } = "";
+
+        [JsonPropertyName("sprite_hue_shift")]
+        public int SpriteHueShift { get; set; }
+
+        [JsonPropertyName("background")]
+        public string Background { get; set; } = "";
+
+        [JsonPropertyName("border_color")]
+        public string BorderColor { get; set; } = "";
+
+        [JsonPropertyName("name_color")]
+        public string NameColor { get; set; } = "";
+
+        [JsonPropertyName("effect")]
+        public string Effect { get; set; } = "";
+
+        [JsonPropertyName("name")]
+        public Dictionary<string, string> Name { get; set; } = new();
     }
 
     /// <summary>

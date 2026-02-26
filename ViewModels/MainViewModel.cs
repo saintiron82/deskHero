@@ -45,7 +45,7 @@ namespace DeskWarrior.ViewModels
         #region Properties - Game State (Direct Access)
 
         public int CurrentLevel => _gameManager.CurrentLevel;
-        public int Gold => _gameManager.Gold;
+        public long Gold => _gameManager.Gold;
         public int KeyboardPower => _gameManager.KeyboardPower;
         public int MousePower => _gameManager.MousePower;
         public double RemainingTime => _gameManager.RemainingTime;
@@ -125,7 +125,7 @@ namespace DeskWarrior.ViewModels
         public event EventHandler<GameInputEventArgs>? InputReceived;
         public event Action? SettingsRequested;
         public event Action? StatsRequested;
-        public event EventHandler? GoldenGoblinSpawned;
+        public event EventHandler<GoldenGoblinSpawnEventArgs>? GoldenGoblinSpawned;
         public event EventHandler? GoldenGoblinEscaped;
         public event EventHandler<GoldenGoblinRewardEventArgs>? GoldenGoblinDefeated;
 
@@ -311,7 +311,7 @@ namespace DeskWarrior.ViewModels
 
         private void OnMonsterDefeated(object? sender, EventArgs e)
         {
-            _soundManager.Play(SoundType.Defeat);
+            // 사운드는 MainWindow.OnMonsterDefeated에서 재생 (중복 방지)
             _gameState.Update();
             NotifyUIPropertiesChanged();
             MonsterDefeated?.Invoke(this, e);
@@ -322,10 +322,7 @@ namespace DeskWarrior.ViewModels
             _monster.Update();
             _timer.Update();
 
-            if (_gameManager.CurrentMonster?.IsBoss == true)
-            {
-                _soundManager.Play(SoundType.BossAppear);
-            }
+            // 사운드는 MainWindow.OnMonsterSpawned에서 재생 (중복 방지)
 
             NotifyUIPropertiesChanged();
             MonsterSpawned?.Invoke(this, e);
@@ -352,7 +349,7 @@ namespace DeskWarrior.ViewModels
             GameOver?.Invoke(this, e);
         }
 
-        private void OnGoldenGoblinSpawned(object? sender, EventArgs e)
+        private void OnGoldenGoblinSpawned(object? sender, GoldenGoblinSpawnEventArgs e)
         {
             _monster.Update();
             NotifyUIPropertiesChanged();
@@ -366,7 +363,7 @@ namespace DeskWarrior.ViewModels
 
         private void OnGoldenGoblinDefeated(object? sender, GoldenGoblinRewardEventArgs e)
         {
-            _soundManager.Play(SoundType.Defeat);
+            // 사운드는 MainWindow.OnGoldenGoblinDefeated에서 재생 (중복 방지)
             _gameState.Update();
             NotifyUIPropertiesChanged();
             GoldenGoblinDefeated?.Invoke(this, e);

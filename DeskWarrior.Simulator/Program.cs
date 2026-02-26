@@ -24,6 +24,12 @@ class Program
             return;
         }
 
+        if (args.Contains("--test-overflow"))
+        {
+            TestOverflowGuard(FindConfigPath());
+            return;
+        }
+
         if (args.Contains("--progress"))
         {
             try
@@ -364,6 +370,53 @@ Examples:
         throw new DirectoryNotFoundException("Could not find 'config' folder");
     }
 
+    /// <summary>
+    /// 오버플로우 가드 동작 테스트: 극한 레벨에서 오버플로우 감지 확인
+    /// </summary>
+    static void TestOverflowGuard(string configPath)
+    {
+        Console.WriteLine("=== Overflow Guard Test ===\n");
+
+        var engine = SimulatorFactory.CreateEngine(configPath, seed: 42);
+        var permStats = new SimPermanentStats();
+        permStats.SetConfig(engine.PermanentStatConfigs);
+
+        // 시작 레벨을 극도로 높게 설정하여 HP 계산 오버플로우 유발
+        // Tier 66 (레벨 6601) 이상에서 오버플로우 예상
+        int[] testStartLevels = { 1000, 3000, 5000, 6000, 6500, 10000, 20000, 50000 };
+
+        var profile = new InputProfile
+        {
+            AverageCps = 5.0,
+            CpsVariance = 0.0,
+            ComboSkill = ComboSkillLevel.None,
+            AutoUpgrade = true
+        };
+
+        foreach (var startLevel in testStartLevels)
+        {
+            permStats.StartLevelLevel = startLevel;
+            var result = engine.SimulateSession(permStats, profile);
+
+            if (result.OverflowDetected)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"  StartLv {startLevel,6} -> OVERFLOW at level {result.OverflowLevel}");
+                Console.WriteLine($"    Location: {result.OverflowLocation}");
+                Console.WriteLine($"    Value:    {result.OverflowValue:E4}");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"  StartLv {startLevel,6} -> OK (reached {result.MaxLevel}, reason: {result.EndReason})");
+                Console.ResetColor();
+            }
+        }
+
+        Console.WriteLine("\n=== Test Complete ===");
+    }
+
     static string FindBalanceDocPath(string configPath)
     {
         // config 폴더가 bin 안에 있으면 프로젝트 루트 찾기
@@ -592,6 +645,16 @@ Examples:
 
     static void PrintGameTimeResult(ProgressionResult result, SimulationOptions options)
     {
+        // 오버플로우 감지 시 경고 출력
+        if (result.OverflowDetected)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("!!! OVERFLOW DETECTED - Simulation stopped !!!");
+            Console.WriteLine($"  {result.OverflowReport}");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
         Console.WriteLine("=== Game Time Simulation Result ===");
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine($"  Recorded Death Level (first death after {options.GameHours}h): {result.TargetReachedDeathLevel}");
@@ -668,6 +731,16 @@ Examples:
 
     static void PrintProgressionResult(ProgressionResult result, SimulationOptions options)
     {
+        // 오버플로우 감지 시 경고 출력
+        if (result.OverflowDetected)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("!!! OVERFLOW DETECTED - Simulation stopped !!!");
+            Console.WriteLine($"  {result.OverflowReport}");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
         Console.WriteLine("=== Progression Result ===");
         if (result.Success)
         {

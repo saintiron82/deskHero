@@ -66,19 +66,20 @@ namespace DeskWarrior.Managers
         /// </summary>
         /// <param name="level">레벨</param>
         /// <returns>예상 골드</returns>
-        public int CalculateStageExpectedGold(int level)
+        public long CalculateStageExpectedGold(int level)
         {
             var monsters = _monsterDataManager.GetAllMonsters();
             if (monsters.Count == 0)
             {
-                Logger.Log("[WARNING] No monsters loaded in batch system");
-                return 10 + level * 2;  // Emergency fallback
+                Logger.Log("[WARNING] No monsters loaded in batch system, using emergency fallback");
+                var fb = _gameData.EmergencyFallback;
+                return fb.BaseGold + level * fb.GoldPerLevel;
             }
 
-            int totalGold = 0;
+            long totalGold = 0;
             foreach (var m in monsters)
             {
-                totalGold += m.BaseGold + level * m.GoldGrowth;
+                totalGold = Helpers.SafeMath.AddLong(totalGold, (long)m.BaseGold + Helpers.SafeMath.MulToLong(level, m.GoldGrowth));
             }
             return totalGold / monsters.Count;
         }
@@ -116,7 +117,7 @@ namespace DeskWarrior.Managers
             if (_gameData.ElementProperties.TryGetValue(element, out var elementProps))
             {
                 // HP 수정 적용
-                monster.MaxHp = (long)(monster.MaxHp * elementProps.HpModifier);
+                monster.MaxHp = Helpers.SafeMath.MulLong(monster.MaxHp, elementProps.HpModifier);
                 monster.CurrentHp = monster.MaxHp;
 
                 // 시간 배속, 저항 설정
@@ -140,7 +141,7 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
-        /// 황금 고블린 스폰
+        /// 황금 고블린 스폰 (등급 시스템 적용)
         /// </summary>
         private MonsterSpawnResult SpawnGoldenGoblin(int currentLevel)
         {
@@ -152,7 +153,9 @@ namespace DeskWarrior.Managers
                 Monster = monster,
                 SpawnType = MonsterSpawnType.GoldenGoblin,
                 TimeLimit = timeLimit,
-                IsGoldenGoblin = true
+                IsGoldenGoblin = true,
+                GradeId = monster.GradeId,
+                GradeBackground = monster.GradeBackground
             };
         }
 
@@ -170,6 +173,8 @@ namespace DeskWarrior.Managers
         public MonsterSpawnType SpawnType { get; set; }
         public int TimeLimit { get; set; }
         public bool IsGoldenGoblin { get; set; }
+        public string? GradeId { get; set; }
+        public string? GradeBackground { get; set; }
     }
 
     /// <summary>

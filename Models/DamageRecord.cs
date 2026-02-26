@@ -8,15 +8,15 @@ namespace DeskWarrior.Models
     public class DamageRecord
     {
         public DateTime Timestamp { get; init; } = DateTime.Now;
-        public int BasePower { get; init; }
-        public int BaseAttackBonus { get; init; }
+        public long BasePower { get; init; }
+        public long BaseAttackBonus { get; init; }
         public double AttackMultiplier { get; init; }
         public bool IsCritical { get; init; }
         public double CritMultiplier { get; init; }
         public bool IsMultiHit { get; init; }
         public bool IsCombo { get; init; }
         public int ComboStack { get; init; }
-        public int FinalDamage { get; init; }
+        public long FinalDamage { get; init; }
         public bool IsMouse { get; init; }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace DeskWarrior.Models
             var parts = new System.Collections.Generic.List<string>();
 
             // 기본 공격력
-            int current = BasePower;
+            long current = BasePower;
             parts.Add($"{BasePower}");
 
             // 기본 공격력 보너스
