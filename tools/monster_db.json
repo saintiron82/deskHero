@@ -1,7 +1,7 @@
 [
     {
         "id": "monster_slime",
-        "base_file": "monster_slimeA.png",
+        "base_file": "monster_slime.png",
         "variations": [
             {
                 "suffix": "A",
@@ -49,7 +49,7 @@
     },
     {
         "id": "monster_bat",
-        "base_file": "monster_batA.png",
+        "base_file": "monster_bat.png",
         "variations": [
             {
                 "suffix": "A",
@@ -97,7 +97,7 @@
     },
     {
         "id": "monster_skeleton",
-        "base_file": "monster_skeletonA.png",
+        "base_file": "monster_skeleton.png",
         "variations": [
             {
                 "suffix": "A",
@@ -145,7 +145,7 @@
     },
     {
         "id": "monster_goblin",
-        "base_file": "monster_goblinA.png",
+        "base_file": "monster_goblin.png",
         "variations": [
             {
                 "suffix": "A",
@@ -193,7 +193,7 @@
     },
     {
         "id": "monster_orc",
-        "base_file": "monster_orcA.png",
+        "base_file": "monster_orc.png",
         "variations": [
             {
                 "suffix": "A",
@@ -241,7 +241,7 @@
     },
     {
         "id": "monster_ghost",
-        "base_file": "monster_ghostA.png",
+        "base_file": "monster_ghost.png",
         "variations": [
             {
                 "suffix": "A",
@@ -289,7 +289,7 @@
     },
     {
         "id": "monster_golem",
-        "base_file": "monster_golemA.png",
+        "base_file": "monster_golem.png",
         "variations": [
             {
                 "suffix": "A",
@@ -337,7 +337,7 @@
     },
     {
         "id": "monster_mushroom",
-        "base_file": "monster_mushroomA.png",
+        "base_file": "monster_mushroom.png",
         "variations": [
             {
                 "suffix": "A",
@@ -385,7 +385,7 @@
     },
     {
         "id": "monster_spider",
-        "base_file": "monster_spiderA.png",
+        "base_file": "monster_spider.png",
         "variations": [
             {
                 "suffix": "A",
@@ -433,7 +433,7 @@
     },
     {
         "id": "monster_wolf",
-        "base_file": "monster_wolfA.png",
+        "base_file": "monster_wolf.png",
         "variations": [
             {
                 "suffix": "A",
@@ -481,7 +481,7 @@
     },
     {
         "id": "monster_snake",
-        "base_file": "monster_snakeA.png",
+        "base_file": "monster_snake.png",
         "variations": [
             {
                 "suffix": "A",
@@ -529,7 +529,7 @@
     },
     {
         "id": "monster_boar",
-        "base_file": "monster_boarA.png",
+        "base_file": "monster_boar.png",
         "variations": [
             {
                 "suffix": "A",
@@ -577,7 +577,7 @@
     },
     {
         "id": "monster_bee",
-        "base_file": "monster_beeA.png",
+        "base_file": "monster_bee.png",
         "variations": [
             {
                 "suffix": "A",
@@ -625,7 +625,7 @@
     },
     {
         "id": "monster_crab",
-        "base_file": "monster_crabA.png",
+        "base_file": "monster_crab.png",
         "variations": [
             {
                 "suffix": "A",
@@ -673,7 +673,7 @@
     },
     {
         "id": "monster_turtle",
-        "base_file": "monster_turtleA.png",
+        "base_file": "monster_turtle.png",
         "variations": [
             {
                 "suffix": "A",
@@ -721,7 +721,7 @@
     },
     {
         "id": "monster_plant",
-        "base_file": "monster_plantA.png",
+        "base_file": "monster_plant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -769,7 +769,7 @@
     },
     {
         "id": "monster_mimic",
-        "base_file": "monster_mimicA.png",
+        "base_file": "monster_mimic.png",
         "variations": [
             {
                 "suffix": "A",
@@ -817,7 +817,7 @@
     },
     {
         "id": "monster_eyeball",
-        "base_file": "monster_eyeballA.png",
+        "base_file": "monster_eyeball.png",
         "variations": [
             {
                 "suffix": "A",
@@ -865,7 +865,7 @@
     },
     {
         "id": "monster_elemental",
-        "base_file": "monster_elementalA.png",
+        "base_file": "monster_elemental.png",
         "variations": [
             {
                 "suffix": "A",
@@ -913,7 +913,7 @@
     },
     {
         "id": "monster_rat",
-        "base_file": "monster_ratA.png",
+        "base_file": "monster_rat.png",
         "variations": [
             {
                 "suffix": "A",
@@ -961,7 +961,7 @@
     },
     {
         "id": "monster_dullahan",
-        "base_file": "monster_dullahanA.png",
+        "base_file": "monster_dullahan.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1009,7 +1009,7 @@
     },
     {
         "id": "monster_harpy",
-        "base_file": "monster_harpyA.png",
+        "base_file": "monster_harpy.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1153,7 +1153,7 @@
     },
     {
         "id": "monster_dragon",
-        "base_file": "monster_dragonA.png",
+        "base_file": "monster_dragon.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1201,7 +1201,7 @@
     },
     {
         "id": "monster_knight",
-        "base_file": "monster_knightA.png",
+        "base_file": "monster_knight.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1249,7 +1249,7 @@
     },
     {
         "id": "monster_lich",
-        "base_file": "monster_lichA.png",
+        "base_file": "monster_lich.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1297,7 +1297,7 @@
     },
     {
         "id": "monster_demon",
-        "base_file": "monster_demonA.png",
+        "base_file": "monster_demon.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1345,7 +1345,7 @@
     },
     {
         "id": "monster_reaper",
-        "base_file": "monster_reaperA.png",
+        "base_file": "monster_reaper.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1393,7 +1393,7 @@
     },
     {
         "id": "monster_",
-        "base_file": "monster_A.png",
+        "base_file": "monster_.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1441,7 +1441,7 @@
     },
     {
         "id": "monster_nymph",
-        "base_file": "monster_nymphA.png",
+        "base_file": "monster_nymph.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1489,7 +1489,7 @@
     },
     {
         "id": "monster_mummy",
-        "base_file": "monster_mummyA.png",
+        "base_file": "monster_mummy.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1537,7 +1537,7 @@
     },
     {
         "id": "monster_zombie",
-        "base_file": "monster_zombieA.png",
+        "base_file": "monster_zombie.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1585,7 +1585,7 @@
     },
     {
         "id": "monster_banshee",
-        "base_file": "monster_bansheeA.png",
+        "base_file": "monster_banshee.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1633,7 +1633,7 @@
     },
     {
         "id": "monster_gargoyle",
-        "base_file": "monster_gargoyleA.png",
+        "base_file": "monster_gargoyle.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1681,7 +1681,7 @@
     },
     {
         "id": "monster_treant",
-        "base_file": "monster_treantA.png",
+        "base_file": "monster_treant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1729,7 +1729,7 @@
     },
     {
         "id": "monster_lizardman",
-        "base_file": "monster_lizardmanA.png",
+        "base_file": "monster_lizardman.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1777,7 +1777,7 @@
     },
     {
         "id": "monster_gnoll",
-        "base_file": "monster_gnollA.png",
+        "base_file": "monster_gnoll.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1825,7 +1825,7 @@
     },
     {
         "id": "monster_kobold",
-        "base_file": "monster_koboldA.png",
+        "base_file": "monster_kobold.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1873,7 +1873,7 @@
     },
     {
         "id": "monster_troll",
-        "base_file": "monster_trollA.png",
+        "base_file": "monster_troll.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1921,7 +1921,7 @@
     },
     {
         "id": "monster_ogre",
-        "base_file": "monster_ogreA.png",
+        "base_file": "monster_ogre.png",
         "variations": [
             {
                 "suffix": "A",
@@ -1969,7 +1969,7 @@
     },
     {
         "id": "monster_centaur",
-        "base_file": "monster_centaurA.png",
+        "base_file": "monster_centaur.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2017,7 +2017,7 @@
     },
     {
         "id": "monster_medusa",
-        "base_file": "monster_medusaA.png",
+        "base_file": "monster_medusa.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2065,7 +2065,7 @@
     },
     {
         "id": "monster_basilisk",
-        "base_file": "monster_basiliskA.png",
+        "base_file": "monster_basilisk.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2113,7 +2113,7 @@
     },
     {
         "id": "monster_griffin",
-        "base_file": "monster_griffinA.png",
+        "base_file": "monster_griffin.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2161,7 +2161,7 @@
     },
     {
         "id": "monster_chimera",
-        "base_file": "monster_chimeraA.png",
+        "base_file": "monster_chimera.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2209,7 +2209,7 @@
     },
     {
         "id": "monster_slimeking",
-        "base_file": "monster_slimekingA.png",
+        "base_file": "monster_slimeking.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2257,7 +2257,7 @@
     },
     {
         "id": "monster_mummylord",
-        "base_file": "monster_mummylordA.png",
+        "base_file": "monster_mummylord.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2305,7 +2305,7 @@
     },
     {
         "id": "monster_orclord",
-        "base_file": "monster_orclordA.png",
+        "base_file": "monster_orclord.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2353,7 +2353,7 @@
     },
     {
         "id": "monster_goblinking",
-        "base_file": "monster_goblinkingA.png",
+        "base_file": "monster_goblinking.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2401,7 +2401,7 @@
     },
     {
         "id": "monster_skeletonking",
-        "base_file": "monster_skeletonkingA.png",
+        "base_file": "monster_skeletonking.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2449,7 +2449,7 @@
     },
     {
         "id": "monster_cockatrice",
-        "base_file": "monster_cockatriceA.png",
+        "base_file": "monster_cockatrice.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2497,7 +2497,7 @@
     },
     {
         "id": "monster_wyvern",
-        "base_file": "monster_wyvernA.png",
+        "base_file": "monster_wyvern.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2545,7 +2545,7 @@
     },
     {
         "id": "monster_drake",
-        "base_file": "monster_drakeA.png",
+        "base_file": "monster_drake.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2593,7 +2593,7 @@
     },
     {
         "id": "monster_hippogriff",
-        "base_file": "monster_hippogriffA.png",
+        "base_file": "monster_hippogriff.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2641,7 +2641,7 @@
     },
     {
         "id": "monster_pegasus",
-        "base_file": "monster_pegasusA.png",
+        "base_file": "monster_pegasus.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2689,7 +2689,7 @@
     },
     {
         "id": "monster_cyclops",
-        "base_file": "monster_cyclopsA.png",
+        "base_file": "monster_cyclops.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2737,7 +2737,7 @@
     },
     {
         "id": "monster_ettin",
-        "base_file": "monster_ettinA.png",
+        "base_file": "monster_ettin.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2785,7 +2785,7 @@
     },
     {
         "id": "monster_hobgoblin",
-        "base_file": "monster_hobgoblinA.png",
+        "base_file": "monster_hobgoblin.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2833,7 +2833,7 @@
     },
     {
         "id": "monster_bugbear",
-        "base_file": "monster_bugbearA.png",
+        "base_file": "monster_bugbear.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2881,7 +2881,7 @@
     },
     {
         "id": "monster_lamia",
-        "base_file": "monster_lamiaA.png",
+        "base_file": "monster_lamia.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2929,7 +2929,7 @@
     },
     {
         "id": "monster_arachne",
-        "base_file": "monster_arachneA.png",
+        "base_file": "monster_arachne.png",
         "variations": [
             {
                 "suffix": "A",
@@ -2977,7 +2977,7 @@
     },
     {
         "id": "monster_drider",
-        "base_file": "monster_driderA.png",
+        "base_file": "monster_drider.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3025,7 +3025,7 @@
     },
     {
         "id": "monster_doppelganger",
-        "base_file": "monster_doppelgangerA.png",
+        "base_file": "monster_doppelganger.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3073,7 +3073,7 @@
     },
     {
         "id": "monster_shade",
-        "base_file": "monster_shadeA.png",
+        "base_file": "monster_shade.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3121,7 +3121,7 @@
     },
     {
         "id": "monster_phantom",
-        "base_file": "monster_phantomA.png",
+        "base_file": "monster_phantom.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3169,7 +3169,7 @@
     },
     {
         "id": "monster_homunculus",
-        "base_file": "monster_homunculusA.png",
+        "base_file": "monster_homunculus.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3217,7 +3217,7 @@
     },
     {
         "id": "monster_livingarmor",
-        "base_file": "monster_livingarmorA.png",
+        "base_file": "monster_livingarmor.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3265,7 +3265,7 @@
     },
     {
         "id": "monster_flyingsword",
-        "base_file": "monster_flyingswordA.png",
+        "base_file": "monster_flyingsword.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3313,7 +3313,7 @@
     },
     {
         "id": "monster_magicbook",
-        "base_file": "monster_magicbookA.png",
+        "base_file": "monster_magicbook.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3361,7 +3361,7 @@
     },
     {
         "id": "monster_poltergeist",
-        "base_file": "monster_poltergeistA.png",
+        "base_file": "monster_poltergeist.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3409,7 +3409,7 @@
     },
     {
         "id": "monster_kraken",
-        "base_file": "monster_krakenA.png",
+        "base_file": "monster_kraken.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3457,7 +3457,7 @@
     },
     {
         "id": "monster_phoenix",
-        "base_file": "monster_phoenixA.png",
+        "base_file": "monster_phoenix.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3505,7 +3505,7 @@
     },
     {
         "id": "monster_hydra",
-        "base_file": "monster_hydraA.png",
+        "base_file": "monster_hydra.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3553,7 +3553,7 @@
     },
     {
         "id": "monster_minotaur",
-        "base_file": "monster_minotaurA.png",
+        "base_file": "monster_minotaur.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3601,7 +3601,7 @@
     },
     {
         "id": "monster_vampirelord",
-        "base_file": "monster_vampirelordA.png",
+        "base_file": "monster_vampirelord.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3649,7 +3649,7 @@
     },
     {
         "id": "monster_willowisp",
-        "base_file": "monster_willowispA.png",
+        "base_file": "monster_willowisp.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3697,7 +3697,7 @@
     },
     {
         "id": "monster_salamander",
-        "base_file": "monster_salamanderA.png",
+        "base_file": "monster_salamander.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3745,7 +3745,7 @@
     },
     {
         "id": "monster_undine",
-        "base_file": "monster_undineA.png",
+        "base_file": "monster_undine.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3793,7 +3793,7 @@
     },
     {
         "id": "monster_sylph",
-        "base_file": "monster_sylphA.png",
+        "base_file": "monster_sylph.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3841,7 +3841,7 @@
     },
     {
         "id": "monster_gnome",
-        "base_file": "monster_gnomeA.png",
+        "base_file": "monster_gnome.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3889,7 +3889,7 @@
     },
     {
         "id": "monster_jackolantern",
-        "base_file": "monster_jackolanternA.png",
+        "base_file": "monster_jackolantern.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3937,7 +3937,7 @@
     },
     {
         "id": "monster_gremlin",
-        "base_file": "monster_gremlinA.png",
+        "base_file": "monster_gremlin.png",
         "variations": [
             {
                 "suffix": "A",
@@ -3985,7 +3985,7 @@
     },
     {
         "id": "monster_leprechaun",
-        "base_file": "monster_leprechaunA.png",
+        "base_file": "monster_leprechaun.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4033,7 +4033,7 @@
     },
     {
         "id": "monster_spriggan",
-        "base_file": "monster_sprigganA.png",
+        "base_file": "monster_spriggan.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4081,7 +4081,7 @@
     },
     {
         "id": "monster_wendigo",
-        "base_file": "monster_wendigoA.png",
+        "base_file": "monster_wendigo.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4129,7 +4129,7 @@
     },
     {
         "id": "monster_yeti",
-        "base_file": "monster_yetiA.png",
+        "base_file": "monster_yeti.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4177,7 +4177,7 @@
     },
     {
         "id": "monster_sasquatch",
-        "base_file": "monster_sasquatchA.png",
+        "base_file": "monster_sasquatch.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4225,7 +4225,7 @@
     },
     {
         "id": "monster_chupacabra",
-        "base_file": "monster_chupacabraA.png",
+        "base_file": "monster_chupacabra.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4273,7 +4273,7 @@
     },
     {
         "id": "monster_mothman",
-        "base_file": "monster_mothmanA.png",
+        "base_file": "monster_mothman.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4321,7 +4321,7 @@
     },
     {
         "id": "monster_deepone",
-        "base_file": "monster_deeponeA.png",
+        "base_file": "monster_deepone.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4369,7 +4369,7 @@
     },
     {
         "id": "monster_nereid",
-        "base_file": "monster_nereidA.png",
+        "base_file": "monster_nereid.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4417,7 +4417,7 @@
     },
     {
         "id": "monster_scylla",
-        "base_file": "monster_scyllaA.png",
+        "base_file": "monster_scylla.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4465,7 +4465,7 @@
     },
     {
         "id": "monster_charybdis",
-        "base_file": "monster_charybdisA.png",
+        "base_file": "monster_charybdis.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4513,7 +4513,7 @@
     },
     {
         "id": "monster_seaserpent",
-        "base_file": "monster_seaserpentA.png",
+        "base_file": "monster_seaserpent.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4561,7 +4561,7 @@
     },
     {
         "id": "monster_naga",
-        "base_file": "monster_nagaA.png",
+        "base_file": "monster_naga.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4609,7 +4609,7 @@
     },
     {
         "id": "monster_cerberus",
-        "base_file": "monster_cerberusA.png",
+        "base_file": "monster_cerberus.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4657,7 +4657,7 @@
     },
     {
         "id": "monster_sphinx",
-        "base_file": "monster_sphinxA.png",
+        "base_file": "monster_sphinx.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4705,7 +4705,7 @@
     },
     {
         "id": "monster_ifrit",
-        "base_file": "monster_ifritA.png",
+        "base_file": "monster_ifrit.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4753,7 +4753,7 @@
     },
     {
         "id": "monster_behemoth",
-        "base_file": "monster_behemothA.png",
+        "base_file": "monster_behemoth.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4801,7 +4801,7 @@
     },
     {
         "id": "monster_leviathan",
-        "base_file": "monster_leviathanA.png",
+        "base_file": "monster_leviathan.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4849,7 +4849,7 @@
     },
     {
         "id": "monster_gorgon",
-        "base_file": "monster_gorgonA.png",
+        "base_file": "monster_gorgon.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4897,7 +4897,7 @@
     },
     {
         "id": "monster_rakshasa",
-        "base_file": "monster_rakshasaA.png",
+        "base_file": "monster_rakshasa.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4945,7 +4945,7 @@
     },
     {
         "id": "monster_oni",
-        "base_file": "monster_oniA.png",
+        "base_file": "monster_oni.png",
         "variations": [
             {
                 "suffix": "A",
@@ -4993,7 +4993,7 @@
     },
     {
         "id": "monster_tengu",
-        "base_file": "monster_tenguA.png",
+        "base_file": "monster_tengu.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5041,7 +5041,7 @@
     },
     {
         "id": "monster_kappa",
-        "base_file": "monster_kappaA.png",
+        "base_file": "monster_kappa.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5089,7 +5089,7 @@
     },
     {
         "id": "monster_jiangshi",
-        "base_file": "monster_jiangshiA.png",
+        "base_file": "monster_jiangshi.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5137,7 +5137,7 @@
     },
     {
         "id": "monster_draugr",
-        "base_file": "monster_draugrA.png",
+        "base_file": "monster_draugr.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5185,7 +5185,7 @@
     },
     {
         "id": "monster_valkyrie",
-        "base_file": "monster_valkyrieA.png",
+        "base_file": "monster_valkyrie.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5233,7 +5233,7 @@
     },
     {
         "id": "monster_einherjar",
-        "base_file": "monster_einherjarA.png",
+        "base_file": "monster_einherjar.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5281,7 +5281,7 @@
     },
     {
         "id": "monster_nuckelavee",
-        "base_file": "monster_nuckelaveeA.png",
+        "base_file": "monster_nuckelavee.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5329,7 +5329,7 @@
     },
     {
         "id": "monster_kelpie",
-        "base_file": "monster_kelpieA.png",
+        "base_file": "monster_kelpie.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5377,7 +5377,7 @@
     },
     {
         "id": "monster_selkie",
-        "base_file": "monster_selkieA.png",
+        "base_file": "monster_selkie.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5425,7 +5425,7 @@
     },
     {
         "id": "monster_redcap",
-        "base_file": "monster_redcapA.png",
+        "base_file": "monster_redcap.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5473,7 +5473,7 @@
     },
     {
         "id": "monster_fomorian",
-        "base_file": "monster_fomorianA.png",
+        "base_file": "monster_fomorian.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5521,7 +5521,7 @@
     },
     {
         "id": "monster_irongolem",
-        "base_file": "monster_irongolemA.png",
+        "base_file": "monster_irongolem.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5569,7 +5569,7 @@
     },
     {
         "id": "monster_stonegolem",
-        "base_file": "monster_stonegolemA.png",
+        "base_file": "monster_stonegolem.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5617,7 +5617,7 @@
     },
     {
         "id": "monster_claygolem",
-        "base_file": "monster_claygolemA.png",
+        "base_file": "monster_claygolem.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5665,7 +5665,7 @@
     },
     {
         "id": "monster_fleshgolem",
-        "base_file": "monster_fleshgolemA.png",
+        "base_file": "monster_fleshgolem.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5713,7 +5713,7 @@
     },
     {
         "id": "monster_magiccarpet",
-        "base_file": "monster_magiccarpetA.png",
+        "base_file": "monster_magiccarpet.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5761,7 +5761,7 @@
     },
     {
         "id": "monster_djinn",
-        "base_file": "monster_djinnA.png",
+        "base_file": "monster_djinn.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5809,7 +5809,7 @@
     },
     {
         "id": "monster_hillgiant",
-        "base_file": "monster_hillgiantA.png",
+        "base_file": "monster_hillgiant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5857,7 +5857,7 @@
     },
     {
         "id": "monster_frostgiant",
-        "base_file": "monster_frostgiantA.png",
+        "base_file": "monster_frostgiant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5905,7 +5905,7 @@
     },
     {
         "id": "monster_firegiant",
-        "base_file": "monster_firegiantA.png",
+        "base_file": "monster_firegiant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -5953,7 +5953,7 @@
     },
     {
         "id": "monster_stormgiant",
-        "base_file": "monster_stormgiantA.png",
+        "base_file": "monster_stormgiant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6001,7 +6001,7 @@
     },
     {
         "id": "monster_cloudgiant",
-        "base_file": "monster_cloudgiantA.png",
+        "base_file": "monster_cloudgiant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6049,7 +6049,7 @@
     },
     {
         "id": "monster_efreet",
-        "base_file": "monster_efreetA.png",
+        "base_file": "monster_efreet.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6097,7 +6097,7 @@
     },
     {
         "id": "monster_marid",
-        "base_file": "monster_maridA.png",
+        "base_file": "monster_marid.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6145,7 +6145,7 @@
     },
     {
         "id": "monster_dao",
-        "base_file": "monster_daoA.png",
+        "base_file": "monster_dao.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6193,7 +6193,7 @@
     },
     {
         "id": "monster_voidwalker",
-        "base_file": "monster_voidwalkerA.png",
+        "base_file": "monster_voidwalker.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6241,7 +6241,7 @@
     },
     {
         "id": "monster_succubus",
-        "base_file": "monster_succubusA.png",
+        "base_file": "monster_succubus.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6289,7 +6289,7 @@
     },
     {
         "id": "monster_incubus",
-        "base_file": "monster_incubusA.png",
+        "base_file": "monster_incubus.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6337,7 +6337,7 @@
     },
     {
         "id": "monster_bonedevil",
-        "base_file": "monster_bonedevilA.png",
+        "base_file": "monster_bonedevil.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6385,7 +6385,7 @@
     },
     {
         "id": "monster_icedevil",
-        "base_file": "monster_icedevilA.png",
+        "base_file": "monster_icedevil.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6433,7 +6433,7 @@
     },
     {
         "id": "monster_horneddevil",
-        "base_file": "monster_horneddevilA.png",
+        "base_file": "monster_horneddevil.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6481,7 +6481,7 @@
     },
     {
         "id": "monster_erinyes",
-        "base_file": "monster_erinyesA.png",
+        "base_file": "monster_erinyes.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6529,7 +6529,7 @@
     },
     {
         "id": "monster_lemure",
-        "base_file": "monster_lemureA.png",
+        "base_file": "monster_lemure.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6577,7 +6577,7 @@
     },
     {
         "id": "monster_mindflayer",
-        "base_file": "monster_mindflayerA.png",
+        "base_file": "monster_mindflayer.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6625,7 +6625,7 @@
     },
     {
         "id": "monster_beholder",
-        "base_file": "monster_beholderA.png",
+        "base_file": "monster_beholder.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6673,7 +6673,7 @@
     },
     {
         "id": "monster_umberhulk",
-        "base_file": "monster_umberhulkA.png",
+        "base_file": "monster_umberhulk.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6721,7 +6721,7 @@
     },
     {
         "id": "monster_owlbear",
-        "base_file": "monster_owlbearA.png",
+        "base_file": "monster_owlbear.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6769,7 +6769,7 @@
     },
     {
         "id": "monster_displacerbeast",
-        "base_file": "monster_displacerbeastA.png",
+        "base_file": "monster_displacerbeast.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6817,7 +6817,7 @@
     },
     {
         "id": "monster_rustmonster",
-        "base_file": "monster_rustmonsterA.png",
+        "base_file": "monster_rustmonster.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6865,7 +6865,7 @@
     },
     {
         "id": "monster_gelatinouscube",
-        "base_file": "monster_gelatinouscubeA.png",
+        "base_file": "monster_gelatinouscube.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6913,7 +6913,7 @@
     },
     {
         "id": "monster_carrioncrawler",
-        "base_file": "monster_carrioncrawlerA.png",
+        "base_file": "monster_carrioncrawler.png",
         "variations": [
             {
                 "suffix": "A",
@@ -6961,7 +6961,7 @@
     },
     {
         "id": "monster_roper",
-        "base_file": "monster_roperA.png",
+        "base_file": "monster_roper.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7009,7 +7009,7 @@
     },
     {
         "id": "monster_pitfiend",
-        "base_file": "monster_pitfiendA.png",
+        "base_file": "monster_pitfiend.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7057,7 +7057,7 @@
     },
     {
         "id": "monster_balor",
-        "base_file": "monster_balorA.png",
+        "base_file": "monster_balor.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7105,7 +7105,7 @@
     },
     {
         "id": "monster_asura",
-        "base_file": "monster_asuraA.png",
+        "base_file": "monster_asura.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7153,7 +7153,7 @@
     },
     {
         "id": "monster_archangel",
-        "base_file": "monster_archangelA.png",
+        "base_file": "monster_archangel.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7201,7 +7201,7 @@
     },
     {
         "id": "monster_hecatoncheires",
-        "base_file": "monster_hecatoncheiresA.png",
+        "base_file": "monster_hecatoncheires.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7249,7 +7249,7 @@
     },
     {
         "id": "monster_otyugh",
-        "base_file": "monster_otyughA.png",
+        "base_file": "monster_otyugh.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7297,7 +7297,7 @@
     },
     {
         "id": "monster_myconid",
-        "base_file": "monster_myconidA.png",
+        "base_file": "monster_myconid.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7345,7 +7345,7 @@
     },
     {
         "id": "monster_shamblingmound",
-        "base_file": "monster_shamblingmoundA.png",
+        "base_file": "monster_shamblingmound.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7393,7 +7393,7 @@
     },
     {
         "id": "monster_hookhorror",
-        "base_file": "monster_hookhorrorA.png",
+        "base_file": "monster_hookhorror.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7441,7 +7441,7 @@
     },
     {
         "id": "monster_grell",
-        "base_file": "monster_grellA.png",
+        "base_file": "monster_grell.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7489,7 +7489,7 @@
     },
     {
         "id": "monster_intellectdevourer",
-        "base_file": "monster_intellectdevourerA.png",
+        "base_file": "monster_intellectdevourer.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7537,7 +7537,7 @@
     },
     {
         "id": "monster_githyanki",
-        "base_file": "monster_githyankiA.png",
+        "base_file": "monster_githyanki.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7585,7 +7585,7 @@
     },
     {
         "id": "monster_githzerai",
-        "base_file": "monster_githzeraiA.png",
+        "base_file": "monster_githzerai.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7633,7 +7633,7 @@
     },
     {
         "id": "monster_slaad",
-        "base_file": "monster_slaadA.png",
+        "base_file": "monster_slaad.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7681,7 +7681,7 @@
     },
     {
         "id": "monster_modron",
-        "base_file": "monster_modronA.png",
+        "base_file": "monster_modron.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7729,7 +7729,7 @@
     },
     {
         "id": "monster_abishai",
-        "base_file": "monster_abishaiA.png",
+        "base_file": "monster_abishai.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7777,7 +7777,7 @@
     },
     {
         "id": "monster_yugoloth",
-        "base_file": "monster_yugolothA.png",
+        "base_file": "monster_yugoloth.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7825,7 +7825,7 @@
     },
     {
         "id": "monster_nightmare",
-        "base_file": "monster_nightmareA.png",
+        "base_file": "monster_nightmare.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7873,7 +7873,7 @@
     },
     {
         "id": "monster_hellcat",
-        "base_file": "monster_hellcatA.png",
+        "base_file": "monster_hellcat.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7921,7 +7921,7 @@
     },
     {
         "id": "monster_barghest",
-        "base_file": "monster_barghestA.png",
+        "base_file": "monster_barghest.png",
         "variations": [
             {
                 "suffix": "A",
@@ -7969,7 +7969,7 @@
     },
     {
         "id": "monster_shadowmastiff",
-        "base_file": "monster_shadowmastiffA.png",
+        "base_file": "monster_shadowmastiff.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8017,7 +8017,7 @@
     },
     {
         "id": "monster_worg",
-        "base_file": "monster_worgA.png",
+        "base_file": "monster_worg.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8065,7 +8065,7 @@
     },
     {
         "id": "monster_fenrirspawn",
-        "base_file": "monster_fenrirspawnA.png",
+        "base_file": "monster_fenrirspawn.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8113,7 +8113,7 @@
     },
     {
         "id": "monster_blinkdog",
-        "base_file": "monster_blinkdogA.png",
+        "base_file": "monster_blinkdog.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8161,7 +8161,7 @@
     },
     {
         "id": "monster_leucrotta",
-        "base_file": "monster_leucrottaA.png",
+        "base_file": "monster_leucrotta.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8209,7 +8209,7 @@
     },
     {
         "id": "monster_shoggoth",
-        "base_file": "monster_shoggothA.png",
+        "base_file": "monster_shoggoth.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8257,7 +8257,7 @@
     },
     {
         "id": "monster_aboleth",
-        "base_file": "monster_abolethA.png",
+        "base_file": "monster_aboleth.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8305,7 +8305,7 @@
     },
     {
         "id": "monster_nightwalker",
-        "base_file": "monster_nightwalkerA.png",
+        "base_file": "monster_nightwalker.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8353,7 +8353,7 @@
     },
     {
         "id": "monster_starspawn",
-        "base_file": "monster_starspawnA.png",
+        "base_file": "monster_starspawn.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8401,7 +8401,7 @@
     },
     {
         "id": "monster_elderbrain",
-        "base_file": "monster_elderbrainA.png",
+        "base_file": "monster_elderbrain.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8449,7 +8449,7 @@
     },
     {
         "id": "monster_peryton",
-        "base_file": "monster_perytonA.png",
+        "base_file": "monster_peryton.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8497,7 +8497,7 @@
     },
     {
         "id": "monster_gibbering",
-        "base_file": "monster_gibberingA.png",
+        "base_file": "monster_gibbering.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8545,7 +8545,7 @@
     },
     {
         "id": "monster_chuul",
-        "base_file": "monster_chuulA.png",
+        "base_file": "monster_chuul.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8593,7 +8593,7 @@
     },
     {
         "id": "monster_nothic",
-        "base_file": "monster_nothicA.png",
+        "base_file": "monster_nothic.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8641,7 +8641,7 @@
     },
     {
         "id": "monster_bodak",
-        "base_file": "monster_bodakA.png",
+        "base_file": "monster_bodak.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8689,7 +8689,7 @@
     },
     {
         "id": "monster_devourer",
-        "base_file": "monster_devourerA.png",
+        "base_file": "monster_devourer.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8737,7 +8737,7 @@
     },
     {
         "id": "monster_vodyanoy",
-        "base_file": "monster_vodyanoyA.png",
+        "base_file": "monster_vodyanoy.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8785,7 +8785,7 @@
     },
     {
         "id": "monster_leshy",
-        "base_file": "monster_leshyA.png",
+        "base_file": "monster_leshy.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8833,7 +8833,7 @@
     },
     {
         "id": "monster_sahuagin",
-        "base_file": "monster_sahuaginA.png",
+        "base_file": "monster_sahuagin.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8881,7 +8881,7 @@
     },
     {
         "id": "monster_kuotoa",
-        "base_file": "monster_kuotoaA.png",
+        "base_file": "monster_kuotoa.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8929,7 +8929,7 @@
     },
     {
         "id": "monster_bullywug",
-        "base_file": "monster_bullywugA.png",
+        "base_file": "monster_bullywug.png",
         "variations": [
             {
                 "suffix": "A",
@@ -8977,7 +8977,7 @@
     },
     {
         "id": "monster_thrikreen",
-        "base_file": "monster_thrikreenA.png",
+        "base_file": "monster_thrikreen.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9025,7 +9025,7 @@
     },
     {
         "id": "monster_aarakocra",
-        "base_file": "monster_aarakocraA.png",
+        "base_file": "monster_aarakocra.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9073,7 +9073,7 @@
     },
     {
         "id": "monster_kenku",
-        "base_file": "monster_kenkuA.png",
+        "base_file": "monster_kenku.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9121,7 +9121,7 @@
     },
     {
         "id": "monster_tabaxi",
-        "base_file": "monster_tabaxiA.png",
+        "base_file": "monster_tabaxi.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9169,7 +9169,7 @@
     },
     {
         "id": "monster_tortle",
-        "base_file": "monster_tortleA.png",
+        "base_file": "monster_tortle.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9217,7 +9217,7 @@
     },
     {
         "id": "monster_yuanti",
-        "base_file": "monster_yuantiA.png",
+        "base_file": "monster_yuanti.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9265,7 +9265,7 @@
     },
     {
         "id": "monster_vegepygmy",
-        "base_file": "monster_vegepygmyA.png",
+        "base_file": "monster_vegepygmy.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9313,7 +9313,7 @@
     },
     {
         "id": "monster_nue",
-        "base_file": "monster_nueA.png",
+        "base_file": "monster_nue.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9361,7 +9361,7 @@
     },
     {
         "id": "monster_kamaitachi",
-        "base_file": "monster_kamaitachiA.png",
+        "base_file": "monster_kamaitachi.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9409,7 +9409,7 @@
     },
     {
         "id": "monster_golemking",
-        "base_file": "monster_golemkingA.png",
+        "base_file": "monster_golemking.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9457,7 +9457,7 @@
     },
     {
         "id": "monster_treeking",
-        "base_file": "monster_treekingA.png",
+        "base_file": "monster_treeking.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9505,7 +9505,7 @@
     },
     {
         "id": "monster_giant",
-        "base_file": "monster_giantA.png",
+        "base_file": "monster_giant.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9553,7 +9553,7 @@
     },
     {
         "id": "monster_dragonturtle",
-        "base_file": "monster_dragonturtleA.png",
+        "base_file": "monster_dragonturtle.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9601,7 +9601,7 @@
     },
     {
         "id": "monster_tarrasque",
-        "base_file": "monster_tarrasqueA.png",
+        "base_file": "monster_tarrasque.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9649,7 +9649,7 @@
     },
     {
         "id": "monster_yukionna",
-        "base_file": "monster_yukionnaA.png",
+        "base_file": "monster_yukionna.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9697,7 +9697,7 @@
     },
     {
         "id": "monster_jackalope",
-        "base_file": "monster_jackalopeA.png",
+        "base_file": "monster_jackalope.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9745,7 +9745,7 @@
     },
     {
         "id": "monster_shieldguardian",
-        "base_file": "monster_shieldguardianA.png",
+        "base_file": "monster_shieldguardian.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9793,7 +9793,7 @@
     },
     {
         "id": "monster_helmedhorror",
-        "base_file": "monster_helmedhorrorA.png",
+        "base_file": "monster_helmedhorror.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9841,7 +9841,7 @@
     },
     {
         "id": "monster_wickerman",
-        "base_file": "monster_wickermanA.png",
+        "base_file": "monster_wickerman.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9889,7 +9889,7 @@
     },
     {
         "id": "monster_clockwork",
-        "base_file": "monster_clockworkA.png",
+        "base_file": "monster_clockwork.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9937,7 +9937,7 @@
     },
     {
         "id": "monster_eidolon",
-        "base_file": "monster_eidolonA.png",
+        "base_file": "monster_eidolon.png",
         "variations": [
             {
                 "suffix": "A",
@@ -9985,7 +9985,7 @@
     },
     {
         "id": "monster_lamianoble",
-        "base_file": "monster_lamianobleA.png",
+        "base_file": "monster_lamianoble.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10033,7 +10033,7 @@
     },
     {
         "id": "monster_jerseydevil",
-        "base_file": "monster_jerseydevilA.png",
+        "base_file": "monster_jerseydevil.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10081,7 +10081,7 @@
     },
     {
         "id": "monster_flatwoods",
-        "base_file": "monster_flatwoodsA.png",
+        "base_file": "monster_flatwoods.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10129,7 +10129,7 @@
     },
     {
         "id": "monster_wolpertinger",
-        "base_file": "monster_wolpertingerA.png",
+        "base_file": "monster_wolpertinger.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10177,7 +10177,7 @@
     },
     {
         "id": "monster_tsuchinoko",
-        "base_file": "monster_tsuchinokoA.png",
+        "base_file": "monster_tsuchinoko.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10225,7 +10225,7 @@
     },
     {
         "id": "monster_lindworm",
-        "base_file": "monster_lindwormA.png",
+        "base_file": "monster_lindworm.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10273,7 +10273,7 @@
     },
     {
         "id": "monster_amphiptere",
-        "base_file": "monster_amphiptereA.png",
+        "base_file": "monster_amphiptere.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10321,7 +10321,7 @@
     },
     {
         "id": "monster_nessie",
-        "base_file": "monster_nessieA.png",
+        "base_file": "monster_nessie.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10369,7 +10369,7 @@
     },
     {
         "id": "monster_raiju",
-        "base_file": "monster_raijuA.png",
+        "base_file": "monster_raiju.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10417,7 +10417,7 @@
     },
     {
         "id": "monster_baku",
-        "base_file": "monster_bakuA.png",
+        "base_file": "monster_baku.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10465,7 +10465,7 @@
     },
     {
         "id": "monster_kirin",
-        "base_file": "monster_kirinA.png",
+        "base_file": "monster_kirin.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10513,7 +10513,7 @@
     },
     {
         "id": "monster_sleipnir",
-        "base_file": "monster_sleipnirA.png",
+        "base_file": "monster_sleipnir.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10561,7 +10561,7 @@
     },
     {
         "id": "monster_ouryu",
-        "base_file": "monster_ouryuA.png",
+        "base_file": "monster_ouryu.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10609,7 +10609,7 @@
     },
     {
         "id": "monster_demilich",
-        "base_file": "monster_demilichA.png",
+        "base_file": "monster_demilich.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10657,7 +10657,7 @@
     },
     {
         "id": "monster_ouroboros",
-        "base_file": "monster_ouroborosA.png",
+        "base_file": "monster_ouroboros.png",
         "variations": [
             {
                 "suffix": "A",
@@ -10705,7 +10705,7 @@
     },
     {
         "id": "monster_reserved",
-        "base_file": "monster_reservedA.png",
+        "base_file": "monster_reserved.png",
         "variations": [
             {
                 "suffix": "A",

@@ -98,7 +98,7 @@ def update_db():
         # Prefix logic
         prefix = "boss" if m['is_boss'] else "monster"
         monster_id = f"{prefix}_{species_lower}"
-        base_filename = f"{prefix}_{species_lower}A.png"
+        base_filename = f"{prefix}_{species_lower}.png"
         
         if monster_id in existing_ids:
             # print(f"Skipping existing ID: {monster_id}")

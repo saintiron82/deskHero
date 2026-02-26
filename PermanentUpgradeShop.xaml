@@ -246,7 +246,7 @@
 
                     <!-- Title (Center) -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Image Source="pack://application:,,,/Assets/Images/UI/crystal.png" Width="28" Height="28" Margin="0,0,6,0"/>
+                        <Image Source="{DynamicResource IconCrystal}" Width="28" Height="28" Margin="0,0,6,0"/>
                         <TextBlock x:Name="ShopTitleText" FontSize="16" FontWeight="Bold"
                                    Foreground="#0099CC" VerticalAlignment="Center"/>
                     </StackPanel>
@@ -255,7 +255,7 @@
                     <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,10,0">
                         <Border Background="#0099CC" CornerRadius="6" Padding="8,4" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal">
-                                <Image Source="pack://application:,,,/Assets/Images/UI/crystal.png" Width="24" Height="24"
+                                <Image Source="{DynamicResource IconCrystal}" Width="24" Height="24"
                                        VerticalAlignment="Center" Margin="0,0,4,0"/>
                                 <TextBlock x:Name="CurrentCrystalsText" Text="0" FontSize="14"
                                            FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>

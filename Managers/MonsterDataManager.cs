@@ -306,8 +306,16 @@ namespace DeskWarrior.Managers
 
             // 최종 가중치 계산
             int speciesWeight = entry.SpawnWeight;
-            int elementWeight = _gameData?.MonsterSpawning.ElementWeights
-                .GetValueOrDefault(element, 100) ?? 100;
+            int elementWeight;
+            if (_gameData?.MonsterSpawning.ElementWeights.TryGetValue(element, out var ew) == true)
+            {
+                elementWeight = ew;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"[Warning] Element weight not found for '{element}', skipping monster");
+                elementWeight = 0;
+            }
 
             var batchEntry = _batchIndex?.Batches.FirstOrDefault(b => b.BatchId == batchId);
             double batchWeight = batchEntry?.ActivationWeight ?? 1.0;

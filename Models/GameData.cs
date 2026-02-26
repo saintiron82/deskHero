@@ -43,6 +43,33 @@ namespace DeskWarrior.Models
     }
 
     /// <summary>
+    /// 긴급 폴백 설정 (몬스터 데이터 로드 실패 시 사용)
+    /// </summary>
+    public class EmergencyFallbackConfig
+    {
+        [JsonPropertyName("base_gold")]
+        public int BaseGold { get; set; }
+
+        [JsonPropertyName("gold_per_level")]
+        public int GoldPerLevel { get; set; }
+    }
+
+    /// <summary>
+    /// 콤보 시스템 설정 (config/GameData.json에서 로드)
+    /// </summary>
+    public class ComboConfig
+    {
+        [JsonPropertyName("base_tolerance")]
+        public double BaseTolerance { get; set; }
+
+        [JsonPropertyName("expire_time")]
+        public double ExpireTime { get; set; }
+
+        [JsonPropertyName("max_stack")]
+        public int MaxStack { get; set; }
+    }
+
+    /// <summary>
     /// 연속 동일키 입력 페널티 설정
     /// </summary>
     public class ConsecutiveKeyPenaltyConfig
@@ -85,6 +112,12 @@ namespace DeskWarrior.Models
 
         [JsonPropertyName("element_properties")]
         public Dictionary<string, ElementProperties> ElementProperties { get; set; } = new();
+
+        [JsonPropertyName("combo")]
+        public ComboConfig Combo { get; set; } = new();
+
+        [JsonPropertyName("emergency_fallback")]
+        public EmergencyFallbackConfig EmergencyFallback { get; set; } = new();
 
         [JsonPropertyName("consecutive_key_penalty")]
         public ConsecutiveKeyPenaltyConfig ConsecutiveKeyPenalty { get; set; } = new();

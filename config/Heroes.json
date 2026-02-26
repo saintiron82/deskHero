@@ -3,26 +3,26 @@
         {
             "Id": "hero_archer",
             "Name": "궁수",
-            "IdleSprite": "UseImage/Hero/hero_archer",
-            "AttackSprite": "UseImage/Hero/hero_archer_attack"
+            "IdleSprite": "Production/Hero/hero_archer",
+            "AttackSprite": "Production/Hero/hero_archer_attack"
         },
         {
             "Id": "hero_mage",
             "Name": "마법사",
-            "IdleSprite": "UseImage/Hero/hero_mage",
-            "AttackSprite": "UseImage/Hero/hero_mage_attack"
+            "IdleSprite": "Production/Hero/hero_mage",
+            "AttackSprite": "Production/Hero/hero_mage_attack"
         },
         {
             "Id": "hero_saint",
             "Name": "성녀",
-            "IdleSprite": "UseImage/Hero/hero_saint",
-            "AttackSprite": "UseImage/Hero/hero_saint_attack"
+            "IdleSprite": "Production/Hero/hero_saint",
+            "AttackSprite": "Production/Hero/hero_saint_attack"
         },
         {
             "Id": "hero_warrior",
             "Name": "전사",
-            "IdleSprite": "UseImage/Hero/hero_warrior",
-            "AttackSprite": "UseImage/Hero/hero_warrior_attack"
+            "IdleSprite": "Production/Hero/hero_warrior",
+            "AttackSprite": "Production/Hero/hero_warrior_attack"
         }
     ]
 }

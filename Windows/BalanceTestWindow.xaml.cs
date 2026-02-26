@@ -449,8 +449,8 @@ namespace DeskWarrior.Windows
                 var goldProperty = _gameManager.GetType().GetProperty("Gold");
                 if (goldProperty != null)
                 {
-                    int currentGold = (int)(goldProperty.GetValue(_gameManager) ?? 0);
-                    goldProperty.SetValue(_gameManager, currentGold + gold);
+                    long currentGold = (long)(goldProperty.GetValue(_gameManager) ?? 0L);
+                    goldProperty.SetValue(_gameManager, Helpers.SafeMath.AddLong(currentGold, gold));
 
                     MessageBox.Show($"Added {gold:N0} gold!\nNew Total: {currentGold + gold:N0}",
                         "Cheat Applied", MessageBoxButton.OK, MessageBoxImage.Information);

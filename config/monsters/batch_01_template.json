@@ -12,7 +12,7 @@
       "species": "slime",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 10,
         "gold_growth": 2
@@ -132,7 +132,7 @@
       "species": "bat",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 13,
         "gold_growth": 2
@@ -252,7 +252,7 @@
       "species": "skeleton",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 16,
         "gold_growth": 2
@@ -372,7 +372,7 @@
       "species": "goblin",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 19,
         "gold_growth": 2
@@ -492,7 +492,7 @@
       "species": "orc",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 22,
         "gold_growth": 2
@@ -612,7 +612,7 @@
       "species": "ghost",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 25,
         "gold_growth": 2
@@ -732,7 +732,7 @@
       "species": "golem",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 28,
         "gold_growth": 2
@@ -852,7 +852,7 @@
       "species": "mushroom",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 31,
         "gold_growth": 2
@@ -972,7 +972,7 @@
       "species": "spider",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 34,
         "gold_growth": 2
@@ -1092,7 +1092,7 @@
       "species": "wolf",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 37,
         "gold_growth": 2
@@ -1212,7 +1212,7 @@
       "species": "snake",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 40,
         "gold_growth": 2
@@ -1332,7 +1332,7 @@
       "species": "boar",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 40,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 43,
         "gold_growth": 2

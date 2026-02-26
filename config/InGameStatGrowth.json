@@ -1,24 +1,24 @@
 {
-  "_comment": "인게임 스탯 성장 곡선 설정 (골드로 업그레이드)",
+  "_comment": "인게임 스탯 성장 곡선 설정 (골드로 업그레이드). 비용↑ 효과↓ 적용",
   "_formula": "cost = base × (1 + level × growth_rate) × multiplier^(level / softcap_interval)",
   "stats": {
     "keyboard_power": {
       "name": "키보드 공격력",
-      "base_cost": 14.462219894199286,
-      "growth_rate": 0.18207,
-      "multiplier": 1.0,
-      "softcap_interval": 8,
-      "effect_per_level": 0.435,
+      "base_cost": 30,
+      "growth_rate": 0.4,
+      "multiplier": 1.3,
+      "softcap_interval": 6,
+      "effect_per_level": 0.15,
       "max_level": 0,
       "description": "키보드 입력 시 +{n} 데미지"
     },
     "mouse_power": {
       "name": "마우스 공격력",
-      "base_cost": 14.462219894199286,
-      "growth_rate": 0.18207,
-      "multiplier": 1.0,
-      "softcap_interval": 8,
-      "effect_per_level": 0.435,
+      "base_cost": 30,
+      "growth_rate": 0.4,
+      "multiplier": 1.3,
+      "softcap_interval": 6,
+      "effect_per_level": 0.15,
       "max_level": 0,
       "description": "마우스 입력 시 +{n} 데미지"
     }

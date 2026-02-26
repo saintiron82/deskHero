@@ -1,7 +1,7 @@
 {
   "_comment": "게임 밸런스 설정 - CharacterData.json의 평균값 (fallback용)",
   "balance": {
-    "base_hp": 20,
+    "base_hp": 10,
     "hp_growth": 5,
     "boss_interval": 10,
     "boss_hp_multiplier": 3.0,
@@ -12,11 +12,11 @@
     "upgrade_cost_interval": 50,
     "tier_hp_system": {
       "enabled": true,
-      "tier_interval": 60,
-      "tier_multiplier": 2.20,
+      "tier_interval": 100,
+      "tier_multiplier": 1.92,
       "min_tier_multiplier": 1.0,
       "tier_curve_exponent": 1.0,
-      "linear_growth_per_level": 40,
+      "linear_growth_per_level": 8,
       "min_linear_growth_per_level": 1.0,
       "growth_decrease_per_tier": 0.96,
       "tier_multiplier_decay_per_tier": 0.99,
@@ -53,6 +53,15 @@
     "combo_exempt": false,
     "mouse_exempt": true,
     "max_cps": 20
+  },
+  "combo": {
+    "base_tolerance": 0.01,
+    "expire_time": 3.0,
+    "max_stack": 3
+  },
+  "emergency_fallback": {
+    "base_gold": 10,
+    "gold_per_level": 2
   },
   "monster_spawning": {
     "element_weights": {

@@ -295,7 +295,7 @@ namespace DeskWarrior
             var costIcon = new Image
             {
                 Source = new System.Windows.Media.Imaging.BitmapImage(
-                    new Uri("pack://application:,,,/Assets/Images/UI/crystal.png")),
+                    ResourceManager.Instance.GetUIImageUri("crystal")),
                 Width = 14,
                 Height = 14,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -618,7 +618,7 @@ namespace DeskWarrior
             var tooltipCostIcon = new Image
             {
                 Source = new System.Windows.Media.Imaging.BitmapImage(
-                    new Uri("pack://application:,,,/Assets/Images/UI/crystal.png")),
+                    ResourceManager.Instance.GetUIImageUri("crystal")),
                 Width = 18,
                 Height = 18,
                 VerticalAlignment = VerticalAlignment.Center,

@@ -89,7 +89,7 @@ namespace DeskWarrior.Managers
         {
             try
             {
-                var uri = new Uri("pack://application:,,,/Assets/Data/GameOverMessages.json");
+                var uri = ResourceManager.Instance.GetDataUri("game_over_messages");
                 var resourceStream = Application.GetResourceStream(uri);
 
                 if (resourceStream == null)

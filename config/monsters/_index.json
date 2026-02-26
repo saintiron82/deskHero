@@ -18,7 +18,8 @@
         "ko-KR": "고전 던전",
         "en-US": "Classic Dungeon"
       },
-      "enabled": false
+      "enabled": false,
+      "min_level": 101
     },
     {
       "batch_id": 3,

@@ -18,7 +18,7 @@ namespace DeskWarrior.ViewModels
         private int _achievementCrystals;
         private int _totalCrystalsEarned;
         private long _currentCrystalBalance;
-        private string _countdownText = "10초 후 닫힘";
+        private string _countdownText = "7초 후 닫힘";
         private bool _showBossDropLine;
         private bool _showAchievementLine;
 

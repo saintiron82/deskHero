@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
 using DeskWarrior.Helpers;
@@ -47,6 +48,9 @@ namespace DeskWarrior
             {
                 ResourceManager.Instance.LoadResourceTable();
                 Logger.Log("ResourceManager initialized successfully");
+
+                // UI 아이콘을 DynamicResource로 등록 (XAML에서 {DynamicResource IconGold} 등으로 사용)
+                RegisterUIIconResources();
             }
             catch (Exception ex)
             {
@@ -64,6 +68,34 @@ namespace DeskWarrior
             base.OnStartup(e);
 
             Logger.Log("Application startup completed");
+        }
+
+        /// <summary>
+        /// ResourcePaths.json의 UI 아이콘을 Application.Resources에 등록
+        /// XAML에서 {DynamicResource IconGold}, {DynamicResource IconCrystal} 등으로 사용
+        /// </summary>
+        private void RegisterUIIconResources()
+        {
+            var uiIcons = new Dictionary<string, string>
+            {
+                { "IconGold", "gold" },
+                { "IconCrystal", "crystal" },
+                { "IconTimer", "timer" }
+            };
+
+            foreach (var (resourceKey, uiKey) in uiIcons)
+            {
+                try
+                {
+                    var uri = ResourceManager.Instance.GetUIImageUri(uiKey);
+                    var bitmap = new System.Windows.Media.Imaging.BitmapImage(uri);
+                    Resources[resourceKey] = bitmap;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Failed to register UI icon resource '{resourceKey}': {ex.Message}");
+                }
+            }
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

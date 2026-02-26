@@ -106,7 +106,29 @@
       "Bash(git stash:*)",
       "Bash($env:PYTHONIOENCODING=\"utf-8\")",
       "Bash(iconv:*)",
-      "Bash(Select-Object -Last 30)"
+      "Bash(Select-Object -Last 30)",
+      "Bash(./AutoAlphaChannel/AutoAlphaChannel.exe:*)",
+      "Bash(org=\"Resources/Org/monster_$species.png\")",
+      "Bash(if [ -f \"$org\" ])",
+      "Bash(then)",
+      "Bash(else)",
+      "Bash(fi:*)",
+      "Bash(do echo \"=== $strategy ===\")",
+      "Bash(src=\"/c/Users/saint/Game/DeskWarrior/Resources/Org/monster_$f.png\")",
+      "Bash(if [ -f \"$src\" ])",
+      "Bash(then echo \"FOUND: $src\")",
+      "Bash(else echo \"MISSING: $src\")",
+      "Bash(git checkout:*)",
+      "Bash(__NEW_LINE_94a4e0fdc3f86860__ python \"C:/Users/saint/Game/DeskWarrior/tools/sprite_processor.py\" process \"C:/Users/saint/Game/DeskWarrior/Resources/Org/Batch_01/Monster/monster_crabA.png\" \"C:/Users/saint/Game/DeskWarrior/Assets/Images/Production/Batch1/Monster/monster_crab.png\" --size 256 --padding 85)",
+      "Bash(__NEW_LINE_ef6d888f2980726f__ python \"C:/Users/saint/Game/DeskWarrior/tools/sprite_processor.py\" process \"C:/Users/saint/Game/DeskWarrior/Resources/Org/Batch_01/Monster/monster_mimicA.png\" \"C:/Users/saint/Game/DeskWarrior/Assets/Images/Production/Batch1/Monster/monster_mimic.png\" --size 256 --padding 85)",
+      "Bash(__NEW_LINE_c36add545e75de22__ python \"C:/Users/saint/Game/DeskWarrior/tools/sprite_processor.py\" process \"C:/Users/saint/Game/DeskWarrior/Resources/Org/Batch_01/Monster/monster_plant_normal.png\" \"C:/Users/saint/Game/DeskWarrior/Assets/Images/Production/Batch1/Monster/monster_plant.png\" --size 256 --padding 85)",
+      "Bash(__NEW_LINE_c36add545e75de22__ python \"C:/Users/saint/Game/DeskWarrior/tools/sprite_processor.py\" process \"C:/Users/saint/Game/DeskWarrior/Resources/Org/Batch_01/Monster/monster_rat_normal.png\" \"C:/Users/saint/Game/DeskWarrior/Assets/Images/Production/Batch1/Monster/monster_rat.png\" --size 256 --padding 85)",
+      "Bash(__NEW_LINE_df154182f6d0c7e5__ python \"C:/Users/saint/Game/DeskWarrior/tools/sprite_processor.py\" process \"C:/Users/saint/Game/DeskWarrior/Resources/Org/Batch_01/Monster/monster_elementalA.png\" \"C:/Users/saint/Game/DeskWarrior/Assets/Images/Production/Batch1/Monster/monster_elemental.png\" --flip --size 256 --padding 85)",
+      "Bash(__NEW_LINE_df154182f6d0c7e5__ python \"C:/Users/saint/Game/DeskWarrior/tools/sprite_processor.py\" process \"C:/Users/saint/Game/DeskWarrior/Resources/Org/Batch_01/Monster/monster_rat_normal.png\" \"C:/Users/saint/Game/DeskWarrior/Assets/Images/Production/Batch1/Monster/monster_rat.png\" --flip --size 256 --padding 85)",
+      "Bash(cd C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior:*)",
+      "Bash(cd:*)",
+      "Bash(mkdir:*)",
+      "WebSearch"
     ]
   }
 }

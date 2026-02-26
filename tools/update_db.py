@@ -10,12 +10,8 @@ def main():
 
     for entry in data:
         base_file = entry['base_file']
-        # monster_slimeA.png -> monster_slime
-        base_name_no_ext = os.path.splitext(base_file)[0]
-        if base_name_no_ext.endswith('A'):
-            core_name = base_name_no_ext[:-1]
-        else:
-            core_name = base_name_no_ext
+        # monster_slime.png -> monster_slime
+        core_name = os.path.splitext(base_file)[0]
 
         for var in entry['variations']:
             suffix = var['suffix']

@@ -12,7 +12,7 @@
       "species": "slime",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 10,
         "gold_growth": 2
@@ -122,7 +122,7 @@
       "species": "bat",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 13,
         "gold_growth": 2
@@ -232,7 +232,7 @@
       "species": "skeleton",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 16,
         "gold_growth": 2
@@ -342,7 +342,7 @@
       "species": "goblin",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 19,
         "gold_growth": 2
@@ -452,7 +452,7 @@
       "species": "orc",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 22,
         "gold_growth": 2
@@ -562,7 +562,7 @@
       "species": "ghost",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 25,
         "gold_growth": 2
@@ -672,7 +672,7 @@
       "species": "golem",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 28,
         "gold_growth": 2
@@ -782,7 +782,7 @@
       "species": "mushroom",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 31,
         "gold_growth": 2
@@ -892,7 +892,7 @@
       "species": "spider",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 34,
         "gold_growth": 2
@@ -1002,7 +1002,7 @@
       "species": "wolf",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 37,
         "gold_growth": 2
@@ -1112,7 +1112,7 @@
       "species": "snake",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 40,
         "gold_growth": 2
@@ -1222,7 +1222,7 @@
       "species": "boar",
       "is_boss": false,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 43,
         "gold_growth": 2
@@ -1326,6 +1326,226 @@
           "gold_modifier": 1.047
         }
       }
+    },
+    {
+      "id": "monster_zombie",
+      "species": "zombie",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 10,
+        "hp_growth": 10,
+        "base_gold": 49,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "좀비",
+              "description": "어둡고 습한 곳에서 배회하는 좀비. 느리지만 끈질기다."
+            },
+            "en-US": {
+              "name": "Zombie",
+              "description": "A zombie wandering dark, damp places. Slow but persistent."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_zombie.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "불타는 좀비",
+              "description": "온몸에 불이 붙은 채 달려드는 좀비. 화염에도 멈추지 않는다."
+            },
+            "en-US": {
+              "name": "Burning Zombie",
+              "description": "A zombie charging with its body ablaze. Not even fire can stop it."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_zombie.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "동사체",
+              "description": "얼어붙은 시체가 다시 움직이기 시작했다. 냉기가 감돈다."
+            },
+            "en-US": {
+              "name": "Frozen Corpse",
+              "description": "A frozen corpse that started moving again. Cold air surrounds it."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_zombie.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "러너 좀비",
+              "description": "비정상적으로 빠른 좀비. 도망치기 어렵다."
+            },
+            "en-US": {
+              "name": "Runner Zombie",
+              "description": "An abnormally fast zombie. Hard to escape from."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_zombie.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "정화된 시체",
+              "description": "신성한 빛에 의해 부분적으로 정화된 좀비. 아직 완전히 쉬지 못했다."
+            },
+            "en-US": {
+              "name": "Purified Corpse",
+              "description": "A zombie partially purified by holy light. Still unable to rest."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_zombie.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "맹독 좀비",
+              "description": "독기를 뿜어내는 좀비. 가까이 가면 중독된다."
+            },
+            "en-US": {
+              "name": "Venom Zombie",
+              "description": "A zombie that exudes toxic fumes. Getting close means getting poisoned."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_zombie.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "monster_mummy",
+      "species": "mummy",
+      "is_boss": false,
+      "base_stats": {
+        "base_hp": 10,
+        "hp_growth": 10,
+        "base_gold": 52,
+        "gold_growth": 2
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "미라",
+              "description": "고대 무덤에서 깨어난 미라. 붕대 속에서 저주가 스며나온다."
+            },
+            "en-US": {
+              "name": "Mummy",
+              "description": "A mummy awakened from an ancient tomb. Curses seep from its bandages."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_mummy.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화염 미라",
+              "description": "불타는 붕대를 휘두르는 미라. 건조한 붕대가 화염을 품었다."
+            },
+            "en-US": {
+              "name": "Flame Mummy",
+              "description": "A mummy swinging burning bandages. Dry wrappings embrace the flames."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_mummy.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "냉동 미라",
+              "description": "빙하 속에서 발견된 미라. 차가운 기운이 주변을 감싼다."
+            },
+            "en-US": {
+              "name": "Frozen Mummy",
+              "description": "A mummy found in a glacier. Cold aura envelops its surroundings."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_mummy.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "모래바람 미라",
+              "description": "모래 폭풍을 일으키는 미라. 시야를 가리며 접근한다."
+            },
+            "en-US": {
+              "name": "Sandstorm Mummy",
+              "description": "A mummy that summons sandstorms. Approaches under cover of blinding sand."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_mummy.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "파라오의 호위",
+              "description": "왕가를 수호하던 신성한 미라. 황금빛 봉인이 남아있다."
+            },
+            "en-US": {
+              "name": "Pharaoh's Guard",
+              "description": "A holy mummy that once guarded royalty. Golden seals still remain."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_mummy.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "저주받은 미라",
+              "description": "강력한 저주에 속박된 미라. 다가오면 생명력을 빼앗는다."
+            },
+            "en-US": {
+              "name": "Cursed Mummy",
+              "description": "A mummy bound by a powerful curse. Drains life force of those nearby."
+            }
+          },
+          "sprite": "Production/Batch1/Monster/monster_mummy.png",
+          "emoji": "🧟",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
     }
   ],
   "bosses": [
@@ -1334,13 +1554,29 @@
       "species": "dragon",
       "is_boss": true,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 100,
         "gold_growth": 20
       },
       "spawn_weight": 100,
       "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "그린 드래곤",
+              "description": "원시 숲을 수호하는 고대 드래곤. 거대한 날개로 울창한 숲을 날아다닌다."
+            },
+            "en-US": {
+              "name": "Green Dragon",
+              "description": "An ancient dragon guarding the primal forest. Soars through dense forests with massive wings."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_dragon.png",
+          "emoji": "🐉",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
         "fire": {
           "localization": {
             "ko-KR": {
@@ -1352,10 +1588,74 @@
               "description": "An ancient flame dragon. A terrifying being that burns everything."
             }
           },
-          "sprite": "Production/boss_dragon_fire.png",
+          "sprite": "Production/Batch1/Boss/boss_dragon.png",
           "emoji": "🐉",
-          "hp_modifier": 1.0,
+          "hp_modifier": 1.2,
           "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "블루 드래곤",
+              "description": "얼음 숨결로 세상을 얼어붙게 하는 냉기 드래곤. 그 포효에 만년설이 내린다."
+            },
+            "en-US": {
+              "name": "Blue Dragon",
+              "description": "An ice dragon that freezes the world with its icy breath. Its roar brings eternal snow."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_dragon.png",
+          "emoji": "🐉",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "윈드 드래곤",
+              "description": "폭풍을 몰고 다니는 바람의 드래곤. 날갯짓 한 번으로 태풍이 일어난다."
+            },
+            "en-US": {
+              "name": "Wind Dragon",
+              "description": "A wind dragon that brings storms. A single wingbeat creates a typhoon."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_dragon.png",
+          "emoji": "🐉",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "골드 드래곤",
+              "description": "신성한 황금 비늘을 지닌 전설의 드래곤. 보는 것만으로도 영혼이 정화된다 전해진다."
+            },
+            "en-US": {
+              "name": "Gold Dragon",
+              "description": "A legendary dragon with sacred golden scales. Said to purify souls just by being witnessed."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_dragon.png",
+          "emoji": "🐉",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "블랙 드래곤",
+              "description": "암흑의 힘에 지배당한 타락한 드래곤. 그가 지나간 땅에는 죽음만이 남는다."
+            },
+            "en-US": {
+              "name": "Black Dragon",
+              "description": "A corrupted dragon dominated by dark power. Only death remains where it has passed."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_dragon.png",
+          "emoji": "🐉",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
         }
       }
     },
@@ -1364,13 +1664,93 @@
       "species": "knight",
       "is_boss": true,
       "base_stats": {
-        "base_hp": 30,
+        "base_hp": 10,
         "hp_growth": 10,
         "base_gold": 120,
         "gold_growth": 25
       },
       "spawn_weight": 100,
       "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "기사단장",
+              "description": "최정예 기사단을 이끄는 전설의 기사단장. 그의 갑옷엔 수백 번의 전투가 새겨져 있다."
+            },
+            "en-US": {
+              "name": "Knight Commander",
+              "description": "The legendary commander leading the elite knights. His armor bears the marks of hundreds of battles."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_knight.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "용암 기사",
+              "description": "화염에 단련된 기사. 붉게 달아오른 갑옷은 닿는 것을 모두 녹여버린다."
+            },
+            "en-US": {
+              "name": "Lava Knight",
+              "description": "A knight tempered by flames. His red-hot armor melts everything it touches."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_knight.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "서리 기사",
+              "description": "얼음 왕국에서 온 냉혹한 기사. 그의 검은 닿는 모든 것을 얼려버린다."
+            },
+            "en-US": {
+              "name": "Frost Knight",
+              "description": "A ruthless knight from the ice kingdom. His blade freezes everything it touches."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_knight.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "폭풍 기사",
+              "description": "번개같은 검술을 지닌 바람의 기사. 눈으로 따라갈 수 없는 속도로 공격한다."
+            },
+            "en-US": {
+              "name": "Storm Knight",
+              "description": "A wind knight with lightning-fast swordplay. Attacks at a speed impossible to follow with the eye."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_knight.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "팔라딘",
+              "description": "신의 가호를 받은 성기사. 신성한 빛으로 악을 심판하는 정의의 수호자."
+            },
+            "en-US": {
+              "name": "Paladin",
+              "description": "A holy knight blessed by divine grace. A guardian of justice who judges evil with sacred light."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_knight.png",
+          "emoji": "🗡️",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
         "dark": {
           "localization": {
             "ko-KR": {
@@ -1382,10 +1762,340 @@
               "description": "A legendary knight corrupted by darkness. His sword cuts through everything."
             }
           },
-          "sprite": "Production/boss_knight_dark.png",
+          "sprite": "Production/Batch1/Boss/boss_knight.png",
           "emoji": "🗡️",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "boss_slimeking",
+      "species": "slimeking",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 10,
+        "hp_growth": 10,
+        "base_gold": 80,
+        "gold_growth": 15
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "킹 슬라임",
+              "description": "모든 슬라임의 왕. 거대한 몸집과 왕관이 인상적이다."
+            },
+            "en-US": {
+              "name": "King Slime",
+              "description": "The king of all slimes. Impressive for its huge body and crown."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_slimeking.png",
+          "emoji": "👑",
           "hp_modifier": 1.0,
           "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "마그마 킹",
+              "description": "용암을 몸 안에 품은 슬라임의 화염 왕. 접촉하면 극심한 화상을 입는다."
+            },
+            "en-US": {
+              "name": "Magma King",
+              "description": "The flame king of slimes with lava inside its body. Contact causes severe burns."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_slimeking.png",
+          "emoji": "👑",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "아이스 킹",
+              "description": "영원한 얼음으로 이루어진 슬라임의 냉기 왕. 그의 영토는 사계절 내내 눈 덮인 동토다."
+            },
+            "en-US": {
+              "name": "Ice King",
+              "description": "The ice king of slimes made of eternal ice. His territory is a permafrost covered in snow year-round."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_slimeking.png",
+          "emoji": "👑",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "스카이 킹",
+              "description": "하늘을 날아다니는 슬라임의 바람 왕. 폭풍 속을 자유롭게 유영한다."
+            },
+            "en-US": {
+              "name": "Sky King",
+              "description": "The wind king of slimes that flies through the sky. Glides freely through storms."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_slimeking.png",
+          "emoji": "👑",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "엔젤 킹",
+              "description": "신성한 빛을 발하는 슬라임의 성왕. 만나는 것만으로도 행운이 찾아온다는 전설의 존재."
+            },
+            "en-US": {
+              "name": "Angel King",
+              "description": "The holy king of slimes radiating divine light. A legendary being whose encounter alone brings good fortune."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_slimeking.png",
+          "emoji": "👑",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "데빌 킹",
+              "description": "악마의 힘을 흡수한 슬라임의 어둠 왕. 자신의 몸 안에 악령들을 가두고 있다."
+            },
+            "en-US": {
+              "name": "Devil King",
+              "description": "The dark king of slimes who absorbed demonic power. Traps evil spirits inside its own body."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_slimeking.png",
+          "emoji": "👑",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "boss_skeletonking",
+      "species": "skeletonking",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 10,
+        "hp_growth": 10,
+        "base_gold": 90,
+        "gold_growth": 18
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "해골 왕",
+              "description": "언데드 군단을 이끄는 해골 왕. 황금 갑옷이 그의 위용을 더한다."
+            },
+            "en-US": {
+              "name": "Skeleton King",
+              "description": "The skeleton king leading the undead legion. His golden armor adds to his majesty."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_skeletonking.png",
+          "emoji": "💀",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "불타는 왕좌",
+              "description": "왕좌 자체가 화염에 휩싸인 해골 왕. 그의 분노가 지옥불로 타오른다."
+            },
+            "en-US": {
+              "name": "Burning Throne",
+              "description": "A skeleton king whose throne itself is engulfed in flames. His rage burns as hellfire."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_skeletonking.png",
+          "emoji": "💀",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "리치 왕의 심복",
+              "description": "얼어붙은 왕국을 다스리는 해골 왕. 리치 왕의 직속 부하로 냉기 마법을 다룬다."
+            },
+            "en-US": {
+              "name": "Lich King's Servant",
+              "description": "A skeleton king ruling a frozen kingdom. A direct subordinate of the Lich King who wields ice magic."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_skeletonking.png",
+          "emoji": "💀",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "바람의 기사단장",
+              "description": "폭풍을 이끄는 해골 기사단의 수장. 바람처럼 빠른 뼈의 군단을 지휘한다."
+            },
+            "en-US": {
+              "name": "Wind Knight Commander",
+              "description": "The leader of the skeleton knight order who commands storms. Leads a bone legion as fast as wind."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_skeletonking.png",
+          "emoji": "💀",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "신성 기사단장",
+              "description": "과거 신성한 빛을 수호하던 기사단장. 죽은 후에도 성스러운 서약을 이행하기 위해 일어선 비극적인 존재."
+            },
+            "en-US": {
+              "name": "Holy Knight Commander",
+              "description": "A knight commander who once guarded sacred light. A tragic being who rose even after death to fulfill a holy vow."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_skeletonking.png",
+          "emoji": "💀",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "레오릭",
+              "description": "광기에 사로잡혀 스스로 저주를 불러들인 해골 왕. 그의 왕국은 영원한 어둠 속에 잠겼다."
+            },
+            "en-US": {
+              "name": "Leoric",
+              "description": "A skeleton king who fell to madness and brought a curse upon himself. His kingdom was plunged into eternal darkness."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_skeletonking.png",
+          "emoji": "💀",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
+        }
+      }
+    },
+    {
+      "id": "boss_orclord",
+      "species": "orclord",
+      "is_boss": true,
+      "base_stats": {
+        "base_hp": 10,
+        "hp_growth": 10,
+        "base_gold": 110,
+        "gold_growth": 22
+      },
+      "spawn_weight": 100,
+      "variations": {
+        "normal": {
+          "localization": {
+            "ko-KR": {
+              "name": "오크 대족장",
+              "description": "오크 부족 전체를 통솔하는 대족장. 해골 도끼 한 방에 성벽도 무너진다."
+            },
+            "en-US": {
+              "name": "Orc Warchief",
+              "description": "The warchief commanding the entire orc tribe. His skull axe can bring down castle walls."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_orclord.png",
+          "emoji": "⚔️",
+          "hp_modifier": 1.0,
+          "gold_modifier": 1.0
+        },
+        "fire": {
+          "localization": {
+            "ko-KR": {
+              "name": "화산의 지배자",
+              "description": "활화산을 보금자리로 삼은 오크 군주. 용암 목욕을 즐기며 더 강해진다."
+            },
+            "en-US": {
+              "name": "Volcano Lord",
+              "description": "An orc lord who makes active volcanoes his home. Grows stronger by bathing in lava."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_orclord.png",
+          "emoji": "⚔️",
+          "hp_modifier": 1.2,
+          "gold_modifier": 1.0
+        },
+        "ice": {
+          "localization": {
+            "ko-KR": {
+              "name": "설원의 지배자",
+              "description": "혹한의 설원을 지배하는 오크 군주. 살을 에는 눈보라 속에서도 흔들리지 않는다."
+            },
+            "en-US": {
+              "name": "Snowfield Lord",
+              "description": "An orc lord who rules the bitter snowfields. Unshaken even in flesh-cutting blizzards."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_orclord.png",
+          "emoji": "⚔️",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "wind": {
+          "localization": {
+            "ko-KR": {
+              "name": "폭풍의 지배자",
+              "description": "천둥과 폭풍을 이끄는 오크 군주. 그의 함성은 폭풍보다 크게 울린다."
+            },
+            "en-US": {
+              "name": "Storm Lord",
+              "description": "An orc lord who commands thunder and storms. His war cry rings louder than the storm itself."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_orclord.png",
+          "emoji": "⚔️",
+          "hp_modifier": 1.1,
+          "gold_modifier": 1.05
+        },
+        "holy": {
+          "localization": {
+            "ko-KR": {
+              "name": "오크 영웅",
+              "description": "신의 축복을 받은 오크 부족의 영웅. 황금 갑옷을 걸치고 고귀한 전투를 추구한다."
+            },
+            "en-US": {
+              "name": "Orc Hero",
+              "description": "A hero of the orc tribe blessed by the gods. Clad in golden armor, pursuing noble combat."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_orclord.png",
+          "emoji": "⚔️",
+          "hp_modifier": 1.3,
+          "gold_modifier": 2.0
+        },
+        "dark": {
+          "localization": {
+            "ko-KR": {
+              "name": "그롬",
+              "description": "어둠의 힘과 계약을 맺은 전설의 오크 전사. 그의 이름만 들어도 적군이 떤다."
+            },
+            "en-US": {
+              "name": "Grom",
+              "description": "A legendary orc warrior who made a pact with the power of darkness. Even enemies tremble at his name."
+            }
+          },
+          "sprite": "Production/Batch1/Boss/boss_orclord.png",
+          "emoji": "⚔️",
+          "hp_modifier": 1.5,
+          "gold_modifier": 1.15
         }
       }
     }

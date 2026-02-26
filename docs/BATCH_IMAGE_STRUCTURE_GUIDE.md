@@ -4,54 +4,77 @@
 
 ---
 
-## Directory Structure
-
-### Standard Layout
+## Pipeline Authority
 
 ```
-Assets/Images/Batches/
-├── Batch_01/
-│   ├── Monster/           ← Regular monster sprites
-│   │   ├── monster_slime.png
-│   │   ├── monster_bat.png
-│   │   └── ...
-│   └── Boss/              ← Boss monster sprites
-│       ├── boss_dragon.png
-│       └── ...
-├── Batch_02/
-│   ├── Monster/
-│   └── Boss/
-└── Batch_0N/              ← Future batches (up to Batch_09)
-    ├── Monster/
-    └── Boss/
+monster_planning.md → monster_progress.md → Org 저장 → Production 변환
+```
+
+**규칙:** `planning.md`에 정의된 몬스터만 Org에 저장. 파일 추가/이동 시 `progress.md` 업데이트 필수.
+
+---
+
+## Directory Structure
+
+### 2-Tier Resource Pipeline
+
+```
+Resources/Org/                    <-- 1단계: 원본 (AI 생성, 미처리)
+  ├── Batch_01/
+  │   ├── Monster/                  monster_slimeA.png, monster_bat_fire.png ...
+  │   └── Boss/                     boss_dragonA.png ...
+  ├── Batch_02/
+  │   ├── Monster/
+  │   └── Boss/
+  ├── Batch_03/
+  │   ├── Monster/
+  │   └── Boss/
+  ├── Batch_04/
+  │   └── Monster/
+  ├── Hero/                         hero_warrior.png ...
+  ├── Special/                      monster_goldengoblin.png ...
+  └── Uncategorized/                테스트/미분류 파일
+
+Assets/Images/Production/         <-- 2단계: 프로덕션 (처리 완료, 게임 로드)
+  ├── Batch1/
+  │   ├── Monster/                  monster_slime.png (256x256, 방향 보정)
+  │   └── Boss/                     boss_dragon.png
+  ├── Batch2/
+  │   ├── Monster/
+  │   └── Boss/
+  ├── Special/                      monster_goldengoblin.png
+  └── (future: UI/, Background/, Hero/)
+```
+
+### Processing Flow
+
+```
+Resources/Org/{Batch}/          원본 이미지
+        |
+        v  (sprite-processor)
+        |  - 배경 제거
+        |  - 여백 조절 (fill ratio ~85%)
+        |  - 256x256 리사이즈
+        |  - 방향 보정 (왼쪽/플레이어 방향)
+        |  - 파일명 정규화 (A 접미사 제거)
+        v
+Assets/Images/Production/{Batch}/   게임 로드용 최종 이미지
 ```
 
 ---
 
 ## Naming Conventions
 
-### Monster Sprites
+### Original Resources (Resources/Org/)
 
-**Format:** `monster_{species}.png`
+**Base Image:** `monster_{species}A.png` (AI 생성 원본)
+**Element Variation:** `monster_{species}_{element}.png` (속성 변형)
+**Boss:** `boss_{species}A.png`
 
-**Examples:**
-- `monster_slime.png`
-- `monster_goblin.png`
-- `monster_dragon.png`
+### Production Resources (Assets/Images/Production/)
 
-**Rules:**
-- Lowercase only
-- Underscores for separation
-- Species name from JSON `"species"` field
-
-### Boss Sprites
-
-**Format:** `boss_{species}.png`
-
-**Examples:**
-- `boss_dragon.png`
-- `boss_lich.png`
-- `boss_demon.png`
+**Monster:** `monster_{species}.png` (A 접미사 없음)
+**Boss:** `boss_{species}.png`
 
 **Rules:**
 - Lowercase only
@@ -65,125 +88,69 @@ Assets/Images/Batches/
 ### Image Format
 
 - **Format:** PNG
-- **Transparency:** Alpha channel required
-- **Color Mode:** RGBA (32-bit)
-- **Recommended Size:** 128×128 to 256×256 pixels
+- **Transparency:** Alpha channel required (RGBA 32-bit)
+- **Size:** 256x256 pixels
+- **Direction:** 몬스터가 왼쪽(플레이어 방향)을 향하도록 보정 완료
 
 ### Hue-Shift Support
 
-**Important:** All monster images support hue-shift for element variations.
-
-**Example:**
-```json
-"variations": {
-  "normal": { "hue_shift": 0 },
-  "fire": { "hue_shift": 15 },
-  "ice": { "hue_shift": 195 }
-}
-```
-
-**Result:** Single `monster_slime.png` renders as 6 different colored slimes.
-
-**Design Guideline:**
-- Use **neutral/grayscale base colors** for best hue-shift results
-- Avoid extreme saturation (doesn't shift well)
-- Test hue-shift in-game to verify appearance
+모든 몬스터 이미지는 런타임 hue-shift로 6속성 변형을 지원합니다.
+단일 `monster_slime.png`로 6가지 색상 슬라임을 렌더링합니다.
 
 ---
 
-## Adding New Batch Images
+## Game Load Path
 
-### Step 1: Create Directory
+### How sprites are loaded
 
-```bash
-mkdir -p Assets/Images/Batches/Batch_0N/Monster
-mkdir -p Assets/Images/Batches/Batch_0N/Boss
+```
+batch_01.json sprite 값
+    "Production/Batch1/Monster/monster_slime.png"
+        |
+        v
+pack://application:,,,/Assets/Images/ + sprite
+        |
+        v
+Assets/Images/Production/Batch1/Monster/monster_slime.png
 ```
 
-### Step 2: Add Sprite Files
+### ResourcePaths.json
 
-Place images in appropriate folders:
-```
-Batch_0N/
-  Monster/
-    monster_newspecies1.png
-    monster_newspecies2.png
-  Boss/
-    boss_newboss1.png
-```
-
-### Step 3: Update ResourcePaths.json
-
-Add batch configuration:
 ```json
 {
   "batches": {
-    "batch_0N": {
-      "id": N,
-      "data_file": "config/monsters/batch_0N.json",
-      "sprite_base": "Batches/Batch_0N",
-      "monster_folder": "Batches/Batch_0N/Monster",
-      "boss_folder": "Batches/Batch_0N/Boss"
+    "batch_01": {
+      "sprite_base": "Production/Batch1",
+      "monster_folder": "Production/Batch1/Monster",
+      "boss_folder": "Production/Batch1/Boss"
     }
   }
 }
 ```
 
-### Step 4: Create batch_0N.json
-
-Use `monster-batch-creator` sub-agent:
-```python
-Task(
-  subagent_type="monster-batch-creator",
-  prompt="Create Batch N with theme: [Your Theme]"
-)
-```
-
-Or manually reference sprite paths:
-```json
-{
-  "monsters": [
-    {
-      "species": "newspecies",
-      "variations": {
-        "normal": {
-          "sprite": "Batches/Batch_0N/Monster/monster_newspecies.png"
-        }
-      }
-    }
-  ]
-}
-```
-
 ---
 
-## Sprite Path Format
+## Adding New Batch Images
 
-### Current Standard (as of 2026-02-06)
+### Step 1: Generate original images
+Place in `Resources/Org/Batch_0N/Monster/` and `Boss/`
 
-**Full Path in JSON:**
-```json
-"sprite": "Batches/Batch_01/Monster/monster_slime.png"
+### Step 2: Process with sprite-processor
+```
+sprite-processor agent:
+- Source: Resources/Org/Batch_0N/
+- Output: Assets/Images/Production/BatchN/
 ```
 
-**Resolution:**
-```
-Base: Assets/Images/
-Full: Assets/Images/Batches/Batch_01/Monster/monster_slime.png
-```
+### Step 3: Update ResourcePaths.json
+Batch entry should point to `Production/BatchN/`
 
-### Future (ResourceManager Dynamic Paths)
+### Step 4: Create batch_0N.json
+Use `monster-batch-creator` sub-agent
 
-**Template in JSON:**
-```json
-"sprite_template": "monster_{species}.png"
-```
-
-**Resolution (automatic):**
-```
-ResourceManager.GetMonsterSpritePath(batchId=1, species="slime", element="fire")
-→ "Batches/Batch_01/Monster/monster_slime.png"
-```
+### Step 5: Verify
+- `dotnet run` - check sprite loading in-game
+- `python tools/sprite_viewer.py` - visual overview
 
 ---
 
@@ -191,158 +158,37 @@ ResourceManager.GetMonsterSpritePath(batchId=1, species="slime", element="fire")
 
 ### Do NOT Use
 
-❌ `Assets/Images/Production/` (archived)
-❌ `Assets/Images/UseImage/` (archived)
-
-**Location:** `Assets/Images/_deprecated/`
-
-These directories are kept for reference only. All new work uses `Batches/` structure.
-
----
-
-## Tools
-
-### update_batch_sprite_paths.py
-
-**Purpose:** Update sprite paths in batch JSON files
-
-**Location:** `tools/update_batch_sprite_paths.py`
-
-**Usage:**
-```bash
-python tools/update_batch_sprite_paths.py
-```
-
-**When to Use:**
-- Migrating old batch JSON to new structure
-- Bulk path updates after directory reorganization
-
-**Customization:**
-Edit the `batch_mappings` list in `main()` to add new batches:
-```python
-batch_mappings = [
-    {
-        "file": config_dir / "batch_04.json",
-        "old_prefix": "OldPath/Batch4",
-        "new_prefix": "Batches/Batch_04"
-    }
-]
-```
+- `Assets/Images/Batches/` - **DELETED** (replaced by Production/)
+- `Assets/Images/_deprecated/` - archived
+- `Assets/Images/UseImage/` - archived
+- `Assets/Images/Raw_Green/` - archived (merged into `Resources/Org/`)
+- `Resources/Org/Raw_Green/` - **DELETED** (merged into `Resources/Org/Batch_0N/`)
 
 ---
 
-## Integration with ResourceManager
+## Batch 1 Reference (25 species)
 
-### Current Status
+### Monsters (20)
+slime, bat, skeleton, goblin, orc, ghost, golem, mushroom, spider,
+wolf, snake, boar, bee, crab, turtle, plant, mimic, eyeball, elemental, rat
 
-**MonsterDataManager:** Reads sprite paths directly from JSON
-
-```csharp
-// In FlattenMonster():
-string spritePath = variation.Sprite; // Full path from JSON
-```
-
-### Future Integration (Task #1 - Pending)
-
-**MonsterDataManager + ResourceManager:** Dynamic path resolution
-
-```csharp
-// In FlattenMonster():
-string spritePath;
-if (!string.IsNullOrEmpty(variation.Sprite))
-{
-    // Legacy: Full path from JSON
-    spritePath = variation.Sprite;
-}
-else
-{
-    // New: ResourceManager dynamic resolution
-    spritePath = ResourceManager.Instance.GetMonsterSpritePath(
-        batchId: batch.BatchId,
-        species: entry.Species,
-        element: elementType
-    );
-}
-```
-
-**Benefits:**
-- Shorter JSON files (no sprite paths)
-- Centralized path management
-- Easy to refactor directory structure
-- Single source of truth (ResourcePaths.json)
+### Bosses (5)
+dragon, knight, lich, demon, reaper
 
 ---
 
 ## Checklist for New Batch
 
-When creating a new monster batch:
-
-- [ ] Create `Batches/Batch_0N/Monster` directory
-- [ ] Create `Batches/Batch_0N/Boss` directory (if bosses exist)
-- [ ] Add monster sprite files (PNG, named `monster_{species}.png`)
-- [ ] Add boss sprite files (PNG, named `boss_{species}.png`)
-- [ ] Update `config/ResourcePaths.json` with batch configuration
+- [ ] Generate images to `Resources/Org/Batch_0N/Monster/` and `Boss/`
+- [ ] Run sprite-processor: Org -> Production
+- [ ] Update `config/ResourcePaths.json` with Production paths
 - [ ] Create `config/monsters/batch_0N.json` (use monster-batch-creator)
-- [ ] Verify sprite paths point to `Batches/Batch_0N/...`
-- [ ] Test in-game: check sprite loading, hue-shift effects
+- [ ] Verify sprite paths in JSON point to `Production/BatchN/...`
+- [ ] Test in-game: `dotnet run`
 - [ ] Update `config/monsters/_index.json` with batch activation settings
 
 ---
 
-## Troubleshooting
-
-### Missing Sprite Error
-
-**Error:** "Failed to load sprite: Batches/Batch_01/Monster/monster_xxx.png"
-
-**Causes:**
-1. File doesn't exist in directory
-2. Filename mismatch (case-sensitive on some systems)
-3. Wrong path in JSON
-
-**Solutions:**
-1. Check file exists: `ls Assets/Images/Batches/Batch_01/Monster/`
-2. Verify filename matches JSON `"species"` field
-3. Run `python tools/update_batch_sprite_paths.py` to fix paths
-
-### Hue-Shift Not Working
-
-**Problem:** All elements look the same color
-
-**Causes:**
-1. Image too dark/black (hue-shift doesn't work on grayscale)
-2. Image already colored (hue-shift conflicts with base color)
-
-**Solutions:**
-1. Use neutral base colors (gray, beige)
-2. Avoid extreme saturation in base image
-3. Test with `hue_shift: 0, 90, 180, 270` to verify effect
-
-### Path Not Found
-
-**Error:** "Directory not found: Batches/Batch_0N"
-
-**Causes:**
-1. Directory not created
-2. ResourcePaths.json not updated
-
-**Solutions:**
-1. Create directory: `mkdir -p Assets/Images/Batches/Batch_0N/Monster`
-2. Update ResourcePaths.json with batch configuration
-3. Restart game to reload ResourceManager
-
----
-
-## References
-
-- **ResourcePaths.json:** `config/ResourcePaths.json`
-- **ResourceManager:** `Managers/ResourceManager.cs`
-- **MonsterDataManager:** `Managers/MonsterDataManager.cs`
-- **Batch Creator Guide:** `docs/monster_batch_creation_guide.md`
-- **CLAUDE.md:** Project rules (Table-Driven Architecture)
-
----
-
-**Version:** 1.0
-**Last Updated:** 2026-02-06
-**Maintainer:** lily (AI Agent)
+**Version:** 2.1
+**Last Updated:** 2026-02-25
+**Changes:** Raw_Green merged into Org/, Batch_04 added, deprecated list updated

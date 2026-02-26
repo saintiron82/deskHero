@@ -23,28 +23,24 @@ def ensure_production_folder():
 def process_single_image(input_path: Path) -> bool:
     """단일 이미지 처리 (녹색 배경 제거 후 Production으로 이동)"""
     try:
-        # AutoAlphaChannel 실행 (녹색 배경 자동 제거)
+        # AutoAlphaChannel 실행 (녹색 배경 자동 제거, -overwrite로 원본 덮어쓰기)
         cmd = [
             str(AUTO_ALPHA),
             "-i", str(input_path),
             "-mode", "0",  # Auto 모드
-            "-erosion", "1"
+            "-erosion", "1",
+            "-overwrite"
         ]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        
-        # 처리된 파일 찾기 (원본명 + A.png)
-        base_name = input_path.stem
-        processed_name = f"{base_name}A.png"
-        processed_path = input_path.parent / processed_name
-        
-        if processed_path.exists():
+
+        if result.returncode == 0 and input_path.exists():
             # Production 폴더로 이동 (원래 이름으로)
             target_path = PRODUCTION / input_path.name
-            shutil.move(str(processed_path), str(target_path))
+            shutil.move(str(input_path), str(target_path))
             print(f"  ✅ {input_path.name} → Production/{input_path.name}")
             return True
         else:
-            print(f"  ⚠️ 처리 결과를 찾을 수 없음: {processed_name}")
+            print(f"  ⚠️ 처리 실패: {input_path.name}")
             return False
             
     except Exception as e:

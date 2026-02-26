@@ -1,9 +1,9 @@
 # DeskWarrior 밸런스 레퍼런스 (Balance Reference)
 
 **생성일**: 2026-02-04
-**최종 수정**: 2026-02-06
-**버전**: 2.1.0
-**기준**: C# 코드베이스 (실제 게임 구현) + Tier HP 시스템 적용 + 50시간 밸런스 검증 완료 + 연속 키 페널티 시스템 추가
+**최종 수정**: 2026-02-24
+**버전**: 2.2.0
+**기준**: **시뮬레이터 (DeskWarrior.Core/Simulation) 기준** + config/*.json 실제 값
 
 ---
 
@@ -18,7 +18,7 @@
 
 ## 📚 목차
 
-1. [전투 시스템](#1-전투-시스템) - 데미지 9단계, 크리티컬, 멀티히트, 콤보, 저항, **연속 키 페널티** ⚠️ NEW
+1. [전투 시스템](#1-전투-시스템) - 데미지 8단계, 크리티컬, 멀티히트, 콤보, 저항, 연속 키 페널티 (게임 전용)
 2. [몬스터 시스템](#2-몬스터-시스템) - HP, 골드, 속성, 배치
 3. [시간 시스템](#3-시간-시스템) - 타이머, Wind 배속, 시간 연장
 4. [확률 시스템](#4-확률-시스템) - 몬스터 등장, 크리티컬
@@ -33,11 +33,11 @@
 
 ## 1. 전투 시스템
 
-### 1.1 데미지 계산 공식 (9단계)
+### 1.1 데미지 계산 공식 (8단계)
 
-**출처**: `Managers/DamageCalculator.cs` (Line 97-199), `Managers/GameManager.cs` (ConsecutiveKeyPenalty)
+**출처**: `DeskWarrior.Core/Simulation/SimulationEngine.cs` (Line 637-700)
 
-데미지는 다음 9단계를 거쳐 계산됩니다:
+시뮬레이터 기준으로 데미지는 다음 8단계를 거쳐 계산됩니다:
 
 ```
 ① 기본 파워 분리
@@ -60,7 +60,7 @@
 
 ⑥ 콤보 배수 (리듬 발동 시)
    if (comboStack > 0):
-       effectivePower = ⑤ × (1 + comboDamageBonus) × 2^comboStack
+       effectivePower = ⑤ × 2^comboStack
 
    콤보 스택별 배율:
    - Stack 1: ×2
@@ -82,30 +82,12 @@
    resistanceModifier = 키보드 공격 시 KeyboardResistance, 마우스 공격 시 MouseResistance
    effectivePower = ⑦ × resistanceModifier
 
-⑨ 연속 키 페널티 (2026-02-06 추가) ⚠️ NEW
-   if (콤보 활성화):
-       consecutivePenalty = 1.0  // 콤보 중엔 페널티 면제
-   else:
-       consecutivePenalty = max(0, 1.0 - max(0, consecutiveCount - 7) × 0.1)
-
-   effectivePower = ⑧ × consecutivePenalty
-
-   **페널티 테이블** (콤보 비활성화 시):
-   - 연속 1~7회: 100% (페널티 없음)
-   - 연속 8회: 90% (-10%)
-   - 연속 10회: 70% (-30%)
-   - 연속 15회: 20% (-80%)
-   - 연속 18회 이상: 0% (완전 차단, "BLOCKED" 표시)
-
-   **출처**:
-   - config/GameData.json → consecutive_key_penalty
-   - Managers/ConsecutiveKeyTracker.cs
-   - Managers/GameManager.cs → CalculateDamage()
-
-   **목적**: 키보드/마우스 자동 반복(키 꾹 누르기) 차단, 입력 다양성 유도
-
-   최종 데미지 = (int)⑨
+   최종 데미지 = OverflowGuard.ToLong(⑧)  // long 반환, 최솟값 1
 ```
+
+**참고**: 연속 키 페널티(Step ⑨)는 시뮬레이터에서 의도적으로 생략됩니다.
+CPS 기반 랜덤 간격 입력이므로 키 반복 매크로 방지 페널티가 발동하지 않습니다.
+자세한 내용은 1.7절 참조.
 
 **파라미터 출처**:
 - `basePower`: 키보드/마우스 공격력 (`GameManager.cs` Line 82-99)
@@ -113,7 +95,7 @@
 - `baseAttackBonus`: `config/PermanentStats.json` → base_attack (effect_per_level: 3)
 - `critChance`, `critMultiplier`: 1.2절 참조
 - `multiHitChance`: 1.3절 참조
-- `comboDamageBonus`, `comboStack`: 1.4절 참조
+- `comboStack`: 1.4절 참조
 - `utilityBonus`: 1.5절 참조
 
 ### 1.2 크리티컬 시스템
@@ -199,15 +181,18 @@ else:
 
 **데미지 배율**:
 ```
-콤보 데미지 보너스: comboDamageBonus (영구 스탯)
 스택별 배율: 2^comboStack
 
-최종 콤보 배수 = (1 + comboDamageBonus) × 2^comboStack
+최종 콤보 배수 = 2^comboStack
 
-Stack 1: (1 + bonus) × 2
-Stack 2: (1 + bonus) × 4
-Stack 3: (1 + bonus) × 8
+Stack 1: ×2
+Stack 2: ×4
+Stack 3: ×8
 ```
+
+**주의**: `combo_damage` 영구 스탯은 `config/PermanentStats.json`에 존재하지 않습니다.
+`start_combo_damage` (시작 콤보 데미지 레벨 가산 스탯)만 존재합니다.
+시뮬레이터의 `comboDamageBonus` 파라미터는 항상 0이며, 공식은 단순히 `2^comboStack`입니다.
 
 ### 1.5 유틸리티 스탯의 데미지 보너스
 
@@ -279,6 +264,36 @@ if (resistanceModifier < 1.0):
     effectivePower ×= resistanceModifier
 ```
 
+### 1.7 게임 전용: 연속 키 페널티
+
+**출처**: `config/GameData.json` → consecutive_key_penalty, `Managers/GameManager.cs`
+
+**중요**: 이 페널티는 **게임 런타임 전용** UX 기능입니다. 시뮬레이터(SimulationEngine.cs)에서는 의도적으로 모델링하지 않습니다.
+
+**목적**: 키보드/마우스 자동 반복(키 꾹 누르기) 차단, 입력 다양성 유도
+
+**파라미터** (config/GameData.json):
+```
+penalty_start_count: 7   // 이 횟수부터 페널티 시작
+penalty_per_count: 0.1   // 1회당 10% 감소
+combo_exempt: false       // 콤보 중 면제 여부 (false = 면제 안 함)
+mouse_exempt: true        // 마우스 면제 여부
+max_cps: 20              // 최대 허용 CPS
+```
+
+**페널티 공식**:
+```
+consecutivePenalty = max(0, 1.0 - max(0, consecutiveCount - 7) × 0.1)
+effectiveDamage = ⑧ × consecutivePenalty
+```
+
+**페널티 테이블**:
+- 연속 1~7회: 100% (페널티 없음)
+- 연속 8회: 90% (-10%)
+- 연속 10회: 70% (-30%)
+- 연속 15회: 20% (-80%)
+- 연속 18회 이상: 0% (완전 차단, "BLOCKED" 표시)
+
 ---
 
 ## 2. 몬스터 시스템
@@ -309,49 +324,82 @@ FinalHp = BaseHp × ElementModifier
 ```
 FinalHp = BaseHp × SpeciesModifier × ElementModifier
 
-예: 슬라임 Holy 속성 (레벨 1)
-BaseHp = 20 × 1.4 (종족 배율) = 28
-FinalHp = 28 × 1.0 (속성 배율) = 28
+예: 슬라임 Holy 속성 (레벨 1, Tier 시스템 비활성화 시)
+BaseHp = 10 × 1.4 (종족 hp_modifier) = 14
+FinalHp = 14 × 1.0 (속성 HP 배율) = 14
 ```
 
-**티어 시스템** (✅ 활성화됨 - 2026-02-05):
+**티어 시스템** (✅ 활성화됨):
 ```
 출처: config/GameData.json → balance.tier_hp_system
-enabled: true
-tierInterval: 300       // 300레벨마다 티어 증가
-tierMultiplier: 1.5     // 티어당 1.5배 배율
-linearGrowthPerLevel: 8 // 티어 내 레벨당 +8 HP
+출처 (알고리즘): DeskWarrior.Core/Models/SimulationModels.cs (Line 196-247)
 
-공식:
-tier = (level - 1) / tierInterval
-tierMultiplier = TierMultiplier^tier
-tierBaseHp = BaseHp × tierMultiplier
-levelInTier = (level - 1) % tierInterval
-linearIncrease = levelInTier × LinearGrowthPerLevel
-FinalHp = tierBaseHp + linearIncrease
+파라미터 (config/GameData.json 실제 값):
+  enabled: true
+  tier_interval: 100              // 100레벨마다 티어 증가
+  tier_multiplier: 1.92           // 티어당 1.92배 배율
+  min_tier_multiplier: 1.0        // 배율 최솟값 (하한)
+  tier_curve_exponent: 1.0        // 티어 지수 곡선 (1.0 = 선형)
+  linear_growth_per_level: 8      // 티어 내 레벨당 기본 선형 증가
+  min_linear_growth_per_level: 1.0 // 선형 증가 최솟값
+  growth_decrease_per_tier: 0.96  // 티어마다 선형 성장률 감소 (×0.96)
+  tier_multiplier_decay_per_tier: 0.99 // 티어마다 배율 감쇠 적용
 
-예시 (slime, base_hp=40):
-- Lv 1-300 (Tier 0): 40 × 1.0 + (레벨×8) = 40~2,440
-- Lv 301-600 (Tier 1): 40 × 1.5 + (레벨×8) = 60~2,460
-- Lv 1501-1800 (Tier 5): 40 × 7.6 + (레벨×8) = 304~2,704
-- Lv 6001-6300 (Tier 20): 40 × 3,325 + (레벨×8) = 133,000~135,400
+  // 후반 시스템 (레벨 1000+)
+  late_start_level: 1000          // 후반 시스템 시작 레벨
+  late_tier_interval: 50          // 후반 티어 간격 (50레벨)
+  late_tier_multiplier: 0.80      // 후반 티어당 0.80배 (HP 완화)
+  max_late_tiers: 30              // 후반 티어 최대 30개
 
-검증: 50시간 플레이 시 레벨 6,332 도달, 평균 세션 89.9초 (안정적)
+알고리즘 (SimulationModels.cs:196-247):
+  tier = (level - 1) / tier_interval
+
+  // 티어 지수 곡선
+  tierIndex = tier  (tier_curve_exponent == 1.0이면 선형)
+
+  // 배율 감쇠 적용
+  tierMultiplier = TierMultiplier^tierIndex
+  if (tier_multiplier_decay_per_tier != 1.0):
+      decay = TierMultiplierDecayPerTier^(tierIndex × (tierIndex-1) / 2)
+      tierMultiplier ×= decay
+  tierMultiplier = max(min_tier_multiplier, tierMultiplier)
+
+  tierBaseHp = OverflowGuard.ToLong(baseHp × tierMultiplier)
+  levelInTier = (level - 1) % tier_interval
+
+  // 성장률 감소 적용
+  tierGrowthRate = linear_growth_per_level × GrowthDecreasePerTier^tierIndex
+  tierGrowthRate = max(min_linear_growth_per_level, tierGrowthRate)
+  linearIncrease = OverflowGuard.ToLong(levelInTier × tierGrowthRate)
+  hp = tierBaseHp + linearIncrease
+
+  // 후반 완화 적용 (레벨 1000+)
+  if (level >= late_start_level):
+      lateTier = (level - late_start_level) / late_tier_interval
+      lateTier = min(lateTier, max_late_tiers)
+      lateMultiplier = LateTierMultiplier^lateTier   // 0.80^lateTier
+      hp = OverflowGuard.ToLong(hp × lateMultiplier)
+
+예시 (slime, base_hp=10, tier_interval=100, tier_multiplier=1.92):
+  - Lv 1-100 (Tier 0): 10 × 1.0 + (0 × 8) = 10 HP
+  - Lv 101-200 (Tier 1): 10 × 1.92 + (0 × 7.68) = 19.2 HP~
+  - Lv 201-300 (Tier 2): 10 × 1.92² ≈ 36.9 HP~
+  - Lv 1001+ (Tier 10): 후반 완화 시스템 적용 시작
 ```
 
-**Batch 1 몬스터 기본 스탯** (레벨 1 기준, 2026-02-05 최종 업데이트):
+**Batch 1 몬스터 기본 스탯** (config/monsters/batch_01.json 실제 값):
 
 **⚠️ 중요**: 모든 몬스터(일반+보스)는 **레벨 기준으로만 HP가 결정**됩니다.
 
 | 구분 | BaseHp | HpGrowth | 비고 |
 |------|--------|----------|------|
-| **모든 일반 몬스터** (12종) | 40 | 10 | slime, bat, skeleton, goblin, orc, ghost, golem, mushroom, spider, wolf, snake, boar |
-| **모든 보스** (2종) | 40 | 10 | dragon, knight (boss_hp_multiplier 5.0 적용됨) |
+| **모든 일반 몬스터** (13종) | **10** | 10 | slime, bat, skeleton, goblin, orc, ghost, golem, mushroom, spider, wolf, snake, boar, ... |
+| **모든 보스** | **10** | 10 | boss_hp_multiplier **3.0** 적용됨 (config/GameData.json) |
 
 **HP 계산 예시**:
-- 일반 몬스터 Lv 10: 40 + (10-1)×10 = 130 HP
-- 보스 Lv 10: (40 + (10-1)×10) × 5.0 = 650 HP
-- Tier 시스템 적용 시: 위 HP에 tier_multiplier 추가 적용
+- 일반 몬스터 Lv 10: 10 + (10-1)×10 = 100 HP
+- 보스 Lv 10: (10 + (10-1)×10) × 3.0 = 300 HP
+- Tier 시스템 적용 시: 티어별 배율 및 감쇠 추가 적용
 
 **골드 보상**: 종족마다 다름 (slime: 10, bat: 13, ..., boar: 43)
 
@@ -390,21 +438,25 @@ BaseGold = 10 × 3.2 (속성 배율) = 32
 
 | 속성 | HP 배율 | 시간 배속 | 키보드 저항 | 마우스 저항 | 크리스탈 배율 | 등장 가중치 |
 |------|---------|----------|-------------|-------------|--------------|-------------|
-| normal | 1.0 | 1.0 | 1.0 | 1.0 | **1.0** | **50** ⚖️ 균등 |
-| fire | 1.0 | 1.0 | **0.67** | 1.0 | **1.0** | **50** ⚖️ 균등 |
-| ice | 1.0 | 1.0 | 1.0 | **0.67** | **1.0** | **50** ⚖️ 균등 |
-| wind | **0.8** | **1.5** | 1.0 | 1.0 | **1.0** | **50** ⚖️ 균등 |
-| holy | 1.0 | 1.0 | 1.0 | 1.0 | **2.0** ⭐ | **2** ✨ 초레어 |
-| dark | **1.5** | 1.0 | 1.0 | 1.0 | **2.0** ⭐ | **6** ✨ 초레어 |
+| normal | 1.0 | **3.6** | 1.0 | 1.0 | **1.0** | **50** ⚖️ 균등 |
+| fire | 1.0 | **3.6** | **0.67** | 1.0 | **1.0** | **50** ⚖️ 균등 |
+| ice | 1.0 | **3.6** | 1.0 | **0.67** | **1.0** | **50** ⚖️ 균등 |
+| wind | **0.8** | **4.0** | 1.0 | 1.0 | **1.0** | **50** ⚖️ 균등 |
+| holy | 1.0 | **3.6** | 1.0 | 1.0 | **2.0** ⭐ | **2** ✨ 초레어 |
+| dark | **1.5** | **3.6** | 1.0 | 1.0 | **2.0** ⭐ | **6** ✨ 초레어 |
 
 **시간 배속 적용**:
 ```
-출처: GameManager.cs (OnTimerTick, Line 720)
-RemainingTime -= 0.1 × TimeScale
+출처: config/GameData.json → element_properties.time_scale (절대값)
+출처: GameManager.cs (OnTimerTick) → RemainingTime -= 0.1 × TimeScale
+출처: SimulationEngine.cs → scaledInterval = inputInterval × timeScale
 
-예: Wind 속성 몬스터
-- 기본: 0.1초당 0.1초 감소
-- Wind: 0.1초당 0.15초 감소 (1.5배 빠름)
+게임 동작:
+  RemainingTime -= 0.1 × time_scale
+  normal/fire/ice/holy/dark: 0.1초당 0.36초 감소 (time_scale=3.6)
+  wind: 0.1초당 0.40초 감소 (time_scale=4.0, 약 1.11배 빠름)
+
+Wind 속도 비율: 4.0 / 3.6 ≈ 1.11배 (기존 문서의 1.5배는 오류)
 ```
 
 ### 2.4 배치 시스템
@@ -440,12 +492,12 @@ DispatcherTimer를 사용한 정확한 타이밍
 
 **시간 감소 로직** (`OnTimerTick`):
 ```csharp
-// 시간 배속 적용 (Wind 속성 몬스터 등)
-double timeScale = _currentMonster?.TimeScale ?? 1.0;
+// 시간 배속 적용 (config/GameData.json → element_properties.time_scale)
+double timeScale = _currentMonster?.TimeScale ?? 3.6;
 RemainingTime -= 0.1 × timeScale;
 
-// Wind 속성: timeScale = 1.5 (시간이 1.5배 빠르게 감소)
-// 일반: timeScale = 1.0
+// normal/fire/ice/holy/dark: timeScale = 3.6 (0.1초당 0.36초 감소)
+// wind: timeScale = 4.0 (0.1초당 0.40초 감소, 약 1.11배 빠름)
 ```
 
 **시간 초과 처리**:
@@ -480,12 +532,14 @@ if (RemainingTime <= 0) {
 레벨 150 투자 시 90초 제한
 ```
 
-**속성별 시간 배속**:
+**속성별 시간 배속** (config/GameData.json 실제 값):
 ```
 실제 감소 = 0.1초 × TimeScale
 
-normal, fire, ice, holy, dark: 1.0 (0.1초당 0.1초 감소)
-wind: 1.5 (0.1초당 0.15초 감소, 1.5배 빠름)
+normal, fire, ice, holy, dark: 3.6 (0.1초당 0.36초 감소)
+wind: 4.0 (0.1초당 0.40초 감소, 약 1.11배 빠름)
+
+Wind 속도 비율: 4.0 / 3.6 ≈ 1.11배
 ```
 
 ---
@@ -1303,14 +1357,17 @@ Balance Grade: B
 **목표**: 초반 쉽고 후반 완만한 난이도 곡선 구현
 
 **적용 내용**:
-1. ✅ **Tier HP 시스템 활성화**
-   - tier_interval: 300 (300레벨마다 티어 증가)
-   - tier_multiplier: 1.5 (티어당 1.5배)
+1. ✅ **Tier HP 시스템 활성화** (현재 config/GameData.json 실제 값)
+   - tier_interval: 100 (100레벨마다 티어 증가)
+   - tier_multiplier: 1.92 (티어당 1.92배)
    - linear_growth_per_level: 8
+   - growth_decrease_per_tier: 0.96
+   - late_start_level: 1000, late_tier_multiplier: 0.80
 
-2. ✅ **몬스터 HP 2배 증가**
-   - base_hp: 20 → 40 (2배)
-   - hp_growth: 5 → 10 (2배)
+2. ✅ **몬스터 HP 설정** (현재 config/monsters/batch_01.json 실제 값)
+   - base_hp: 10
+   - hp_growth: 10
+   - boss_hp_multiplier: 3.0 (config/GameData.json)
 
 3. ✅ **Timeout 기반 time_extend 투자 전략**
    - 출처: `DeskWarrior.Core/Simulation/ProgressionSimulator.cs`
@@ -1336,15 +1393,18 @@ Balance Grade: B
 20-50시간: 17 레벨/시간  (완만한 성장)
 ```
 
-**티어별 HP 스케일 (slime 기준, base_hp=40)**:
+**티어별 HP 스케일 (slime 기준, base_hp=10, tier_interval=100, tier_multiplier=1.92)**:
 ```
-Tier 0  (Lv 1-300):    40 × 1.0    = 40
-Tier 1  (Lv 301-600):  40 × 1.5    = 60
-Tier 3  (Lv 901-1200): 40 × 3.4    = 135
-Tier 5  (Lv 1501-1800): 40 × 7.6   = 304
-Tier 10 (Lv 3001-3300): 40 × 57.7  = 2,307
-Tier 20 (Lv 6001-6300): 40 × 3,325 = 133,000
+Tier 0  (Lv 1-100):    10 × 1.0          = 10 (+ 선형 증가)
+Tier 1  (Lv 101-200):  10 × 1.92         ≈ 19 (+ 선형 증가)
+Tier 2  (Lv 201-300):  10 × 1.92²        ≈ 37 (+ 선형 증가)
+Tier 5  (Lv 501-600):  10 × 1.92⁵        ≈ 253 (+ 선형 증가)
+Tier 10 (Lv 1001+):    후반 완화 시작 (0.80배/50레벨)
+Tier 20 (Lv 2001+):    후반 최대 30 티어 (max_late_tiers)
 ```
+
+참고: 감쇠(decay) 및 후반 완화 적용으로 실제 수치는 위와 다를 수 있음.
+정확한 수치는 DeskWarrior.Simulator로 검증하세요.
 
 ### 11.4 검증 결과
 
@@ -1368,6 +1428,32 @@ Tier 20 (Lv 6001-6300): 40 × 3,325 = 133,000
 ---
 
 ## 변경 이력 (Changelog)
+
+- **2026-02-24 (v2.2.0)**: ✅ **문서 기준을 시뮬레이터(DeskWarrior.Core/Simulation) + config 실제 값으로 교정**
+  - **기준 변경**: C# 게임 코드 → 시뮬레이터(SimulationEngine.cs) + config/*.json 실제 값
+  - **데미지 공식**: 9단계 → 8단계 (연속 키 페널티는 1.7절로 분리)
+    - 출처: SimulationEngine.cs:637-700 (CalculateDamage)
+    - 최종 데미지 반환: `(int)` → `OverflowGuard.ToLong()` (long 반환)
+  - **콤보 공식 수정**: `(1 + comboDamageBonus) × 2^comboStack` → `2^comboStack`
+    - `combo_damage` 스탯은 PermanentStats.json에 없음, comboDamageBonus 항상 0
+  - **Tier HP 파라미터 교정** (config/GameData.json 실제 값):
+    - tier_interval: 300 → **100**
+    - tier_multiplier: 1.5 → **1.92**
+    - 추가: growth_decrease_per_tier: 0.96, tier_multiplier_decay_per_tier: 0.99
+    - 추가: late_start_level: 1000, late_tier_interval: 50, late_tier_multiplier: 0.80, max_late_tiers: 30
+  - **몬스터 base_hp 교정** (config/monsters/batch_01.json 실제 값):
+    - 모든 몬스터 base_hp: 40 → **10**
+  - **boss_hp_multiplier 교정** (config/GameData.json 실제 값):
+    - 5.0 → **3.0**
+  - **HP 계산 예시 교정**:
+    - Lv 10 일반: 40+(10-1)×10=130 → **10+(10-1)×10=100**
+    - Lv 10 보스: ×5.0=650 → **×3.0=300**
+  - **시간 배속(time_scale) 교정** (config/GameData.json 실제 값):
+    - normal/fire/ice/holy/dark: 1.0 → **3.6** (절대값)
+    - wind: 1.5 → **4.0** (절대값)
+    - Wind 속도 비율: 1.5배 → **1.11배** (4.0/3.6)
+  - **연속 키 페널티**: 1.7절 신규 추가 (게임 전용 UX 기능 설명)
+  - **CalculateHp 알고리즘**: 2.1절에 SimulationModels.cs 전체 알고리즘 추가 (감쇠, 후반 완화 포함)
 
 - **2026-02-05 (v2.0.0)**: ✅ **Tier HP 시스템 적용 및 50시간 밸런스 검증**
   - **Tier HP 시스템**: enabled: true, tier_interval: 300, tier_multiplier: 1.5
