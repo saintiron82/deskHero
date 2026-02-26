@@ -173,8 +173,14 @@ namespace DeskWarrior.Models
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";
 
+        [JsonPropertyName("icon")]
+        public string Icon { get; set; } = "";
+
         [JsonPropertyName("order")]
         public int Order { get; set; } = 0;
+
+        [JsonPropertyName("color")]
+        public string Color { get; set; } = "#9CA3AF";
     }
 
     /// <summary>

@@ -17,6 +17,7 @@ namespace DeskWarrior.Managers
 
         private readonly SaveManager _saveManager;
         private readonly Dictionary<string, StatGrowthConfig> _statConfigs;
+        private readonly Dictionary<string, CategoryInfo> _categories;
         private readonly BossDropConfig _bossDropConfig;
         private readonly Random _random = new();
 
@@ -34,6 +35,7 @@ namespace DeskWarrior.Managers
         public PermanentProgressionManager(SaveManager saveManager)
         {
             _saveManager = saveManager;
+            _categories = new Dictionary<string, CategoryInfo>();
             _statConfigs = LoadStatConfigs();
             _bossDropConfig = LoadBossDropConfig();
         }
@@ -218,6 +220,17 @@ namespace DeskWarrior.Managers
                                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
+        /// <summary>
+        /// 카테고리 목록 가져오기 (order 순서대로 정렬)
+        /// </summary>
+        public List<(string Key, CategoryInfo Info)> GetOrderedCategories()
+        {
+            return _categories
+                .OrderBy(kvp => kvp.Value.Order)
+                .Select(kvp => (kvp.Key, kvp.Value))
+                .ToList();
+        }
+
         #endregion
 
         #region Private Methods
@@ -284,6 +297,14 @@ namespace DeskWarrior.Managers
                 {
                     PropertyNameCaseInsensitive = true
                 });
+
+                if (root?.Categories != null)
+                {
+                    foreach (var kvp in root.Categories)
+                    {
+                        _categories[kvp.Key] = kvp.Value;
+                    }
+                }
 
                 return root?.Stats ?? new Dictionary<string, StatGrowthConfig>();
             }

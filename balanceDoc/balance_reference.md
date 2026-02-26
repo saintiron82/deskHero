@@ -1,8 +1,8 @@
 # DeskWarrior 밸런스 레퍼런스 (Balance Reference)
 
 **생성일**: 2026-02-04
-**최종 수정**: 2026-02-24
-**버전**: 2.2.0
+**최종 수정**: 2026-02-26
+**버전**: 2.3.0
 **기준**: **시뮬레이터 (DeskWarrior.Core/Simulation) 기준** + config/*.json 실제 값
 
 ---
@@ -657,48 +657,85 @@ cost = base_cost × (1 + level × growth_rate) × adjusted_multiplier^(level / a
 - 게임 로직: `Models/StatGrowthConfig.cs` (CalculateCost, Lines 100-141)
 - 시뮬레이터: `DeskWarrior.Core/Balance/StatCostCalculator.cs` (Lines 37-51)
 
-### 5.2 전체 스탯 목록 (36개)
+### 5.2 전체 스탯 목록 (20개, 8개 카테고리)
 
-#### 카테고리 1: 기본 능력 (Base Stats)
+**v2.3.0 변경**: 4개 → 8개 카테고리로 세분화. 같은 카테고리 내 비-% 스탯은 **동일 레벨에서 동일 비용**을 가집니다.
+% 스탯 (max_level > 0인 스탯)은 독립적인 비용 곡선을 유지합니다.
 
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 설명 | 아이콘 |
-|---------|-------------|----------|------|--------|
-| base_attack | +3 | 무제한 | 모든 공격 데미지 가산 | ⚔️ |
-| attack_percent | +2% | 무제한 | 데미지 퍼센트 배수 (pureBasePower에만) | 💪 |
-| crit_chance | +0.5% | 90% | 크리티컬 확률 (기본 10% + 90%) | ✨ |
-| crit_damage | +0.2 | 무제한 | 크리티컬 배율 (기본 2.0 + bonus) | 💥 |
-| multi_hit | +1% | 100% | 2배 타격 확률 | 🎯 |
-| combo_damage | +1.5% | 무제한 | 콤보 데미지 보너스 | 🔥 |
-| combo_flex | +0.3 | 무제한 | 콤보 허용 오차 (초) | 🎵 |
+#### 카테고리 1: 강화 공격 (Heavy Damage) ⚔️
 
-#### 카테고리 2: 재화 보너스 (Currency Bonus)
+**통합 비용**: base_cost=20, growth_rate=1.2, multiplier=1.9, softcap=8
 
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 설명 | 아이콘 |
-|---------|-------------|----------|------|--------|
-| gold_flat_perm | +3 | 무제한 | 골드 가산 | 💵 |
-| gold_multi_perm | +15% | 무제한 | 골드 배수 | 🌟 |
-| crystal_flat | +10 | 무제한 | 보스 크리스탈 가산 | 💎 |
-| crystal_chance | +2% | 100% | 크리스탈 드롭 확률 (현재 미사용) | ✨ |
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| base_attack | +3 | 무제한 | 통합 | 모든 공격 데미지 가산 | ⚔️ |
 
-#### 카테고리 3: 유틸리티 (Utility)
+#### 카테고리 2: 전투 특성 (Standard Damage) 🎯
 
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 설명 | 아이콘 |
-|---------|-------------|----------|------|--------|
-| time_extend | +0.4초 | 60초 | 제한시간 연장 | ⏰ |
-| upgrade_discount | +3% | 60% | 업그레이드 비용 할인 | 🎫 |
+**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.6, multiplier=1.6, softcap=9
 
-#### 카테고리 4: 시작 보너스 (Starting Bonus)
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| crit_damage | +0.2 | 무제한 | 통합 | 크리티컬 배율 (기본 2.0 + bonus) | 💥 |
+| attack_percent | +2% | 무제한 | **독립 (%)** | 데미지 퍼센트 배수 | 💪 |
+| crit_chance | +0.5% | 90% | **독립 (%)** | 크리티컬 확률 (기본 10% + 90%) | ✨ |
+| multi_hit | +1% | 100% | **독립 (%)** | 2배 타격 확률 | 🎯 |
 
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 설명 | 아이콘 |
-|---------|-------------|----------|------|--------|
-| start_level | +5 | 무제한 | 시작 레벨 | 🚀 |
-| start_gold | +150 | 무제한 | 시작 골드 | 💵 |
-| start_keyboard | +2 | 무제한 | 시작 키보드 공격력 레벨 | ⌨️ |
-| start_mouse | +2 | 무제한 | 시작 마우스 공격력 레벨 | 🖱️ |
-| start_gold_flat | +0.3 | 무제한 | 시작 골드+ 레벨 | 💸 |
-| start_gold_multi | +0.3% | 무제한 | 시작 골드* 레벨 | 💰 |
-| start_combo_flex | +0.3 | 무제한 | 시작 콤보유연성 레벨 | 🎯 |
-| start_combo_damage | +1.5% | 무제한 | 시작 콤보데미지 레벨 | 💥 |
+#### 카테고리 3: 골드 보너스 (Currency Income) 💰
+
+**통합 비용** (비-% 스탯): base_cost=0.06, growth_rate=0.7, multiplier=1.5, softcap=10
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| gold_flat_perm | +3 | 무제한 | 통합 | 골드 가산 | 💵 |
+| gold_multi_perm | +15% | 무제한 | **독립 (%)** | 골드 배수 | 🌟 |
+
+#### 카테고리 4: 크리스탈 (Crystal Economy) 💎
+
+**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.8, multiplier=1.6, softcap=8
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| crystal_flat | +10 | 무제한 | 통합 | 보스 크리스탈 가산 | 💎 |
+| crystal_chance | +2% | 100% | **독립 (%)** | 크리스탈 드롭 확률 (현재 미사용) | ✨ |
+
+#### 카테고리 5: 유틸리티 (Utility) ⚙️
+
+**통합 비용** (비-% 스탯): base_cost=1.5, growth_rate=0.55, multiplier=1.4, softcap=10
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| time_extend | +0.4초 | 60초 | 통합 | 제한시간 연장 | ⏰ |
+| upgrade_discount | +3% | 60% | **독립 (%)** | 업그레이드 비용 할인 | 🎫 |
+
+#### 카테고리 6: 시작 전투 (Starting Combat) 🚀
+
+**통합 비용**: base_cost=2, growth_rate=0.5, multiplier=1.5, softcap=10
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| start_level | +5 | 무제한 | 통합 | 시작 레벨 | 🚀 |
+| start_keyboard | +2 | 무제한 | 통합 | 시작 키보드 공격력 레벨 | ⌨️ |
+| start_mouse | +2 | 무제한 | 통합 | 시작 마우스 공격력 레벨 | 🖱️ |
+
+#### 카테고리 7: 시작 경제 (Starting Economy) 💵
+
+**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.4, multiplier=1.4, softcap=12
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| start_gold | +150 | 무제한 | 통합 | 시작 골드 | 💵 |
+| start_gold_flat | +0.3 | 무제한 | 통합 | 시작 골드+ 레벨 | 💸 |
+| start_gold_multi | +0.3% | 무제한 | **독립 (%)** | 시작 골드* 레벨 | 💰 |
+
+#### 카테고리 8: 시작 콤보 (Starting Combo) 🔥
+
+**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.5, multiplier=1.5, softcap=8
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
+|---------|-------------|----------|-----------|------|--------|
+| start_combo_flex | +0.3 | 무제한 | 통합 | 시작 콤보유연성 레벨 | 🎯 |
+| start_combo_damage | +1.5% | 무제한 | **독립 (%)** | 시작 콤보데미지 레벨 | 💥 |
 
 ### 5.3 주요 스탯 성장 곡선
 
@@ -1428,6 +1465,18 @@ Tier 20 (Lv 2001+):    후반 최대 30 티어 (max_late_tiers)
 ---
 
 ## 변경 이력 (Changelog)
+
+- **2026-02-26 (v2.3.0)**: ✅ **8개 카테고리 통합 비용 시스템 도입**
+  - **카테고리 확장**: 4개 → 8개 (heavy_damage, standard_damage, currency_income, crystal_economy, utility, starting_combat, starting_economy, starting_combo)
+  - **통합 비용 원칙**: 같은 카테고리의 비-% 스탯은 동일 레벨에서 동일 비용
+  - **% 스탯 독립**: max_level > 0인 스탯은 기존 비용 곡선 유지 (attack_percent, crit_chance, multi_hit 등)
+  - **주요 비용 변경** (ba_ma 분석 기반):
+    - crystal_flat: multiplier 1.8→1.6, softcap 5→8 (Lv50 비용: 16,424→~328)
+    - start_combo_flex: softcap 4→8 (Lv50 비용: 27,347→~328, 데드 스탯 해소)
+    - start_level: base_cost 3→2, softcap 12→10
+    - start_gold_flat: base_cost 0.5→1, multiplier 1.5→1.4, softcap 8→12
+  - **UI 변경**: 상점 탭 하드코딩 4개 → JSON 기반 동적 생성 8개
+  - **로컬라이제이션**: 5개 언어에 8개 카테고리 키 추가 (ko-KR, en-US, ja-JP, zh-CN, zh-TW)
 
 - **2026-02-24 (v2.2.0)**: ✅ **문서 기준을 시뮬레이터(DeskWarrior.Core/Simulation) + config 실제 값으로 교정**
   - **기준 변경**: C# 게임 코드 → 시뮬레이터(SimulationEngine.cs) + config/*.json 실제 값

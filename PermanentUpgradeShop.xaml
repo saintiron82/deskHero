@@ -32,9 +32,9 @@
             <Setter Property="Foreground" Value="#FFFFFF"/>
             <Setter Property="BorderBrush" Value="#33FFFFFF"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="Padding" Value="10,7"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -299,40 +299,9 @@
                 <Border.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="0" Opacity="0.2"/>
                 </Border.Effect>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <RadioButton x:Name="TabBaseStats" Style="{StaticResource TabButton}"
-                                 Margin="0,0,8,0" IsChecked="True" Checked="Tab_Checked">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="TabBaseStatsText"/>
-                            <TextBlock x:Name="BadgeBaseStats" Text="" FontSize="10" FontWeight="Bold"
-                                       Foreground="#10B981" Margin="6,0,0,0"/>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="TabCurrencyBonus" Style="{StaticResource TabButton}"
-                                 Margin="0,0,8,0" Checked="Tab_Checked">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="TabCurrencyBonusText"/>
-                            <TextBlock x:Name="BadgeCurrencyBonus" Text="" FontSize="10" FontWeight="Bold"
-                                       Foreground="#10B981" Margin="6,0,0,0"/>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="TabUtility" Style="{StaticResource TabButton}"
-                                 Margin="0,0,8,0" Checked="Tab_Checked">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="TabUtilityText"/>
-                            <TextBlock x:Name="BadgeUtility" Text="" FontSize="10" FontWeight="Bold"
-                                       Foreground="#10B981" Margin="6,0,0,0"/>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="TabStartingBonus" Style="{StaticResource TabButton}"
-                                 Checked="Tab_Checked">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="TabStartingBonusText"/>
-                            <TextBlock x:Name="BadgeStartingBonus" Text="" FontSize="10" FontWeight="Bold"
-                                       Foreground="#10B981" Margin="6,0,0,0"/>
-                        </StackPanel>
-                    </RadioButton>
-                </StackPanel>
+                <WrapPanel x:Name="TabPanel" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <!-- Tabs are generated dynamically from PermanentStats.json categories -->
+                </WrapPanel>
             </Border>
 
             <!-- 📦 CONTENT: Light Background -->

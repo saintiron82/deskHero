@@ -179,19 +179,10 @@ namespace DeskWarrior.ViewModels
         /// </summary>
         private string GetCategoryDisplayName(string category)
         {
-            var loc = LocalizationManager.Instance;
-            return category switch
-            {
-                "base" => loc["ui.shop.categoryName.baseStats"],
-                "currency" => loc["ui.shop.categoryName.currencyBonus"],
-                "utility" => loc["ui.shop.categoryName.utility"],
-                "starting" => loc["ui.shop.categoryName.startingBonus"],
-                // Legacy 카테고리 (하위 호환)
-                "base_stats" => loc["ui.shop.categoryName.baseStats"],
-                "currency_bonus" => loc["ui.shop.categoryName.currencyBonus"],
-                "starting_bonus" => loc["ui.shop.categoryName.startingBonus"],
-                _ => category
-            };
+            // 카테고리 이름은 PermanentStats.json의 categories 섹션에서 로드됨
+            var categories = _progressionManager.GetOrderedCategories();
+            var match = categories.FirstOrDefault(c => c.Key == category);
+            return match.Info?.Name ?? category;
         }
 
         /// <summary>

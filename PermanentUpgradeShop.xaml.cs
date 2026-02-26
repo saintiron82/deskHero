@@ -21,10 +21,13 @@ namespace DeskWarrior
         private readonly PermanentProgressionManager _progressionManager;
         private readonly SaveManager _saveManager;
         private PermanentUpgradeShopViewModel _viewModel;
-        private string _currentCategory = "base_stats";
+        private string _currentCategory = "";
 
         // 연속 구매 시 UI 업데이트를 위한 요소 참조 (버튼 포함)
         private readonly Dictionary<string, (TextBlock levelText, TextBlock effectText, TextBlock costText, Button button, TextBlock icon, TextBlock nameText)> _cardElements = new();
+
+        // 동적 탭 뱃지 참조
+        private readonly Dictionary<string, TextBlock> _tabBadges = new();
 
         // 연속 구매용 타이머
         private System.Windows.Threading.DispatcherTimer? _repeatPurchaseTimer;
@@ -40,8 +43,16 @@ namespace DeskWarrior
                 _saveManager = saveManager;
                 _viewModel = new PermanentUpgradeShopViewModel(_progressionManager, _saveManager);
 
+                GenerateTabs();
                 RefreshUI();
-                LoadCategoryUpgrades("base_stats");
+
+                // 첫 번째 카테고리 로드
+                var categories = _progressionManager.GetOrderedCategories();
+                if (categories.Count > 0)
+                {
+                    _currentCategory = categories[0].Key;
+                    LoadCategoryUpgrades(_currentCategory);
+                }
             }
             catch (Exception ex)
             {
@@ -69,15 +80,88 @@ namespace DeskWarrior
             if (HelpButton != null) HelpButton.ToolTip = loc["ui.shop.help"];
             if (CloseButton != null) CloseButton.ToolTip = loc["ui.shop.close"];
 
-            // 탭 텍스트
-            if (TabBaseStatsText != null) TabBaseStatsText.Text = loc["ui.shop.category.baseStats"];
-            if (TabCurrencyBonusText != null) TabCurrencyBonusText.Text = loc["ui.shop.category.currencyBonus"];
-            if (TabUtilityText != null) TabUtilityText.Text = loc["ui.shop.category.utility"];
-            if (TabStartingBonusText != null) TabStartingBonusText.Text = loc["ui.shop.category.startingBonus"];
+            // 탭 텍스트는 GenerateTabs()에서 동적 생성
 
             // 힌트 텍스트
             if (HintText != null) HintText.Text = loc["ui.shop.hint"];
         }
+
+        #region Tab Generation
+
+        /// <summary>
+        /// JSON 카테고리 데이터에서 동적으로 탭 생성
+        /// </summary>
+        private void GenerateTabs()
+        {
+            if (TabPanel == null) return;
+
+            TabPanel.Children.Clear();
+            _tabBadges.Clear();
+
+            var categories = _progressionManager.GetOrderedCategories();
+            bool isFirst = true;
+
+            foreach (var (key, info) in categories)
+            {
+                var badge = new TextBlock
+                {
+                    Text = "",
+                    FontSize = 10,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = new SolidColorBrush(Color.FromRgb(16, 185, 129)),
+                    Margin = new Thickness(4, 0, 0, 0),
+                    Visibility = Visibility.Collapsed
+                };
+                _tabBadges[key] = badge;
+
+                // 로컬라이제이션 키 우선, 없으면 JSON name 사용
+                var loc = LocalizationManager.Instance;
+                string locKey = $"ui.shop.category.{key}";
+                string tabText = loc[locKey];
+                if (tabText == locKey) // 키가 없으면 원본 반환
+                    tabText = $"{info.Icon} {info.Name}";
+
+                var tabContent = new StackPanel { Orientation = Orientation.Horizontal };
+                tabContent.Children.Add(new TextBlock { Text = tabText });
+                tabContent.Children.Add(badge);
+
+                var tab = new RadioButton
+                {
+                    Style = (Style)FindResource("TabButton"),
+                    Tag = key,
+                    Margin = new Thickness(0, 0, 6, 4),
+                    IsChecked = isFirst,
+                    Content = tabContent
+                };
+                tab.Checked += Tab_Checked;
+
+                TabPanel.Children.Add(tab);
+                isFirst = false;
+            }
+        }
+
+        /// <summary>
+        /// 카테고리 색상을 JSON에서 가져오기
+        /// </summary>
+        private Color GetCategoryColor(string categoryKey)
+        {
+            var categories = _progressionManager.GetOrderedCategories();
+            var match = categories.FirstOrDefault(c => c.Key == categoryKey);
+
+            if (match.Info != null && !string.IsNullOrEmpty(match.Info.Color))
+            {
+                try
+                {
+                    var wpfColor = (Color)ColorConverter.ConvertFromString(match.Info.Color);
+                    return wpfColor;
+                }
+                catch { }
+            }
+
+            return Color.FromRgb(156, 163, 175); // 기본 회색
+        }
+
+        #endregion
 
         #region UI Update
 
@@ -107,32 +191,23 @@ namespace DeskWarrior
         /// </summary>
         private void UpdateBadges()
         {
-            // InitializeComponent 완료 전에 호출되면 무시
-            if (BadgeBaseStats == null)
+            if (_tabBadges.Count == 0)
                 return;
 
-            var categories = new[]
-            {
-                new { Key = "base_stats", Badge = BadgeBaseStats },
-                new { Key = "currency_bonus", Badge = BadgeCurrencyBonus },
-                new { Key = "utility", Badge = BadgeUtility },
-                new { Key = "starting_bonus", Badge = BadgeStartingBonus }
-            };
-
-            foreach (var cat in categories)
+            foreach (var kvp in _tabBadges)
             {
                 int affordableCount = _viewModel.AllUpgrades
-                    .Count(u => u.CategoryKey == cat.Key && u.CanAfford);
+                    .Count(u => u.CategoryKey == kvp.Key && u.CanAfford);
 
                 if (affordableCount > 0)
                 {
-                    cat.Badge.Text = $"({affordableCount})";
-                    cat.Badge.Visibility = Visibility.Visible;
+                    kvp.Value.Text = $"({affordableCount})";
+                    kvp.Value.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    cat.Badge.Text = "";
-                    cat.Badge.Visibility = Visibility.Collapsed;
+                    kvp.Value.Text = "";
+                    kvp.Value.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -220,15 +295,8 @@ namespace DeskWarrior
                 Padding = new Thickness(8)
             };
 
-            // 카테고리별 테두리 색상
-            Color categoryColor = upgrade.CategoryKey switch
-            {
-                "base_stats" => Color.FromRgb(220, 38, 38),      // 빨강 (전투력)
-                "currency_bonus" => Color.FromRgb(250, 204, 21), // 금색 (재화)
-                "utility" => Color.FromRgb(59, 130, 246),        // 파랑 (유틸)
-                "starting_bonus" => Color.FromRgb(168, 85, 247), // 보라 (시작)
-                _ => Color.FromRgb(156, 163, 175)                // 회색 (기본)
-            };
+            // 카테고리별 테두리 색상 (JSON에서 로드)
+            Color categoryColor = GetCategoryColor(upgrade.CategoryKey);
 
             // 구매 가능 여부에 따라 카드 스타일 변경
             if (upgrade.CanAfford)
@@ -652,17 +720,8 @@ namespace DeskWarrior
         /// </summary>
         private void Tab_Checked(object sender, RoutedEventArgs e)
         {
-            if (sender is not RadioButton radioButton)
+            if (sender is not RadioButton radioButton || radioButton.Tag is not string category)
                 return;
-
-            string category = radioButton.Name switch
-            {
-                "TabBaseStats" => "base_stats",
-                "TabCurrencyBonus" => "currency_bonus",
-                "TabUtility" => "utility",
-                "TabStartingBonus" => "starting_bonus",
-                _ => "base_stats"
-            };
 
             LoadCategoryUpgrades(category);
         }

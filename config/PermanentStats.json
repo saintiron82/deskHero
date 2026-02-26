@@ -1,10 +1,11 @@
 {
   "_comment": "영구 스탯 통합 데이터 - 게임(C#)과 대시보드(Python) 공용",
   "_formula": "cost = base_cost × (1 + level × growth_rate) × multiplier^(level / softcap_interval)",
+  "_cost_rule": "같은 카테고리 + 같은 레벨 = 같은 비용 (% 스탯은 독립)",
   "stats": {
     "base_attack": {
       "stat_name": "BaseAttackLevel",
-      "category": "base_stats",
+      "category": "heavy_damage",
       "icon": "⚔️",
       "base_cost": 20,
       "growth_rate": 1.2,
@@ -35,7 +36,7 @@
     },
     "attack_percent": {
       "stat_name": "AttackPercentLevel",
-      "category": "base_stats",
+      "category": "standard_damage",
       "icon": "💪",
       "base_cost": 10,
       "growth_rate": 1.0,
@@ -45,7 +46,7 @@
       "max_level": 1000,
       "max_effect": 200,
       "weight": 1.8,
-      "_comment": "최대 200%. 0.2%/lv × 1000lv = 200%. 비용곡선 강화",
+      "_comment": "% 스탯 - 독립 비용. 최대 200%. 0.2%/lv × 1000lv = 200%",
       "tier_config": {
         "tier_interval": 100,
         "base_multiplier": 1.8,
@@ -68,7 +69,7 @@
     },
     "crit_chance": {
       "stat_name": "CritChanceLevel",
-      "category": "base_stats",
+      "category": "standard_damage",
       "icon": "✨",
       "base_cost": 1,
       "growth_rate": 0.7,
@@ -78,7 +79,7 @@
       "max_level": 1000,
       "max_effect": 90,
       "weight": 1.8,
-      "_comment": "기본 10% + 최대 90% = 100%. 0.09%/lv × 1000lv = 90%",
+      "_comment": "% 스탯 - 독립 비용. 기본 10% + 최대 90% = 100%",
       "tier_config": {
         "tier_interval": 100,
         "base_multiplier": 1.7,
@@ -101,22 +102,22 @@
     },
     "crit_damage": {
       "stat_name": "CritDamageLevel",
-      "category": "base_stats",
+      "category": "standard_damage",
       "icon": "💥",
       "base_cost": 1,
-      "growth_rate": 0.5,
-      "multiplier": 1.5,
-      "softcap_interval": 10,
+      "growth_rate": 0.6,
+      "multiplier": 1.6,
+      "softcap_interval": 9,
       "effect_per_level": 0.002,
       "max_level": 1000,
       "max_effect": 2.0,
       "weight": 1.8,
-      "_comment": "최대 +2.0 보너스 (기본2.0+2.0=x4.0). 0.002/lv × 1000lv = 2.0. 200% 공통 한계",
+      "_comment": "비% 스탯 - 카테고리 통일 비용. 최대 +2.0 보너스 (기본2.0+2.0=x4.0)",
       "tier_config": {
         "tier_interval": 100,
-        "base_multiplier": 1.5,
+        "base_multiplier": 1.6,
         "multiplier_decrease_per_tier": 0,
-        "base_softcap": 10,
+        "base_softcap": 9,
         "softcap_increase_per_tier": 0,
         "effect_multiplier_per_tier": 1.0,
         "effect_add_per_tier": 0.0
@@ -134,7 +135,7 @@
     },
     "multi_hit": {
       "stat_name": "MultiHitLevel",
-      "category": "base_stats",
+      "category": "standard_damage",
       "icon": "🎯",
       "base_cost": 1,
       "growth_rate": 0.7,
@@ -144,7 +145,7 @@
       "max_level": 1000,
       "max_effect": 100,
       "weight": 1.5,
-      "_comment": "100% 확률 한계. 0.1%/lv × 1000lv = 100%. 비용곡선 강화",
+      "_comment": "% 스탯 - 독립 비용. 100% 확률 한계",
       "tier_config": {
         "tier_interval": 100,
         "base_multiplier": 1.6,
@@ -167,15 +168,16 @@
     },
     "gold_flat_perm": {
       "stat_name": "GoldFlatPermLevel",
-      "category": "currency_bonus",
+      "category": "currency_income",
       "icon": "💰",
-      "base_cost": 0.05,
+      "base_cost": 0.06,
       "growth_rate": 0.7,
-      "multiplier": 1.6,
+      "multiplier": 1.5,
       "softcap_interval": 10,
       "effect_per_level": 3,
       "max_level": 0,
       "weight": 0.3,
+      "_comment": "비% 스탯 - 카테고리 통일 비용",
       "localization": {
         "ko-KR": {
           "name": "영구 골드+",
@@ -188,7 +190,7 @@
       },
       "tier_config": {
         "tier_interval": 100,
-        "base_multiplier": 1.6,
+        "base_multiplier": 1.5,
         "multiplier_decrease_per_tier": 0,
         "base_softcap": 10,
         "softcap_increase_per_tier": 0,
@@ -198,7 +200,7 @@
     },
     "gold_multi_perm": {
       "stat_name": "GoldMultiPermLevel",
-      "category": "currency_bonus",
+      "category": "currency_income",
       "icon": "🌟",
       "base_cost": 0.08,
       "growth_rate": 0.7,
@@ -208,7 +210,7 @@
       "max_level": 1000,
       "max_effect": 200,
       "weight": 0.3,
-      "_comment": "최대 200% 골드 배수. 0.2%/lv × 1000lv = 200%. 비용곡선 강화",
+      "_comment": "% 스탯 - 독립 비용. 최대 200% 골드 배수",
       "localization": {
         "ko-KR": {
           "name": "영구 골드*",
@@ -231,15 +233,16 @@
     },
     "crystal_flat": {
       "stat_name": "CrystalFlatLevel",
-      "category": "currency_bonus",
+      "category": "crystal_economy",
       "icon": "💎",
       "base_cost": 1,
-      "growth_rate": 0.9,
-      "multiplier": 1.8,
-      "softcap_interval": 5,
+      "growth_rate": 0.8,
+      "multiplier": 1.6,
+      "softcap_interval": 8,
       "effect_per_level": 10,
       "max_level": 0,
       "weight": 0.8,
+      "_comment": "비% 스탯 - 카테고리 통일 비용",
       "localization": {
         "ko-KR": {
           "name": "크리스탈+",
@@ -252,9 +255,9 @@
       },
       "tier_config": {
         "tier_interval": 100,
-        "base_multiplier": 1.8,
+        "base_multiplier": 1.6,
         "multiplier_decrease_per_tier": 0,
-        "base_softcap": 5,
+        "base_softcap": 8,
         "softcap_increase_per_tier": 0,
         "effect_add_per_tier": 0.0,
         "effect_multiplier_per_tier": 0.94
@@ -262,7 +265,7 @@
     },
     "crystal_chance": {
       "stat_name": "CrystalMultiLevel",
-      "category": "currency_bonus",
+      "category": "crystal_economy",
       "icon": "✨",
       "base_cost": 1,
       "growth_rate": 0.8,
@@ -272,7 +275,7 @@
       "max_level": 1000,
       "max_effect": 100,
       "weight": 0.8,
-      "_comment": "100% 확률 한계. 0.1%/lv × 1000lv = 100%. 비용곡선 강화",
+      "_comment": "% 스탯 - 독립 비용. 100% 확률 한계 (현재 미사용)",
       "localization": {
         "ko-KR": {
           "name": "크리스탈*",
@@ -298,7 +301,7 @@
       "category": "utility",
       "icon": "⏰",
       "base_cost": 1.5,
-      "growth_rate": 0.6,
+      "growth_rate": 0.55,
       "multiplier": 1.4,
       "softcap_interval": 10,
       "effect_per_level": 0.28,
@@ -306,7 +309,7 @@
       "max_effect": 60,
       "weight": 0.75,
       "damage_bonus_per_level": 0.667,
-      "_comment": "기본 30초에서 최대 +60초 = 90초. 데미지 보너스 0.667%/lv × 300lv = 200% 한계. 비용곡선 강화",
+      "_comment": "비% 스탯 - 카테고리 통일 비용. 기본 30초에서 최대 +60초 = 90초",
       "tier_config": {
         "tier_interval": 100,
         "base_multiplier": 1.4,
@@ -340,7 +343,7 @@
       "max_effect": 60,
       "weight": 0.5,
       "damage_bonus_per_level": 0.6,
-      "_comment": "최대 60% 할인. 추가로 레벨당 0.6% 데미지 증가. 비용곡선 강화",
+      "_comment": "% 스탯 - 독립 비용. 최대 60% 할인 + 레벨당 0.6% 데미지",
       "localization": {
         "ko-KR": {
           "name": "업그레이드 할인",
@@ -363,12 +366,12 @@
     },
     "start_level": {
       "stat_name": "StartLevelLevel",
-      "category": "starting_bonus",
+      "category": "starting_combat",
       "icon": "🚀",
-      "base_cost": 3,
+      "base_cost": 2,
       "growth_rate": 0.5,
       "multiplier": 1.5,
-      "softcap_interval": 12,
+      "softcap_interval": 10,
       "effect_per_level": 1.0,
       "max_level": 0,
       "weight": 1.5,
@@ -376,12 +379,12 @@
         "tier_interval": 50,
         "base_multiplier": 1.5,
         "multiplier_decrease_per_tier": 0,
-        "base_softcap": 12,
+        "base_softcap": 10,
         "softcap_increase_per_tier": 0,
         "effect_multiplier_per_tier": 1.0,
         "effect_add_per_tier": 0.0
       },
-      "_comment": "450레벨 벽 우회용. 비용곡선 강화",
+      "_comment": "비% 스탯 - 카테고리 통일 비용. 450레벨 벽 우회용",
       "localization": {
         "ko-KR": {
           "name": "시작 레벨",
@@ -395,7 +398,7 @@
     },
     "start_gold": {
       "stat_name": "StartGoldLevel",
-      "category": "starting_bonus",
+      "category": "starting_economy",
       "icon": "💵",
       "base_cost": 1,
       "growth_rate": 0.4,
@@ -404,7 +407,7 @@
       "effect_per_level": 150,
       "max_level": 0,
       "weight": 0.8,
-      "_comment": "start_level 시너지. 비용곡선 강화",
+      "_comment": "비% 스탯 - 카테고리 통일 비용. start_level 시너지",
       "localization": {
         "ko-KR": {
           "name": "시작 골드",
@@ -427,15 +430,16 @@
     },
     "start_keyboard": {
       "stat_name": "StartKeyboardLevel",
-      "category": "starting_bonus",
+      "category": "starting_combat",
       "icon": "⌨️",
-      "base_cost": 1,
+      "base_cost": 2,
       "growth_rate": 0.5,
       "multiplier": 1.5,
-      "softcap_interval": 8,
+      "softcap_interval": 10,
       "effect_per_level": 2.0,
       "max_level": 0,
       "weight": 0.8,
+      "_comment": "비% 스탯 - 카테고리 통일 비용",
       "localization": {
         "ko-KR": {
           "name": "시작 키보드",
@@ -450,7 +454,7 @@
         "tier_interval": 100,
         "base_multiplier": 1.5,
         "multiplier_decrease_per_tier": 0,
-        "base_softcap": 8,
+        "base_softcap": 10,
         "softcap_increase_per_tier": 0,
         "effect_add_per_tier": 0.0,
         "effect_multiplier_per_tier": 1.0
@@ -458,15 +462,16 @@
     },
     "start_mouse": {
       "stat_name": "StartMouseLevel",
-      "category": "starting_bonus",
+      "category": "starting_combat",
       "icon": "🖱️",
-      "base_cost": 1,
+      "base_cost": 2,
       "growth_rate": 0.5,
       "multiplier": 1.5,
-      "softcap_interval": 8,
+      "softcap_interval": 10,
       "effect_per_level": 2.0,
       "max_level": 0,
       "weight": 0.8,
+      "_comment": "비% 스탯 - 카테고리 통일 비용",
       "localization": {
         "ko-KR": {
           "name": "시작 마우스",
@@ -481,7 +486,7 @@
         "tier_interval": 100,
         "base_multiplier": 1.5,
         "multiplier_decrease_per_tier": 0,
-        "base_softcap": 8,
+        "base_softcap": 10,
         "softcap_increase_per_tier": 0,
         "effect_add_per_tier": 0.0,
         "effect_multiplier_per_tier": 1.0
@@ -489,15 +494,16 @@
     },
     "start_gold_flat": {
       "stat_name": "StartGoldFlatLevel",
-      "category": "starting_bonus",
+      "category": "starting_economy",
       "icon": "💸",
       "base_cost": 1,
-      "growth_rate": 0.5,
-      "multiplier": 1.5,
-      "softcap_interval": 8,
+      "growth_rate": 0.4,
+      "multiplier": 1.4,
+      "softcap_interval": 12,
       "effect_per_level": 0.3,
       "max_level": 0,
       "weight": 0.5,
+      "_comment": "비% 스탯 - 카테고리 통일 비용",
       "localization": {
         "ko-KR": {
           "name": "시작 골드+",
@@ -510,9 +516,9 @@
       },
       "tier_config": {
         "tier_interval": 100,
-        "base_multiplier": 1.5,
+        "base_multiplier": 1.4,
         "multiplier_decrease_per_tier": 0,
-        "base_softcap": 8,
+        "base_softcap": 12,
         "softcap_increase_per_tier": 0,
         "effect_add_per_tier": 0.0,
         "effect_multiplier_per_tier": 1.0
@@ -520,7 +526,7 @@
     },
     "start_gold_multi": {
       "stat_name": "StartGoldMultiLevel",
-      "category": "starting_bonus",
+      "category": "starting_economy",
       "icon": "💰",
       "base_cost": 1,
       "growth_rate": 0.6,
@@ -529,6 +535,7 @@
       "effect_per_level": 0.3,
       "max_level": 0,
       "weight": 0.5,
+      "_comment": "% 스탯 - 독립 비용",
       "localization": {
         "ko-KR": {
           "name": "시작 골드*",
@@ -551,15 +558,16 @@
     },
     "start_combo_flex": {
       "stat_name": "StartComboFlexLevel",
-      "category": "starting_bonus",
+      "category": "starting_combo",
       "icon": "🎯",
       "base_cost": 1,
-      "growth_rate": 0.7,
-      "multiplier": 1.7,
-      "softcap_interval": 4,
+      "growth_rate": 0.5,
+      "multiplier": 1.5,
+      "softcap_interval": 8,
       "effect_per_level": 0.3,
       "max_level": 0,
       "weight": 0.6,
+      "_comment": "비% 스탯 - 카테고리 통일 비용. 이전 softcap=4→8로 정상화",
       "localization": {
         "ko-KR": {
           "name": "시작 콤보유연성",
@@ -572,9 +580,9 @@
       },
       "tier_config": {
         "tier_interval": 100,
-        "base_multiplier": 1.7,
+        "base_multiplier": 1.5,
         "multiplier_decrease_per_tier": 0,
-        "base_softcap": 4,
+        "base_softcap": 8,
         "softcap_increase_per_tier": 0,
         "effect_add_per_tier": 0.0,
         "effect_multiplier_per_tier": 1.0
@@ -582,7 +590,7 @@
     },
     "start_combo_damage": {
       "stat_name": "StartComboDamageLevel",
-      "category": "starting_bonus",
+      "category": "starting_combo",
       "icon": "💥",
       "base_cost": 1,
       "growth_rate": 0.7,
@@ -591,6 +599,7 @@
       "effect_per_level": 1.5,
       "max_level": 0,
       "weight": 0.7,
+      "_comment": "% 스탯 - 독립 비용",
       "localization": {
         "ko-KR": {
           "name": "시작 콤보데미지",
@@ -613,21 +622,53 @@
     }
   },
   "categories": {
-    "base_stats": {
-      "name": "기본 능력",
-      "order": 1
+    "heavy_damage": {
+      "name": "강화 공격",
+      "icon": "⚔️",
+      "order": 1,
+      "color": "#DC2626"
     },
-    "currency_bonus": {
-      "name": "재화 보너스",
-      "order": 2
+    "standard_damage": {
+      "name": "전투 특성",
+      "icon": "🎯",
+      "order": 2,
+      "color": "#F59E0B"
+    },
+    "currency_income": {
+      "name": "골드 보너스",
+      "icon": "💰",
+      "order": 3,
+      "color": "#FACC15"
+    },
+    "crystal_economy": {
+      "name": "크리스탈",
+      "icon": "💎",
+      "order": 4,
+      "color": "#0EA5E9"
     },
     "utility": {
       "name": "유틸리티",
-      "order": 3
+      "icon": "⚙️",
+      "order": 5,
+      "color": "#3B82F6"
     },
-    "starting_bonus": {
-      "name": "시작 보너스",
-      "order": 4
+    "starting_combat": {
+      "name": "시작 전투",
+      "icon": "🚀",
+      "order": 6,
+      "color": "#A855F7"
+    },
+    "starting_economy": {
+      "name": "시작 경제",
+      "icon": "💵",
+      "order": 7,
+      "color": "#10B981"
+    },
+    "starting_combo": {
+      "name": "시작 콤보",
+      "icon": "🔥",
+      "order": 8,
+      "color": "#EF4444"
     }
   }
 }
