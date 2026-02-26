@@ -268,25 +268,25 @@
                                     <!-- Row 0: Keyboard, Mouse, Level, Kills -->
                                     <Border Grid.Row="0" Grid.Column="0" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="0,0,2,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestKeyboard" Text="⌨️" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestKeyboard" Text="⌨️" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestKeyboard" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="1" Background="#AA10B981" CornerRadius="4" Padding="4" Margin="2,0,2,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestMouse" Text="🖱️" Foreground="#10B981" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestMouse" Text="🖱️" Foreground="#10B981" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestMouse" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="2" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="2,0,2,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestLevel" Text="LV" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestLevel" Text="LV" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestLevel" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="3" Background="#AA10B981" CornerRadius="4" Padding="4" Margin="2,0,0,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestKills" Text="KILL" Foreground="#10B981" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestKills" Text="KILL" Foreground="#10B981" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestKills" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
@@ -294,25 +294,25 @@
                                     <!-- Row 1: Damage, Gold, Crystals, IPM -->
                                     <Border Grid.Row="1" Grid.Column="0" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="0,0,2,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestDamage" Text="DMG" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestDamage" Text="DMG" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestDamage" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="1" Background="#AAFFD700" CornerRadius="4" Padding="4" Margin="2,0,2,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestGold" Text="GOLD" Foreground="#FFD700" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestGold" Text="GOLD" Foreground="#FFD700" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestGold" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="2" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="2,0,2,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestCrystals" Text="💎" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestCrystals" Text="💎" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestCrystals" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="3" Background="#AA10B981" CornerRadius="4" Padding="4" Margin="2,0,0,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblBestIPM" Text="IPM" Foreground="#10B981" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblBestIPM" Text="IPM" Foreground="#10B981" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtBestIPM" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
@@ -361,25 +361,25 @@
                                     <!-- Row 0: Keyboard, Mouse, Level, Kills -->
                                     <Border Grid.Row="0" Grid.Column="0" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="0,0,2,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumKeyboard" Text="⌨️" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumKeyboard" Text="⌨️" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumKeyboard" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="1" Background="#AA10B981" CornerRadius="4" Padding="4" Margin="2,0,2,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumMouse" Text="🖱️" Foreground="#10B981" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumMouse" Text="🖱️" Foreground="#10B981" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumMouse" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="2" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="2,0,2,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumLevel" Text="LV" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumLevel" Text="LV" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumLevel" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="3" Background="#AA10B981" CornerRadius="4" Padding="4" Margin="2,0,0,2">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumKills" Text="KILL" Foreground="#10B981" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumKills" Text="KILL" Foreground="#10B981" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumKills" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
@@ -387,25 +387,25 @@
                                     <!-- Row 1: Damage, Gold, Crystals, IPM -->
                                     <Border Grid.Row="1" Grid.Column="0" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="0,0,2,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumDamage" Text="DMG" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumDamage" Text="DMG" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumDamage" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="1" Background="#AAFFD700" CornerRadius="4" Padding="4" Margin="2,0,2,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumGold" Text="GOLD" Foreground="#FFD700" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumGold" Text="GOLD" Foreground="#FFD700" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumGold" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="2" Background="#AA0099CC" CornerRadius="4" Padding="4" Margin="2,0,2,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumCrystals" Text="💎" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumCrystals" Text="💎" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumCrystals" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="3" Background="#AA10B981" CornerRadius="4" Padding="4" Margin="2,0,0,0">
                                         <StackPanel>
-                                            <TextBlock x:Name="LblCumIPM" Text="IPM" Foreground="#10B981" FontSize="9" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="LblCumIPM" Text="IPM" Foreground="#10B981" FontSize="10" FontWeight="SemiBold"/>
                                             <TextBlock x:Name="TxtCumIPM" Text="0" Foreground="White" FontSize="14" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
@@ -439,15 +439,15 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                                    <TextBlock x:Name="LblDmRecordCount" Text="RECORDS" Foreground="#AAAAAA" FontSize="9" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="LblDmRecordCount" Text="RECORDS" Foreground="#AAAAAA" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                                     <TextBlock x:Name="TxtDmRecordCount" Text="0" Foreground="White" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                                    <TextBlock x:Name="LblDmAvgDamage" Text="AVG" Foreground="#AAAAAA" FontSize="9" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="LblDmAvgDamage" Text="AVG" Foreground="#AAAAAA" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                                     <TextBlock x:Name="TxtDmAvgDamage" Text="0" Foreground="#0099CC" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                    <TextBlock x:Name="LblDmMaxDamage" Text="MAX" Foreground="#AAAAAA" FontSize="9" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="LblDmMaxDamage" Text="MAX" Foreground="#AAAAAA" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                                     <TextBlock x:Name="TxtDmMaxDamage" Text="0" Foreground="#FF6B6B" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Grid>
@@ -457,12 +457,12 @@
                         <Border Grid.Row="1" Style="{StaticResource StatsCard}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock x:Name="LblDmLegend" Text="LEGEND:" Foreground="#AAAAAA" FontWeight="Bold" FontSize="9" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Base" Foreground="#888888" FontSize="9" FontWeight="SemiBold" Margin="0,0,6,0"/>
-                                <TextBlock Text="+Atk" Foreground="#0099CC" FontSize="9" FontWeight="SemiBold" Margin="0,0,6,0"/>
-                                <TextBlock Text="×Mult" Foreground="#10B981" FontSize="9" FontWeight="SemiBold" Margin="0,0,6,0"/>
-                                <TextBlock Text="×Crit" Foreground="#FF6B6B" FontSize="9" FontWeight="SemiBold" Margin="0,0,6,0"/>
-                                <TextBlock Text="×Multi" Foreground="#FFD700" FontSize="9" FontWeight="SemiBold" Margin="0,0,6,0"/>
-                                <TextBlock Text="×Combo" Foreground="#FF69B4" FontSize="9" FontWeight="SemiBold"/>
+                                <TextBlock Text="Base" Foreground="#888888" FontSize="10" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                <TextBlock Text="+Atk" Foreground="#0099CC" FontSize="10" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                <TextBlock Text="×Mult" Foreground="#10B981" FontSize="10" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                <TextBlock Text="×Crit" Foreground="#FF6B6B" FontSize="10" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                <TextBlock Text="×Multi" Foreground="#FFD700" FontSize="10" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                <TextBlock Text="×Combo" Foreground="#FF69B4" FontSize="10" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Border>
 

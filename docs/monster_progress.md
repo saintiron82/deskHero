@@ -134,8 +134,8 @@
 | :-- | :--- | :--- | :--- | :--- |
 | 76 | **윌오위스프** | `monster_willowisp.png` | **[완료]** | |
 | 77 | **살라만더** | `monster_salamander.png` | | |
-| 78 | **운디네** | `monster_undine.png` | | |
-| 79 | **실프** | `monster_sylph.png` | | |
+| 78 | **운디네** | `monster_undine.png` | **[완료]** | |
+| 79 | **실프** | `monster_sylph.png` | **[완료]** | |
 | 80 | **노움** | `monster_gnome.png` | | |
 | 81 | **잭오랜턴** | `monster_jackolantern.png` | | |
 | 82 | **그렘린** | `monster_gremlin.png` | | |

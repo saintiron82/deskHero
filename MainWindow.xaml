@@ -181,7 +181,7 @@
 
                     <!-- 플레이어 히어로 (좌측 하단) -->
                     <Image x:Name="HeroImage"
-                           Width="90" Height="90"
+                           Width="108" Height="108"
                            Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"

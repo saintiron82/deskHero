@@ -71,7 +71,6 @@ namespace DeskWarrior.Windows
         private void UpdateLocalizedUI()
         {
             var loc = LocalizationManager.Instance;
-            bool isKo = loc.CurrentLanguage == "ko-KR";
 
             // 타이틀 (emoji 제외)
             TitleText.Text = loc["ui.statistics.title"].Replace("📊 ", "").Replace("📊", "");
@@ -82,12 +81,12 @@ namespace DeskWarrior.Windows
 
             // Time range
             LblTimeRange.Text = loc["ui.statistics.labels.timeRange"];
-            BtnRange1H.Content = isKo ? "1시간" : "1H";
-            BtnRange24H.Content = isKo ? "24시간" : "24H";
-            BtnRange7D.Content = isKo ? "7일" : "7D";
+            BtnRange1H.Content = loc["ui.statistics.filter.1h"];
+            BtnRange24H.Content = loc["ui.statistics.filter.24h"];
+            BtnRange7D.Content = loc["ui.statistics.filter.7d"];
 
             // BEST 섹션
-            LblBestRecord.Text = isKo ? "최고 기록" : "BEST";
+            LblBestRecord.Text = loc["ui.statistics.section.best"];
             LblBestKeyboard.Text = "⌨️";
             LblBestMouse.Text = "🖱️";
             LblBestLevel.Text = "LV";
@@ -98,10 +97,10 @@ namespace DeskWarrior.Windows
             LblBestIPM.Text = "IPM";
 
             // RATIO 섹션
-            LblInputRatio.Text = isKo ? "비율" : "RATIO";
+            LblInputRatio.Text = loc["ui.statistics.section.ratio"];
 
             // CUMULATIVE 섹션
-            LblCumulative.Text = isKo ? "누적" : "CUMULATIVE";
+            LblCumulative.Text = loc["ui.statistics.section.cumulative"];
             LblCumKeyboard.Text = "⌨️";
             LblCumMouse.Text = "🖱️";
             LblCumLevel.Text = "LV";
@@ -111,6 +110,31 @@ namespace DeskWarrior.Windows
             LblCumCrystals.Text = "💎";
             LblCumIPM.Text = "IPM";
 
+            // Stat card tooltips (BEST) - Border 전체에 설정
+            SetCardTooltip(LblBestKeyboard, loc["ui.statistics.tooltip.keyboard"]);
+            SetCardTooltip(LblBestMouse, loc["ui.statistics.tooltip.mouse"]);
+            SetCardTooltip(LblBestLevel, loc["ui.statistics.tooltip.level"]);
+            SetCardTooltip(LblBestKills, loc["ui.statistics.tooltip.kills"]);
+            SetCardTooltip(LblBestDamage, loc["ui.statistics.tooltip.damage"]);
+            SetCardTooltip(LblBestGold, loc["ui.statistics.tooltip.gold"]);
+            SetCardTooltip(LblBestCrystals, loc["ui.statistics.tooltip.crystals"]);
+            SetCardTooltip(LblBestIPM, loc["ui.statistics.tooltip.ipm"]);
+
+            // Stat card tooltips (CUMULATIVE)
+            SetCardTooltip(LblCumKeyboard, loc["ui.statistics.tooltip.keyboard"]);
+            SetCardTooltip(LblCumMouse, loc["ui.statistics.tooltip.mouse"]);
+            SetCardTooltip(LblCumLevel, loc["ui.statistics.tooltip.level"]);
+            SetCardTooltip(LblCumKills, loc["ui.statistics.tooltip.kills"]);
+            SetCardTooltip(LblCumDamage, loc["ui.statistics.tooltip.damage"]);
+            SetCardTooltip(LblCumGold, loc["ui.statistics.tooltip.gold"]);
+            SetCardTooltip(LblCumCrystals, loc["ui.statistics.tooltip.crystals"]);
+            SetCardTooltip(LblCumIPM, loc["ui.statistics.tooltip.ipm"]);
+
+            // Section header tooltips
+            LblBestRecord.ToolTip = loc["ui.statistics.tooltip.bestSection"];
+            LblCumulative.ToolTip = loc["ui.statistics.tooltip.cumulativeSection"];
+            LblInputRatio.ToolTip = loc["ui.statistics.tooltip.ratio"];
+
             // Close Button
             CloseButton.Content = loc["ui.common.close"];
 
@@ -118,13 +142,18 @@ namespace DeskWarrior.Windows
             HelpButton.ToolTip = loc["ui.help.title"];
 
             // Damage Meter 탭
-            TabDamageMeterText.Text = isKo ? "데미지 미터" : "DMG METER";
-            LblDmRecordCount.Text = isKo ? "기록 수" : "RECORDS";
-            LblDmAvgDamage.Text = isKo ? "평균" : "AVG";
-            LblDmMaxDamage.Text = isKo ? "최대" : "MAX";
-            LblDmRecentHits.Text = isKo ? "최근 히트" : "RECENT HITS";
-            LblDmLegend.Text = isKo ? "범례" : "LEGEND";
-            TxtDmNoRecords.Text = isKo ? "데미지 기록 없음" : "No damage records yet";
+            TabDamageMeterText.Text = loc["ui.statistics.tabs.damageMeter"];
+            LblDmRecordCount.Text = loc["ui.statistics.damageMeter.records"];
+            LblDmAvgDamage.Text = loc["ui.statistics.damageMeter.avg"];
+            LblDmMaxDamage.Text = loc["ui.statistics.damageMeter.max"];
+            LblDmRecentHits.Text = loc["ui.statistics.damageMeter.recentHits"];
+            LblDmLegend.Text = loc["ui.statistics.damageMeter.legend"];
+            TxtDmNoRecords.Text = loc["ui.statistics.damageMeter.noRecords"];
+
+            // Damage Meter tooltips
+            LblDmRecordCount.ToolTip = loc["ui.statistics.tooltip.records"];
+            LblDmAvgDamage.ToolTip = loc["ui.statistics.tooltip.damage"];
+            LblDmMaxDamage.ToolTip = loc["ui.statistics.tooltip.damage"];
         }
 
         #region Tab Navigation
@@ -543,15 +572,7 @@ namespace DeskWarrior.Windows
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             var loc = LocalizationManager.Instance;
-            var helpContent = loc.CurrentLanguage == "ko-KR"
-                ? "통계 창에서 게임 기록을 확인할 수 있습니다.\n\n" +
-                  "• 전투 기록: 시간대별 플레이 통계\n" +
-                  "• 업적: 달성한 업적 목록\n" +
-                  "• 시간 필터로 기간별 통계 확인 가능"
-                : "View your game statistics here.\n\n" +
-                  "• Battle Record: Play statistics by time period\n" +
-                  "• Achievements: List of unlocked achievements\n" +
-                  "• Use time filters to view stats by period";
+            var helpContent = loc["ui.statistics.help.content"];
 
             var helpPopup = new HelpPopup(loc["ui.statistics.title"], helpContent);
             helpPopup.Owner = this;
@@ -574,6 +595,16 @@ namespace DeskWarrior.Windows
         #endregion
 
         #region Helpers
+
+        /// <summary>
+        /// 라벨의 부모 Border에 ToolTip을 설정하여 카드 전체에서 툴팁이 표시되도록 함
+        /// </summary>
+        private static void SetCardTooltip(FrameworkElement label, object tooltip)
+        {
+            // Label → StackPanel → Border
+            if (label.Parent is FrameworkElement stackPanel && stackPanel.Parent is Border border)
+                border.ToolTip = tooltip;
+        }
 
         private static string FormatNumber(long value)
         {
