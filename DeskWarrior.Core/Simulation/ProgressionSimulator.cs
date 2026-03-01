@@ -336,7 +336,7 @@ public class ProgressionSimulator
                 totalSpent = ApplyRestrictedStrategy(stats, ref crystals, afterSession, upgradeHistory,
                     new[]
                     {
-                        "time_extend", "upgrade_discount",
+                        "time_extend", "upgrade_discount", "cost_flat_reduction", "crystal_discount", "crystal_flat_reduction",
                         "start_level", "start_gold",
                         "start_keyboard", "start_mouse",
                         "start_gold_flat", "start_gold_multi",
@@ -451,7 +451,7 @@ public class ProgressionSimulator
         crystals -= (phase1Budget - phase1Crystals);
 
         // Phase 2: 생존/유틸리티 스탯 (남은 예산) - time_extend 우선
-        var survivalStats = new[] { "time_extend", "start_level", "upgrade_discount" };
+        var survivalStats = new[] { "time_extend", "start_level", "upgrade_discount", "cost_flat_reduction", "crystal_discount", "crystal_flat_reduction" };
         totalSpent += ApplyPriorityStrategy(stats, ref crystals, afterSession, history, survivalStats);
 
         return totalSpent;
@@ -586,7 +586,7 @@ public class ProgressionSimulator
         long initialCrystals = crystals;
 
         // Phase 1: 골드 스탯에 40% 예산
-        var goldStats = new[] { "gold_flat_perm", "gold_multi_perm", "upgrade_discount" };
+        var goldStats = new[] { "gold_flat_perm", "gold_multi_perm", "upgrade_discount", "cost_flat_reduction", "crystal_discount", "crystal_flat_reduction" };
         long phase1Budget = (long)(initialCrystals * 0.4);
         long phase1Crystals = phase1Budget;
         totalSpent += ApplyPriorityStrategy(stats, ref phase1Crystals, afterSession, history, goldStats);
@@ -729,6 +729,9 @@ public class ProgressionSimulator
             { "crystal_multi", stats.CrystalMultiLevel },
             { "time_extend", stats.TimeExtendLevel },
             { "upgrade_discount", stats.UpgradeDiscountLevel },
+            { "cost_flat_reduction", stats.CostFlatReductionLevel },
+            { "crystal_discount", stats.CrystalDiscountLevel },
+            { "crystal_flat_reduction", stats.CrystalFlatReductionLevel },
             { "start_level", stats.StartLevelLevel },
             { "start_gold", stats.StartGoldLevel },
             { "start_keyboard", stats.StartKeyboardLevel },

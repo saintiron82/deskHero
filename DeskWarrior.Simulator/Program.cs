@@ -1384,6 +1384,9 @@ Examples:
                 Console.WriteLine($"  crit_damage: {stats.CritDamageLevel,3} → x{stats.CriticalDamageBonus:F2}");
                 Console.WriteLine($"  time_extend: {stats.TimeExtendLevel,3} → +{stats.TimeExtend:F1}s");
                 Console.WriteLine($"  upgrade_discount: {stats.UpgradeDiscountLevel,3} → -{stats.UpgradeCostReduction * 100:F1}%");
+                Console.WriteLine($"  cost_flat_reduction: {stats.CostFlatReductionLevel,3} → -{stats.CostFlatReduction:N0} gold");
+                Console.WriteLine($"  crystal_discount:    {stats.CrystalDiscountLevel,3} → -{stats.CrystalDiscount * 100:F1}%");
+                Console.WriteLine($"  crystal_flat_reduct: {stats.CrystalFlatReductionLevel,3} → -{stats.CrystalFlatReduction:N0} crystals");
             }
         }
         Console.WriteLine();

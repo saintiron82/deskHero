@@ -86,6 +86,10 @@ namespace DeskWarrior.ViewModels
                 string description = GetStatLocalizedText(config.Localization, currentLang, l => l.Description, config.Description);
                 string formattedDescription = FormatDescription(id, config, currentLevel, description);
 
+                // 등급 계산
+                int tierInterval = config.TierConfig?.TierInterval ?? 0;
+                var (grade, displayLevel, gradeName) = GradeSystem.GetGradeInfo(currentLevel, tierInterval);
+
                 var card = new UpgradeCardViewModel
                 {
                     Id = id,
@@ -95,8 +99,13 @@ namespace DeskWarrior.ViewModels
                     Description = formattedDescription,
                     Category = GetCategoryDisplayName(config.Category ?? ""),
                     CategoryKey = config.Category ?? "",
+                    UnifiedCost = config.UnifiedCost,
                     CurrentLevel = currentLevel,
                     MaxLevel = config.MaxLevel,
+                    Grade = grade,
+                    GradeName = gradeName,
+                    DisplayLevel = displayLevel,
+                    TierInterval = tierInterval,
                     IncrementPerLevel = config.EffectPerLevel,
                     IsMaxed = config.MaxLevel > 0 && currentLevel >= config.MaxLevel
                 };
@@ -104,8 +113,21 @@ namespace DeskWarrior.ViewModels
                 // 현재 효과 계산
                 card.CurrentEffect = FormatEffect(id, config, currentLevel);
 
+                // 승급 상태 확인
+                var (needsPromotion, promotion, levelMet, crystalsMet) = _progressionManager.GetPromotionStatus(id);
+                if (needsPromotion && promotion != null)
+                {
+                    card.NeedsPromotion = true;
+                    card.PromotionCrystalCost = promotion.CrystalCost;
+                    card.PromotionRequiredLevel = promotion.RequiredLevel;
+                    card.PromotionLevelMet = levelMet;
+                    card.PlayerMaxLevel = _saveManager.CurrentSave.Stats?.MaxLevel ?? 0;
+                    card.CanPromote = levelMet && crystalsMet;
+                    card.NextLevelEffect = FormatEffect(id, config, currentLevel + 1);
+                    card.CanAfford = card.CanPromote;
+                }
                 // 다음 레벨 효과 계산
-                if (!card.IsMaxed)
+                else if (!card.IsMaxed)
                 {
                     card.NextLevelEffect = FormatEffect(id, config, currentLevel + 1);
                     card.Cost = _progressionManager.CalculateUpgradeCost(id, currentLevel);
@@ -117,11 +139,23 @@ namespace DeskWarrior.ViewModels
         }
 
         /// <summary>
-        /// 업그레이드 구매 시도
+        /// 업그레이드 구매 시도 (승급 필요 시 승급 처리)
         /// </summary>
         public bool TryPurchaseUpgrade(string upgradeId)
         {
-            bool success = _progressionManager.PurchaseUpgrade(upgradeId);
+            // 승급이 필요한 카드인지 확인
+            var card = AllUpgrades.FirstOrDefault(u => u.Id == upgradeId);
+            bool success;
+
+            if (card != null && card.NeedsPromotion)
+            {
+                success = _progressionManager.PurchasePromotion(upgradeId);
+            }
+            else
+            {
+                success = _progressionManager.PurchaseUpgrade(upgradeId);
+            }
+
             if (success)
             {
                 LoadData(); // 데이터 새로고침
@@ -130,12 +164,11 @@ namespace DeskWarrior.ViewModels
         }
 
         /// <summary>
-        /// 설명문 포맷팅 ({n} 치환)
+        /// 설명문 포맷팅 ({n} 치환) — tier 효과 반영
         /// </summary>
         private string FormatDescription(string id, StatGrowthConfig config, int level, string template)
         {
-            // effect_per_level이 이미 실제 효과값을 가지고 있음
-            double effectValue = config.EffectPerLevel * level;
+            double effectValue = config.CalculateEffect(level);
             string formattedValue = $"{effectValue:F0}";
 
             // 소수점이 필요한 경우
@@ -148,12 +181,11 @@ namespace DeskWarrior.ViewModels
         }
 
         /// <summary>
-        /// 효과 포맷팅 - effect_per_level 기반
+        /// 효과 포맷팅 — tier 효과 반영
         /// </summary>
         private string FormatEffect(string id, StatGrowthConfig config, int level)
         {
-            // effect_per_level이 이미 실제 효과값을 가지고 있음
-            double value = config.EffectPerLevel * level;
+            double value = config.CalculateEffect(level);
 
             // 카테고리/ID 기반 포맷팅
             return id switch
@@ -243,12 +275,27 @@ namespace DeskWarrior.ViewModels
         public string Description { get; set; } = "";
         public string Category { get; set; } = "";
         public string CategoryKey { get; set; } = "";
+        public bool UnifiedCost { get; set; }
         public int CurrentLevel { get; set; }
         public int MaxLevel { get; set; }
         public double IncrementPerLevel { get; set; }
         public string CurrentEffect { get; set; } = "";
         public string NextLevelEffect { get; set; } = "";
+
+        // 등급 시스템
+        public int Grade { get; set; }
+        public string GradeName { get; set; } = "α";
+        public int DisplayLevel { get; set; }
+        public int TierInterval { get; set; } = 100;
         public int Cost { get; set; }
+
+        // 등급 승급 시스템
+        public bool NeedsPromotion { get; set; }
+        public int PromotionCrystalCost { get; set; }
+        public int PromotionRequiredLevel { get; set; }
+        public bool PromotionLevelMet { get; set; }
+        public bool CanPromote { get; set; }
+        public int PlayerMaxLevel { get; set; }
 
         public bool CanAfford
         {
@@ -267,6 +314,11 @@ namespace DeskWarrior.ViewModels
             get
             {
                 var loc = LocalizationManager.Instance;
+                if (TierInterval > 0)
+                {
+                    int showLevel = System.Math.Max(1, DisplayLevel);
+                    return loc.Format("ui.shop.gradeLevel", GradeName, showLevel);
+                }
                 if (MaxLevel > 0)
                     return loc.Format("ui.shop.levelFormat", CurrentLevel, MaxLevel);
                 return loc.Format("ui.shop.levelUnlimited", CurrentLevel);
@@ -279,6 +331,8 @@ namespace DeskWarrior.ViewModels
             {
                 if (IsMaxed)
                     return LocalizationManager.Instance["ui.common.max"];
+                if (NeedsPromotion)
+                    return $"💎 {PromotionCrystalCost:N0}";
                 return $"💎 {Cost:N0}";
             }
         }

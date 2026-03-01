@@ -83,6 +83,24 @@ namespace DeskWarrior.Models
         [JsonPropertyName("upgrade_discount")]
         public int UpgradeDiscountLevel { get; set; } = 0;
 
+        /// <summary>
+        /// 비용 고정 차감 (레벨)
+        /// </summary>
+        [JsonPropertyName("cost_flat_reduction")]
+        public int CostFlatReductionLevel { get; set; } = 0;
+
+        /// <summary>
+        /// 크리스탈 비용 % 할인 (레벨)
+        /// </summary>
+        [JsonPropertyName("crystal_discount")]
+        public int CrystalDiscountLevel { get; set; } = 0;
+
+        /// <summary>
+        /// 크리스탈 비용 고정 차감 (레벨)
+        /// </summary>
+        [JsonPropertyName("crystal_flat_reduction")]
+        public int CrystalFlatReductionLevel { get; set; } = 0;
+
         #endregion
 
         #region D. 시작 보너스 (8종)

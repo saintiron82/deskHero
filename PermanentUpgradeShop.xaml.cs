@@ -213,7 +213,7 @@ namespace DeskWarrior
         }
 
         /// <summary>
-        /// 카테고리별 업그레이드 로드 (3열 컴팩트 그리드)
+        /// 카테고리별 업그레이드 로드 (3열 컴팩트 그리드, 통일/독립 비용 분리 표시)
         /// </summary>
         private void LoadCategoryUpgrades(string category)
         {
@@ -229,12 +229,15 @@ namespace DeskWarrior
             UpgradeGrid.ColumnDefinitions.Clear();
             UpgradeGrid.RowDefinitions.Clear();
 
-            // 해당 카테고리의 업그레이드 필터링
+            // 해당 카테고리의 업그레이드 필터링 (통일 비용 → 독립 비용 순)
             var categoryUpgrades = _viewModel.AllUpgrades
                 .Where(u => u.CategoryKey == category)
                 .ToList();
 
-            DeskWarrior.Helpers.Logger.Log($"[Shop] Found {categoryUpgrades.Count} upgrades for category '{category}'");
+            var unifiedUpgrades = categoryUpgrades.Where(u => u.UnifiedCost).ToList();
+            var independentUpgrades = categoryUpgrades.Where(u => !u.UnifiedCost).ToList();
+
+            DeskWarrior.Helpers.Logger.Log($"[Shop] Found {categoryUpgrades.Count} upgrades for category '{category}' (unified:{unifiedUpgrades.Count}, independent:{independentUpgrades.Count})");
 
             if (categoryUpgrades.Count == 0)
             {
@@ -260,20 +263,62 @@ namespace DeskWarrior
                 UpgradeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             }
 
-            // 카드 배치
-            for (int i = 0; i < categoryUpgrades.Count; i++)
+            int currentRow = 0;
+
+            // 통일 비용 스탯 배치
+            for (int i = 0; i < unifiedUpgrades.Count; i++)
             {
-                var upgrade = categoryUpgrades[i];
+                var upgrade = unifiedUpgrades[i];
                 int col = i % columns;
                 int row = i / columns;
 
-                // 행 추가 (필요한 경우)
                 while (UpgradeGrid.RowDefinitions.Count <= row)
                 {
                     UpgradeGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 }
 
-                // 컴팩트 카드 생성
+                var card = CreateCompactUpgradeCard(upgrade);
+                Grid.SetColumn(card, col);
+                Grid.SetRow(card, row);
+                UpgradeGrid.Children.Add(card);
+
+                currentRow = row;
+            }
+
+            // 독립 비용 (%) 스탯이 있으면 구분선 추가 후 배치
+            if (independentUpgrades.Count > 0 && unifiedUpgrades.Count > 0)
+            {
+                currentRow++;
+                UpgradeGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                // 구분선
+                var separator = new Border
+                {
+                    Height = 1,
+                    Background = new SolidColorBrush(Color.FromRgb(229, 231, 235)),
+                    Margin = new Thickness(4, 8, 4, 4)
+                };
+                Grid.SetRow(separator, currentRow);
+                Grid.SetColumn(separator, 0);
+                Grid.SetColumnSpan(separator, columns);
+                UpgradeGrid.Children.Add(separator);
+            }
+
+            int baseRow = (unifiedUpgrades.Count > 0 && independentUpgrades.Count > 0)
+                ? currentRow + 1
+                : (unifiedUpgrades.Count > 0 ? currentRow + 1 : 0);
+
+            for (int i = 0; i < independentUpgrades.Count; i++)
+            {
+                var upgrade = independentUpgrades[i];
+                int col = i % columns;
+                int row = baseRow + i / columns;
+
+                while (UpgradeGrid.RowDefinitions.Count <= row)
+                {
+                    UpgradeGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                }
+
                 var card = CreateCompactUpgradeCard(upgrade);
                 Grid.SetColumn(card, col);
                 Grid.SetRow(card, row);
@@ -298,8 +343,34 @@ namespace DeskWarrior
             // 카테고리별 테두리 색상 (JSON에서 로드)
             Color categoryColor = GetCategoryColor(upgrade.CategoryKey);
 
-            // 구매 가능 여부에 따라 카드 스타일 변경
-            if (upgrade.CanAfford)
+            // 구매/승급 가능 여부에 따라 카드 스타일 변경
+            if (upgrade.NeedsPromotion)
+            {
+                if (upgrade.CanPromote)
+                {
+                    // 승급 가능: 골든 테두리 + 밝은 배경
+                    card.Background = new SolidColorBrush(Color.FromRgb(255, 251, 235));
+                    card.BorderBrush = new SolidColorBrush(Color.FromRgb(245, 158, 11));  // Amber
+                    card.BorderThickness = new Thickness(3);
+                    card.Cursor = Cursors.Hand;
+
+                    card.MouseLeftButtonDown += (s, e) => {
+                        if (s is Border clickedCard && clickedCard.Tag is string upgradeId)
+                        {
+                            TryPurchaseUpgrade(upgradeId);
+                        }
+                    };
+                }
+                else
+                {
+                    // 승급 불가: 어두운 회색 + 주황 테두리
+                    card.Background = new SolidColorBrush(Color.FromRgb(220, 210, 190));
+                    card.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 150, 100));
+                    card.BorderThickness = new Thickness(2);
+                    card.Cursor = Cursors.No;
+                }
+            }
+            else if (upgrade.CanAfford)
             {
                 // 구매 가능: 카테고리 색상 테두리 + 밝은 배경
                 card.Background = new SolidColorBrush(Color.FromRgb(255, 255, 255));
@@ -371,12 +442,14 @@ namespace DeskWarrior
             };
             costPanel.Children.Add(costIcon);
 
+            int displayCost = upgrade.NeedsPromotion ? upgrade.PromotionCrystalCost : upgrade.Cost;
+            bool canDo = upgrade.NeedsPromotion ? upgrade.CanPromote : upgrade.CanAfford;
             var costText = new TextBlock
             {
-                Text = $"{upgrade.Cost:N0}",
+                Text = $"{displayCost:N0}",
                 FontSize = 9,
                 FontWeight = FontWeights.Bold,
-                Foreground = upgrade.CanAfford
+                Foreground = canDo
                     ? new SolidColorBrush(Color.FromRgb(0, 153, 204))  // 파란색 (구매 가능)
                     : new SolidColorBrush(Color.FromRgb(120, 120, 120)), // 회색 (구매 불가)
                 VerticalAlignment = VerticalAlignment.Center
@@ -429,20 +502,65 @@ namespace DeskWarrior
             };
             mainStack.Children.Add(effectText);
 
-            // === 구매 버튼 (항상 생성, 스타일로 활성/비활성 표시) - 연속 구매 지원 ===
-            var button = new Button
+            // === 승급 상태 표시 (등급 경계일 때) ===
+            if (upgrade.NeedsPromotion)
             {
-                Height = 24,
-                Tag = upgrade.Id,
-                Content = LocalizationManager.Instance["ui.common.buy"],
-                Style = (Style)FindResource(upgrade.CanAfford ? "BuyButtonAffordable" : "BuyButtonUnaffordable"),
-                IsEnabled = upgrade.CanAfford
-            };
-            button.Click += BuyUpgrade_Click;
-            // 연속 구매: 마우스 누르고 있으면 반복 구매
-            button.PreviewMouseLeftButtonDown += BuyButton_MouseDown;
-            button.PreviewMouseLeftButtonUp += BuyButton_MouseUp;
-            button.MouseLeave += BuyButton_MouseLeave;
+                var loc = LocalizationManager.Instance;
+
+                // 레벨 조건 표시
+                var reqText = new TextBlock
+                {
+                    Text = upgrade.PromotionLevelMet
+                        ? loc.Format("ui.shop.promotion.requirementMet", upgrade.PromotionRequiredLevel)
+                        : loc.Format("ui.shop.promotion.requirementNotMet", upgrade.PromotionRequiredLevel, upgrade.PlayerMaxLevel),
+                    FontSize = 8,
+                    FontWeight = FontWeights.SemiBold,
+                    Foreground = upgrade.PromotionLevelMet
+                        ? new SolidColorBrush(Color.FromRgb(16, 185, 129))  // Green
+                        : new SolidColorBrush(Color.FromRgb(239, 68, 68)),  // Red
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(0, 0, 0, 4)
+                };
+                mainStack.Children.Add(reqText);
+            }
+
+            // === 구매/승급 버튼 ===
+            Button button;
+            if (upgrade.NeedsPromotion)
+            {
+                var loc = LocalizationManager.Instance;
+                string promoteStyle = upgrade.CanPromote ? "BuyButtonAffordable" : "BuyButtonUnaffordable";
+
+                button = new Button
+                {
+                    Height = 24,
+                    Tag = upgrade.Id,
+                    Content = upgrade.CanPromote
+                        ? $"⬆ {loc["ui.shop.promotion.promote"]}"
+                        : loc["ui.shop.promotion.locked"],
+                    Style = (Style)FindResource(promoteStyle),
+                    IsEnabled = upgrade.CanPromote
+                };
+                button.Click += BuyUpgrade_Click;
+            }
+            else
+            {
+                button = new Button
+                {
+                    Height = 24,
+                    Tag = upgrade.Id,
+                    Content = LocalizationManager.Instance["ui.common.buy"],
+                    Style = (Style)FindResource(upgrade.CanAfford ? "BuyButtonAffordable" : "BuyButtonUnaffordable"),
+                    IsEnabled = upgrade.CanAfford
+                };
+                button.Click += BuyUpgrade_Click;
+                // 연속 구매: 마우스 누르고 있으면 반복 구매 (승급에는 적용하지 않음)
+                button.PreviewMouseLeftButtonDown += BuyButton_MouseDown;
+                button.PreviewMouseLeftButtonUp += BuyButton_MouseUp;
+                button.MouseLeave += BuyButton_MouseLeave;
+            }
             mainStack.Children.Add(button);
 
             // StackPanel을 Grid에 추가

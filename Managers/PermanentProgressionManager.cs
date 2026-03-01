@@ -18,6 +18,7 @@ namespace DeskWarrior.Managers
         private readonly SaveManager _saveManager;
         private readonly Dictionary<string, StatGrowthConfig> _statConfigs;
         private readonly Dictionary<string, CategoryInfo> _categories;
+        private readonly Dictionary<string, GradePromotion> _gradePromotions;
         private readonly BossDropConfig _bossDropConfig;
         private readonly Random _random = new();
 
@@ -36,6 +37,7 @@ namespace DeskWarrior.Managers
         {
             _saveManager = saveManager;
             _categories = new Dictionary<string, CategoryInfo>();
+            _gradePromotions = new Dictionary<string, GradePromotion>();
             _statConfigs = LoadStatConfigs();
             _bossDropConfig = LoadBossDropConfig();
         }
@@ -148,7 +150,7 @@ namespace DeskWarrior.Managers
         #region Upgrade Management
 
         /// <summary>
-        /// 영구 업그레이드 구매
+        /// 영구 업그레이드 구매 (등급 경계에서는 승급 필요 — 일반 구매 차단)
         /// </summary>
         public bool PurchaseUpgrade(string upgradeId)
         {
@@ -162,8 +164,20 @@ namespace DeskWarrior.Managers
             if (config.MaxLevel > 0 && progress.CurrentLevel >= config.MaxLevel)
                 return false;
 
-            // 비용 계산
-            int cost = config.CalculateCost(progress.CurrentLevel + 1);
+            // 등급 경계 체크: 승급이 필요하면 일반 구매 차단
+            int tierInterval = config.TierConfig?.TierInterval ?? 0;
+            if (tierInterval > 0 && progress.CurrentLevel > 0 && progress.CurrentLevel % tierInterval == 0)
+            {
+                // 승급 데이터가 있으면 일반 구매 차단 (PurchasePromotion 사용 필요)
+                int nextGrade = progress.CurrentLevel / tierInterval;
+                if (_gradePromotions.ContainsKey(nextGrade.ToString()))
+                    return false;
+            }
+
+            // 크리스탈 비용 감소 적용 (% 할인 + 고정 차감)
+            double? crystalDiscount = save.PermanentStats?.GetCrystalDiscount();
+            long crystalFlatReduction = save.PermanentStats?.GetCrystalFlatReduction() ?? 0;
+            int cost = config.CalculateCost(progress.CurrentLevel + 1, crystalDiscount, crystalFlatReduction);
 
             // 크리스탈 체크
             if (save.PermanentCurrency.Crystals < cost)
@@ -186,13 +200,88 @@ namespace DeskWarrior.Managers
         }
 
         /// <summary>
+        /// 등급 승급 구매 (등급 경계에서만 호출)
+        /// 승급 비용만 지불하고 레벨 1 증가 (새 등급 진입)
+        /// </summary>
+        public bool PurchasePromotion(string upgradeId)
+        {
+            if (!_statConfigs.TryGetValue(upgradeId, out var config))
+                return false;
+
+            var save = _saveManager.CurrentSave;
+            var progress = GetOrCreateProgress(upgradeId);
+
+            int tierInterval = config.TierConfig?.TierInterval ?? 0;
+            if (tierInterval <= 0 || progress.CurrentLevel <= 0 || progress.CurrentLevel % tierInterval != 0)
+                return false;
+
+            int nextGrade = progress.CurrentLevel / tierInterval;
+            if (!_gradePromotions.TryGetValue(nextGrade.ToString(), out var promotion))
+                return false;
+
+            // 레벨 게이트 체크
+            int maxLevelReached = save.Stats?.MaxLevel ?? 0;
+            if (maxLevelReached < promotion.RequiredLevel)
+                return false;
+
+            // 크리스탈 비용 체크
+            if (save.PermanentCurrency.Crystals < promotion.CrystalCost)
+                return false;
+
+            // 승급 비용 차감
+            save.PermanentCurrency.Crystals -= promotion.CrystalCost;
+            save.PermanentCurrency.LifetimeCrystalsSpent += promotion.CrystalCost;
+
+            // 레벨 증가 (새 등급 Lv.1 진입)
+            progress.CurrentLevel++;
+            progress.TotalInvested += promotion.CrystalCost;
+
+            // 스탯 업그레이드 적용
+            ApplyStatUpgrade(upgradeId, config, progress.CurrentLevel);
+
+            UpgradePurchased?.Invoke(this, new UpgradePurchasedEventArgs(upgradeId, progress.CurrentLevel));
+
+            return true;
+        }
+
+        /// <summary>
+        /// 승급 상태 조회 (UI용)
+        /// </summary>
+        public (bool needsPromotion, GradePromotion? promotion, bool levelMet, bool crystalsMet) GetPromotionStatus(string upgradeId)
+        {
+            if (!_statConfigs.TryGetValue(upgradeId, out var config))
+                return (false, null, false, false);
+
+            var progress = _saveManager.CurrentSave.PermanentUpgrades.FirstOrDefault(p => p.Id == upgradeId);
+            int currentLevel = progress?.CurrentLevel ?? 0;
+
+            int tierInterval = config.TierConfig?.TierInterval ?? 0;
+            if (tierInterval <= 0 || currentLevel <= 0 || currentLevel % tierInterval != 0)
+                return (false, null, false, false);
+
+            int nextGrade = currentLevel / tierInterval;
+            if (!_gradePromotions.TryGetValue(nextGrade.ToString(), out var promotion))
+                return (false, null, false, false);
+
+            var save = _saveManager.CurrentSave;
+            int maxLevelReached = save.Stats?.MaxLevel ?? 0;
+            bool levelMet = maxLevelReached >= promotion.RequiredLevel;
+            bool crystalsMet = save.PermanentCurrency.Crystals >= promotion.CrystalCost;
+
+            return (true, promotion, levelMet, crystalsMet);
+        }
+
+        /// <summary>
         /// 업그레이드 비용 계산
         /// </summary>
         public int CalculateUpgradeCost(string upgradeId, int currentLevel)
         {
             if (!_statConfigs.TryGetValue(upgradeId, out var config))
                 return int.MaxValue;
-            return config.CalculateCost(currentLevel + 1);
+
+            double? crystalDiscount = _saveManager.CurrentSave?.PermanentStats?.GetCrystalDiscount();
+            long crystalFlatReduction = _saveManager.CurrentSave?.PermanentStats?.GetCrystalFlatReduction() ?? 0;
+            return config.CalculateCost(currentLevel + 1, crystalDiscount, crystalFlatReduction);
         }
 
         /// <summary>
@@ -236,7 +325,8 @@ namespace DeskWarrior.Managers
         #region Private Methods
 
         /// <summary>
-        /// 스탯 업그레이드 적용
+        /// 스탯 업그레이드 적용 — 구매 레벨을 직접 저장
+        /// CalculateEffect(level)에서 EffectPerLevel을 적용하므로 여기서는 레벨만 저장
         /// </summary>
         private void ApplyStatUpgrade(string upgradeId, StatGrowthConfig config, int newLevel)
         {
@@ -246,19 +336,33 @@ namespace DeskWarrior.Managers
 
             if (property == null) return;
 
-            double newValue = config.EffectPerLevel * newLevel;
-
             if (property.PropertyType == typeof(int))
             {
-                property.SetValue(stats, (int)newValue);
+                property.SetValue(stats, newLevel);
             }
             else if (property.PropertyType == typeof(double))
             {
-                property.SetValue(stats, newValue);
+                property.SetValue(stats, (double)newLevel);
             }
             else if (property.PropertyType == typeof(bool))
             {
                 property.SetValue(stats, newLevel > 0);
+            }
+        }
+
+        /// <summary>
+        /// 세이브 데이터 마이그레이션: 모든 스탯을 구매 레벨 기준으로 재계산
+        /// 기존 세이브의 이중 적용 버그 수정
+        /// </summary>
+        public void MigrateStatLevels()
+        {
+            var save = _saveManager.CurrentSave;
+            foreach (var progress in save.PermanentUpgrades)
+            {
+                if (_statConfigs.TryGetValue(progress.Id, out var config))
+                {
+                    ApplyStatUpgrade(progress.Id, config, progress.CurrentLevel);
+                }
             }
         }
 
@@ -303,6 +407,15 @@ namespace DeskWarrior.Managers
                     foreach (var kvp in root.Categories)
                     {
                         _categories[kvp.Key] = kvp.Value;
+                    }
+                }
+
+                if (root?.GradePromotions != null)
+                {
+                    foreach (var kvp in root.GradePromotions)
+                    {
+                        if (!kvp.Key.StartsWith("_"))
+                            _gradePromotions[kvp.Key] = kvp.Value;
                     }
                 }
 

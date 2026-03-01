@@ -210,18 +210,48 @@ public class StatGrowthConfig
     [JsonPropertyName("tier_config")]
     public StatTierEffectConfig? TierConfig { get; set; }
 
-    public long CalculateCost(int level, double? discountPercent = null)
+    public long CalculateCost(int level, double? discountPercent = null, long flatReduction = 0)
     {
         if (level <= 0) return 0;
         if (MaxLevel > 0 && level >= MaxLevel) return long.MaxValue;
 
-        double linearFactor = 1.0 + level * GrowthRate;
-        double exponentialFactor = Math.Pow(Multiplier, (double)level / SoftcapInterval);
-        double cost = BaseCost * linearFactor * exponentialFactor;
+        double baseCost = BaseCost;
+        double growthRate = GrowthRate;
+        double multiplier = Multiplier;
+        int softcap = SoftcapInterval;
+        int levelForCalc = level;
+
+        if (TierConfig?.TierOverrides != null)
+        {
+            int interval = Math.Max(1, TierConfig.TierInterval);
+            int tier = (level - 1) / interval;
+            int relativeLevel = ((level - 1) % interval) + 1;
+            levelForCalc = relativeLevel;
+
+            var ov = TierConfig.GetOverride(tier);
+            if (ov != null)
+            {
+                baseCost = ov.BaseCost ?? BaseCost;
+                growthRate = ov.GrowthRate ?? GrowthRate;
+                multiplier = ov.Multiplier ?? Multiplier;
+                softcap = ov.SoftcapInterval ?? SoftcapInterval;
+            }
+        }
+
+        double linearFactor = 1.0 + levelForCalc * growthRate;
+        double exponentialFactor = Math.Pow(multiplier, (double)levelForCalc / softcap);
+        double cost = baseCost * linearFactor * exponentialFactor;
 
         if (discountPercent.HasValue)
         {
             cost *= (1.0 - discountPercent.Value);
+        }
+
+        // 고정액 차감 적용
+        if (flatReduction > 0)
+        {
+            cost -= flatReduction;
+            if (cost < 1.0) cost = 1.0;
         }
 
         // 오버플로우 방지: long 범위 초과 시 센티넬 반환 (구매 불가)
@@ -237,10 +267,13 @@ public class StatGrowthConfig
 
         double effect;
 
-        if (TierConfig != null &&
-            (TierConfig.EffectMultiplierPerTier != 1.0 || TierConfig.EffectAddPerTier != 0.0))
+        bool hasTierEffect = TierConfig != null &&
+            (TierConfig.EffectMultiplierPerTier != 1.0 || TierConfig.EffectAddPerTier != 0.0 ||
+             TierConfig.TierOverrides != null);
+
+        if (hasTierEffect)
         {
-            int interval = Math.Max(1, TierConfig.TierInterval);
+            int interval = Math.Max(1, TierConfig!.TierInterval);
             int remaining = level;
             int tier = 0;
             double total = 0;
@@ -248,8 +281,19 @@ public class StatGrowthConfig
             while (remaining > 0)
             {
                 int inTier = Math.Min(remaining, interval);
-                double perLevel = EffectPerLevel * Math.Pow(TierConfig.EffectMultiplierPerTier, tier)
-                                  + (TierConfig.EffectAddPerTier * tier);
+
+                var ov = TierConfig.GetOverride(tier);
+                double perLevel;
+                if (ov?.EffectPerLevel != null)
+                {
+                    perLevel = ov.EffectPerLevel.Value;
+                }
+                else
+                {
+                    perLevel = EffectPerLevel * Math.Pow(TierConfig.EffectMultiplierPerTier, tier)
+                               + (TierConfig.EffectAddPerTier * tier);
+                }
+
                 total += inTier * perLevel;
                 remaining -= inTier;
                 tier++;
@@ -301,6 +345,27 @@ public class StatGrowthConfig
 }
 
 /// <summary>
+/// 티어별 오버라이드 파라미터 (tier_overrides에서 사용)
+/// </summary>
+public class TierOverride
+{
+    [JsonPropertyName("base_cost")]
+    public double? BaseCost { get; set; }
+
+    [JsonPropertyName("growth_rate")]
+    public double? GrowthRate { get; set; }
+
+    [JsonPropertyName("multiplier")]
+    public double? Multiplier { get; set; }
+
+    [JsonPropertyName("softcap_interval")]
+    public int? SoftcapInterval { get; set; }
+
+    [JsonPropertyName("effect_per_level")]
+    public double? EffectPerLevel { get; set; }
+}
+
+/// <summary>
 /// 영구 스탯 효과용 티어 설정
 /// </summary>
 public class StatTierEffectConfig
@@ -313,6 +378,15 @@ public class StatTierEffectConfig
 
     [JsonPropertyName("effect_add_per_tier")]
     public double EffectAddPerTier { get; set; } = 0.0;
+
+    [JsonPropertyName("tier_overrides")]
+    public Dictionary<string, TierOverride>? TierOverrides { get; set; }
+
+    public TierOverride? GetOverride(int tier)
+    {
+        if (TierOverrides == null) return null;
+        return TierOverrides.TryGetValue(tier.ToString(), out var o) ? o : null;
+    }
 }
 
 /// <summary>

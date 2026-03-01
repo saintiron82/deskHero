@@ -19,6 +19,15 @@ namespace DeskWarrior.Controls
             HeaderText.Text = LocalizationManager.Instance["ui.toast.achievementUnlocked"];
         }
 
+        private void CloseButton_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // 애니메이션 중단하고 즉시 숨김
+            var storyboard = (Storyboard)Resources["ToastAnimation"];
+            storyboard.Stop(this);
+            this.Opacity = 0;
+            AnimationCompleted?.Invoke(this, EventArgs.Empty);
+        }
+
         public void Show(AchievementDefinition achievement)
         {
             IconText.Text = achievement.Icon;

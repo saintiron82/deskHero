@@ -19,7 +19,7 @@ public class StatCostCalculator
     /// 특정 스탯의 다음 레벨 업그레이드 비용 계산
     /// 티어 시스템이 활성화되면 레벨에 따라 multiplier와 softcap이 자동 조정됩니다.
     /// </summary>
-    public long GetUpgradeCost(string statId, int currentLevel)
+    public long GetUpgradeCost(string statId, int currentLevel, double crystalDiscount = 0, long crystalFlatReduction = 0)
     {
         if (!_statConfigs.TryGetValue(statId, out var config))
             return long.MaxValue;
@@ -30,29 +30,63 @@ public class StatCostCalculator
 
         int targetLevel = currentLevel + 1;
 
-        // 티어 기반 파라미터 계산 (게임 로직과 동일)
+        // 파라미터 (tier_overrides로 변경 가능)
+        double baseCost = config.BaseCost;
+        double growthRate = config.GrowthRate;
         int softcap = config.SoftcapInterval;
         double multiplier = config.Multiplier;
+        int levelForCalc = targetLevel;
 
         if (config.TierConfig != null)
         {
-            // 공식으로 티어 계산
-            int tier = targetLevel / config.TierConfig.TierInterval;
+            int interval = Math.Max(1, config.TierConfig.TierInterval);
 
-            // 티어에 따라 파라미터 조정
-            multiplier = config.TierConfig.BaseMultiplier - (tier * config.TierConfig.MultiplierDecreasePerTier);
-            softcap = config.TierConfig.BaseSoftcap + (tier * config.TierConfig.SoftcapIncreasePerTier);
-
-            // 안전장치: multiplier 최소값 1.0
-            if (multiplier < 1.0)
+            if (config.TierConfig.TierOverrides != null)
             {
-                multiplier = 1.0;
+                // tier_overrides 모드: 상대 레벨 + 오버라이드 파라미터
+                int tier = (targetLevel - 1) / interval;
+                int relativeLevel = ((targetLevel - 1) % interval) + 1;
+                levelForCalc = relativeLevel;
+
+                var ov = config.TierConfig.GetOverride(tier);
+                if (ov != null)
+                {
+                    baseCost = ov.BaseCost ?? config.BaseCost;
+                    growthRate = ov.GrowthRate ?? config.GrowthRate;
+                    multiplier = ov.Multiplier ?? config.Multiplier;
+                    softcap = ov.SoftcapInterval ?? config.SoftcapInterval;
+                }
+            }
+            else
+            {
+                // 기존 formula-based 티어 조정 (역호환)
+                int tier = targetLevel / interval;
+                multiplier = config.TierConfig.BaseMultiplier - (tier * config.TierConfig.MultiplierDecreasePerTier);
+                softcap = config.TierConfig.BaseSoftcap + (tier * config.TierConfig.SoftcapIncreasePerTier);
+
+                if (multiplier < 1.0)
+                {
+                    multiplier = 1.0;
+                }
             }
         }
 
-        double linearFactor = 1.0 + targetLevel * config.GrowthRate;
-        double exponentialFactor = Math.Pow(multiplier, (double)targetLevel / softcap);
-        double cost = config.BaseCost * linearFactor * exponentialFactor;
+        double linearFactor = 1.0 + levelForCalc * growthRate;
+        double exponentialFactor = Math.Pow(multiplier, (double)levelForCalc / softcap);
+        double cost = baseCost * linearFactor * exponentialFactor;
+
+        // 크리스탈 % 할인 적용
+        if (crystalDiscount > 0)
+        {
+            cost *= (1.0 - crystalDiscount);
+        }
+
+        // 크리스탈 고정 차감 적용
+        if (crystalFlatReduction > 0)
+        {
+            cost -= crystalFlatReduction;
+            if (cost < 1.0) cost = 1.0;
+        }
 
         // 오버플로우 방지: long 범위 초과 시 센티넬 반환 (구매 불가)
         if (double.IsNaN(cost) || double.IsInfinity(cost) || cost > 9.2E+18)
@@ -109,12 +143,12 @@ public class StatCostCalculator
     /// <summary>
     /// 비용 대비 효과 효율 계산 (다음 레벨)
     /// </summary>
-    public double GetEfficiency(string statId, int currentLevel)
+    public double GetEfficiency(string statId, int currentLevel, double crystalDiscount = 0, long crystalFlatReduction = 0)
     {
         if (!_statConfigs.TryGetValue(statId, out var config))
             return 0;
 
-        long cost = GetUpgradeCost(statId, currentLevel);
+        long cost = GetUpgradeCost(statId, currentLevel, crystalDiscount, crystalFlatReduction);
         if (cost <= 0) return 0;
 
         return config.EffectPerLevel / cost;
@@ -128,6 +162,8 @@ public class StatCostCalculator
         long availableCrystals)
     {
         var candidates = new List<(string statId, long cost, double efficiency)>();
+        double crystalDiscount = stats.CrystalDiscount;
+        long crystalFlatReduction = stats.CrystalFlatReduction;
 
         foreach (var (statId, config) in _statConfigs)
         {
@@ -137,11 +173,11 @@ public class StatCostCalculator
             if (!CanUpgrade(statId, currentLevel))
                 continue;
 
-            long cost = GetUpgradeCost(statId, currentLevel);
+            long cost = GetUpgradeCost(statId, currentLevel, crystalDiscount, crystalFlatReduction);
 
             if (cost <= availableCrystals && cost != long.MaxValue)
             {
-                double efficiency = GetEfficiency(statId, currentLevel);
+                double efficiency = GetEfficiency(statId, currentLevel, crystalDiscount, crystalFlatReduction);
                 candidates.Add((statId, cost, efficiency));
             }
         }
@@ -192,6 +228,9 @@ public class StatCostCalculator
             "crystal_multi" => stats.CrystalMultiLevel,
             "time_extend" => stats.TimeExtendLevel,
             "upgrade_discount" => stats.UpgradeDiscountLevel,
+            "cost_flat_reduction" => stats.CostFlatReductionLevel,
+            "crystal_discount" => stats.CrystalDiscountLevel,
+            "crystal_flat_reduction" => stats.CrystalFlatReductionLevel,
             "start_level" => stats.StartLevelLevel,
             "start_gold" => stats.StartGoldLevel,
             "start_keyboard" => stats.StartKeyboardLevel,
@@ -222,6 +261,9 @@ public class StatCostCalculator
             case "crystal_multi": stats.CrystalMultiLevel = level; break;
             case "time_extend": stats.TimeExtendLevel = level; break;
             case "upgrade_discount": stats.UpgradeDiscountLevel = level; break;
+            case "cost_flat_reduction": stats.CostFlatReductionLevel = level; break;
+            case "crystal_discount": stats.CrystalDiscountLevel = level; break;
+            case "crystal_flat_reduction": stats.CrystalFlatReductionLevel = level; break;
             case "start_level": stats.StartLevelLevel = level; break;
             case "start_gold": stats.StartGoldLevel = level; break;
             case "start_keyboard": stats.StartKeyboardLevel = level; break;
@@ -240,7 +282,7 @@ public class StatCostCalculator
 }
 
 /// <summary>
-/// 티어 설정 (공식 기반, 무한 확장)
+/// 티어 설정 (공식 기반, 무한 확장 + tier_overrides 지원)
 /// </summary>
 public class TierConfigSim
 {
@@ -249,6 +291,17 @@ public class TierConfigSim
     public double MultiplierDecreasePerTier { get; set; } = 0.1;
     public int BaseSoftcap { get; set; } = 12;
     public int SoftcapIncreasePerTier { get; set; } = 3;
+
+    /// <summary>
+    /// 티어별 독립 파라미터 오버라이드 (키: 티어 인덱스 "0"=Z, "1"=Y, ...)
+    /// </summary>
+    public Dictionary<string, TierOverride>? TierOverrides { get; set; }
+
+    public TierOverride? GetOverride(int tier)
+    {
+        if (TierOverrides == null) return null;
+        return TierOverrides.TryGetValue(tier.ToString(), out var o) ? o : null;
+    }
 }
 
 /// <summary>

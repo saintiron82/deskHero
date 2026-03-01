@@ -1,8 +1,8 @@
 # DeskWarrior 밸런스 레퍼런스 (Balance Reference)
 
 **생성일**: 2026-02-04
-**최종 수정**: 2026-02-26
-**버전**: 2.3.0
+**최종 수정**: 2026-02-27
+**버전**: 3.0.0
 **기준**: **시뮬레이터 (DeskWarrior.Core/Simulation) 기준** + config/*.json 실제 값
 
 ---
@@ -74,7 +74,7 @@
 
    **출처**:
    - config/PermanentStats.json → time_extend.damage_bonus_per_level (1.0)
-   - config/PermanentStats.json → upgrade_discount.damage_bonus_per_level (1.0)
+   - config/PermanentStats.json → upgrade_discount.damage_bonus_per_level (0.03)
    - Managers/DamageCalculator.cs (Line 157-171)
    - Managers/StatGrowthManager.cs → GetDamageBonusEffect()
 
@@ -92,7 +92,7 @@ CPS 기반 랜덤 간격 입력이므로 키 반복 매크로 방지 페널티�
 **파라미터 출처**:
 - `basePower`: 키보드/마우스 공격력 (`GameManager.cs` Line 82-99)
 - `attack_percent`: `config/PermanentStats.json` → attack_percent (effect_per_level: 2.0%)
-- `baseAttackBonus`: `config/PermanentStats.json` → base_attack (effect_per_level: 3)
+- `baseAttackBonus`: `config/PermanentStats.json` → base_attack (effect_per_level: 0.45, softcap_interval: 4, tier_multiplier: 1.15)
 - `critChance`, `critMultiplier`: 1.2절 참조
 - `multiHitChance`: 1.3절 참조
 - `comboStack`: 1.4절 참조
@@ -205,30 +205,30 @@ Stack 3: ×8
 | 스탯 | 주 효과 | 데미지 보너스 | 출처 |
 |------|---------|--------------|------|
 | time_extend | 제한시간 +0.4초/레벨 | **+1%/레벨** | config/PermanentStats.json:169 |
-| upgrade_discount | 업그레이드 비용 -3%/레벨 | **+1%/레벨** | config/PermanentStats.json:186 |
+| upgrade_discount | 업그레이드 비용 -0.1%/레벨 | **+0.03%/레벨** | config/PermanentStats.json |
 
 #### 계산 공식
 
 ```
-total_damage_bonus = (time_extend_level × 1%) + (upgrade_discount_level × 1%)
+total_damage_bonus = (time_extend_level × 1%) + (upgrade_discount_level × 0.03%)
 utility_multiplier = 1.0 + (total_damage_bonus / 100)
 final_damage = ⑥ × utility_multiplier
 ```
 
 #### 예시
 
-**예시 1**: time_extend 10레벨 + upgrade_discount 5레벨
+**예시 1**: time_extend 10레벨 + upgrade_discount 100레벨
 ```
-데미지 보너스 = (10 × 1%) + (5 × 1%) = 15%
-utility_multiplier = 1.0 + 0.15 = 1.15
-최종 데미지 = 원래 데미지 × 1.15
+데미지 보너스 = (10 × 1%) + (100 × 0.03%) = 13%
+utility_multiplier = 1.0 + 0.13 = 1.13
+최종 데미지 = 원래 데미지 × 1.13
 ```
 
-**예시 2**: time_extend 30레벨 + upgrade_discount 20레벨
+**예시 2**: time_extend 30레벨 + upgrade_discount 362레벨
 ```
-데미지 보너스 = (30 × 1%) + (20 × 1%) = 50%
-utility_multiplier = 1.0 + 0.50 = 1.50
-최종 데미지 = 원래 데미지 × 1.50 (50% 증가)
+데미지 보너스 = (30 × 1%) + (362 × 0.03%) = 40.86%
+utility_multiplier = 1.0 + 0.4086 = 1.4086
+최종 데미지 = 원래 데미지 × 1.41 (41% 증가)
 ```
 
 #### 설계 의도
@@ -624,143 +624,280 @@ cost = base_cost × (1 + level × growth_rate) × adjusted_multiplier^(level / a
 안전장치: adjusted_multiplier의 최소값은 1.0
 ```
 
-**티어 시스템 적용 스탯** (v1.3.0):
+**티어 시스템 적용 스탯** (v2.4.0):
 
-| 스탯 ID | tier_interval | base_multiplier | decrease_per_tier | base_softcap | increase_per_tier |
-|---------|---------------|-----------------|-------------------|--------------|-------------------|
-| crit_damage | 100 | 1.5 | 0.05 | 18 | 3 |
-| time_extend | 100 | 1.4 | 0.04 | 15 | 3 |
-| multi_hit | 100 | 1.45 | 0.04 | 12 | 2 |
-| base_attack | 100 | 1.6 | 0.05 | 12 | 2 |
-| attack_percent | 100 | 1.6 | 0.05 | 12 | 2 |
-| crit_chance | 100 | 1.6 | 0.05 | 12 | 2 |
+모든 스탯의 tier_config는 `multiplier_decrease_per_tier=0, softcap_increase_per_tier=0`이므로
+실질적으로 **고정 파라미터**로 동작합니다 (현재 티어 감쇠 비활성화).
 
-**티어별 파라미터 예시** (crit_damage):
-
-| 레벨 범위 | Tier | Multiplier | Softcap | 비용 (레벨 844 기준) |
-|-----------|------|------------|---------|----------------------|
-| 0-99 | 0 | 1.50 | 18 | - |
-| 100-199 | 1 | 1.45 | 21 | - |
-| 200-299 | 2 | 1.40 | 24 | - |
-| 800-899 | 8 | 1.10 | 42 | **1,439 크리스탈** ✅ |
-
-**효과 비교** (레벨 844, 티어 없음 vs 있음):
-```
-티어 없음: 1 × 211 × 1.2^46.89 = 1,094,098 크리스탈
-티어 있음: 1 × 211 × 1.1^20.10 = 1,439 크리스탈
-
-감소율: 99.87%
-```
+| 스탯 ID | tier_interval | base_multiplier | base_softcap | 비고 |
+|---------|---------------|-----------------|--------------|------|
+| base_attack | 100 | **3.0** | **4** | effect_multiplier_per_tier=1.15 (v5.0: 1.28→1.18→1.15, softcap 6→4) |
+| crit_damage | 100 | **4.5** | **5** | effect_multiplier_per_tier=1.0 |
+| attack_percent | 100 | **4.5** | **5** | effect_multiplier_per_tier=1.0 |
+| crit_chance | 100 | **4.5** | **5** | effect_multiplier_per_tier=1.0 |
+| multi_hit | 100 | **4.5** | **5** | effect_multiplier_per_tier=1.0 |
+| gold_flat_perm | 100 | **2.5** | **6** | effect_multiplier_per_tier=1.12 |
+| crystal_flat | 100 | **2.5** | **6** | effect_multiplier_per_tier=0.94 |
+| gold_multi_perm | 100 | **2.5** | **5** | effect_multiplier_per_tier=1.12 |
+| crystal_chance | 100 | **2.5** | **5** | effect_multiplier_per_tier=0.94 |
+| time_extend | 100 | **4.0** | **5** | effect_multiplier_per_tier=1.0 |
+| upgrade_discount | 100 | 2.0 | 6 | effect_multiplier_per_tier=1.0 |
+| start_* (unified) | 100 | **2.3** | **6** | effect_multiplier_per_tier=1.0 |
+| start_* (%) | 100 | **2.3** | **6** | effect_multiplier_per_tier=1.0 |
 
 **구현 위치**:
 - 데이터: `config/PermanentStats.json` (tier_config 블록)
 - 게임 로직: `Models/StatGrowthConfig.cs` (CalculateCost, Lines 100-141)
 - 시뮬레이터: `DeskWarrior.Core/Balance/StatCostCalculator.cs` (Lines 37-51)
 
-### 5.2 전체 스탯 목록 (20개, 8개 카테고리)
+### 5.2 전체 스탯 목록 (20개 스탯, config/PermanentStats.json 기준)
 
-**v2.3.0 변경**: 4개 → 8개 카테고리로 세분화. 같은 카테고리 내 비-% 스탯은 **동일 레벨에서 동일 비용**을 가집니다.
-% 스탯 (max_level > 0인 스탯)은 독립적인 비용 곡선을 유지합니다.
+**v3.0 변경 (2026-02-27)**: "항상 업그레이드할 게 있다" 체감 설계. effect_per_level 감소 + 비용 완만화.
+핵심: base_attack effect 4→1 (1/4), multiplier 대폭 낮춤 (9.0→3.0), softcap 늘림 (4→6).
+결과: 10시간에 base_attack ~40레벨 (v2.5.0의 3배), 세션당 3-4레벨 업글 체감.
 
-#### 카테고리 1: 강화 공격 (Heavy Damage) ⚔️
+**v4.0 변경 (2026-02-27)**: base_attack 효율 하향으로 빌드 다양성 확보.
+핵심: base_attack effect 1→0.55 (-45%), tier_multiplier 1.28→1.18 (-10p).
+결과: Diversity Score 0.10→0.34~0.40 (4배 향상), Balance Grade D→C.
 
-**통합 비용**: base_cost=20, growth_rate=1.2, multiplier=1.9, softcap=8
+**v5.0 변경 (2026-02-27)**: base_attack 추가 너프 실험 (12회 반복). 최적점 탐색.
+핵심: effect 0.55→0.45 (-18%), softcap_interval 6→4 (비용 폭발 가속), tier_multiplier 1.18→1.15.
+결과: Diversity Score 0.28~0.42 범위 (GA 탐색 확률적 변동). Grade C 유지.
+비용 곡선: softcap 4로 인해 Lv4마다 3배 폭발 (기존 Lv6마다). 장기 투자 비용 급증.
 
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| base_attack | +3 | 무제한 | 통합 | 모든 공격 데미지 가산 | ⚔️ |
+**비용 그룹 통일 규칙**: `unified_cost=true` 스탯끼리 동일 `base_cost / growth_rate / multiplier / softcap_interval` 유지.
 
-#### 카테고리 2: 전투 특성 (Standard Damage) 🎯
+#### 그룹 1: base_stats unified (base_attack, crit_damage)
 
-**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.6, multiplier=1.6, softcap=9
+**비용 파라미터 (crit_damage)**: base_cost=5, growth_rate=0.3, multiplier=3.0, softcap_interval=6
+**비용 파라미터 (base_attack)**: base_cost=5, growth_rate=0.3, **multiplier=3.0, softcap_interval=4** (v5.0: 가속 비용 폭발)
 
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| crit_damage | +0.2 | 무제한 | 통합 | 크리티컬 배율 (기본 2.0 + bonus) | 💥 |
-| attack_percent | +2% | 무제한 | **독립 (%)** | 데미지 퍼센트 배수 | 💪 |
-| crit_chance | +0.5% | 90% | **독립 (%)** | 크리티컬 확률 (기본 10% + 90%) | ✨ |
-| multi_hit | +1% | 100% | **독립 (%)** | 2배 타격 확률 | 🎯 |
+| 스탯 ID | 레벨당 효과 | 최대 레벨 | 비용 타입 | 설명 |
+|---------|-------------|----------|-----------|------|
+| base_attack | **+0.45 데미지** | 무제한 | unified | 모든 공격 데미지 가산 (v2.5: +4 → v3.0: +1 → v4.0: +0.55 → v5.0: +0.45) |
+| crit_damage | +0.002 배율 | 1000 (max_effect=+2.0) | unified | 크리티컬 배율 (기본 2.0x + bonus) |
 
-#### 카테고리 3: 골드 보너스 (Currency Income) 💰
-
-**통합 비용** (비-% 스탯): base_cost=0.06, growth_rate=0.7, multiplier=1.5, softcap=10
-
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| gold_flat_perm | +3 | 무제한 | 통합 | 골드 가산 | 💵 |
-| gold_multi_perm | +15% | 무제한 | **독립 (%)** | 골드 배수 | 🌟 |
-
-#### 카테고리 4: 크리스탈 (Crystal Economy) 💎
-
-**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.8, multiplier=1.6, softcap=8
-
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| crystal_flat | +10 | 무제한 | 통합 | 보스 크리스탈 가산 | 💎 |
-| crystal_chance | +2% | 100% | **독립 (%)** | 크리스탈 드롭 확률 (현재 미사용) | ✨ |
-
-#### 카테고리 5: 유틸리티 (Utility) ⚙️
-
-**통합 비용** (비-% 스탯): base_cost=1.5, growth_rate=0.55, multiplier=1.4, softcap=10
-
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| time_extend | +0.4초 | 60초 | 통합 | 제한시간 연장 | ⏰ |
-| upgrade_discount | +3% | 60% | **독립 (%)** | 업그레이드 비용 할인 | 🎫 |
-
-#### 카테고리 6: 시작 전투 (Starting Combat) 🚀
-
-**통합 비용**: base_cost=2, growth_rate=0.5, multiplier=1.5, softcap=10
-
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| start_level | +5 | 무제한 | 통합 | 시작 레벨 | 🚀 |
-| start_keyboard | +2 | 무제한 | 통합 | 시작 키보드 공격력 레벨 | ⌨️ |
-| start_mouse | +2 | 무제한 | 통합 | 시작 마우스 공격력 레벨 | 🖱️ |
-
-#### 카테고리 7: 시작 경제 (Starting Economy) 💵
-
-**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.4, multiplier=1.4, softcap=12
-
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| start_gold | +150 | 무제한 | 통합 | 시작 골드 | 💵 |
-| start_gold_flat | +0.3 | 무제한 | 통합 | 시작 골드+ 레벨 | 💸 |
-| start_gold_multi | +0.3% | 무제한 | **독립 (%)** | 시작 골드* 레벨 | 💰 |
-
-#### 카테고리 8: 시작 콤보 (Starting Combo) 🔥
-
-**통합 비용** (비-% 스탯): base_cost=1, growth_rate=0.5, multiplier=1.5, softcap=8
-
-| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 | 아이콘 |
-|---------|-------------|----------|-----------|------|--------|
-| start_combo_flex | +0.3 | 무제한 | 통합 | 시작 콤보유연성 레벨 | 🎯 |
-| start_combo_damage | +1.5% | 무제한 | **독립 (%)** | 시작 콤보데미지 레벨 | 💥 |
-
-### 5.3 주요 스탯 성장 곡선
-
-**time_extend** (가장 효과적인 투자):
+**비용 곡선 (v5.0 - base_attack, softcap=4)**:
 ```
-레벨 1: 30.4초
-레벨 50: 50초 (+20초)
-레벨 100: 70초 (+40초)
-레벨 150: 90초 (+60초, 최대치)
+Lv 4:  5 × (1+4×0.3) × 3^1 = 33 크리스탈
+Lv 8:  5 × (1+8×0.3) × 3^2 = 162 크리스탈
+Lv 12: 5 × (1+12×0.3) × 3^3 = 1,035 크리스탈
+Lv 20: 5 × (1+20×0.3) × 3^5 = 14,175 크리스탈
+Lv 24: 5 × (1+24×0.3) × 3^6 = 62,370 크리스탈
 ```
 
-**base_attack** (선형 성장):
+**비용 곡선 (v3.0 참조 - crit_damage, softcap=6)**:
 ```
-레벨 1: +3 공격력
-레벨 50: +150 공격력
-레벨 100: +300 공격력
+Lv 6:  5 × (1+6×0.3) × 3^1 = 42 크리스탈
+Lv 12: 5 × (1+12×0.3) × 3^2 = 207 크리스탈
+Lv 30: 5 × (1+30×0.3) × 3^5 = 12,150 크리스탈
+Lv 60: 5 × (1+60×0.3) × 3^10 ≈ 4.7M 크리스탈
 ```
 
-**crit_chance** (한계 있음):
+#### 그룹 2: base_stats % (attack_percent, crit_chance, multi_hit)
+
+**비용 파라미터**: base_cost=10, growth_rate=0.4, **multiplier=3.0, softcap_interval=6**
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 비용 타입 | 설명 |
+|---------|-------------|----------|-----------|------|
+| attack_percent | +0.2% | 200% (Lv1000) | 독립 | 데미지 퍼센트 배수 |
+| crit_chance | +0.09% | 90% | 독립 | 크리티컬 확률 (기본 10% + max 90%) |
+| multi_hit | +0.1% | 100% | 독립 | 2배 타격 확률 |
+
+#### 그룹 3: currency_bonus unified (gold_flat_perm, crystal_flat)
+
+**비용 파라미터**: base_cost=1, growth_rate=0.3, **multiplier=2.5, softcap_interval=8**
+
+| 스탯 ID | 레벨당 효과 | 최대 레벨 | 설명 |
+|---------|-------------|----------|------|
+| gold_flat_perm | +3 골드 | 무제한 | 몬스터 처치 시 골드 가산 |
+| crystal_flat | +10 크리스탈 | 무제한 | 보스 드롭 크리스탈 가산 |
+
+#### 그룹 4: currency_bonus % (gold_multi_perm, crystal_chance)
+
+**비용 파라미터**: base_cost=1.5, growth_rate=0.4, **multiplier=2.5, softcap_interval=7**
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 설명 |
+|---------|-------------|----------|------|
+| gold_multi_perm | +0.2% | 200% | 골드 획득량 배수 |
+| crystal_chance | +0.1% | 100% | 크리스탈 드롭 확률 (미사용) |
+
+#### 그룹 5: utility unified (time_extend)
+
+**비용 파라미터**: base_cost=1.5, growth_rate=0.3, **multiplier=4.0, softcap_interval=6**
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 최대 레벨 | 설명 |
+|---------|-------------|----------|----------|------|
+| time_extend | **+0.1초** | +60초 (Lv600) | 600 | 제한시간 연장 + 데미지 보너스 (v2.5: +0.28초/Lv214 → v3.0: +0.1초/Lv600) |
+
+#### 그룹 6: utility % (upgrade_discount)
+
+**비용 파라미터**: base_cost=1, growth_rate=0.08, **multiplier=1.5, softcap_interval=60**
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 최대 레벨 | 설명 |
+|---------|-------------|----------|----------|------|
+| upgrade_discount | **+0.1% 할인** | 90% | **900** | 인게임 업그레이드 비용 할인 (v4.0: 0.1%×900=90%, 완만한 비용 곡선) |
+
+#### 그룹 6b: utility flat (cost_flat_reduction)
+
+**비용 파라미터**: base_cost=1, growth_rate=0.08, **multiplier=1.5, softcap_interval=100**
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 최대 레벨 | 설명 |
+|---------|-------------|----------|----------|------|
+| cost_flat_reduction | **-5 골드** | 무제한 | 무제한 | 인게임 업그레이드 비용에서 고정 골드 차감 (v4.0 신규, 초중반 가속 스탯) |
+
+#### 그룹 6c: utility crystal % (crystal_discount)
+
+**비용 파라미터**: base_cost=1, growth_rate=0.08, **multiplier=1.5, softcap_interval=60**
+
+| 스탯 ID | 레벨당 효과 | 최대 효과 | 최대 레벨 | 설명 |
+|---------|-------------|----------|----------|------|
+| crystal_discount | **+0.1% 할인** | 90% | **900** | 영구 업그레이드 크리스탈 비용 % 할인 (v4.0 신규, upgrade_discount의 크리스탈 버전) |
+
+**최종 비용 공식**:
 ```
-레벨 1: 10.5%
-레벨 50: 35%
-레벨 100: 60%
-레벨 180: 100% (최대치)
+인게임 비용: final_cost = max(1, (base_cost × (1 - upgrade_discount%)) - cost_flat_reduction)
+크리스탈 비용: final_cost = base_cost × (1 - crystal_discount%)
 ```
+
+#### 그룹 7: starting_bonus unified (start_level, start_gold, start_keyboard, start_mouse, start_gold_flat, start_combo_flex)
+
+**비용 파라미터**: base_cost=3, growth_rate=0.3, **multiplier=2.0, softcap_interval=6**
+
+#### 그룹 8: starting_bonus % (start_gold_multi, start_combo_damage)
+
+**비용 파라미터**: base_cost=3, growth_rate=0.4, **multiplier=2.0, softcap_interval=6**
+
+### 5.3 비용 곡선 비교 (v2.5.0 → v3.0)
+
+**base_attack 비용 곡선 변화**:
+```
+v2.5.0 (9.0/4):          v3.0 (3.0/6):
+Lv 4:  ~380 크리스탈    Lv 6:  ~42 크리스탈
+Lv 8:  ~50,000 크리스탈 Lv 12: ~207 크리스탈
+Lv 12: ~3.5M 크리스탈   Lv 30: ~12,150 크리스탈
+                         Lv 60: ~4.7M 크리스탈
+```
+
+**time_extend 비용 곡선 변화**:
+```
+v2.5.0 (12.0/4):         v3.0 (4.0/6):
+Lv 4:  ~320 크리스탈    Lv 6:  ~22 크리스탈
+Lv 8:  ~130,000 크리스탈 Lv 12: ~69 크리스탈
+Lv 12: ~34M 크리스탈     Lv 30: ~1,701 크리스탈
+```
+
+### 5.4 tier_overrides v7.0 - 등급별 메타 시프트 (2026-02-28)
+
+**버전**: PermanentStats.json v5.0.0
+**설계 원칙**: 스탯 레벨 tier가 올라갈수록(100레벨 구간마다) 메타가 전환됨.
+
+#### tier 구조 (tier_interval=100)
+
+| tier | 스탯 레벨 구간 | 플레이어 등급 | 메타 |
+|------|--------------|-------------|------|
+| 0 | Lv 1~100 | Z등급 | base_attack 중심 |
+| 1 | Lv 101~200 | Y등급 | 다각화 시작 |
+| 2 | Lv 201~300 | X등급 | crit/multi_hit 경쟁력 |
+| 3 | Lv 301~400 | W등급 | utility 활성화 |
+| 4 | Lv 401~500 | V등급 | starting_bonus 중요 |
+| 5 | Lv 501~600 | U등급 | 완전 복합 빌드 |
+
+#### 공격 스탯 tier별 effect_per_level
+
+| 스탯 | tier0(Z) | tier1(Y) | tier2(X) | tier3(W) | tier4(V) | tier5(U) | 방향 |
+|------|---------|---------|---------|---------|---------|---------|------|
+| base_attack | 3.5 | 1.2 | 0.7 | 0.45 | 0.3 | 0.2 | 점진 약화 |
+| attack_percent% | 3.0 | 3.0 | 2.5 | 1.5 | 1.0 | 0.7 | 점진 약화 |
+| crit_damage | 0.03 | 0.04 | 0.07 | 0.12 | 0.18 | 0.25 | 점진 강화 |
+| crit_chance% | 0.7 | 0.5 | 0.7 | 0.9 | 1.1 | 1.3 | 점진 강화 |
+| multi_hit% | 0.5 | 0.6 | 0.8 | 1.0 | 1.2 | 1.5 | 점진 강화 |
+
+#### 유틸리티 스탯 tier별 effect_per_level
+
+| 스탯 | tier0(Z) | tier1(Y) | tier2(X) | tier3(W) | tier4(V) | tier5(U) | 방향 |
+|------|---------|---------|---------|---------|---------|---------|------|
+| time_extend(s) | 0.1 | 0.11 | 0.13 | 0.16 | 0.20 | 0.25 | 점진 강화 |
+| upgrade_discount% | 0.1 | 0.1 | 0.13 | 0.16 | 0.20 | 0.25 | 점진 강화 |
+| cost_flat_reduction | 25 | 6 | 9 | 14 | 20 | 30 | U자형 |
+
+#### 시작 보너스 스탯 tier별 effect_per_level
+
+| 스탯 | tier0(Z) | tier1(Y) | tier2(X) | tier3(W) | tier4(V) | tier5(U) | 방향 |
+|------|---------|---------|---------|---------|---------|---------|------|
+| start_level | 5.0 | 1.5 | 2.5 | 4.0 | 6.0 | 9.0 | 중반 활성화 |
+| start_keyboard | 5.0 | 3.0 | 4.0 | 6.0 | 8.0 | 12.0 | 점진 강화 |
+| start_mouse | 5.0 | 3.0 | 4.0 | 6.0 | 8.0 | 12.0 | 점진 강화 |
+| start_gold | 150 | 200 | 280 | 400 | 600 | 900 | 점진 강화 |
+| start_gold_flat | 0.3 | 0.4 | 0.55 | 0.8 | 1.2 | 1.8 | 점진 강화 |
+| start_gold_multi | 0.3 | 0.4 | 0.55 | 0.8 | 1.2 | 1.8 | 점진 강화 |
+| start_combo_flex | 0.3 | 0.4 | 0.6 | 1.0 | 1.5 | 2.2 | 점진 강화 |
+| start_combo_damage | 1.5 | 2.0 | 3.0 | 4.5 | 6.5 | 9.0 | 점진 강화 |
+
+#### 통화 스탯 tier별 effect_per_level
+
+| 스탯 | tier0(Z) | tier1(Y) | tier2(X) | tier3(W) | tier4(V) | tier5(U) | 방향 |
+|------|---------|---------|---------|---------|---------|---------|------|
+| gold_flat_perm | 3 | 4 | 6 | 9 | 14 | 20 | 점진 강화 |
+| gold_multi_perm | 0.2 | 0.25 | 0.35 | 0.5 | 0.8 | 1.2 | 점진 강화 |
+| crystal_flat | 10 | 12 | 15 | 20 | 28 | 40 | 점진 강화 |
+| crystal_chance | 0.1 | 0.12 | 0.15 | 0.2 | 0.3 | 0.45 | 점진 강화 |
+| crystal_discount | 0.1 | 0.12 | 0.16 | 0.22 | 0.3 | 0.4 | 점진 강화 |
+| crystal_flat_reduction | 1 | 1.5 | 2.5 | 4 | 6 | 10 | 점진 강화 |
+
+#### 시뮬레이션 검증 결과 (2026-02-28)
+
+**Z등급 (1000 crystals - 풀 분석)**:
+- Diversity Score: 0.34 (C등급) - 목표 0.3 달성
+- Top 빌드: base_attack 65% + attack_percent 12%
+
+**Y등급 (base_attack lv10 + 2000cr 추가 - quick 분석)**:
+- Dominance Ratio: 1.04
+- Top 5: attack_percent(836), multi_hit(806), upgrade_discount(800), time_extend(796), crit_chance(789)
+- 메타 시프트 확인: base_attack이 2위권 밖
+
+**X등급 (ba10+ap50 + 5000cr - quick 분석)**:
+- Dominance Ratio: 1.00
+- Top 5: attack_percent, multi_hit, time_extend, upgrade_discount, base_attack
+- 다양한 스탯이 비슷한 효율
+
+**W등급 (복합 투자 + 10000cr - quick 분석)**:
+- Dominance Ratio: 1.07
+- Top 5: attack_percent, upgrade_discount, time_extend, crit_damage, multi_hit
+- utility 스탯 경쟁력 확인
+
+**V등급 (복합 투자 + 15000cr - quick 분석)**:
+- Dominance Ratio: 1.01
+- attack_percent, multi_hit, crit_damage 상위 경쟁
+
+**U등급 (복합 투자 + 20000cr - quick 분석)**:
+- Dominance Ratio: 1.03
+- 5개 스탯이 모두 비슷한 효율 → 완전 복합 빌드 메타
+
+**10시간 전략 비교 (Zero-Start)**:
+- Dominance Ratio: 1.06 (A등급)
+- SurvivalFirst: 2941, EconomyFirst: 2785, DamageFirst: 2726
+
+### 5.5 10시간 시뮬레이션 결과 (v3.0 기준)
+
+**시뮬레이션 조건**: 크리스탈 0에서 시작, 10시간, **CPS 10**
+
+| 전략 | 평균 레벨 | base_attack | time_extend | upgrade_discount | 크리스탈 획득 |
+|------|-----------|-------------|-------------|-----------------|--------------|
+| SurvivalFirst | ~1130 (±29) | ~44 | ~37레벨(+3.7s) | ~31레벨(-46.5%) | ~2.7M |
+| EconomyFirst | ~1076 (±42) | ~40 | ~35레벨(+3.5s) | ~32레벨(-48.0%) | ~2.6M |
+| DamageFirst | ~1038 (±20) | ~43 | ~31레벨(+3.1s) | 0 | ~2.5M |
+| CrystalFarm | ~1032 (±27) | ~42 | ~37레벨(+3.7s) | 0 | ~3.1M |
+| Greedy | ~958 (±22) | ~39 | 0레벨 | ~9레벨(-13.5%) | ~2.3M |
+| Balanced | ~891 (±22) | ~12 | ~35레벨(+3.5s) | ~4레벨(-6.0%) | ~1.8M |
+
+**Dominance Ratio**: 1.05 (A등급)
+
+**v2.5.0 대비 변화**:
+- base_attack 레벨: ~14 → ~40+ (약 3배 증가, "더 자주 업글" 체감)
+- time_extend 레벨: ~15 → ~35 (약 2.3배 증가)
+- upgrade_discount 레벨: 0 → ~30+ (새로운 투자 대상 등장)
+- 총 게임 레벨: 유사 (~1000~1130 범위 유지)
 
 ---
 
@@ -797,13 +934,23 @@ finalCost = (int)(baseCost × multiplier);
 레벨 30-39: 비용 배율 3.375x (1.5³)
 ```
 
-**영구 스탯 할인** (`upgrade_discount`):
+**인게임 비용 감소** (`upgrade_discount` + `cost_flat_reduction`):
 ```
-discount = UpgradeDiscountLevel × 3%
-finalCost = baseCost × (1 - discount / 100)
+discount% = UpgradeDiscountLevel × 0.1%    (최대 90%, 900레벨)
+goldFlat = CostFlatReductionLevel × 5      (무제한)
+finalGoldCost = max(1, baseCost × (1 - discount%) - goldFlat)
+```
 
-최대 할인: 60% (레벨 20)
+**크리스탈 비용 감소** (`crystal_discount`):
 ```
+crystalDiscount% = CrystalFlatReductionLevel × 0.1%  (최대 90%, 900레벨)
+finalCrystalCost = baseCost × (1 - crystalDiscount%)
+```
+
+v4.0: 세 레이어 비용 감소 시스템
+ - upgrade_discount: 인게임 골드 % 할인 (0.1%×900=90%)
+ - cost_flat_reduction: 인게임 골드 고정 차감 (초중반 가속)
+ - crystal_discount: 크리스탈 % 할인 (0.1%×900=90%, upgrade_discount의 크리스탈 버전)
 
 ### 6.2 인게임 스탯
 
@@ -986,95 +1133,48 @@ HP: 100~200 랜덤 (HpMin: 100, HpMax: 200)
 
 ## 10. 밸런스 검증
 
-### 10.1 50시간 진행 시뮬레이션 결과 (최신)
+### 10.1 10시간 전략 비교 시뮬레이션 결과 (최신, v2.5.0)
 
-**출처**: `balanceDoc/2026-02-04/progression_50h.csv`
+**출처**: `balanceDoc/2026-02-27/23_strategy_comparison.md`
 
 **시뮬레이션 설정**:
 ```
-목표 플레이 타임: 50시간 (180,000초)
-입력 프로파일: CPS 5
-투자 전략: Balanced (균형)
-  - 우선순위: time_extend > base_attack > crit_damage > attack_percent
-
-영구 스탯 초기값: 모두 0
-티어 시스템: 활성화 (tier_interval=100)
+시작 크리스탈: 0 (Zero-Start)
+게임 시간: 10시간
+CPS: 10 (실제 플레이어 입력 속도 반영, v2.5.0 변경)
+전략당 실행: 10회
 ```
 
-**최종 결과** (2,002 세션):
+**최종 결과**:
 ```
-총 플레이 타임: 50.0시간 (180,046초)
-총 세션 수: 2,002회
-평균 세션 길이: 89.9초
+1. SurvivalFirst   Avg: 1149 (±63)   세션: 12  크리스탈: 2,870,622
+2. EconomyFirst    Avg: 1127 (±50)   세션: 13  크리스탈: 2,807,852  (-1.9%)
+3. DamageFirst     Avg: 1077 (±24)   세션: 12  크리스탈: 2,754,878  (-6.2%)
+4. CrystalFarm     Avg: 1075 (±37)   세션: 12  크리스탈: 3,001,597  (-6.4%)
+5. Greedy          Avg: 1025 (±22)   세션: 13  크리스탈: 2,624,156  (-10.8%)
+6. Balanced        Avg:  958 (±36)   세션: 14  크리스탈: 2,085,012  (-16.7%)
 
-도달 최고 레벨: 6,313
-도달 평균 레벨: ~6,300
-총 획득 크리스탈: 547,667
-총 소비 크리스탈: 542,580
-잔여 크리스탈: 5,087
-
-총 획득 골드: 9,643,776
-평균 골드: ~9,500,000
+Dominance Ratio: 1.02
+Balance Grade: A
 ```
 
-**영구 스탯 최종 레벨** (2,002세션 기준):
+**대표 영구 스탯 레벨** (SurvivalFirst 기준):
 ```
-공격 관련:
-- base_attack: Lv 170 (~510 추가 공격력)
-- attack_percent: Lv 215 (~430% 배수)
-- crit_chance: Lv 318 (~159% 크리티컬 확률)
-- crit_damage: Lv 844 (~168.8 크리티컬 배율)
-- multi_hit: Lv 403 (~100% 멀티히트 확률, 최대치)
-
-유틸리티:
-- time_extend: Lv 577 (~230.8초 연장, 기본 30초 + 연장 = 260.8초)
-- upgrade_discount: Lv 4 (~12% 할인)
-
-재화 보너스:
-- gold_flat_perm: Lv 492 (~1,476 골드+)
-- gold_multi_perm: Lv 405 (~6,075% 골드*)
-- crystal_flat: Lv 8 (~80 크리스탈+)
+base_attack:  14 → +56 데미지
+attack_percent:  13 → +2.6%
+crit_damage:  14 → x0.03 배율 추가
+time_extend:  15 → +4.2초 (기본 30초 + 4.2초 = 34.2초)
+upgrade_discount:  20 → -60%
 ```
 
-**핵심 발견**:
-```
-✅ 티어 시스템 효과 검증 완료
-- crit_damage Lv 844: 1,439 크리스탈 (티어 시스템)
-  vs 1.09M 크리스탈 (티어 없음) = 99.87% 비용 감소
-- time_extend Lv 577: 6,765 크리스탈
-- 고레벨 영구 스탯 투자 가능성 확보
-
-✅ 장기 플레이 안정성
-- 레벨 6,300대까지 일관된 성장 곡선
-- 크리스탈 경제 균형 (획득 vs 소비)
-- 세션당 평균 273 크리스탈 획득
-
-✅ 영구 스탯 투자 효율
-- time_extend 최우선 투자 (Lv 577, 260초 제한시간)
-- crit_damage 고효율 (Lv 844, 티어 시스템 덕분)
-- multi_hit 최대치 도달 (Lv 403, 100% 확률)
-
-⚠️ 황금 고블린 희귀성
-- 처치율: ~1% 미만
-- 도주율: 극히 낮음
-- 체감 희귀도: 매우 높음
-```
-
-**진행 곡선 안정성**:
-```
-초반 (세션 1-500):
-- 평균 레벨: 50-1,500
-- 크리스탈 획득: 100-50,000/세션
-
-중반 (세션 501-1,500):
-- 평균 레벨: 2,000-4,500
-- 크리스탈 획득: 100,000-300,000/세션
-
-후반 (세션 1,501-2,002):
-- 평균 레벨: 5,000-6,300
-- 크리스탈 획득: 400,000-550,000/세션
-- 성장 안정화 (세션당 ~273 크리스탈)
-```
+**변경 이력**:
+- v2.5.0 (2026-02-27): CPS 5→10 변경 + 비용 파라미터 전면 재조정
+  - 목표: 10시간 기준 시간당 ~100레벨 (총 900~1100)
+  - base_stats: multiplier 4.5→9.0, softcap_interval 5→4
+  - currency_bonus: multiplier 2.5→4.5
+  - time_extend: multiplier 4.0→12.0, softcap_interval 5→4
+  - upgrade_discount: multiplier 2.0→7.0, softcap_interval 6→5
+  - starting_bonus: multiplier 2.3→4.0, softcap_interval 6→5
 
 ---
 
@@ -1503,6 +1603,21 @@ Tier 20 (Lv 2001+):    후반 최대 30 티어 (max_late_tiers)
     - Wind 속도 비율: 1.5배 → **1.11배** (4.0/3.6)
   - **연속 키 페널티**: 1.7절 신규 추가 (게임 전용 UX 기능 설명)
   - **CalculateHp 알고리즘**: 2.1절에 SimulationModels.cs 전체 알고리즘 추가 (감쇠, 후반 완화 포함)
+
+- **2026-02-27 (v2.5.0)**: ✅ **CPS 10 기준 재조정 - 비용 파라미터 전면 인상**
+  - **시뮬레이션 기준 변경**: CPS 5 → CPS 10 (실제 플레이어 입력 속도 반영)
+  - **목표 유지**: 10시간 기준 시간당 ~100레벨 (총 900~1100레벨)
+  - **비용 파라미터 변경** (multiplier/softcap_interval만 조정, effect_per_level 유지):
+    - base_stats unified: multiplier 4.5→9.0, softcap 5→4
+    - base_stats %: multiplier 4.5→9.0, softcap 5→4
+    - currency_bonus unified: multiplier 2.5→4.5 (softcap 유지)
+    - currency_bonus %: multiplier 2.5→4.5 (softcap 유지)
+    - time_extend: multiplier 4.0→12.0, softcap 5→4
+    - upgrade_discount: multiplier 2.0→7.0, softcap 6→5
+    - starting_bonus unified: multiplier 2.3→4.0, softcap 6→5
+    - starting_bonus %: multiplier 2.3→4.0, softcap 6→5
+  - **결과**: Dominance Ratio 1.02 (A등급), 전략 범위 958~1149레벨
+  - **데이터 로그**: balanceDoc/2026-02-27/17~23_strategy_comparison.md
 
 - **2026-02-05 (v2.0.0)**: ✅ **Tier HP 시스템 적용 및 50시간 밸런스 검증**
   - **Tier HP 시스템**: enabled: true, tier_interval: 300, tier_multiplier: 1.5

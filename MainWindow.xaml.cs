@@ -49,7 +49,7 @@ namespace DeskWarrior
         private IInputHandler InputHandler => ViewModel.InputHandler;
 
         private const double MONSTER_SIZE = 80;
-        private const double BOSS_SIZE = 130;  // Used in UpdateMonsterImage
+        private const double BOSS_SIZE = 110;  // Used in UpdateMonsterImage
         private string DefaultBackgroundUri => ResourceManager.Instance.GetDefaultBackgroundUri().ToString();
 
         #endregion
@@ -776,8 +776,14 @@ namespace DeskWarrior
                 }
 
                 MonsterImage.Source = loaded;
-                MonsterImage.Width = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
-                MonsterImage.Height = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+                double size = monster.IsBoss ? BOSS_SIZE : MONSTER_SIZE;
+                MonsterImage.Width = size;
+                MonsterImage.Height = size;
+
+                // 보스/일반 크기 변경 시 중심점 유지하도록 bottom margin 조정
+                const double centerY = 54 + MONSTER_SIZE / 2;  // 일반 몬스터 기준 중심 Y
+                double bottomMargin = centerY - size / 2;
+                MonsterImage.Margin = new Thickness(0, 0, 20, Math.Max(0, bottomMargin));
 
                 bool needsFlip = NeedsFlip(spritePath);
                 MonsterImage.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -1065,9 +1071,10 @@ namespace DeskWarrior
 
         public void ApplyBackgroundOpacity(double opacity)
         {
-            double effectiveOpacity = opacity;
-            double infoOpacity = Math.Clamp(effectiveOpacity, 0.0, 0.8);
-            double upgradeOpacity = Math.Clamp(effectiveOpacity * 1.5, 0.0, 0.95);
+            // 최소 0.01 유지: WPF에서 Opacity=0이면 hit-test 통과(클릭 관통)되므로 방지
+            double effectiveOpacity = Math.Max(opacity, 0.01);
+            double infoOpacity = Math.Clamp(effectiveOpacity, 0.01, 0.8);
+            double upgradeOpacity = Math.Clamp(effectiveOpacity * 1.5, 0.01, 0.95);
 
             if (MainBackgroundBorder != null)
                 MainBackgroundBorder.Background = new SolidColorBrush(Color.FromRgb(0x1a, 0x1a, 0x2e)) { Opacity = effectiveOpacity };

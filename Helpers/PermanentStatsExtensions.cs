@@ -135,6 +135,30 @@ namespace DeskWarrior.Helpers
             return GetRequiredEffect("upgrade_discount", stats.UpgradeDiscountLevel) / 100.0;
         }
 
+        /// <summary>
+        /// 인게임 골드 비용 고정 차감 효과 계산 (Config 기반, Fail-fast)
+        /// </summary>
+        public static long GetCostFlatReduction(this PermanentStats stats)
+        {
+            return (long)GetRequiredEffect("cost_flat_reduction", stats.CostFlatReductionLevel);
+        }
+
+        /// <summary>
+        /// 크리스탈 비용 % 할인율 계산 (Config 기반, Fail-fast)
+        /// </summary>
+        public static double GetCrystalDiscount(this PermanentStats stats)
+        {
+            return GetRequiredEffect("crystal_discount", stats.CrystalDiscountLevel) / 100.0;
+        }
+
+        /// <summary>
+        /// 크리스탈 비용 고정 차감 효과 계산 (Config 기반, Fail-fast)
+        /// </summary>
+        public static long GetCrystalFlatReduction(this PermanentStats stats)
+        {
+            return (long)GetRequiredEffect("crystal_flat_reduction", stats.CrystalFlatReductionLevel);
+        }
+
         #endregion
 
         #region D. 시작 보너스 (8종)

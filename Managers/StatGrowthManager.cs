@@ -33,12 +33,12 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 인게임 스탯 업그레이드 비용 계산 (골드)
         /// </summary>
-        public int GetInGameUpgradeCost(string statId, int currentLevel, double? discountPercent = null)
+        public int GetInGameUpgradeCost(string statId, int currentLevel, double? discountPercent = null, long flatReduction = 0)
         {
             if (!_inGameStats.TryGetValue(statId, out var config))
                 return int.MaxValue;
 
-            return config.CalculateCost(currentLevel + 1, discountPercent);
+            return config.CalculateCost(currentLevel + 1, discountPercent, flatReduction);
         }
 
         /// <summary>
@@ -78,12 +78,12 @@ namespace DeskWarrior.Managers
         /// <summary>
         /// 영구 스탯 업그레이드 비용 계산 (크리스탈)
         /// </summary>
-        public int GetPermanentUpgradeCost(string statId, int currentLevel, double? discountPercent = null)
+        public int GetPermanentUpgradeCost(string statId, int currentLevel, double? discountPercent = null, long flatReduction = 0)
         {
             if (!_permanentStats.TryGetValue(statId, out var config))
                 return int.MaxValue;
 
-            return config.CalculateCost(currentLevel + 1, discountPercent);
+            return config.CalculateCost(currentLevel + 1, discountPercent, flatReduction);
         }
 
         /// <summary>

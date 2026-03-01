@@ -50,15 +50,20 @@ def remove_background(input_path: str, output_path: str,
                       erosion: int = 1) -> str:
     """Remove green background using AutoAlphaChannel.exe.
 
+    Copies input to temp file first to preserve the original.
     Returns output path on success, None on failure.
     """
     if not os.path.exists(AUTO_ALPHA_EXE):
         print(f"ERROR: AutoAlphaChannel.exe not found at {AUTO_ALPHA_EXE}")
         return None
 
+    # Copy to temp file to avoid modifying/locking the original
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+    shutil.copy2(input_path, output_path)
+
     cmd = [
         AUTO_ALPHA_EXE,
-        "-i", input_path,
+        "-i", output_path,
         "-mode", "1",
         "-color", color,
         "-tolerance", str(tolerance),
@@ -70,15 +75,13 @@ def remove_background(input_path: str, output_path: str,
 
     if result.returncode != 0:
         print(f"ERROR: AutoAlphaChannel failed: {result.stderr}")
+        os.remove(output_path)
         return None
 
-    if not os.path.exists(input_path):
-        print(f"ERROR: Overwritten output not found: {input_path}")
+    if not os.path.exists(output_path):
+        print(f"ERROR: Processed output not found: {output_path}")
         return None
 
-    # Move to desired output path
-    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
-    shutil.move(input_path, output_path)
     return output_path
 
 
@@ -128,11 +131,15 @@ def analyze_sprite(img: Image.Image) -> dict:
     }
 
 
-def adjust_margins(img: Image.Image, target_fill: float = 0.85) -> Image.Image:
-    """Crop to bounding box, then re-center with target fill ratio.
+def adjust_margins(img: Image.Image, target_fill: float = 0.85,
+                   align_bottom: bool = False) -> Image.Image:
+    """Crop to bounding box, then position with target fill ratio.
 
     The sprite will occupy ~target_fill of the canvas (longest dimension).
     Canvas is always square.
+
+    align_bottom: If True, sprite bottom edge touches canvas bottom (feet on ground).
+                  If False, sprite is centered vertically (legacy behavior).
     """
     if img.mode != "RGBA":
         img = img.convert("RGBA")
@@ -149,10 +156,13 @@ def adjust_margins(img: Image.Image, target_fill: float = 0.85) -> Image.Image:
     max_dim = max(sprite_w, sprite_h)
     canvas_size = int(max_dim / target_fill)
 
-    # Create transparent canvas and paste sprite centered
+    # Create transparent canvas and position sprite
     canvas = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
     x_offset = (canvas_size - sprite_w) // 2
-    y_offset = (canvas_size - sprite_h) // 2
+    if align_bottom:
+        y_offset = canvas_size - sprite_h  # feet on ground
+    else:
+        y_offset = (canvas_size - sprite_h) // 2  # centered
     canvas.paste(sprite, (x_offset, y_offset), sprite)
 
     return canvas
@@ -182,7 +192,7 @@ def flip_horizontal(img: Image.Image) -> Image.Image:
 
 def process_single(input_path: str, output_path: str,
                    flip: bool = False, size: int = PRODUCTION_SIZE,
-                   padding: int = 85) -> dict:
+                   padding: int = 85, align_bottom: bool = False) -> dict:
     """Run the full processing pipeline on a single image.
 
     Returns a report dict with processing details.
@@ -235,7 +245,7 @@ def process_single(input_path: str, output_path: str,
         info = analyze_sprite(img)
         report["sprite_bounds"] = info["bbox"]
 
-        img = adjust_margins(img, target_fill=target_fill)
+        img = adjust_margins(img, target_fill=target_fill, align_bottom=align_bottom)
 
         info_after = analyze_sprite(img)
         report["sprite_fill_ratio"] = info_after["fill_ratio"]
@@ -284,7 +294,8 @@ def _has_green_background(img: Image.Image) -> bool:
 
 def process_batch(input_dir: str, output_dir: str,
                   flip: bool = False, size: int = PRODUCTION_SIZE,
-                  padding: int = 85, force: bool = False) -> list:
+                  padding: int = 85, force: bool = False,
+                  align_bottom: bool = False) -> list:
     """Process all PNG/JPG files in input_dir.
 
     Returns list of report dicts.
@@ -324,7 +335,8 @@ def process_batch(input_dir: str, output_dir: str,
 
         print(f"[{i}/{len(files)}] Processing: {filename}")
         report = process_single(input_path, output_path,
-                                flip=flip, size=size, padding=padding)
+                                flip=flip, size=size, padding=padding,
+                                align_bottom=align_bottom)
         reports.append(report)
 
         if report["status"] == "success":
@@ -374,6 +386,7 @@ def cmd_process(args):
         flip=args.flip,
         size=args.size,
         padding=args.padding,
+        align_bottom=args.align_bottom,
     )
     print(json.dumps(report, indent=2, ensure_ascii=False))
 
@@ -393,6 +406,7 @@ def cmd_batch(args):
         size=args.size,
         padding=args.padding,
         force=args.force,
+        align_bottom=args.align_bottom,
     )
 
     # Summary
@@ -429,6 +443,7 @@ def main():
     p_process.add_argument("--flip", action="store_true", help="Flip horizontally")
     p_process.add_argument("--size", type=int, default=PRODUCTION_SIZE, help="Output size (default: 256)")
     p_process.add_argument("--padding", type=int, default=85, help="Sprite fill ratio %% (default: 85)")
+    p_process.add_argument("--align-bottom", action="store_true", help="Align sprite to bottom (feet on ground)")
     p_process.set_defaults(func=cmd_process)
 
     # batch
@@ -439,6 +454,7 @@ def main():
     p_batch.add_argument("--size", type=int, default=PRODUCTION_SIZE, help="Output size (default: 256)")
     p_batch.add_argument("--padding", type=int, default=85, help="Sprite fill ratio %% (default: 85)")
     p_batch.add_argument("--force", action="store_true", help="Overwrite existing files")
+    p_batch.add_argument("--align-bottom", action="store_true", help="Align sprite to bottom (feet on ground)")
     p_batch.set_defaults(func=cmd_batch)
 
     args = parser.parse_args()

@@ -213,6 +213,7 @@ namespace DeskWarrior.Managers
         {
             _saveManager = saveManager;
             _permanentProgression = new PermanentProgressionManager(saveManager);
+            _permanentProgression.MigrateStatLevels();
             _compendiumManager = new CompendiumManager(saveManager);
 
             // RewardManager 초기화
@@ -348,7 +349,8 @@ namespace DeskWarrior.Managers
         {
             int currentLevel = GetInGameStatLevel(statId);
             var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.GetUpgradeCostReduction();
-            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            var flatReduction = _saveManager?.CurrentSave?.PermanentStats?.GetCostFlatReduction() ?? 0;
+            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent, flatReduction);
             int cost = ApplyStageCostMultiplier(baseCost);
 
             if (!_statGrowth.CanUpgradeInGameStat(statId, currentLevel))
@@ -398,7 +400,8 @@ namespace DeskWarrior.Managers
         {
             int currentLevel = GetInGameStatLevel(statId);
             var discountPercent = _saveManager?.CurrentSave?.PermanentStats?.GetUpgradeCostReduction();
-            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent);
+            var flatReduction = _saveManager?.CurrentSave?.PermanentStats?.GetCostFlatReduction() ?? 0;
+            int baseCost = _statGrowth.GetInGameUpgradeCost(statId, currentLevel, discountPercent, flatReduction);
             return ApplyStageCostMultiplier(baseCost);
         }
 

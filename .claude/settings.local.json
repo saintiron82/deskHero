@@ -128,7 +128,10 @@
       "Bash(cd C:\\\\Users\\\\saint\\\\Game\\\\DeskWarrior:*)",
       "Bash(cd:*)",
       "Bash(mkdir:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(cmd:*)",
+      "Bash(wmic process:*)",
+      "Bash(echo fuser unavailable:*)"
     ]
   }
 }

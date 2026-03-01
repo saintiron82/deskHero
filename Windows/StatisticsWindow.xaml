@@ -128,6 +128,25 @@
                 <RowDefinition Height="Auto"/>   <!-- Footer -->
             </Grid.RowDefinitions>
 
+            <!-- X 닫기 버튼 (우측 상단, 헤더 위에 오버레이) -->
+            <Border Grid.Row="0"
+                    Background="#662222"
+                    BorderBrush="#FF4444" BorderThickness="1"
+                    CornerRadius="6"
+                    Width="28" Height="28"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,4,6,0"
+                    Cursor="Hand"
+                    MouseLeftButtonDown="CloseButton_Click"
+                    Panel.ZIndex="999">
+                <TextBlock Text="❌"
+                           FontSize="14"
+                           Foreground="#FF8888"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
+
             <!-- HEADER: Glass Morphism -->
             <Border Grid.Row="0" Background="#CC666666" CornerRadius="10,10,0,0" Padding="10,8"
                     BorderBrush="#33FFFFFF" BorderThickness="1"
@@ -139,7 +158,6 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>  <!-- Help -->
                         <ColumnDefinition Width="*"/>     <!-- Title -->
-                        <ColumnDefinition Width="Auto"/>  <!-- Close -->
                     </Grid.ColumnDefinitions>
 
                     <!-- Help Button (Left) -->
@@ -176,32 +194,6 @@
                                    Foreground="#0099CC" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- Close Button (Right) -->
-                    <Button x:Name="HeaderCloseButton" Grid.Column="2" Width="32" Height="32"
-                            Background="#66FF4444" BorderBrush="#FF6666" BorderThickness="1"
-                            Cursor="Hand"
-                            Click="CloseButton_Click">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="6">
-                                    <TextBlock Text="X" FontSize="14" Foreground="White" FontWeight="Bold"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#88FF4444"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
                 </Grid>
             </Border>
 

@@ -20,7 +20,7 @@ namespace DeskWarrior.ViewControllers
         private bool _isShowingToast;
 
         private const double MONSTER_SIZE = 80;
-        private const double BOSS_SIZE = 130;
+        private const double BOSS_SIZE = 110;
 
         public VisualEffectController(MainWindow window)
         {

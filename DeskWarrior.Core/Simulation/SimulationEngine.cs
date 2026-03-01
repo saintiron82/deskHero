@@ -228,7 +228,7 @@ public class SimulationEngine
                 // 자동 업그레이드 시도
                 if (profile.AutoUpgrade)
                 {
-                    TryAutoUpgrade(ref inGameStats, ref gold, permStats.UpgradeCostReduction);
+                    TryAutoUpgrade(ref inGameStats, ref gold, permStats.UpgradeCostReduction, permStats.CostFlatReduction);
                 }
 
                 // 입력 생성 (CPS 기반)
@@ -361,7 +361,7 @@ public class SimulationEngine
             });
 
             // 인게임 업그레이드 (골드 사용)
-            PerformInGameUpgrades(ref gold, inGameStats, currentLevel, permStats.UpgradeCostReduction);
+            PerformInGameUpgrades(ref gold, inGameStats, currentLevel, permStats.UpgradeCostReduction, permStats.CostFlatReduction);
 
             currentLevel++;
         }
@@ -546,19 +546,19 @@ public class SimulationEngine
         return 0;
     }
 
-    private long GetUpgradeCost(string statId, int level, double discountPercent, int currentStage = 1)
+    private long GetUpgradeCost(string statId, int level, double discountPercent, long flatReduction = 0, int currentStage = 1)
     {
         if (_inGameStatConfigs.TryGetValue(statId, out var config))
         {
-            return config.CalculateCost(level + 1, discountPercent);
+            return config.CalculateCost(level + 1, discountPercent, flatReduction);
         }
         return long.MaxValue;
     }
 
-    private void TryAutoUpgrade(ref SimInGameStats stats, ref long gold, double discountPercent)
+    private void TryAutoUpgrade(ref SimInGameStats stats, ref long gold, double discountPercent, long flatReduction = 0)
     {
         // 키보드 파워 우선 업그레이드
-        long kbCost = GetUpgradeCost("keyboard_power", stats.KeyboardPowerLevel, discountPercent);
+        long kbCost = GetUpgradeCost("keyboard_power", stats.KeyboardPowerLevel, discountPercent, flatReduction);
         if (gold >= kbCost)
         {
             gold -= kbCost;
@@ -567,7 +567,7 @@ public class SimulationEngine
         }
 
         // 마우스 파워 업그레이드
-        long msCost = GetUpgradeCost("mouse_power", stats.MousePowerLevel, discountPercent);
+        long msCost = GetUpgradeCost("mouse_power", stats.MousePowerLevel, discountPercent, flatReduction);
         if (gold >= msCost)
         {
             gold -= msCost;
@@ -702,13 +702,13 @@ public class SimulationEngine
     /// 인게임 업그레이드 수행 (골드 사용)
     /// 키보드/마우스 파워를 교대로 업그레이드
     /// </summary>
-    private void PerformInGameUpgrades(ref long gold, SimInGameStats inGameStats, long currentLevel, double discountPercent)
+    private void PerformInGameUpgrades(ref long gold, SimInGameStats inGameStats, long currentLevel, double discountPercent, long flatReduction = 0)
     {
         // 게임 로직과 유사한 비용 계산 적용
         while (true)
         {
-            long kbCost = GetUpgradeCost("keyboard_power", inGameStats.KeyboardPowerLevel, discountPercent);
-            long msCost = GetUpgradeCost("mouse_power", inGameStats.MousePowerLevel, discountPercent);
+            long kbCost = GetUpgradeCost("keyboard_power", inGameStats.KeyboardPowerLevel, discountPercent, flatReduction);
+            long msCost = GetUpgradeCost("mouse_power", inGameStats.MousePowerLevel, discountPercent, flatReduction);
 
             if (kbCost == long.MaxValue && msCost == long.MaxValue)
                 break;

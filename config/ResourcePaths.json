@@ -75,7 +75,7 @@
     "sprite_folder": "Production/Hero"
   },
   "backgrounds": {
-    "default": "Production/Background/bg_floor_grassland_v2.png",
+    "default": "Production/Background/New/BG2.png",
     "available": [
       "Production/Background/bg_floor_beach_v1.png",
       "Production/Background/bg_floor_cave_v1.png",

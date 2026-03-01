@@ -133,13 +133,13 @@
 
                 <!-- Row 2: 배틀 필드 (몬스터, 히어로) -->
                 <Grid Grid.Row="2" Panel.ZIndex="1">
-                    <!-- 적 몬스터 (우측 상단) -->
+                    <!-- 적 몬스터 (우측, 히어로 1/2 높이) -->
                     <Image x:Name="MonsterImage"
                            Width="80" Height="80"
                            Stretch="Uniform"
                            HorizontalAlignment="Right"
-                           VerticalAlignment="Top"
-                           Margin="0,-10,10,0"
+                           VerticalAlignment="Bottom"
+                           Margin="0,0,20,54"
                            RenderTransformOrigin="0.5,0.5"
                            Panel.ZIndex="2"
                            MouseLeftButtonDown="GameElement_MouseLeftButtonDown">
@@ -155,9 +155,9 @@
                     <!-- 데미지 팝업 영역 -->
                     <Canvas x:Name="DamagePopupCanvas"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
+                            VerticalAlignment="Bottom"
                             Width="90" Height="90"
-                            Margin="0,5,5,0"
+                            Margin="0,0,15,44"
                             Panel.ZIndex="10"
                             IsHitTestVisible="False"/>
 
@@ -185,7 +185,7 @@
                            Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
-                           Margin="10,0,0,0"
+                           Margin="20,0,0,0"
                            Panel.ZIndex="3"
                            RenderTransformOrigin="0.5,0.5"
                            MouseLeftButtonDown="GameElement_MouseLeftButtonDown">

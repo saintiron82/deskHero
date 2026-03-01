@@ -23,7 +23,7 @@ public static class CsvExporter
             "CrystalsSpent,CrystalsRemain," +
             "GGKilled,GGEscaped,GGGold," +
             "BaseAttackLv,AttackPctLv,CritChanceLv,CritDamageLv,MultiHitLv," +
-            "TimeExtendLv,UpgradeDiscountLv," +
+            "TimeExtendLv,UpgradeDiscountLv,CostFlatReductionLv,CrystalDiscountLv,CrystalFlatReductionLv," +
             "GoldFlatPermLv,GoldMultiPermLv,CrystalFlatLv"
         );
 
@@ -60,6 +60,9 @@ public static class CsvExporter
                 $"{s.PermanentStatLevels.GetValueOrDefault("multi_hit", 0)}," +
                 $"{s.PermanentStatLevels.GetValueOrDefault("time_extend", 0)}," +
                 $"{s.PermanentStatLevels.GetValueOrDefault("upgrade_discount", 0)}," +
+                $"{s.PermanentStatLevels.GetValueOrDefault("cost_flat_reduction", 0)}," +
+                $"{s.PermanentStatLevels.GetValueOrDefault("crystal_discount", 0)}," +
+                $"{s.PermanentStatLevels.GetValueOrDefault("crystal_flat_reduction", 0)}," +
                 $"{s.PermanentStatLevels.GetValueOrDefault("gold_flat_perm", 0)}," +
                 $"{s.PermanentStatLevels.GetValueOrDefault("gold_multi_perm", 0)}," +
                 $"{s.PermanentStatLevels.GetValueOrDefault("crystal_flat", 0)}"

@@ -32,6 +32,9 @@ public class SimPermanentStats
     // 유틸리티
     public int TimeExtendLevel { get; set; } = 0;
     public int UpgradeDiscountLevel { get; set; } = 0;
+    public int CostFlatReductionLevel { get; set; } = 0;
+    public int CrystalDiscountLevel { get; set; } = 0;
+    public int CrystalFlatReductionLevel { get; set; } = 0;
 
     // 시작 보너스
     public int StartLevelLevel { get; set; } = 0;
@@ -66,6 +69,9 @@ public class SimPermanentStats
     public double CrystalDropChanceBonus => GetEffect("crystal_chance", CrystalMultiLevel) / 100.0; // % → 소수
     public double TimeExtend => GetEffect("time_extend", TimeExtendLevel);
     public double UpgradeCostReduction => GetEffect("upgrade_discount", UpgradeDiscountLevel) / 100.0; // % → 소수
+    public long CostFlatReduction => (long)GetEffect("cost_flat_reduction", CostFlatReductionLevel);
+    public double CrystalDiscount => GetEffect("crystal_discount", CrystalDiscountLevel) / 100.0;
+    public long CrystalFlatReduction => (long)GetEffect("crystal_flat_reduction", CrystalFlatReductionLevel);
     public int StartLevel => (int)GetEffect("start_level", StartLevelLevel);
     public int StartGold => (int)GetEffect("start_gold", StartGoldLevel);
     public int StartKeyboardPower => (int)GetEffect("start_keyboard", StartKeyboardLevel);
@@ -86,6 +92,9 @@ public class SimPermanentStats
             CrystalMultiLevel = this.CrystalMultiLevel,
             TimeExtendLevel = this.TimeExtendLevel,
             UpgradeDiscountLevel = this.UpgradeDiscountLevel,
+            CostFlatReductionLevel = this.CostFlatReductionLevel,
+            CrystalDiscountLevel = this.CrystalDiscountLevel,
+            CrystalFlatReductionLevel = this.CrystalFlatReductionLevel,
             StartLevelLevel = this.StartLevelLevel,
             StartGoldLevel = this.StartGoldLevel,
             StartKeyboardLevel = this.StartKeyboardLevel,

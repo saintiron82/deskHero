@@ -165,7 +165,7 @@ public static class SimulatorFactory
         if (!element.TryGetProperty("tier_config", out var tier))
             return null;
 
-        return new TierConfigSim
+        var config = new TierConfigSim
         {
             TierInterval = TryGetInt(tier, "tier_interval", 1000),
             BaseMultiplier = TryGetDouble(tier, "base_multiplier", 1.0),
@@ -173,6 +173,39 @@ public static class SimulatorFactory
             BaseSoftcap = TryGetInt(tier, "base_softcap", 10),
             SoftcapIncreasePerTier = TryGetInt(tier, "softcap_increase_per_tier", 2)
         };
+
+        // tier_overrides 파싱
+        if (tier.TryGetProperty("tier_overrides", out var overrides))
+        {
+            config.TierOverrides = new Dictionary<string, TierOverride>();
+            foreach (var ov in overrides.EnumerateObject())
+            {
+                config.TierOverrides[ov.Name] = new TierOverride
+                {
+                    BaseCost = TryGetNullableDouble(ov.Value, "base_cost"),
+                    GrowthRate = TryGetNullableDouble(ov.Value, "growth_rate"),
+                    Multiplier = TryGetNullableDouble(ov.Value, "multiplier"),
+                    SoftcapInterval = TryGetNullableInt(ov.Value, "softcap_interval"),
+                    EffectPerLevel = TryGetNullableDouble(ov.Value, "effect_per_level")
+                };
+            }
+        }
+
+        return config;
+    }
+
+    private static double? TryGetNullableDouble(System.Text.Json.JsonElement el, string name)
+    {
+        if (el.TryGetProperty(name, out var prop) && prop.ValueKind == System.Text.Json.JsonValueKind.Number)
+            return prop.GetDouble();
+        return null;
+    }
+
+    private static int? TryGetNullableInt(System.Text.Json.JsonElement el, string name)
+    {
+        if (el.TryGetProperty(name, out var prop) && prop.ValueKind == System.Text.Json.JsonValueKind.Number)
+            return prop.GetInt32();
+        return null;
     }
 
     private static BossDropConfig LoadBossDropConfig(string path)

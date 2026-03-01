@@ -367,13 +367,16 @@ namespace DeskWarrior.Windows
                 if (type == "ingame")
                 {
                     var discountPercent = _saveManager.CurrentSave.PermanentStats.GetUpgradeCostReduction();
-                    cost = _statGrowth.GetInGameUpgradeCost(statId, targetLevel - 1, discountPercent);
+                    var flatReduction = _saveManager.CurrentSave.PermanentStats.GetCostFlatReduction();
+                    cost = _statGrowth.GetInGameUpgradeCost(statId, targetLevel - 1, discountPercent, flatReduction);
                     effect = _statGrowth.GetInGameStatEffect(statId, targetLevel);
                     CostResult.Text = $"💰 Cost: {cost:N0} Gold";
                 }
                 else // permanent
                 {
-                    cost = _statGrowth.GetPermanentUpgradeCost(statId, targetLevel - 1, null);
+                    var crystalDiscount = _saveManager.CurrentSave.PermanentStats.GetCrystalDiscount();
+                    var crystalFlatReduction = _saveManager.CurrentSave.PermanentStats.GetCrystalFlatReduction();
+                    cost = _statGrowth.GetPermanentUpgradeCost(statId, targetLevel - 1, crystalDiscount, crystalFlatReduction);
                     effect = _statGrowth.GetPermanentStatEffect(statId, targetLevel);
                     CostResult.Text = $"💎 Cost: {cost:N0} Crystal";
                 }
